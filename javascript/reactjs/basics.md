@@ -1,4 +1,4 @@
-# React
+# React Basics
 
 > Notes for React.js — add sections as you go.
 

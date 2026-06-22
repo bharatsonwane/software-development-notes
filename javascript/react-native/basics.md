@@ -1,4 +1,4 @@
-# React Native
+# React Native Basics
 
 > Notes for React Native — add sections as you go.
 
