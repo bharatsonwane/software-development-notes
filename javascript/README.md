@@ -2,15 +2,15 @@
 
 Notes for the JavaScript language and related ecosystems.
 
-Each subfolder uses **numbered files by level**:
+Each subfolder uses **numbered files in learning order**:
 
 ```
-01-js-fundamental.md
-02-js-intermediate.md
-03-js-advanced.md
+01-js-types-and-values.md
+02-js-variables-scope-hoisting.md
+...
 ```
 
-Topic prefix varies per folder (`js`, `node`, `react`, `rn`). Add new numbered files as you progress.
+Topic prefix varies per folder (`js`, `node`, `react`, `rn`). See each folder's `README.md` for the full file list.
 
 ## Contents
 
