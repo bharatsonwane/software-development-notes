@@ -1,6 +1,6 @@
-# Python Basics
+# Python (Fundamental)
 
-> Notes for Python fundamentals — add sections as you go.
+> Level 01 — Python fundamentals. Add sections as you go.
 
 ## Language basics
 

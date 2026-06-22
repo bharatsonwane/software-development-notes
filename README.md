@@ -6,7 +6,7 @@ Personal notes for technical learning and reference. Topics are organized by fol
 
 | Topic | Folder | Focus |
 |-------|--------|-------|
-| JavaScript | [javascript/](javascript/) | JS language, React.js, React Native |
+| JavaScript | [javascript/](javascript/) | JS language, Node.js, React.js, React Native |
 | Database | [database/](database/) | PostgreSQL |
 | Python | [python/](python/) | Core Python |
 

@@ -1,6 +1,6 @@
-# PostgreSQL
+# PostgreSQL (Fundamental)
 
-> Notes for PostgreSQL — add sections as you go.
+> Level 01 — PostgreSQL basics. Add sections as you go.
 
 ## Basics
 

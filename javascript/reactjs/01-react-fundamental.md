@@ -1,6 +1,6 @@
-# React Basics
+# React (Fundamental)
 
-> Notes for React.js — add sections as you go.
+> Level 01 — React.js basics. Add sections as you go.
 
 ## Basics
 

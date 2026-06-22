@@ -1,6 +1,6 @@
-# Node.js
+# Node.js (Fundamental)
 
-> Notes for Node.js — add sections as you go.
+> Level 01 — Node.js runtime and server-side JavaScript. Add sections as you go.
 
 ## Basics
 

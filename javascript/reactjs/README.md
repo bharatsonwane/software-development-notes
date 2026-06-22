@@ -2,13 +2,15 @@
 
 Notes for React on the web.
 
+Files are numbered by level: `01-react-fundamental.md`, `02-react-intermediate.md`, and so on.
+
 ## Contents
 
-- [Basics](./basics.md)
+| Level | File | Topic |
+|-------|------|-------|
+| 01 | [01-react-fundamental](./01-react-fundamental.md) | Components, hooks, basics |
 
-## Topics to cover (later)
+## Planned (later)
 
-- Components, JSX, props, state
-- Hooks (useState, useEffect, useContext, custom hooks)
-- Performance (memo, useMemo, useCallback)
-- Routing and data fetching patterns
+- `02-react-intermediate.md` — routing, data fetching, state management
+- `03-react-advanced.md` — architecture, performance, patterns

@@ -1,6 +1,6 @@
-# JavaScript Basics
+# Core JavaScript (Fundamental)
 
-> Notes for core JavaScript — add sections as you go.
+> Level 01 — core language concepts. Add sections as you go.
 
 ## Language basics
 

@@ -1,6 +1,6 @@
-# React Native Basics
+# React Native (Fundamental)
 
-> Notes for React Native — add sections as you go.
+> Level 01 — React Native basics. Add sections as you go.
 
 ## Basics
 

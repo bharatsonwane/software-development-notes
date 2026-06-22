@@ -1,15 +1,16 @@
 # JavaScript Language
 
-Notes for core JavaScript and the Node.js runtime.
+Notes for core JavaScript (language only).
+
+Files are numbered by level: `01-js-fundamental.md`, `02-js-intermediate.md`, and so on.
 
 ## Contents
 
-- [Basics](./basics.md)
-- [Node.js](./nodejs.md)
+| Level | File | Topic |
+|-------|------|-------|
+| 01 | [01-js-fundamental](./01-js-fundamental.md) | Core language |
 
-## Topics to cover (later)
+## Planned (later)
 
-- Closures, `this`, prototypes, event loop
-- ES6+ features
-- Async patterns (Promises, async/await)
-- TypeScript basics (if needed)
+- `02-js-intermediate.md` — deeper async, modules, patterns
+- `03-js-advanced.md` — performance, memory, internals
