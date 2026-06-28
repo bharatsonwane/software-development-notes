@@ -10,9 +10,9 @@ Builds on state and events (File 03). File 05 covers side effects if you sync fo
 
 ---
 
-## 6.1. Controlled vs uncontrolled inputs
+## 1. Controlled vs uncontrolled inputs
 
-### 6.1.1. Controlled input
+### 1.1. Controlled input
 
 React state is the **single source of truth**:
 
@@ -31,7 +31,7 @@ function NameField() {
 
 Every keystroke updates state → React re-renders → input shows new value.
 
-### 6.1.2. Uncontrolled input
+### 1.2. Uncontrolled input
 
 The **DOM** holds the value; read it with a **ref** when needed (File 07):
 
@@ -55,7 +55,7 @@ function NameField() {
 
 Use uncontrolled inputs sparingly — file uploads, integrating non-React widgets, or simple one-off reads.
 
-### 6.1.3. Why controlled is default
+### 1.3. Why controlled is default
 
 | Controlled | Uncontrolled |
 |------------|--------------|
@@ -66,9 +66,9 @@ Use uncontrolled inputs sparingly — file uploads, integrating non-React widget
 
 ---
 
-## 6.2. Text inputs and textareas
+## 2. Text inputs and textareas
 
-### 6.2.1. Single-line text
+### 2.1. Single-line text
 
 ```jsx
 function SignUpForm() {
@@ -91,7 +91,7 @@ function SignUpForm() {
 
 Always pair **`value`** with **`onChange`**. A `value` without `onChange` makes the input **read-only**.
 
-### 6.2.2. Textarea
+### 2.2. Textarea
 
 Same pattern — use **`value`** / **`onChange`**, not children for the current value:
 
@@ -103,7 +103,7 @@ Same pattern — use **`value`** / **`onChange`**, not children for the current 
 />
 ```
 
-### 6.2.3. Multiple fields — object state or separate state
+### 2.3. Multiple fields — object state or separate state
 
 **Separate state** — clear for small forms:
 
@@ -131,9 +131,9 @@ Immutable update — spread `prev`, change one key (File 03).
 
 ---
 
-## 6.3. Checkboxes, radios, and selects
+## 3. Checkboxes, radios, and selects
 
-### 6.3.1. Checkbox (boolean)
+### 3.1. Checkbox (boolean)
 
 Use **`checked`**, not `value`:
 
@@ -147,7 +147,7 @@ const [agreed, setAgreed] = useState(false);
 />
 ```
 
-### 6.3.2. Checkbox group (array)
+### 3.2. Checkbox group (array)
 
 ```jsx
 const [selected, setSelected] = useState([]);
@@ -170,7 +170,7 @@ function toggle(id) {
 ))}
 ```
 
-### 6.3.3. Radio buttons
+### 3.3. Radio buttons
 
 Group by **`name`**; state holds the **selected value**:
 
@@ -189,7 +189,7 @@ const [size, setSize] = useState("medium");
 </label>
 ```
 
-### 6.3.4. Select dropdown
+### 3.4. Select dropdown
 
 ```jsx
 const [country, setCountry] = useState("us");
@@ -205,9 +205,9 @@ For multi-select: `<select multiple value={array} onChange={...} />`.
 
 ---
 
-## 6.4. Form submit
+## 4. Form submit
 
-### 6.4.1. onSubmit on the form
+### 4.1. onSubmit on the form
 
 Prefer **form `onSubmit`** over button **`onClick`** — handles Enter key and accessibility:
 
@@ -240,7 +240,7 @@ function LoginForm() {
 }
 ```
 
-### 6.4.2. Button types
+### 4.2. Button types
 
 | `type` | Behavior |
 |--------|----------|
@@ -250,7 +250,7 @@ function LoginForm() {
 
 Use **`type="button"`** on buttons that should not submit (e.g. "Cancel", "Add row").
 
-### 6.4.3. Disabled submit while invalid or loading
+### 4.3. Disabled submit while invalid or loading
 
 ```jsx
 const canSubmit = email.includes("@") && password.length >= 8 && !loading;
@@ -262,9 +262,9 @@ const canSubmit = email.includes("@") && password.length >= 8 && !loading;
 
 ---
 
-## 6.5. Validation basics
+## 5. Validation basics
 
-### 6.5.1. When to validate
+### 5.1. When to validate
 
 | Timing | Use for |
 |--------|---------|
@@ -274,7 +274,7 @@ const canSubmit = email.includes("@") && password.length >= 8 && !loading;
 
 Start with **validate on submit**; add blur/change when UX needs it.
 
-### 6.5.2. Client-side validation example
+### 5.2. Client-side validation example
 
 ```jsx
 function SignUpForm() {
@@ -317,7 +317,7 @@ function SignUpForm() {
 
 **`noValidate`** — disable browser popup validation when you show custom errors (still use semantic `type="email"` etc.).
 
-### 6.5.3. Server errors
+### 5.3. Server errors
 
 After failed API response, map server messages to fields or a form-level banner:
 
@@ -332,15 +332,15 @@ try {
 
 File 10 covers async submit flow in depth.
 
-### 6.5.4. Libraries
+### 5.4. Libraries
 
 For large forms: **React Hook Form**, **Formik**, or **Zod** + resolver. Same ideas — register fields, validate schema, handle submit.
 
 ---
 
-## 6.6. Labels and accessibility
+## 6. Labels and accessibility
 
-### 6.6.1. Label every control
+### 6.1. Label every control
 
 ```jsx
 <label htmlFor="email">Email</label>
@@ -349,11 +349,11 @@ For large forms: **React Hook Form**, **Formik**, or **Zod** + resolver. Same id
 
 Or wrap the input inside `<label>`.
 
-### 6.6.2. aria-invalid and error messages
+### 6.2. aria-invalid and error messages
 
 Connect errors with **`aria-describedby`** and **`role="alert"`** so screen readers announce failures.
 
-### 6.6.3. Focus management
+### 6.3. Focus management
 
 After submit with errors, focus the **first invalid field**:
 
@@ -366,9 +366,9 @@ const firstErrorRef = useRef(null);
 
 ---
 
-## 6.7. Resetting forms
+## 7. Resetting forms
 
-### 6.7.1. Reset via state
+### 7.1. Reset via state
 
 ```jsx
 function handleReset() {
@@ -379,7 +379,7 @@ function handleReset() {
 
 Controlled forms reset by setting state back to initial values.
 
-### 6.7.2. Key remount pattern
+### 7.2. Key remount pattern
 
 Force a fresh form when switching entities:
 
@@ -391,9 +391,9 @@ When `userId` changes, React remounts and re-runs initial state (File 05 — pre
 
 ---
 
-## 6.8. Putting it together
+## 8. Putting it together
 
-### 6.8.1. Contact form
+### 8.1. Contact form
 
 ```jsx
 function ContactForm({ onSend }) {
@@ -456,34 +456,34 @@ function ContactForm({ onSend }) {
 
 ---
 
-## 6.9. Common questions
+## 9. Common questions
 
-**6.9.1. What is a controlled input?**  
+**9.1. What is a controlled input?**  
 A: An input whose **`value`** (or **`checked`**) is driven by React **state**, updated via **`onChange`**. React owns the displayed value.
 
-**6.9.2. Why must I call preventDefault on submit?**  
+**9.2. Why must I call preventDefault on submit?**  
 A: Without it, the browser **reloads the page** on form submit — you lose SPA state and React's handler may not run as expected.
 
-**6.9.3. Checkbox: value or checked?**  
+**9.3. Checkbox: value or checked?**  
 A: Use **`checked={bool}`** and **`onChange`** with **`e.target.checked`**. `value` on checkboxes is the value submitted in native forms, not visibility state.
 
-**6.9.4. Can I use defaultValue with controlled inputs?**  
+**9.4. Can I use defaultValue with controlled inputs?**  
 A: **No** — pick one model. **`defaultValue`** is for uncontrolled; **`value`** is for controlled. Mixing causes confusion.
 
-**6.9.5. How do I handle many form fields?**  
+**9.5. How do I handle many form fields?**  
 A: One **object in state** + helper like `updateField("email")`, or a form library. Keep updates **immutable**.
 
-**6.9.6. When should I validate?**  
+**9.6. When should I validate?**  
 A: Start **on submit**. Add **on blur** or **on change** when users need earlier feedback. Always re-validate on submit.
 
-**6.9.7. Controlled vs uncontrolled — which default?**  
+**9.7. Controlled vs uncontrolled — which default?**  
 A: **Controlled** for most React forms. **Uncontrolled + ref** for file inputs, some third-party widgets, or rare performance cases.
 
-**6.9.8. How do I disable browser validation popups?**  
+**9.8. How do I disable browser validation popups?**  
 A: Add **`noValidate`** on `<form>` and implement your own error UI.
 
-**6.9.9. How do I reset a controlled form?**  
+**9.9. How do I reset a controlled form?**  
 A: Set state back to initial values, or remount with **`key`**.
 
-**6.9.10. What should I read next?**  
+**9.10. What should I read next?**  
 A: File 07 (useRef, custom hooks), File 10 (submitting to APIs), File 06 patterns apply inside File 09 route forms.

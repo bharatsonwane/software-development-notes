@@ -10,9 +10,9 @@ Builds on state and events (File 03) and props (File 02).
 
 ---
 
-## 4.1. Conditional rendering
+## 1. Conditional rendering
 
-### 4.1.1. Early return
+### 1.1. Early return
 
 Guard clauses keep JSX flat:
 
@@ -43,7 +43,7 @@ function UserPanel({ loading, error, user }) {
 }
 ```
 
-### 4.1.2. Ternary operator
+### 1.2. Ternary operator
 
 Inline **either/or** inside JSX:
 
@@ -69,7 +69,7 @@ Small UI toggles:
 
 Avoid deep nested ternaries — use early return or extract a component.
 
-### 4.1.3. Logical AND (`&&`)
+### 1.3. Logical AND (`&&`)
 
 Render when condition is **true**; render nothing when **false**:
 
@@ -96,7 +96,7 @@ function Cart({ itemCount }) {
 {count > 0 && <p>{count} items</p>}
 ```
 
-### 4.1.4. null and undefined
+### 1.4. null and undefined
 
 Return **`null`** from a component to render nothing:
 
@@ -109,7 +109,7 @@ function AdminBanner({ isAdmin }) {
 
 Do not confuse with **`undefined`** — prefer explicit `null` for "no UI".
 
-### 4.1.5. Storing JSX in variables
+### 1.5. Storing JSX in variables
 
 Complex branches — assign to a variable first:
 
@@ -131,9 +131,9 @@ function StatusMessage({ status }) {
 
 ---
 
-## 4.2. Rendering lists
+## 2. Rendering lists
 
-### 4.2.1. map() to JSX
+### 2.1. map() to JSX
 
 Transform array data into elements:
 
@@ -153,7 +153,7 @@ function FruitList() {
 
 Each callback returns JSX; **`map`** produces an array of elements React can render.
 
-### 4.2.2. List item component
+### 2.2. List item component
 
 Extract for clarity and reuse:
 
@@ -188,9 +188,9 @@ function TodoList({ todos, onToggle }) {
 }
 ```
 
-**Key** goes on the outermost element in the `map` — often the list item component (section 4.3).
+**Key** goes on the outermost element in the `map` — often the list item component (section 3).
 
-### 4.2.3. Empty lists
+### 2.3. Empty lists
 
 Always handle **zero items**:
 
@@ -220,7 +220,7 @@ Or inline:
 )}
 ```
 
-### 4.2.4. Filter, sort, then map
+### 2.4. Filter, sort, then map
 
 Derive during render — don't mutate props/state arrays:
 
@@ -242,7 +242,7 @@ function ActiveUsers({ users }) {
 
 For expensive lists, memoize (File 12).
 
-### 4.2.5. Lists of numbers and fragments
+### 2.5. Lists of numbers and fragments
 
 ```jsx
 function NumberRow({ numbers }) {
@@ -258,9 +258,9 @@ function NumberRow({ numbers }) {
 
 ---
 
-## 4.3. Keys
+## 3. Keys
 
-### 4.3.1. Why keys matter
+### 3.1. Why keys matter
 
 React uses **keys** to match list items across re-renders — which DOM node corresponds to which data item.
 
@@ -274,7 +274,7 @@ Without stable keys, React may **reuse wrong DOM** → bugs in controlled inputs
 
 Keys are **not** passed as props — React consumes them. Use `id` from data if you need it inside the child.
 
-### 4.3.2. Rules for keys
+### 3.2. Rules for keys
 
 - **Unique among siblings** — not globally unique.
 - **Stable** — same item → same key across renders.
@@ -292,7 +292,7 @@ key={fruit}
 key={index}
 ```
 
-### 4.3.3. Index as key — when it breaks
+### 3.3. Index as key — when it breaks
 
 ```jsx
 // Initial
@@ -309,7 +309,7 @@ Symptoms:
 
 Use **index** only if the list is **static**, never reordered, no item state in rows.
 
-### 4.3.4. Generating keys
+### 3.4. Generating keys
 
 If no id exists, create one when adding items (File 03):
 
@@ -327,7 +327,7 @@ Do not generate new random keys **on every render**:
 key={Math.random()}
 ```
 
-### 4.3.5. Keys in nested lists
+### 3.5. Keys in nested lists
 
 Each **`map`** level needs keys on direct children:
 
@@ -346,9 +346,9 @@ Each **`map`** level needs keys on direct children:
 
 ---
 
-## 4.4. Fragments
+## 4. Fragments
 
-### 4.4.1. Problem: extra wrappers
+### 4.1. Problem: extra wrappers
 
 Component must return **one** root. Extra `<div>` can break layout (flex/grid, tables):
 
@@ -364,7 +364,7 @@ function Row() {
 }
 ```
 
-### 4.4.2. Fragment syntax
+### 4.2. Fragment syntax
 
 **Short syntax** — no keys:
 
@@ -400,7 +400,7 @@ function Glossary({ terms }) {
 
 `<>` cannot take a `key` — use `<Fragment key={...}>`.
 
-### 4.4.3. Fragment vs div
+### 4.3. Fragment vs div
 
 | Use Fragment | Use div (or semantic tag) |
 |--------------|----------------------------|
@@ -410,9 +410,9 @@ function Glossary({ terms }) {
 
 ---
 
-## 4.5. Putting it together
+## 5. Putting it together
 
-### 4.5.1. Todo list pattern
+### 5.1. Todo list pattern
 
 Combines conditionals, map, keys, lifted state (File 03):
 
@@ -472,7 +472,7 @@ function TodoApp() {
 }
 ```
 
-### 4.5.2. Loading / empty / data pattern
+### 5.2. Loading / empty / data pattern
 
 Common async UI shape (File 10 expands):
 
@@ -494,34 +494,34 @@ function UserList({ loading, error, users }) {
 
 ---
 
-## 4.6. Common questions
+## 6. Common questions
 
-**4.6.1. How do I conditionally render in JSX?**  
+**6.1. How do I conditionally render in JSX?**  
 A: **Early return**, **ternary** (`cond ? a : b`), or **`&&`** (`cond && <UI />`). Pick the clearest for the case.
 
-**4.6.2. Why does `{count && <p>…</p>}` show `0`?**  
+**6.2. Why does `{count && <p>…</p>}` show `0`?**  
 A: When `count` is `0`, React renders **`0`** as text. Use `count > 0 &&` instead.
 
-**4.6.3. How do I render a list in React?**  
+**6.3. How do I render a list in React?**  
 A: Call **`.map()`** on the array inside JSX and return an element per item. Put a **`key`** on each top-level item in the list.
 
-**4.6.4. What makes a good `key`?**  
+**6.4. What makes a good `key`?**  
 A: A **stable, unique** id from your data (`user.id`, `todo.id`). Avoid **array index** when items reorder, insert, or delete.
 
-**4.6.5. Can I use the index as key?**  
+**6.5. Can I use the index as key?**  
 A: Only for **static** lists that never change order and hold no per-row state. Otherwise use real ids.
 
-**4.6.6. What is a React Fragment?**  
+**6.6. What is a React Fragment?**  
 A: A wrapper that **groups children without adding a DOM node**. Syntax: `<>...</>` or `<Fragment>`.
 
-**4.6.7. When do I need `<Fragment key={...}>` instead of `<>`?**  
+**6.7. When do I need `<Fragment key={...}>` instead of `<>`?**  
 A: When mapping a list and the **fragment** is the direct child — fragments in lists need an explicit **key**.
 
-**4.6.8. Do keys get passed as props to the component?**  
+**6.8. Do keys get passed as props to the component?**  
 A: **No.** `key` is special — React uses it internally. Pass `id` separately if the child needs it.
 
-**4.6.9. Should I filter before or inside map?**  
+**6.9. Should I filter before or inside map?**  
 A: Usually **filter (or derive) before map** for clarity: `items.filter(...).map(...)`.
 
-**4.6.10. What should I read next?**  
+**6.10. What should I read next?**  
 A: File 05 (useEffect), File 06 (forms), File 10 (fetching data into lists).

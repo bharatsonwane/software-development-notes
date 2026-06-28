@@ -10,9 +10,9 @@ Builds on state and events (File 03) and rendering patterns (File 04). File 10 g
 
 ---
 
-## 5.1. Side effects vs render
+## 1. Side effects vs render
 
-### 5.1.1. What belongs outside render
+### 1.1. What belongs outside render
 
 **Render** should compute UI from props and state only:
 
@@ -37,7 +37,7 @@ function Greeting({ name }) {
 
 Running these **during render** causes bugs: they may run on every render, race with each other, and break React's predictable model (File 01 — pure components).
 
-### 5.1.2. Where useEffect runs
+### 1.2. Where useEffect runs
 
 ```jsx
 import { useState, useEffect } from "react";
@@ -65,9 +65,9 @@ Effects do **not** block painting — good for responsiveness. For urgent DOM wo
 
 ---
 
-## 5.2. Basic useEffect syntax
+## 2. Basic useEffect syntax
 
-### 5.2.1. Effect function
+### 2.1. Effect function
 
 ```jsx
 useEffect(() => {
@@ -77,7 +77,7 @@ useEffect(() => {
 
 The function you pass to `useEffect` is the **effect**. React calls it after render.
 
-### 5.2.2. Optional cleanup return
+### 2.2. Optional cleanup return
 
 ```jsx
 useEffect(() => {
@@ -91,7 +91,7 @@ useEffect(() => {
 
 Return a **cleanup function** when you need to undo what the effect set up.
 
-### 5.2.3. Dependency array (third argument)
+### 2.3. Dependency array (third argument)
 
 ```jsx
 useEffect(() => {
@@ -107,9 +107,9 @@ useEffect(() => {
 
 ---
 
-## 5.3. Dependency array in depth
+## 3. Dependency array in depth
 
-### 5.3.1. Include what you read
+### 3.1. Include what you read
 
 If the effect **uses** a value from the component, include it in deps:
 
@@ -125,7 +125,7 @@ function ChatRoom({ roomId }) {
 
 When `roomId` changes, React runs **cleanup** for the old room, then runs the effect for the new room.
 
-### 5.3.2. Stale closures
+### 3.2. Stale closures
 
 Missing deps causes **stale** values inside the effect:
 
@@ -157,7 +157,7 @@ useEffect(() => {
 // Option C — useRef for latest value without re-running effect (File 07)
 ```
 
-### 5.3.3. Stable functions and deps
+### 3.3. Stable functions and deps
 
 Functions defined in the component are **new references** every render:
 
@@ -186,7 +186,7 @@ useEffect(() => {
 
 **Setters from `useState`** and **`dispatch` from `useReducer`** are stable — safe to omit from deps (React guarantees identity).
 
-### 5.3.4. Objects and arrays as deps
+### 3.4. Objects and arrays as deps
 
 ```jsx
 useEffect(() => {
@@ -196,15 +196,15 @@ useEffect(() => {
 
 If `settings` is recreated each render, the effect fires too often. **Derive** stable deps (primitives) or **memoize** the object (File 12).
 
-### 5.3.5. ESLint `react-hooks/exhaustive-deps`
+### 3.5. ESLint `react-hooks/exhaustive-deps`
 
 The **`eslint-plugin-react-hooks`** rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.
 
 ---
 
-## 5.4. Cleanup
+## 4. Cleanup
 
-### 5.4.1. When cleanup runs
+### 4.1. When cleanup runs
 
 Cleanup runs:
 
@@ -222,7 +222,7 @@ useEffect(() => {
 // Unmount:       unsubscribe B
 ```
 
-### 5.4.2. Subscriptions and listeners
+### 4.2. Subscriptions and listeners
 
 ```jsx
 useEffect(() => {
@@ -237,7 +237,7 @@ useEffect(() => {
 
 Always remove listeners, close connections, and abort fetches in cleanup.
 
-### 5.4.3. Aborting fetch
+### 4.3. Aborting fetch
 
 ```jsx
 useEffect(() => {
@@ -262,7 +262,7 @@ useEffect(() => {
 
 Without abort, a slow response for **old** `id` can overwrite state after **new** `id` loaded (**race condition**). File 10 expands on loading/error UI.
 
-### 5.4.4. Timers
+### 4.4. Timers
 
 ```jsx
 useEffect(() => {
@@ -273,9 +273,9 @@ useEffect(() => {
 
 ---
 
-## 5.5. Common effect patterns
+## 5. Common effect patterns
 
-### 5.5.1. Syncing document title
+### 5.1. Syncing document title
 
 ```jsx
 function ProductPage({ product }) {
@@ -289,7 +289,7 @@ function ProductPage({ product }) {
 
 Small, self-contained — good first useEffect.
 
-### 5.5.2. Fetch on mount / when id changes
+### 5.2. Fetch on mount / when id changes
 
 ```jsx
 function UserProfile({ userId }) {
@@ -329,7 +329,7 @@ function UserProfile({ userId }) {
 
 For production apps, prefer **TanStack Query** or similar (File 10) instead of hand-rolled fetch effects.
 
-### 5.5.3. Syncing to localStorage
+### 5.3. Syncing to localStorage
 
 ```jsx
 function usePersistedState(key, initial) {
@@ -348,7 +348,7 @@ function usePersistedState(key, initial) {
 
 **Note:** reading `localStorage` in lazy `useState` initializer is fine; **writing** on every `value` change belongs in an effect (or event handler if you only save on explicit save).
 
-### 5.5.4. External non-React library
+### 5.4. External non-React library
 
 ```jsx
 useEffect(() => {
@@ -361,9 +361,9 @@ Create / destroy imperatively in effect + cleanup when the library is not React-
 
 ---
 
-## 5.6. When not to use useEffect
+## 6. When not to use useEffect
 
-### 5.6.1. Deriving state during render
+### 6.1. Deriving state during render
 
 Don't sync state with props via effect when you can **compute during render**:
 
@@ -385,7 +385,7 @@ function FullName({ first, last }) {
 
 Use **`useMemo`** only when the computation is expensive (File 12).
 
-### 5.6.2. User events belong in handlers
+### 6.2. User events belong in handlers
 
 ```jsx
 // Avoid — effect on every query change to POST analytics
@@ -403,11 +403,11 @@ function onSubmit(e) {
 
 Effects are for **syncing with external systems**, not for chaining **event → state → event**.
 
-### 5.6.3. Initial data that could be server-provided
+### 6.3. Initial data that could be server-provided
 
 In frameworks with **server components** or **loaders** (File 09), fetch on the server or in the route loader instead of `useEffect` on mount when possible.
 
-### 5.6.4. Resetting state when a prop changes
+### 6.4. Resetting state when a prop changes
 
 ```jsx
 // Avoid extra effect + flash
@@ -423,7 +423,7 @@ Or pass `userId` and derive selection during render.
 
 ---
 
-## 5.7. Strict Mode and development behavior
+## 7. Strict Mode and development behavior
 
 In **React Strict Mode** (dev only), React **mounts → unmounts → remounts** components to surface missing cleanup:
 
@@ -444,7 +444,7 @@ useEffect(() => {
 
 ---
 
-## 5.8. Multiple effects
+## 8. Multiple effects
 
 Split unrelated side effects into **separate** `useEffect` calls:
 
@@ -471,9 +471,9 @@ Each effect has its own **deps** and **cleanup** — easier to reason about than
 
 ---
 
-## 5.9. Putting it together
+## 9. Putting it together
 
-### 5.9.1. Online status hook (preview of File 07)
+### 9.1. Online status hook (preview of File 07)
 
 ```jsx
 function useOnlineStatus() {
@@ -505,7 +505,7 @@ function StatusBar() {
 
 Custom hooks are just functions that call `useEffect` — File 07 formalizes the pattern.
 
-### 5.9.2. Debounced search (effect + cleanup)
+### 9.2. Debounced search (effect + cleanup)
 
 ```jsx
 function SearchUsers({ onResults }) {
@@ -540,34 +540,34 @@ Debounce cleanup cancels the pending fetch when `query` changes before 300ms.
 
 ---
 
-## 5.10. Common questions
+## 10. Common questions
 
-**5.10.1. What is a side effect in React?**  
+**10.1. What is a side effect in React?**  
 A: Anything that touches **outside** the render result — network, DOM APIs, timers, subscriptions, storage. Run these in **`useEffect`**, not during render.
 
-**5.10.2. When does useEffect run?**  
+**10.2. When does useEffect run?**  
 A: **After** React commits the update to the DOM and the browser paints. On mount and after re-renders where **dependencies** changed (if you pass a dependency array).
 
-**5.10.3. What does an empty dependency array `[]` mean?**  
+**10.3. What does an empty dependency array `[]` mean?**  
 A: Run the effect **once after mount** (and run cleanup on unmount). In Strict Mode dev, mount/cleanup/mount runs once extra to test cleanup.
 
-**5.10.4. What happens if I omit the dependency array?**  
+**10.4. What happens if I omit the dependency array?**  
 A: The effect runs after **every** render. Rarely correct — almost always specify `[]` or `[deps]`.
 
-**5.10.5. Why do I need a cleanup function?**  
+**10.5. Why do I need a cleanup function?**  
 A: To **undo** subscriptions, listeners, timers, and in-flight requests when deps change or the component unmounts. Prevents leaks and stale updates.
 
-**5.10.6. How do I fix stale closure bugs in effects?**  
+**10.6. How do I fix stale closure bugs in effects?**  
 A: Add missing values to the **dependency array**, use **functional state updates**, or store latest values in **`useRef`** (File 07). Follow **`exhaustive-deps`** lint warnings.
 
-**5.10.7. Can I fetch data in useEffect?**  
+**10.7. Can I fetch data in useEffect?**  
 A: **Yes** for client-only loading. Use **abort/cancel** on cleanup to avoid races. For real apps, prefer **TanStack Query** or route **loaders** (Files 09–10).
 
-**5.10.8. Should I use useEffect to update state when props change?**  
+**10.8. Should I use useEffect to update state when props change?**  
 A: Usually **no** — compute derived values during **render**, reset with **`key`**, or adjust design. Effects that only mirror props into state often cause extra renders.
 
-**5.10.9. Why does my effect run twice in development?**  
+**10.9. Why does my effect run twice in development?**  
 A: **Strict Mode** intentionally double-invokes effects in dev to verify cleanup. Production runs once per dependency change.
 
-**5.10.10. What should I read next?**  
+**10.10. What should I read next?**  
 A: File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).

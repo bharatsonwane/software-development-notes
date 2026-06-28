@@ -10,9 +10,9 @@ Props stay **read-only** — if a child needs to change data, the parent updates
 
 ---
 
-## 2.1. Function components in depth
+## 1. Function components in depth
 
-### 2.1.1. Anatomy of a component file
+### 1.1. Anatomy of a component file
 
 Typical file layout:
 
@@ -38,7 +38,7 @@ Conventions:
 - **Named export** for reusable components; **default export** for page/route root (team choice — stay consistent).
 - Keep **markup + minimal logic** in the component; extract helpers to separate files if they grow.
 
-### 2.1.2. Named vs default export
+### 1.2. Named vs default export
 
 ```jsx
 // Named — explicit imports, good for multiple exports
@@ -57,7 +57,7 @@ import Dashboard from "./Dashboard.jsx";
 
 Avoid mixing many default exports in one file.
 
-### 2.1.3. Components must return valid UI
+### 1.3. Components must return valid UI
 
 Return JSX, `null`, or a **Fragment**. Do not return plain objects or undefined accidentally:
 
@@ -70,7 +70,7 @@ function MaybeShow({ show, content }) {
 
 Early returns keep JSX readable (File 04 — conditional rendering).
 
-### 2.1.4. Single responsibility
+### 1.4. Single responsibility
 
 Split when a component:
 
@@ -98,9 +98,9 @@ function UserPage() {
 
 ---
 
-## 2.2. Props patterns
+## 2. Props patterns
 
-### 2.2.1. Destructuring and renaming
+### 2.1. Destructuring and renaming
 
 ```jsx
 function UserCard({ name: displayName, age, isActive = false }) {
@@ -130,7 +130,7 @@ function PrimaryButton({ label, ...rest }) {
 
 Useful for native attributes (`aria-*`, `data-*`, `className`).
 
-### 2.2.2. Passing objects and spreading
+### 2.2. Passing objects and spreading
 
 Parent bundles related props:
 
@@ -149,7 +149,7 @@ Explicit is often clearer for public APIs:
 <UserCard name={user.name} role={user.role} />
 ```
 
-### 2.2.3. Boolean and optional props
+### 2.3. Boolean and optional props
 
 **Boolean props** — shorthand when `true`:
 
@@ -180,7 +180,7 @@ function Alert({ title, message, variant = "info" }) {
 }
 ```
 
-### 2.2.4. Props are a snapshot
+### 2.4. Props are a snapshot
 
 Props do not update inside the child by themselves — parent re-render passes **new** props:
 
@@ -210,7 +210,7 @@ function Bad({ user }) {
 }
 ```
 
-### 2.2.5. Typing props (PropTypes / TypeScript)
+### 2.5. Typing props (PropTypes / TypeScript)
 
 JavaScript — optional **PropTypes** (runtime, dev only):
 
@@ -242,7 +242,7 @@ function UserCard({ name, age }: UserCardProps) {
 
 Types document the public contract of a component.
 
-### 2.2.6. Callback props
+### 2.6. Callback props
 
 Parent passes **functions** so child can notify parent (events up, data down):
 
@@ -266,9 +266,9 @@ Naming: `on` + event for handlers (`onClick`, `onSubmit`, `onSelectUser`). Full 
 
 ---
 
-## 2.3. The `children` prop
+## 3. The `children` prop
 
-### 2.3.1. Basic children
+### 3.1. Basic children
 
 ```jsx
 function Panel({ title, children }) {
@@ -292,7 +292,7 @@ function Panel({ title, children }) {
 - Element(s): nested JSX
 - Expression: `{items.map(...)}` (File 04)
 
-### 2.3.2. Multiple slots (explicit props)
+### 3.2. Multiple slots (explicit props)
 
 When you need **named regions**, use extra props instead of only `children`:
 
@@ -317,7 +317,7 @@ function Card({ header, footer, children }) {
 
 Alternative names: `sidebar`, `actions`, `leading`, `trailing`.
 
-### 2.3.3. Layout components
+### 3.3. Layout components
 
 **Layout** components wrap pages with shared chrome:
 
@@ -343,7 +343,7 @@ function App() {
 
 Same pattern for `Modal`, `Card`, `Sidebar`, `Stack`, `Grid` wrappers.
 
-### 2.3.4. Children as function (render prop intro)
+### 3.4. Children as function (render prop intro)
 
 Pass a **function** as child to share data from parent wrapper:
 
@@ -369,11 +369,11 @@ Also called **render props**. Custom hooks often replace this pattern today (Fil
 
 ---
 
-## 2.4. Composition vs inheritance
+## 4. Composition vs inheritance
 
 React favors **composition** — building UI by nesting components and passing props/`children`.
 
-### 2.4.1. Compose, do not extend
+### 4.1. Compose, do not extend
 
 ```jsx
 // Prefer — composition
@@ -402,7 +402,7 @@ function WelcomeDialog() {
 
 Configure behavior with **props**, not subclass overrides.
 
-### 2.4.2. Specialization via props
+### 4.2. Specialization via props
 
 ```jsx
 function Button({ variant = "primary", size = "md", ...rest }) {
@@ -417,7 +417,7 @@ function DangerButton(props) {
 
 **Wrapper components** reuse base UI with preset props.
 
-### 2.4.3. Containment vs specialization
+### 4.3. Containment vs specialization
 
 | Pattern | Example |
 |---------|---------|
@@ -428,9 +428,9 @@ Both are composition — no class hierarchy.
 
 ---
 
-## 2.5. Component composition patterns
+## 5. Component composition patterns
 
-### 2.5.1. Small presentational components
+### 5.1. Small presentational components
 
 Split **data** (File 03, 10) from **presentation** when helpful:
 
@@ -460,7 +460,7 @@ function UserRow({ user }) {
 
 Not a strict rule — use when it improves reuse and tests.
 
-### 2.5.2. Config-driven UI
+### 5.2. Config-driven UI
 
 Pass arrays of props to map into components (File 04):
 
@@ -481,7 +481,7 @@ function Nav() {
 }
 ```
 
-### 2.5.3. Prop drilling (preview)
+### 5.3. Prop drilling (preview)
 
 Passing props through many layers:
 
@@ -502,7 +502,7 @@ function Sidebar({ user }) {
 
 Works for shallow trees. Deep drilling → **Context** (File 08) or state library (File 11).
 
-### 2.5.4. Fragment in composition
+### 5.4. Fragment in composition
 
 Avoid extra DOM nodes when wrapping siblings for export:
 
@@ -522,34 +522,34 @@ Long form: `<React.Fragment key={id}>`. Details in File 04.
 
 ---
 
-## 2.6. Common questions
+## 6. Common questions
 
-**2.6.1. Can a component update its own props?**  
+**6.1. Can a component update its own props?**  
 A: **No.** Props are read-only. The **parent** owns the data and passes new props on re-render.
 
-**2.6.2. What is the difference between props and state?**  
+**6.2. What is the difference between props and state?**  
 A: **Props** are external inputs; **state** is internal (File 01, File 03). Components react to both by re-rendering.
 
-**2.6.3. When should I use `children` vs a named prop like `footer`?**  
+**6.3. When should I use `children` vs a named prop like `footer`?**  
 A: Use **`children`** for a single main slot (typical wrapper). Use **named props** for multiple distinct regions (header, footer, sidebar).
 
-**2.6.4. What does spreading props (`{...props}`) do?**  
+**6.4. What does spreading props (`{...props}`) do?**  
 A: Copies all properties onto the target element or component. Useful for forwarding HTML attributes; avoid spreading unknown objects onto DOM nodes.
 
-**2.6.5. Why compose instead of inherit in React?**  
+**6.5. Why compose instead of inherit in React?**  
 A: Composition is **flexible** and avoids fragile class hierarchies. React's model is built around nesting components and passing props.
 
-**2.6.6. What is a callback prop?**  
+**6.6. What is a callback prop?**  
 A: A function passed from **parent to child** so the child can report events or data upward (`onChange`, `onSelect`).
 
-**2.6.7. What is prop drilling?**  
+**6.7. What is prop drilling?**  
 A: Passing props through **intermediate** components that do not use them, only to reach a deep child. Fix with Context or global state when it hurts maintainability.
 
-**2.6.8. Named or default export?**  
+**6.8. Named or default export?**  
 A: Either works. **Named** exports scale well for component libraries; **default** exports are common for page-level components. Pick one style per project.
 
-**2.6.9. What is a render prop?**  
+**6.9. What is a render prop?**  
 A: A prop (often `children`) that is a **function** receiving data from the parent component and returning UI. Custom hooks are often a simpler alternative (File 07).
 
-**2.6.10. What should I read next?**  
+**6.10. What should I read next?**  
 A: File 03 (state & events), File 04 (lists & conditional rendering).

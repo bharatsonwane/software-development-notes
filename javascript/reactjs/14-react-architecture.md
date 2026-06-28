@@ -10,9 +10,9 @@ Builds on composition (File 02), Context (File 08), routing (File 09), and testi
 
 ---
 
-## 14.1. Folder structure
+## 1. Folder structure
 
-### 14.1.1. Feature-first layout
+### 1.1. Feature-first layout
 
 ```
 src/
@@ -44,7 +44,7 @@ src/
 
 **Feature folders** group everything for one domain. **`components/`** at root holds **design system** pieces used everywhere.
 
-### 14.1.2. Avoid type-only grouping at scale
+### 1.2. Avoid type-only grouping at scale
 
 ```
 # Hard to navigate in large apps
@@ -55,7 +55,7 @@ services/
 
 Cross-cutting folders force jumping between directories for one feature. Hybrid works: shared **`components/`**, feature-local **`hooks/`**.
 
-### 14.1.3. Public API via index.js
+### 1.3. Public API via index.js
 
 ```jsx
 // features/cart/index.js
@@ -65,7 +65,7 @@ export { CartDrawer } from "./components/CartDrawer";
 
 Import from **`@/features/cart`**, not deep paths into internals — freedom to refactor inside feature.
 
-### 14.1.4. Colocate tests and styles
+### 1.4. Colocate tests and styles
 
 ```
 ProductCard/
@@ -78,9 +78,9 @@ Tests next to source (File 13) — easier to find and maintain.
 
 ---
 
-## 14.2. Separation of concerns
+## 2. Separation of concerns
 
-### 14.2.1. Presentational vs container (light touch)
+### 2.1. Presentational vs container (light touch)
 
 | Layer | Responsibility |
 |-------|----------------|
@@ -91,7 +91,7 @@ Tests next to source (File 13) — easier to find and maintain.
 
 Not a strict rule — avoid "container" files that only pass props through one level.
 
-### 14.2.2. Example split
+### 2.2. Example split
 
 ```jsx
 // features/products/hooks/useProduct.js
@@ -121,7 +121,7 @@ export function ProductDetails({ product }) {
 
 File 10 — data in hook; UI stays readable.
 
-### 14.2.3. providers.jsx
+### 2.3. providers.jsx
 
 Centralize app-wide wrappers (File 08, File 10, File 09):
 
@@ -141,9 +141,9 @@ export function AppProviders({ children }) {
 
 ---
 
-## 14.3. Compound components
+## 3. Compound components
 
-### 14.3.1. Flexible API without prop soup
+### 3.1. Flexible API without prop soup
 
 Instead of one mega-component with dozens of props:
 
@@ -167,7 +167,7 @@ Use **composition** — parent shares state with children via Context **inside t
 </Tabs>
 ```
 
-### 14.3.2. Internal context for compound pattern
+### 3.2. Internal context for compound pattern
 
 ```jsx
 const TabsContext = createContext(null);
@@ -205,7 +205,7 @@ Tabs.List = TabList;
 
 Consumers compose markup; library owns **behavior** and **accessibility** wiring.
 
-### 14.3.3. When to use
+### 3.3. When to use
 
 - Design systems (`Select`, `Menu`, `Accordion`)
 - Repeated layout patterns with slots
@@ -213,9 +213,9 @@ Consumers compose markup; library owns **behavior** and **accessibility** wiring
 
 ---
 
-## 14.4. Error boundaries
+## 4. Error boundaries
 
-### 14.4.1. What they catch
+### 4.1. What they catch
 
 **Error boundaries** catch **render errors** in child tree — JavaScript exceptions during render, lifecycle, or constructors of child components.
 
@@ -225,7 +225,7 @@ They do **not** catch:
 - Async errors inside `useEffect` (handle in promise)
 - Server-side rendering errors (framework-specific)
 
-### 14.4.2. Class component boundary (current API)
+### 4.2. Class component boundary (current API)
 
 ```jsx
 class ErrorBoundary extends React.Component {
@@ -258,7 +258,7 @@ class ErrorBoundary extends React.Component {
 
 React may add **`use` / error boundary hooks** — check your React version; class boundary remains widely used.
 
-### 14.4.3. Granular placement
+### 4.3. Granular placement
 
 ```jsx
 <AppProviders>
@@ -274,23 +274,23 @@ React may add **`use` / error boundary hooks** — check your React version; cla
 
 Isolate failures — one broken widget should not white-screen the entire app.
 
-### 14.4.4. React Router errorElement
+### 4.4. React Router errorElement
 
 File 09 — route-level **`errorElement`** for loader/render failures in a section.
 
 ---
 
-## 14.5. Boundaries and layers
+## 5. Boundaries and layers
 
-### 14.5.1. Unidirectional data flow (recap)
+### 5.1. Unidirectional data flow (recap)
 
 Props down, events up (File 03). Global client state via Context or store (Files 08, 11). Server state via query library (File 10).
 
-### 14.5.2. Avoid circular imports
+### 5.2. Avoid circular imports
 
 Features import from **`components/`** and **`lib/`**, not from each other. Shared types in **`lib/types`** or feature-agnostic module.
 
-### 14.5.3. Environment and config
+### 5.3. Environment and config
 
 ```jsx
 // lib/config.js
@@ -301,23 +301,23 @@ Never hardcode secrets in client bundle — env vars prefixed for exposure (Vite
 
 ---
 
-## 14.6. Scaling patterns
+## 6. Scaling patterns
 
-### 14.6.1. Route-based code splitting
+### 6.1. Route-based code splitting
 
 File 12 — lazy routes per feature folder reduce initial bundle.
 
-### 14.6.2. Design system layer
+### 6.2. Design system layer
 
 Shared **`Button`**, **`Input`**, **`Modal`** — consistent a11y and styling. Feature components compose design system pieces.
 
-### 14.6.3. Documentation and Storybook
+### 6.3. Documentation and Storybook
 
 Optional **Storybook** for presentational components — visual catalog isolated from data fetching.
 
 ---
 
-## 14.7. Anti-patterns to avoid
+## 7. Anti-patterns to avoid
 
 | Anti-pattern | Better approach |
 |--------------|-----------------|
@@ -329,9 +329,9 @@ Optional **Storybook** for presentational components — visual catalog isolated
 
 ---
 
-## 14.8. Putting it together
+## 8. Putting it together
 
-### 14.8.1. Minimal production-shaped app
+### 8.1. Minimal production-shaped app
 
 ```
 src/
@@ -373,34 +373,34 @@ Each **`features/*`** owns routes segment, pages, hooks, and API for that domain
 
 ---
 
-## 14.9. Common questions
+## 9. Common questions
 
-**14.9.1. Feature folders vs pages folders?**  
+**9.1. Feature folders vs pages folders?**  
 A: **Feature-first** scales better — everything for "products" lives together. **`pages/`** can alias route entry components inside features.
 
-**14.9.2. Where do shared hooks go?**  
+**9.2. Where do shared hooks go?**  
 A: **`hooks/`** at root if truly generic; otherwise **inside the feature** that owns them.
 
-**14.9.3. What are compound components?**  
+**9.3. What are compound components?**  
 A: A set of components (**`Tabs`**, **`Tabs.Tab`**) that **share implicit state** via internal Context for a flexible public API.
 
-**14.9.4. Do error boundaries catch useEffect errors?**  
+**9.4. Do error boundaries catch useEffect errors?**  
 A: **Not async errors** inside effects unless re-thrown during render. Handle fetch errors in UI state (File 10).
 
-**14.9.5. Can I use error boundary with function components?**  
+**9.5. Can I use error boundary with function components?**  
 A: Boundaries are **class components** today (or library wrappers). Handlers use **try/catch**.
 
-**14.9.6. How many providers is too many?**  
+**9.6. How many providers is too many?**  
 A: Combine in **`AppProviders`**. Split contexts by concern (File 08) — not one mega-provider.
 
-**14.9.7. Monorepo?**  
+**9.7. Monorepo?**  
 A: Shared **`ui`** package + app packages per product — same feature principles at package level.
 
-**14.9.8. TypeScript?**  
+**9.8. TypeScript?**  
 A: Same structure — add **`types.ts`** per feature for API shapes and props.
 
-**14.9.9. When to split a feature?**  
+**9.9. When to split a feature?**  
 A: When folder grows hard to navigate (~15+ files) or two unrelated domains share a folder — extract sub-features.
 
-**14.9.10. End of React track — what next?**  
+**9.10. End of React track — what next?**  
 A: Build a small full-stack app applying Files 01–14. Deepen **File 10** (TanStack Query), **File 12** (perf), or explore **Next.js** for SSR/file routing.

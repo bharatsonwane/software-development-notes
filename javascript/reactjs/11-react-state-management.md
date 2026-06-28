@@ -8,9 +8,9 @@ React apps juggle **local UI state**, **shared client state**, and **server stat
 
 ---
 
-## 11.1. State placement decision tree
+## 1. State placement decision tree
 
-### 11.1.1. Where should this state live?
+### 1.1. Where should this state live?
 
 ```
 Is it from the API?
@@ -29,7 +29,7 @@ Does it change very often across a huge tree?
   → Prefer Zustand/Redux with selectors, not one big Context
 ```
 
-### 11.1.2. Avoid duplicating server data in global store
+### 1.2. Avoid duplicating server data in global store
 
 ```jsx
 // Avoid — user also lives in React Query cache
@@ -43,7 +43,7 @@ Store **UI preferences**, **draft wizard state**, **cart** (if not server-owned)
 
 ---
 
-## 11.2. Context limits (recap)
+## 2. Context limits (recap)
 
 File 08 — Context works for theme, auth snapshot, locale. Pain points at scale:
 
@@ -55,9 +55,9 @@ Graduate to a store when profiling shows Context churn or logic sprawls across f
 
 ---
 
-## 11.3. Zustand
+## 3. Zustand
 
-### 11.3.1. Minimal global store
+### 3.1. Minimal global store
 
 ```bash
 npm install zustand
@@ -88,7 +88,7 @@ function AddButton({ product }) {
 }
 ```
 
-### 11.3.2. Selectors prevent extra re-renders
+### 3.2. Selectors prevent extra re-renders
 
 Subscribe to **slices** of state:
 
@@ -99,14 +99,14 @@ const addItem = useCartStore((s) => s.addItem);    // stable function reference
 
 Only re-renders when **selected value** changes (shallow compare by default).
 
-### 11.3.3. When Zustand fits
+### 3.3. When Zustand fits
 
 - Medium global state without boilerplate
 - Quick prototypes and production apps alike
 - Optional **persist** middleware (localStorage)
 - Works outside React — `useCartStore.getState()`
 
-### 11.3.4. immer middleware (optional)
+### 3.4. immer middleware (optional)
 
 ```jsx
 import { immer } from "zustand/middleware/immer";
@@ -125,9 +125,9 @@ const useStore = create(
 
 ---
 
-## 11.4. Redux Toolkit
+## 4. Redux Toolkit
 
-### 11.4.1. Core ideas
+### 4.1. Core ideas
 
 | Term | Meaning |
 |------|---------|
@@ -138,7 +138,7 @@ const useStore = create(
 
 Redux enforces **one direction**: UI → dispatch(action) → reducer → new state → UI.
 
-### 11.4.2. createSlice
+### 4.2. createSlice
 
 ```jsx
 import { configureStore, createSlice } from "@reduxjs/toolkit";
@@ -163,7 +163,7 @@ const store = configureStore({
 });
 ```
 
-### 11.4.3. React bindings
+### 4.3. React bindings
 
 ```jsx
 import { Provider, useSelector, useDispatch } from "react-redux";
@@ -187,11 +187,11 @@ function CartPage() {
 }
 ```
 
-### 11.4.4. RTK Query (server state)
+### 4.4. RTK Query (server state)
 
 Redux Toolkit includes **RTK Query** — define API slices with generated hooks (parallel to TanStack Query). Pick **one** primary server cache per app.
 
-### 11.4.5. When Redux Toolkit fits
+### 4.5. When Redux Toolkit fits
 
 - Large teams wanting **strict conventions**
 - Complex async middleware (logging, analytics)
@@ -200,7 +200,7 @@ Redux Toolkit includes **RTK Query** — define API slices with generated hooks 
 
 ---
 
-## 11.5. Zustand vs Redux Toolkit
+## 5. Zustand vs Redux Toolkit
 
 | | Zustand | Redux Toolkit |
 |---|---------|---------------|
@@ -215,13 +215,13 @@ Neither replaces **TanStack Query** for normalized server cache unless you stand
 
 ---
 
-## 11.6. Patterns across libraries
+## 6. Patterns across libraries
 
-### 11.6.1. Colocate feature state
+### 6.1. Colocate feature state
 
 Keep cart logic in `cartSlice` or `useCartStore` — not scattered `useState` in ten files.
 
-### 11.6.2. Derived state
+### 6.2. Derived state
 
 Compute totals in **selectors** or `useMemo`, do not duplicate in store unless needed for perf:
 
@@ -231,15 +231,15 @@ const total = useCartStore((s) =>
 );
 ```
 
-### 11.6.3. URL as state
+### 6.3. URL as state
 
 Filters, pagination, selected tab — prefer **URL search params** (File 09) over global store when users should share/bookmark state.
 
 ---
 
-## 11.7. Putting it together
+## 7. Putting it together
 
-### 11.7.1. Small app stack
+### 7.1. Small app stack
 
 | Concern | Tool |
 |---------|------|
@@ -253,34 +253,34 @@ Avoid Redux until complexity or team standards require it.
 
 ---
 
-## 11.8. Common questions
+## 8. Common questions
 
-**11.8.1. Do I need Redux for every React app?**  
+**8.1. Do I need Redux for every React app?**  
 A: **No.** Most apps get by with **local state**, **Context**, **TanStack Query**, and optionally **Zustand**.
 
-**11.8.2. Zustand vs Context?**  
+**8.2. Zustand vs Context?**  
 A: **Context** for low-frequency shared values. **Zustand** when many components need **selective** subscriptions without prop drilling or giant re-renders.
 
-**11.8.3. Should API data live in Redux?**  
+**8.3. Should API data live in Redux?**  
 A: Prefer **TanStack Query** or **RTK Query**. Duplicating server cache in manual Redux slices adds sync bugs.
 
-**11.8.4. What is a selector?**  
+**8.4. What is a selector?**  
 A: Function that **reads** a slice of store state — enables fine-grained subscriptions.
 
-**11.8.5. Can I use multiple Zustand stores?**  
+**8.5. Can I use multiple Zustand stores?**  
 A: **Yes** — one store per feature domain is common (`useCartStore`, `useUIStore`).
 
-**11.8.6. Is dispatch stable in Redux?**  
+**8.6. Is dispatch stable in Redux?**  
 A: **Yes** — like `useReducer` dispatch (File 08).
 
-**11.8.7. How do I persist cart to localStorage?**  
+**8.7. How do I persist cart to localStorage?**  
 A: Zustand **`persist`** middleware, or save in effect (File 05) — handle SSR carefully.
 
-**11.8.8. When is Redux Toolkit worth the overhead?**  
+**8.8. When is Redux Toolkit worth the overhead?**  
 A: Large codebases, many async workflows, team already on Redux, need **standardized** patterns and DevTools.
 
-**11.8.9. Can Zustand and Redux coexist?**  
+**8.9. Can Zustand and Redux coexist?**  
 A: Technically yes, but **avoid** — pick one global client state approach.
 
-**11.8.10. What should I read next?**  
+**8.10. What should I read next?**  
 A: File 12 (performance — selectors vs re-renders), File 10 (server cache), File 14 (feature folders).

@@ -10,9 +10,9 @@ Builds on components and composition (File 02). File 10 covers fetching inside r
 
 ---
 
-## 9.1. Why client-side routing
+## 1. Why client-side routing
 
-### 9.1.1. URL as UI state
+### 1.1. URL as UI state
 
 The **address bar** should reflect where the user is:
 
@@ -25,7 +25,7 @@ The **address bar** should reflect where the user is:
 
 Users can bookmark, share links, and use back/forward. React Router syncs URL ↔ rendered components **without** full page reload.
 
-### 9.1.2. React Router role
+### 1.2. React Router role
 
 - **Match** path to a route definition
 - **Render** the matching component(s)
@@ -36,9 +36,9 @@ Install: `npm install react-router-dom`
 
 ---
 
-## 9.2. Basic setup
+## 2. Basic setup
 
-### 9.2.1. Browser router with Routes
+### 2.1. Browser router with Routes
 
 ```jsx
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
@@ -63,7 +63,7 @@ function App() {
 **`<Link to="...">`** — client navigation (no full reload).  
 **`path="*"`** — catch-all for 404.
 
-### 9.2.2. createBrowserRouter (recommended for data APIs)
+### 2.2. createBrowserRouter (recommended for data APIs)
 
 ```jsx
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -82,9 +82,9 @@ Data loaders and actions integrate cleanly with this style (9.5).
 
 ---
 
-## 9.3. Navigation
+## 3. Navigation
 
-### 9.3.1. Link and NavLink
+### 3.1. Link and NavLink
 
 ```jsx
 <Link to="/products">Products</Link>
@@ -99,7 +99,7 @@ Data loaders and actions integrate cleanly with this style (9.5).
 
 **`NavLink`** knows if its route is **active** — ideal for nav bars.
 
-### 9.3.2. useNavigate (programmatic)
+### 3.2. useNavigate (programmatic)
 
 ```jsx
 import { useNavigate } from "react-router-dom";
@@ -116,15 +116,15 @@ function LoginForm() {
 
 **`replace: true`** — no extra history entry (like redirect after login).
 
-### 9.3.3. Relative links
+### 3.3. Relative links
 
 Inside nested routes, **`to="details"`** resolves relative to the current route path.
 
 ---
 
-## 9.4. Dynamic routes and params
+## 4. Dynamic routes and params
 
-### 9.4.1. URL parameters
+### 4.1. URL parameters
 
 ```jsx
 <Route path="/products/:productId" element={<ProductDetail />} />
@@ -137,7 +137,7 @@ function ProductDetail() {
 
 **`:productId`** is a **dynamic segment**. `useParams()` returns `{ productId: "42" }` for `/products/42`.
 
-### 9.4.2. Optional and splat segments
+### 4.2. Optional and splat segments
 
 ```jsx
 <Route path="/files/*" element={<Files />} />
@@ -146,7 +146,7 @@ function ProductDetail() {
 
 Consult React Router docs for optional params (`:id?`) in your version.
 
-### 9.4.3. Search params (query string)
+### 4.3. Search params (query string)
 
 ```jsx
 import { useSearchParams } from "react-router-dom";
@@ -168,9 +168,9 @@ function ProductList() {
 
 ---
 
-## 9.5. Nested routes and layouts
+## 5. Nested routes and layouts
 
-### 9.5.1. Layout route with Outlet
+### 5.1. Layout route with Outlet
 
 ```jsx
 <Route path="/dashboard" element={<DashboardLayout />}>
@@ -204,15 +204,15 @@ URLs:
 
 **`index`** — default child when path matches parent exactly.
 
-### 9.5.2. Shared chrome, independent pages
+### 5.2. Shared chrome, independent pages
 
 Nested routes avoid duplicating sidebar/header in every page component (File 02 — composition).
 
 ---
 
-## 9.6. Loaders and actions (data router)
+## 6. Loaders and actions (data router)
 
-### 9.6.1. Loader — fetch before render
+### 6.1. Loader — fetch before render
 
 ```jsx
 const router = createBrowserRouter([
@@ -239,7 +239,7 @@ function ProductDetail() {
 
 Data is available on first render of the route — reduces loading flash vs `useEffect` fetch (File 05, File 10).
 
-### 9.6.2. Error boundaries on routes
+### 6.2. Error boundaries on routes
 
 ```jsx
 {
@@ -252,7 +252,7 @@ Data is available on first render of the route — reduces loading flash vs `use
 
 Loader throws → **`errorElement`** renders (File 14 — error boundaries).
 
-### 9.6.3. Actions — form mutations
+### 6.3. Actions — form mutations
 
 ```jsx
 {
@@ -270,9 +270,9 @@ Use **`<Form>`** from React Router to POST to the route **action** (File 06 — 
 
 ---
 
-## 9.7. Protected routes
+## 7. Protected routes
 
-### 9.7.1. Wrapper component
+### 7.1. Wrapper component
 
 ```jsx
 function ProtectedRoute({ children }) {
@@ -298,13 +298,13 @@ function ProtectedRoute({ children }) {
 
 After login, **`navigate(location.state?.from ?? "/")`** sends user back.
 
-### 9.7.2. Loader auth check
+### 7.2. Loader auth check
 
 In data routers, throw **`redirect("/login")`** from loader if session missing — centralizes gate before render.
 
 ---
 
-## 9.8. Code splitting routes (preview)
+## 8. Code splitting routes (preview)
 
 ```jsx
 import { lazy, Suspense } from "react";
@@ -325,9 +325,9 @@ File 12 expands **lazy** and **Suspense**.
 
 ---
 
-## 9.9. Putting it together
+## 9. Putting it together
 
-### 9.9.1. Small app route table
+### 9.1. Small app route table
 
 ```jsx
 const router = createBrowserRouter([
@@ -355,34 +355,34 @@ const router = createBrowserRouter([
 
 ---
 
-## 9.10. Common questions
+## 10. Common questions
 
-**9.10.1. Link vs anchor `<a href>`?**  
+**10.1. Link vs anchor `<a href>`?**  
 A: **`<Link>`** navigates inside the SPA without reload. Use **`<a href>`** for external URLs or downloads.
 
-**9.10.2. How do I read URL params?**  
+**10.2. How do I read URL params?**  
 A: **`useParams()`** for path segments (`:id`). **`useSearchParams()`** for query string.
 
-**9.10.3. What is Outlet?**  
+**10.3. What is Outlet?**  
 A: Placeholder in a **layout route** where **child routes** render.
 
-**9.10.4. Loader vs useEffect fetch?**  
+**10.4. Loader vs useEffect fetch?**  
 A: **Loader** runs as part of routing — data ready before route component paints. **useEffect** is fine for client-only or non-router apps (File 10).
 
-**9.10.5. How do nested routes build full paths?**  
+**10.5. How do nested routes build full paths?**  
 A: Child paths **append** to parent unless they start with `/` (absolute).
 
-**9.10.6. How do I redirect?**  
+**10.6. How do I redirect?**  
 A: **`<Navigate to="..." />`**, **`navigate()`**, or **`redirect()`** in loader/action.
 
-**9.10.7. Where does BrowserRouter go?**  
+**10.7. Where does BrowserRouter go?**  
 A: Near app root (or use **`RouterProvider`** with **`createBrowserRouter`**). Only one router per app.
 
-**9.10.8. How do I pass state between routes?**  
+**10.8. How do I pass state between routes?**  
 A: **`navigate("/path", { state: { ... } })`** and **`useLocation().state`** — not in URL; lost on refresh.
 
-**9.10.9. React Router vs Next.js routing?**  
+**10.9. React Router vs Next.js routing?**  
 A: **React Router** — client SPA in Vite/CRA. **Next.js** — file-based routing with server components. Concepts overlap; APIs differ.
 
-**9.10.10. What should I read next?**  
+**10.10. What should I read next?**  
 A: File 10 (data fetching, TanStack Query), File 12 (lazy routes), File 14 (app folder structure).

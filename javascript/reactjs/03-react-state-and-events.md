@@ -10,9 +10,9 @@ File 01 introduced `useState` briefly. This chapter goes deeper on **updating st
 
 ---
 
-## 3.1. useState in depth
+## 1. useState in depth
 
-### 3.1.1. State and re-renders
+### 1.1. State and re-renders
 
 When you call a state **setter**, React:
 
@@ -38,7 +38,7 @@ function Counter() {
 
 Each click logs a new render with an incremented count.
 
-### 3.1.2. Initial state and lazy initialization
+### 1.2. Initial state and lazy initialization
 
 ```jsx
 const [count, setCount] = useState(0);
@@ -57,7 +57,7 @@ function ExpensiveInit() {
 
 Without the function, `computeHeavyInitialValue()` would run on **every** render.
 
-### 3.1.3. Functional updates
+### 1.3. Functional updates
 
 When the next state depends on the **previous** state, use the updater form:
 
@@ -76,7 +76,7 @@ setCount(count + 1);
 setCount((prev) => prev + 1);
 ```
 
-### 3.1.4. Object and array state (immutability)
+### 1.4. Object and array state (immutability)
 
 **Do not mutate** state objects or arrays — replace with a **new** copy:
 
@@ -103,7 +103,7 @@ setItems(items.map((x) => x === "b" ? "B" : x));  // update one
 
 Same idea as JavaScript immutability (File 12) — React compares by reference for change detection.
 
-### 3.1.5. Multiple state variables
+### 1.5. Multiple state variables
 
 Split unrelated state — easier to reason about:
 
@@ -123,7 +123,7 @@ const [form, setForm] = useState({ name: "", email: "" });
 setForm((prev) => ({ ...prev, name: "Bharat" }));
 ```
 
-### 3.1.6. Batching (brief)
+### 1.6. Batching (brief)
 
 React **batches** multiple setters in the same event handler into **one re-render**:
 
@@ -139,9 +139,9 @@ React 18+ batches more cases (including promises/timeouts in many setups). File 
 
 ---
 
-## 3.2. Events in React
+## 2. Events in React
 
-### 3.2.1. Synthetic events
+### 2.1. Synthetic events
 
 React wraps native DOM events in **SyntheticEvent** — same interface across browsers, pooled for performance (details rarely matter in app code):
 
@@ -158,7 +158,7 @@ function Button() {
 
 Use **camelCase** event names: `onClick`, `onChange`, `onSubmit`, `onKeyDown`.
 
-### 3.2.2. Common handlers
+### 2.2. Common handlers
 
 **Click:**
 
@@ -201,7 +201,7 @@ function LoginForm() {
 
 Full forms in File 06.
 
-### 3.2.3. Passing arguments to handlers
+### 2.3. Passing arguments to handlers
 
 ```jsx
 function ItemList({ items }) {
@@ -219,7 +219,7 @@ function ItemList({ items }) {
 
 Wrap in arrow function — `onClick={handleDelete(item.id)}` would **call immediately** on render.
 
-### 3.2.4. preventDefault and stopPropagation
+### 2.4. preventDefault and stopPropagation
 
 ```jsx
 function Link({ href, onNavigate }) {
@@ -240,9 +240,9 @@ function handleInnerClick(e) {
 
 ---
 
-## 3.3. One-way data flow
+## 3. One-way data flow
 
-### 3.3.1. Data down, events up
+### 3.1. Data down, events up
 
 Parent owns **state**; child receives **props** and **callbacks**:
 
@@ -273,13 +273,13 @@ function Child({ value, onChange }) {
 
 Child does not own the text state — parent does (**controlled** pattern, File 06).
 
-### 3.3.2. Unidirectional flow benefits
+### 3.2. Unidirectional flow benefits
 
 - Easier to trace bugs — state lives in one place.
 - Predictable UI — render is a function of state.
 - Siblings stay in sync when they share parent state.
 
-### 3.3.3. Controlled vs uncontrolled (preview)
+### 3.3. Controlled vs uncontrolled (preview)
 
 | | Controlled | Uncontrolled |
 |---|------------|--------------|
@@ -291,11 +291,11 @@ Prefer **controlled** for most React forms.
 
 ---
 
-## 3.4. Lifting state up
+## 4. Lifting state up
 
 When **two or more components** need the same state, move it to their **closest common parent**.
 
-### 3.4.1. Problem: siblings need shared data
+### 4.1. Problem: siblings need shared data
 
 ```jsx
 // Won't stay in sync — separate state each
@@ -311,7 +311,7 @@ function BrokenApp() {
 
 Each `TemperatureInput` would keep its own temperature.
 
-### 3.4.2. Solution: lift to parent
+### 4.2. Solution: lift to parent
 
 ```jsx
 function App() {
@@ -355,7 +355,7 @@ function BoilingVerdict({ celsius }) {
 
 Parent holds **single source of truth**; children are controlled.
 
-### 3.4.3. Lifting callback-only state
+### 4.3. Lifting callback-only state
 
 Child triggers action; parent updates list:
 
@@ -384,7 +384,7 @@ function TodoApp() {
 
 List rendering details in File 04.
 
-### 3.4.4. How far to lift
+### 4.4. How far to lift
 
 Lift to the **lowest** ancestor that:
 
@@ -395,9 +395,9 @@ Lift too high → prop drilling (File 02, File 08). Keep state local when only o
 
 ---
 
-## 3.5. State design basics
+## 5. State design basics
 
-### 3.5.1. Single source of truth
+### 5.1. Single source of truth
 
 Avoid duplicating the same fact in two state variables:
 
@@ -413,7 +413,7 @@ const fullName = `${first} ${last}`.trim();
 
 **Derived values** — compute from state/props in render; don't store unless expensive (File 12 — `useMemo`).
 
-### 3.5.2. Minimal state
+### 5.2. Minimal state
 
 Ask: "What is the minimum state needed?" Remove anything computable:
 
@@ -427,7 +427,7 @@ const visibleItems = items.filter((item) =>
 // visibleItems is derived — not separate useState
 ```
 
-### 3.5.3. State structure
+### 5.3. State structure
 
 | Prefer | Avoid |
 |--------|-------|
@@ -439,34 +439,34 @@ Complex global state → File 08, File 11.
 
 ---
 
-## 3.6. Common questions
+## 6. Common questions
 
-**3.6.1. Why doesn't updating a variable re-render the component?**  
+**6.1. Why doesn't updating a variable re-render the component?**  
 A: React only re-renders when **state** (via setter) or **parent** re-renders with new props. Plain `let` variables are not tracked.
 
-**3.6.2. Can I mutate state directly?**  
+**6.2. Can I mutate state directly?**  
 A: **No.** Mutating objects/arrays in place may skip re-renders and breaks predictability. Always pass a **new** reference to the setter.
 
-**3.6.3. When should I use the functional form of setState?**  
+**6.3. When should I use the functional form of setState?**  
 A: When the new state **depends on the previous** state, especially with batched updates or inside timeouts (`setCount(prev => prev + 1)`).
 
-**3.6.4. What is lifting state up?**  
+**6.4. What is lifting state up?**  
 A: Moving shared state from child components to their **common parent**, then passing it down as props and updating via callbacks.
 
-**3.6.5. What is one-way data flow?**  
+**6.5. What is one-way data flow?**  
 A: Data flows **down** (props); events/callbacks flow **up**. Parents own state; children request changes through handlers.
 
-**3.6.6. What is a SyntheticEvent?**  
+**6.6. What is a SyntheticEvent?**  
 A: React's cross-browser wrapper around native DOM events, used by `onClick`, `onChange`, etc.
 
-**3.6.7. Why use `e.preventDefault()` on forms?**  
+**6.7. Why use `e.preventDefault()` on forms?**  
 A: To stop the browser's default **full page reload** on submit and handle submission in JavaScript instead.
 
-**3.6.8. What is the difference between controlled and uncontrolled components?**  
+**6.8. What is the difference between controlled and uncontrolled components?**  
 A: **Controlled** — React state is the source of truth for input value. **Uncontrolled** — DOM holds value; read via ref (File 07).
 
-**3.6.9. Should every input have its own useState?**  
+**6.9. Should every input have its own useState?**  
 A: Often **yes** for simple forms, or **one object** for many related fields. Lift to parent when siblings or submit handler need the data.
 
-**3.6.10. What should I read next?**  
+**6.10. What should I read next?**  
 A: File 04 (lists, keys, conditional UI), File 06 (forms), File 05 (useEffect for side effects).

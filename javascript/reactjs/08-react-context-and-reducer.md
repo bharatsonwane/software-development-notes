@@ -10,9 +10,9 @@ Builds on state (File 03) and hooks patterns (File 07). File 11 covers global st
 
 ---
 
-## 8.1. Prop drilling problem
+## 1. Prop drilling problem
 
-### 8.1.1. Passing props through intermediates
+### 1.1. Passing props through intermediates
 
 ```jsx
 function App() {
@@ -31,15 +31,15 @@ function Sidebar({ user, setUser }) {
 
 `Layout` and `Sidebar` do not use `user` — they only forward props. Context (or a store) removes the middle passes.
 
-### 8.1.2. When lifting state is still enough
+### 1.2. When lifting state is still enough
 
 If only **two or three** levels share state, **lifting state up** (File 03) may be simpler than Context. Reach for Context when the tree is deep or many branches need the same value.
 
 ---
 
-## 8.2. Context API
+## 2. Context API
 
-### 8.2.1. createContext
+### 2.1. createContext
 
 ```jsx
 import { createContext, useContext, useState } from "react";
@@ -55,7 +55,7 @@ export function useTheme() {
 
 Default `null` (or a sentinel) lets custom hooks **fail fast** outside a provider.
 
-### 8.2.2. Provider
+### 2.2. Provider
 
 ```jsx
 export function ThemeProvider({ children }) {
@@ -82,7 +82,7 @@ function App() {
 }
 ```
 
-### 8.2.3. Consuming with useContext
+### 2.3. Consuming with useContext
 
 ```jsx
 function ThemeToggle() {
@@ -97,7 +97,7 @@ function ThemeToggle() {
 
 Any descendant of `ThemeProvider` can call `useTheme()` without prop chains.
 
-### 8.2.4. Colocate providers
+### 2.4. Colocate providers
 
 Place providers **as close as needed** to consumers — not always at app root:
 
@@ -115,9 +115,9 @@ Smaller subtrees = fewer components that re-render when context value changes.
 
 ---
 
-## 8.3. Context performance
+## 3. Context performance
 
-### 8.3.1. Re-renders when value changes
+### 3.1. Re-renders when value changes
 
 When **`Provider value={...}`** changes, **all consumers** of that context re-render (unless optimized — File 12).
 
@@ -134,7 +134,7 @@ const value = useMemo(() => ({ theme, setTheme }), [theme]);
 
 `setTheme` from `useState` is stable — only `theme` needs to be in deps.
 
-### 8.3.2. Split contexts
+### 3.2. Split contexts
 
 Separate **read-heavy** data from **actions**:
 
@@ -156,7 +156,7 @@ function ThemeProvider({ children }) {
 
 Components that only call `setTheme` subscribe to **dispatch** context and skip re-renders when `theme` changes (if they only use dispatch).
 
-### 8.3.3. When Context is a poor fit
+### 3.3. When Context is a poor fit
 
 - **High-frequency updates** (mouse position, keystrokes in huge trees)
 - **Large app state** with many selectors — use **Zustand / Redux** (File 11)
@@ -164,9 +164,9 @@ Components that only call `setTheme` subscribe to **dispatch** context and skip 
 
 ---
 
-## 8.4. useReducer
+## 4. useReducer
 
-### 8.4.1. Reducer shape
+### 4.1. Reducer shape
 
 ```jsx
 function counterReducer(state, action) {
@@ -197,7 +197,7 @@ function Counter() {
 
 **`dispatch`** is stable — safe to pass down without `useCallback`.
 
-### 8.4.2. When to prefer useReducer over useState
+### 4.2. When to prefer useReducer over useState
 
 | useState | useReducer |
 |----------|------------|
@@ -205,7 +205,7 @@ function Counter() {
 | Simple updates | Next state depends on complex rules |
 | Local component only | Shared update logic via Context |
 
-### 8.4.3. Lazy initial state
+### 4.3. Lazy initial state
 
 ```jsx
 const [state, dispatch] = useReducer(reducer, initialArg, initFunction);
@@ -214,15 +214,15 @@ const [state, dispatch] = useReducer(reducer, initialArg, initFunction);
 
 Same idea as lazy `useState` (File 03).
 
-### 8.4.4. Immer (optional)
+### 4.4. Immer (optional)
 
 Libraries like **Immer** let you write "mutating" logic that produces immutable state — common in Redux Toolkit (File 11).
 
 ---
 
-## 8.5. Context + useReducer together
+## 5. Context + useReducer together
 
-### 8.5.1. Global state pattern
+### 5.1. Global state pattern
 
 ```jsx
 const CartStateContext = createContext(null);
@@ -264,7 +264,7 @@ export function useCartDispatch() {
 }
 ```
 
-### 8.5.2. Dispatching actions from components
+### 5.2. Dispatching actions from components
 
 ```jsx
 function AddToCartButton({ product }) {
@@ -284,25 +284,25 @@ function CartSummary() {
 
 ---
 
-## 8.6. Common Context use cases
+## 6. Common Context use cases
 
-### 8.6.1. Theme and locale
+### 6.1. Theme and locale
 
 Theme, language, density — read by many components, changes infrequently.
 
-### 8.6.2. Auth session
+### 6.2. Auth session
 
 Current user and login/logout — often Context + fetch on mount (File 10). Keep **token** in httpOnly cookies when possible (security — not React-specific).
 
-### 8.6.3. Dependency injection (testing)
+### 6.3. Dependency injection (testing)
 
 Provide mock services via Context in tests without rewiring imports.
 
 ---
 
-## 8.7. Putting it together
+## 7. Putting it together
 
-### 8.7.1. Todo app with Context + reducer
+### 7.1. Todo app with Context + reducer
 
 ```jsx
 function todosReducer(state, action) {
@@ -339,34 +339,34 @@ List UI from File 04 consumes `todos` and dispatches actions — no prop drillin
 
 ---
 
-## 8.8. Common questions
+## 8. Common questions
 
-**8.8.1. What is prop drilling?**  
+**8.1. What is prop drilling?**  
 A: Passing props through **many intermediate** components that do not use them, only forward them down.
 
-**8.8.2. When should I use Context?**  
+**8.2. When should I use Context?**  
 A: When **many components** in a subtree need the same value and prop drilling hurts. Not for every shared bit of state.
 
-**8.8.3. Does Context replace Redux?**  
+**8.3. Does Context replace Redux?**  
 A: **Context + useReducer** covers moderate global state. **Redux / Zustand** (File 11) scale better for large apps, devtools, and middleware.
 
-**8.8.4. Why split state and dispatch contexts?**  
+**8.4. Why split state and dispatch contexts?**  
 A: So components that only **dispatch** do not re-render when **state** changes.
 
-**8.8.5. useReducer vs useState?**  
+**8.5. useReducer vs useState?**  
 A: **useState** for simple local state. **useReducer** when updates are **event-driven**, related, or complex.
 
-**8.8.6. Is dispatch stable?**  
+**8.6. Is dispatch stable?**  
 A: **Yes** — `dispatch` identity from `useReducer` does not change between renders.
 
-**8.8.7. Can I put functions in context value?**  
+**8.7. Can I put functions in context value?**  
 A: **Yes**, but a **new object** `{ user, logout }` each render re-renders all consumers. **Memoize** the value object.
 
-**8.8.8. Where should Provider live?**  
+**8.8. Where should Provider live?**  
 A: As **low** in the tree as still covers all consumers — avoid wrapping the entire app if only one section needs it.
 
-**8.8.9. How do I type Context in TypeScript?**  
+**8.9. How do I type Context in TypeScript?**  
 A: Type `createContext<T | null>(null)` and narrow in custom hooks after null check.
 
-**8.8.10. What should I read next?**  
+**8.10. What should I read next?**  
 A: File 09 (routing), File 11 (Zustand / Redux Toolkit), File 12 (memoizing context consumers).

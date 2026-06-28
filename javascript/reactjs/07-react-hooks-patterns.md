@@ -10,9 +10,9 @@ Builds on `useState` (File 03), `useEffect` (File 05), and forms (File 06). File
 
 ---
 
-## 7.1. Rules of Hooks
+## 1. Rules of Hooks
 
-### 7.1.1. Only call hooks at the top level
+### 1.1. Only call hooks at the top level
 
 Do **not** call hooks inside loops, conditions, or nested functions:
 
@@ -34,7 +34,7 @@ function Good({ show }) {
 
 React relies on **call order** being identical every render to match state to the right hook.
 
-### 7.1.2. Only call hooks from React functions
+### 1.2. Only call hooks from React functions
 
 Call hooks from:
 
@@ -43,15 +43,15 @@ Call hooks from:
 
 Do **not** call hooks from regular JS functions, class components, or event handlers.
 
-### 7.1.3. ESLint enforcement
+### 1.3. ESLint enforcement
 
 **`eslint-plugin-react-hooks`** with rules **`rules-of-hooks`** and **`exhaustive-deps`** catches most mistakes. Enable them in every React project.
 
 ---
 
-## 7.2. Custom hooks
+## 2. Custom hooks
 
-### 7.2.1. What is a custom hook?
+### 2.1. What is a custom hook?
 
 A **function** that **calls other hooks** and returns state, handlers, or refs for components to use:
 
@@ -72,7 +72,7 @@ function App() {
 
 Each component calling `useCounter` gets **its own** independent state.
 
-### 7.2.2. Naming convention
+### 2.2. Naming convention
 
 Name must start with **`use`** so React (and linters) know it may call hooks:
 
@@ -81,7 +81,7 @@ function useLocalStorage(key, initial) { ... }
 function useMediaQuery(query) { ... }
 ```
 
-### 7.2.3. Extract when logic repeats
+### 2.3. Extract when logic repeats
 
 Extract a custom hook when:
 
@@ -91,7 +91,7 @@ Extract a custom hook when:
 
 Keep hooks **focused** — one responsibility per hook when possible.
 
-### 7.2.4. Custom hook wrapping useEffect
+### 2.4. Custom hook wrapping useEffect
 
 From File 05 — online status:
 
@@ -114,15 +114,15 @@ function useOnlineStatus() {
 }
 ```
 
-### 7.2.5. Returning stable APIs
+### 2.5. Returning stable APIs
 
 Return an **object** or **tuple** — document whether functions are stable. For callbacks passed to effects, wrap in **`useCallback`** when needed (File 12).
 
 ---
 
-## 7.3. useRef
+## 3. useRef
 
-### 7.3.1. Ref object persists across renders
+### 3.1. Ref object persists across renders
 
 ```jsx
 const ref = useRef(initialValue);
@@ -131,7 +131,7 @@ const ref = useRef(initialValue);
 
 Updating **`ref.current`** does **not** trigger a re-render (unlike `setState`).
 
-### 7.3.2. DOM refs
+### 3.2. DOM refs
 
 Attach to JSX to access the underlying DOM node:
 
@@ -154,7 +154,7 @@ function FocusInput() {
 
 Use for: focus, scroll, measuring size, integrating non-React libraries.
 
-### 7.3.3. Mutable instance values
+### 3.3. Mutable instance values
 
 Store timers, previous props, or any value that should survive renders without causing them:
 
@@ -169,7 +169,7 @@ function Timer() {
 }
 ```
 
-### 7.3.4. Storing previous value
+### 3.4. Storing previous value
 
 ```jsx
 function usePrevious(value) {
@@ -181,7 +181,7 @@ function usePrevious(value) {
 }
 ```
 
-### 7.3.5. Latest callback without re-subscribing
+### 3.5. Latest callback without re-subscribing
 
 ```jsx
 function Chat({ onMessage }) {
@@ -197,7 +197,7 @@ function Chat({ onMessage }) {
 
 Pattern: keep ref synced each render; effect reads `ref.current`.
 
-### 7.3.6. ref callback (advanced)
+### 3.6. ref callback (advanced)
 
 ```jsx
 <div ref={(node) => { /* node mounted or unmounted */ }} />
@@ -207,9 +207,9 @@ Use when you need setup/teardown per DOM node. Less common than object ref.
 
 ---
 
-## 7.4. useId
+## 4. useId
 
-### 7.4.1. Stable unique ids for accessibility
+### 4.1. Stable unique ids for accessibility
 
 Link labels, inputs, and error messages with matching **`id`** / **`htmlFor`**:
 
@@ -232,19 +232,19 @@ function EmailField({ label, error }) {
 }
 ```
 
-### 7.4.2. SSR and hydration
+### 4.2. SSR and hydration
 
 **`useId`** generates ids that are **consistent** between server and client render — avoid `Math.random()` or increment counters for ids in SSR apps.
 
-### 7.4.3. Do not use useId for list keys
+### 4.3. Do not use useId for list keys
 
 **Keys** in lists need stable **data ids** (`item.id`), not `useId()` — `useId` is per component instance, not per list item logic.
 
 ---
 
-## 7.5. Composing hooks
+## 5. Composing hooks
 
-### 7.5.1. Hooks can call hooks
+### 5.1. Hooks can call hooks
 
 ```jsx
 function useUser(userId) {
@@ -266,7 +266,7 @@ function useUser(userId) {
 
 File 10 covers server-state libraries that replace hand-rolled fetch hooks.
 
-### 7.5.2. Split hooks by concern
+### 5.2. Split hooks by concern
 
 ```jsx
 function ProfilePage({ userId }) {
@@ -280,17 +280,17 @@ Smaller hooks compose into readable components.
 
 ---
 
-## 7.6. Hook pitfalls
+## 6. Hook pitfalls
 
-### 7.6.1. Over-abstracting too early
+### 6.1. Over-abstracting too early
 
 Not every `useState` needs a custom hook. Extract when **reuse** or **clarity** justifies it.
 
-### 7.6.2. Hidden dependencies
+### 6.2. Hidden dependencies
 
 Custom hooks should document required **props/args** and return values. Callers still need correct **effect deps** inside the hook.
 
-### 7.6.3. Ref vs state
+### 6.3. Ref vs state
 
 | Need | Use |
 |------|-----|
@@ -299,9 +299,9 @@ Custom hooks should document required **props/args** and return values. Callers 
 
 ---
 
-## 7.7. Putting it together
+## 7. Putting it together
 
-### 7.7.1. useDebouncedValue
+### 7.1. useDebouncedValue
 
 ```jsx
 function useDebouncedValue(value, delayMs) {
@@ -329,34 +329,34 @@ function Search() {
 
 ---
 
-## 7.8. Common questions
+## 8. Common questions
 
-**7.8.1. What are the Rules of Hooks?**  
+**8.1. What are the Rules of Hooks?**  
 A: Call hooks only at the **top level** of React functions, and only from **components** or **custom hooks** — never inside conditions, loops, or plain functions.
 
-**7.8.2. What is a custom hook?**  
+**8.2. What is a custom hook?**  
 A: A reusable function named **`useSomething`** that calls hooks and returns state, effects, or handlers for components.
 
-**7.8.3. Does each component share custom hook state?**  
+**8.3. Does each component share custom hook state?**  
 A: **No.** Each call site gets **independent** state, like `useState`.
 
-**7.8.4. When do I use useRef vs useState?**  
+**8.4. When do I use useRef vs useState?**  
 A: **`useState`** when UI should update. **`useRef`** for DOM access or mutable values that should **not** re-render on change.
 
-**7.8.5. What is useId for?**  
+**8.5. What is useId for?**  
 A: Generate **stable unique ids** for `label`/`input`/`aria-*` links, especially with **SSR**.
 
-**7.8.6. Can I use useId as a list key?**  
+**8.6. Can I use useId as a list key?**  
 A: **No.** Use stable ids from **data** (`item.id`).
 
-**7.8.7. Why store callbacks in refs?**  
+**8.7. Why store callbacks in refs?**  
 A: So **effects** with empty deps can call the **latest** callback without re-subscribing every render.
 
-**7.8.8. Can custom hooks return JSX?**  
+**8.8. Can custom hooks return JSX?**  
 A: They **can**, but usually return **data and functions** — keep UI in components. Exception: small shared layout hooks are rare.
 
-**7.8.9. How do I test custom hooks?**  
+**8.9. How do I test custom hooks?**  
 A: **`@testing-library/react`** **`renderHook`** (File 13) — render hook in isolation and assert return values.
 
-**7.8.10. What should I read next?**  
+**8.10. What should I read next?**  
 A: File 08 (Context, useReducer), File 12 (useCallback/useMemo with hooks), File 13 (testing hooks).
