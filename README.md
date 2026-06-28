@@ -9,8 +9,8 @@ Personal notes for technical learning and reference. Topics are organized by fol
 | ---------- | -------------------------- | --------------------------------------------- |
 | HTML & CSS | [html-css/](html-css/)     | HTML structure, CSS layout, responsive design |
 | JavaScript | [javascript/](javascript/) | JS language, Node.js, React.js, React Native  |
-| Database   | [database/](database/)     | PostgreSQL                                    |
-| Python     | [python/](python/)         | Core Python                                   |
+| Database   | [database/](database/)     | SQL (PostgreSQL), NoSQL (MongoDB)             |
+| Python     | [python/](python/)         | Core Python (16 chapters)                     |
 
 
 ## How to use
@@ -25,5 +25,5 @@ Personal notes for technical learning and reference. Topics are organized by fol
 
 - [ ] HTML & CSS
 - [ ] JavaScript
-- [ ] Database (PostgreSQL)
+- [ ] Database (PostgreSQL, MongoDB)
 - [ ] Python

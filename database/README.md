@@ -1,16 +1,20 @@
 # Database Notes
 
-Notes for database concepts and PostgreSQL specifically.
+Notes for relational and document databases.
 
-Files are numbered by level: `01-pg-fundamental.md`, `02-pg-intermediate.md`, and so on.
+Each subfolder uses **numbered files in learning order**:
+
+```
+01-pg-introduction-and-setup.md
+01-mongo-introduction-and-setup.md
+...
+```
+
+Topic prefix varies per folder (`pg`, `mongo`). See each folder's `README.md` for the full file list.
+
+**Suggested order:** learn **SQL fundamentals** (PostgreSQL) before **MongoDB schema design** — document modeling makes more sense once you understand tables, joins, and normalization.
 
 ## Contents
 
-| Level | File | Topic |
-|-------|------|-------|
-| 01 | [01-pg-fundamental](./01-pg-fundamental.md) | Data types, queries, indexing |
-
-## Planned (later)
-
-- `02-pg-intermediate.md` — transactions, query tuning, design patterns
-- `03-pg-advanced.md` — replication, partitioning, internals
+- [PostgreSQL (SQL)](./postgresql/)
+- [MongoDB (NoSQL)](./mongodb/)
