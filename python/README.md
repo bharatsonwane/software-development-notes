@@ -4,7 +4,7 @@ Notes for Python — language core, standard library, and common patterns.
 
 Files are numbered in **learning order**: `01-py-topic.md`, `02-py-topic.md`, and so on.
 
-**Prerequisite:** none for basics. Helpful if you already know another language (see [JavaScript Language](../javascript/) for parallel concepts).
+**Prerequisite:** none for basics. Helpful if you already know another language (see [JavaScript Language](../javascript/javascript-language/) for parallel concepts).
 
 ## Contents
 
