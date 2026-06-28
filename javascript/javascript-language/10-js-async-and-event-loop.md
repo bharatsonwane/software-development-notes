@@ -10,9 +10,9 @@ Modern async code uses **Promises** and **`async`/`await`**. Callbacks remain in
 
 ---
 
-## 1.1. Sync vs async
+## 1. Sync vs async
 
-### 1.1.1. Synchronous execution
+### 1.1. Synchronous execution
 
 **Synchronous** code runs line by line. Each line **blocks** until the current operation finishes:
 
@@ -37,7 +37,7 @@ block(3000);
 console.log("end");  // 3 seconds later — page frozen
 ```
 
-### 1.1.2. Asynchronous execution
+### 1.2. Asynchronous execution
 
 **Asynchronous** code **starts** an operation and continues without waiting for it to finish. A **callback** or **Promise** handles the result later:
 
@@ -54,7 +54,7 @@ console.log("C");
 
 Async does not mean **parallel threads** in JS itself — it means **deferring** work and resuming via the event loop.
 
-### 1.1.3. When async is used
+### 1.3. When async is used
 
 | Source | Example API |
 |--------|-------------|
@@ -74,11 +74,11 @@ console.log("request sent");  // runs before response arrives
 
 ---
 
-## 1.2. Callbacks
+## 2. Callbacks
 
 A **callback** is a function passed to another function to run **later** (File 05).
 
-### 1.2.1. Basic callback pattern
+### 2.1. Basic callback pattern
 
 ```js
 function loadData(callback) {
@@ -96,7 +96,7 @@ loadData((err, data) => {
 });
 ```
 
-### 1.2.2. Error-first callbacks (Node style)
+### 2.2. Error-first callbacks (Node style)
 
 Convention: first argument is **`err`**, second is **result**:
 
@@ -117,7 +117,7 @@ divide(10, 2, (err, result) => {
 
 Always check **`err`** before using `result`.
 
-### 1.2.3. Callback hell
+### 2.3. Callback hell
 
 Nested callbacks become hard to read and error-prone:
 
@@ -142,7 +142,7 @@ Problems:
 
 **Promises** and **`async`/`await`** flatten this structure.
 
-### 1.2.4. Callbacks today
+### 2.4. Callbacks today
 
 Still used in:
 
@@ -154,11 +154,11 @@ Prefer **Promise-based** APIs or **`util.promisify`** (Node) / wrappers when ava
 
 ---
 
-## 1.3. Promises
+## 3. Promises
 
 A **Promise** represents a value that may be available **now**, **later**, or **never** (error).
 
-### 1.3.1. Promise states
+### 3.1. Promise states
 
 | State | Meaning |
 |-------|---------|
@@ -176,7 +176,7 @@ const p = new Promise((resolve, reject) => {
 p.then((value) => console.log(value));  // "done"
 ```
 
-### 1.3.2. Creating Promises
+### 3.2. Creating Promises
 
 ```js
 function delay(ms) {
@@ -209,7 +209,7 @@ function readFileAsync(path) {
 }
 ```
 
-### 1.3.3. then, catch, finally
+### 3.3. then, catch, finally
 
 ```js
 fetchUser(1)
@@ -239,7 +239,7 @@ Promise.resolve(2)
   .then(console.log);  // 5
 ```
 
-### 1.3.4. Promise chaining and errors
+### 3.4. Promise chaining and errors
 
 Rejected Promise skips to nearest **`catch`**:
 
@@ -256,7 +256,7 @@ Promise.resolve()
 
 Return **`Promise.reject(err)`** or **throw** inside `then` to reject.
 
-### 1.3.5. Static helpers
+### 3.5. Static helpers
 
 **`Promise.all`** — wait for **all**; fails fast on **first rejection**:
 
@@ -312,11 +312,11 @@ Promise.reject(new Error("fail"));
 
 ---
 
-## 1.4. async / await
+## 4. async / await
 
 **`async`/`await`** is syntactic sugar over Promises — write async code that **looks** synchronous.
 
-### 1.4.1. async functions
+### 4.1. async functions
 
 An **`async` function** always returns a **Promise**:
 
@@ -334,7 +334,7 @@ async function fail() {
 fail().catch((err) => console.log(err.message));  // "bad"
 ```
 
-### 1.4.2. await
+### 4.2. await
 
 **`await`** pauses **inside the async function** until the Promise settles, then gives the value (or throws on reject):
 
@@ -356,7 +356,7 @@ async function example() {
 }
 ```
 
-### 1.4.3. Error handling
+### 4.3. Error handling
 
 **try/catch** with await:
 
@@ -382,7 +382,7 @@ async function oops() {
 oops();  // UnhandledPromiseRejection — always catch at boundary
 ```
 
-### 1.4.4. Sequential vs parallel
+### 4.4. Sequential vs parallel
 
 **Sequential** — one after another (slower when independent):
 
@@ -424,7 +424,7 @@ const b = await pB;
 // Both already in flight
 ```
 
-### 1.4.5. await in loops
+### 4.5. await in loops
 
 **Sequential loop:**
 
@@ -448,11 +448,11 @@ Choose based on rate limits and whether order matters.
 
 ---
 
-## 1.5. Event loop
+## 5. Event loop
 
 The **event loop** coordinates the **call stack**, **Web APIs** (or Node libuv), and **task queues**.
 
-### 1.5.1. Call stack
+### 5.1. Call stack
 
 The **call stack** runs synchronous function calls — LIFO (last in, first out):
 
@@ -473,7 +473,7 @@ function recurse() {
 // recurse();  // RangeError: Maximum call stack size exceeded
 ```
 
-### 1.5.2. Macrotasks vs microtasks
+### 5.2. Macrotasks vs microtasks
 
 When async work completes, callbacks enter **queues**:
 
@@ -507,7 +507,7 @@ Walkthrough:
 - Microtask: `3` — Promise `then`
 - Macrotask: `2` — `setTimeout`
 
-### 1.5.3. Classic interview example
+### 5.3. Classic interview example
 
 ```js
 console.log("start");
@@ -536,7 +536,7 @@ Promise.resolve().then(() => {
 // p1, p2, timeout
 ```
 
-### 1.5.4. async/await and microtasks
+### 5.4. async/await and microtasks
 
 **`await`** splits function execution — code after `await` runs as a **microtask**:
 
@@ -560,7 +560,7 @@ console.log("E");
 
 `await async2()` runs until `async2` hits its end, then yields; `E` runs; then `B` as microtask.
 
-### 1.5.5. Node vs browser (brief)
+### 5.5. Node vs browser (brief)
 
 Same core model; differences in details:
 
@@ -572,34 +572,34 @@ For interviews and app code, **sync → microtasks → macrotask** is the essent
 
 ---
 
-## 1.6. Common questions
+## 6. Common questions
 
-**1.6.1. Is JavaScript multithreaded?**  
+**6.1. Is JavaScript multithreaded?**  
 A: **No** for your JS code on one thread — one call stack. Async uses the **event loop** and host APIs. **Web Workers** / **Worker threads** (Node) are separate threads with message passing.
 
-**1.6.2. What is the difference between sync and async?**  
+**6.2. What is the difference between sync and async?**  
 A: **Sync** blocks until done. **Async** starts work and continues; a callback or Promise delivers the result later via the event loop.
 
-**1.6.3. What is callback hell?**  
+**6.3. What is callback hell?**  
 A: Deeply nested callbacks for sequential async steps — hard to read and error-handle. Fixed with Promises and `async`/`await`.
 
-**1.6.4. What are the three Promise states?**  
+**6.4. What are the three Promise states?**  
 A: **pending**, **fulfilled**, and **rejected**. Settled means fulfilled or rejected — no further change.
 
-**1.6.5. What does `async` function return?**  
+**6.5. What does `async` function return?**  
 A: Always a **Promise**. Returning a value wraps it in `Promise.resolve`; throwing rejects the Promise.
 
-**1.6.6. What is the difference between `Promise.all` and `Promise.race`?**  
+**6.6. What is the difference between `Promise.all` and `Promise.race`?**  
 A: **`all`** waits for every Promise to fulfill (or fails on first reject). **`race`** settles when the **first** Promise settles (fulfill or reject).
 
-**1.6.7. Why does `setTimeout(fn, 0)` not run immediately?**  
+**6.7. Why does `setTimeout(fn, 0)` not run immediately?**  
 A: It schedules a **macrotask**. Sync code and **microtasks** (e.g. Promise callbacks) run first.
 
-**1.6.8. What runs first — `Promise.then` or `setTimeout`?**  
+**6.8. What runs first — `Promise.then` or `setTimeout`?**  
 A: **`Promise.then`** (microtask) runs before **`setTimeout`** (macrotask) after the current synchronous code completes.
 
-**1.6.9. How do you run two independent async operations in parallel?**  
+**6.9. How do you run two independent async operations in parallel?**  
 A: Start both without awaiting immediately, then `await Promise.all([p1, p2])`, or assign both to promises first then await each.
 
-**1.6.10. What is the event loop?**  
+**6.10. What is the event loop?**  
 A: The mechanism that takes callbacks from task queues and pushes them onto the call stack when the stack is empty — interleaving async work with synchronous JS execution.

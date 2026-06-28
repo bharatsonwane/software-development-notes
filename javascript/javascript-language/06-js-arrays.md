@@ -10,9 +10,9 @@ Indexes are **zero-based**: first element is `[0]`, last is `[length - 1]`. Arra
 
 ---
 
-## 1.1. Creating & accessing
+## 1. Creating & accessing
 
-### 1.1.1. Creating arrays
+### 1.1. Creating arrays
 
 ```js
 // Array literal (most common)
@@ -36,7 +36,7 @@ const copy = Array.from([1, 2]);    // [1, 2]
 const zeros = Array(5).fill(0);     // [0, 0, 0, 0, 0]
 ```
 
-### 1.1.2. Index access
+### 1.2. Index access
 
 ```js
 const fruits = ["apple", "banana", "cherry"];
@@ -72,7 +72,7 @@ sparse.length;            // 3
 sparse[1];                // undefined
 ```
 
-### 1.1.3. length property
+### 1.3. length property
 
 `length` is the number of slots (including empty ones), not always "count of defined values":
 
@@ -94,11 +94,11 @@ console.log(nums);  // [1, 2, 3]
 
 ---
 
-## 1.2. Mutating methods
+## 2. Mutating methods
 
 These methods **change the original array**.
 
-### 1.2.1. Add / remove at end — push & pop
+### 2.1. Add / remove at end — push & pop
 
 ```js
 const stack = [1, 2];
@@ -116,7 +116,7 @@ console.log(stack);  // [1, 2]
 [1].push(2, 3, 4);   // [1, 2, 3, 4]
 ```
 
-### 1.2.2. Add / remove at start — unshift & shift
+### 2.2. Add / remove at start — unshift & shift
 
 ```js
 const queue = [2, 3];
@@ -130,7 +130,7 @@ console.log(queue);  // [2, 3]
 
 `shift` and `unshift` are **O(n)** — slower on large arrays than `push`/`pop`.
 
-### 1.2.3. splice — insert, remove, replace
+### 2.3. splice — insert, remove, replace
 
 `arr.splice(start, deleteCount, ...items)` — versatile in-place editor:
 
@@ -147,7 +147,7 @@ arr.splice(1, 0, 2, 3);     // arr is [1, 2, 3, 4, 5]
 arr.splice(2, 1, 99);       // arr is [1, 2, 99, 4, 5]
 ```
 
-### 1.2.4. Other mutators
+### 2.4. Other mutators
 
 | Method | Effect |
 |--------|--------|
@@ -171,7 +171,7 @@ arr.splice(2, 1, 99);       // arr is [1, 2, 99, 4, 5]
 [10, 2, 1].sort((a, b) => a - b);  // [1, 2, 10]
 ```
 
-### 1.2.5. Non-mutating alternatives
+### 2.5. Non-mutating alternatives
 
 | Mutating | Non-mutating alternative |
 |----------|--------------------------|
@@ -189,11 +189,11 @@ console.log(sorted);    // [1, 2, 3]
 
 ---
 
-## 1.3. Iteration & transformation
+## 3. Iteration & transformation
 
 Most take a **callback** `(element, index, array) => ...` (File 05). They skip **holes** in sparse arrays unless noted.
 
-### 1.3.1. forEach
+### 3.1. forEach
 
 Run a function for each element. Returns **`undefined`**. Cannot `break` — use `for...of` if you need early exit (File 04).
 
@@ -203,7 +203,7 @@ Run a function for each element. Returns **`undefined`**. Cannot `break` — use
 });
 ```
 
-### 1.3.2. map
+### 3.2. map
 
 Transform each element → **new array** of same length:
 
@@ -217,7 +217,7 @@ const users = [{ name: "A" }, { name: "B" }];
 const names = users.map((u) => u.name);  // ["A", "B"]
 ```
 
-### 1.3.3. filter
+### 3.3. filter
 
 Keep elements where callback returns **truthy** → **new array** (possibly shorter):
 
@@ -226,7 +226,7 @@ const evens = [1, 2, 3, 4].filter((n) => n % 2 === 0);
 console.log(evens);  // [2, 4]
 ```
 
-### 1.3.4. reduce
+### 3.4. reduce
 
 Fold array into a **single value** (or object/array accumulator):
 
@@ -253,7 +253,7 @@ const obj = pairs.reduce((acc, [k, v]) => {
 // { a: 1, b: 2 }
 ```
 
-### 1.3.5. find, findIndex, findLast
+### 3.5. find, findIndex, findLast
 
 | Method | Returns |
 |--------|---------|
@@ -276,7 +276,7 @@ users.findLast((u) => u.active);   // { id: 3, active: true }
 
 Prefer `find` over `filter()[0]` — stops at first match.
 
-### 1.3.6. some & every
+### 3.6. some & every
 
 Short-circuit boolean tests:
 
@@ -288,7 +288,7 @@ Short-circuit boolean tests:
 [].every(() => false); // true — vacuous truth on empty
 ```
 
-### 1.3.7. Other useful methods (non-mutating)
+### 3.7. Other useful methods (non-mutating)
 
 | Method | Purpose |
 |--------|---------|
@@ -311,7 +311,7 @@ Short-circuit boolean tests:
 [1, 2, 3].join("-");             // "1-2-3"
 ```
 
-### 1.3.8. Method cheat sheet
+### 3.8. Method cheat sheet
 
 | Goal | Method |
 |------|--------|
@@ -326,9 +326,9 @@ Short-circuit boolean tests:
 
 ---
 
-## 1.4. Spread & copy
+## 4. Spread & copy
 
-### 1.4.1. Shallow copy
+### 4.1. Shallow copy
 
 Arrays hold **references** to objects (File 01). Copying duplicates the **array**, not nested objects:
 
@@ -345,7 +345,7 @@ console.log(original[1].x); // 99 — nested object shared!
 
 Deep copy plain data: `structuredClone(original)` (File 01).
 
-### 1.4.2. Spread in arrays
+### 4.2. Spread in arrays
 
 **Copy:**
 
@@ -376,7 +376,7 @@ Spread in function calls (File 05):
 Math.max(...[1, 5, 3]);   // 5
 ```
 
-### 1.4.3. concat vs spread
+### 4.3. concat vs spread
 
 Both produce new arrays:
 
@@ -387,7 +387,7 @@ Both produce new arrays:
 
 Spread is more flexible for interleaving values; `concat` accepts multiple arrays directly.
 
-### 1.4.4. Destructuring arrays (brief)
+### 4.4. Destructuring arrays (brief)
 
 Pull elements into variables (File 07 goes deeper):
 
@@ -411,28 +411,28 @@ let a = 1, b = 2;
 
 ---
 
-## 1.5. Common questions
+## 5. Common questions
 
-**1.5.1. How do you check if a value is an array?**  
+**5.1. How do you check if a value is an array?**  
 A: Use **`Array.isArray(value)`**. `typeof []` returns `"object"`, which is not specific enough.
 
-**1.5.2. What is the difference between `map` and `forEach`?**  
+**5.2. What is the difference between `map` and `forEach`?**  
 A: **`map`** returns a **new array** with transformed values. **`forEach`** runs side effects and returns **`undefined`**. Use `map` when you need a result array.
 
-**1.5.3. What is the difference between `filter` and `find`?**  
+**5.3. What is the difference between `filter` and `find`?**  
 A: **`filter`** returns **all** matches as an array. **`find`** returns the **first** match (or `undefined`) and stops early.
 
-**1.5.4. Does `sort()` mutate the original array?**  
+**5.4. Does `sort()` mutate the original array?**  
 A: **Yes.** It sorts in place. Copy first: `[...arr].sort(compareFn)` or use `toSorted()` (ES2023+).
 
-**1.5.5. Why does `[10, 2, 1].sort()` give `[1, 10, 2]`?**  
+**5.5. Why does `[10, 2, 1].sort()` give `[1, 10, 2]`?**  
 A: Default sort converts elements to **strings**. Use `(a, b) => a - b` for numeric sort.
 
-**1.5.6. What is the difference between `slice` and `splice`?**  
+**5.6. What is the difference between `slice` and `splice`?**  
 A: **`slice`** returns a **shallow copy** of a portion — does not mutate. **`splice`** **mutates** the array (remove/insert/replace).
 
-**1.5.7. Is `[...arr]` a deep copy?**  
+**5.7. Is `[...arr]` a deep copy?**  
 A: **No.** It is a **shallow** copy. Top-level elements are copied; nested objects/arrays are still shared. Use `structuredClone()` for deep copies of plain data.
 
-**1.5.8. What does `reduce` need as a second argument?**  
+**5.8. What does `reduce` need as a second argument?**  
 A: An **initial accumulator** value. Always provide one for empty arrays and when the result type differs from elements (e.g. summing to `0`, building `{}`).

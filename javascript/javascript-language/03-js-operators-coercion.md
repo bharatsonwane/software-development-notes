@@ -10,9 +10,9 @@ These two ideas are tightly linked: many operators trigger coercion before compa
 
 ---
 
-## 1.1. Operators
+## 1. Operators
 
-### 1.1.1. Arithmetic operators
+### 1.1. Arithmetic operators
 
 | Operator | Name | Example | Notes |
 |----------|------|---------|-------|
@@ -36,7 +36,7 @@ n++;        // n is 6; expression evaluates to 5 (postfix)
 ++n;        // n is 7; expression evaluates to 7 (prefix)
 ```
 
-### 1.1.2. Assignment operators
+### 1.2. Assignment operators
 
 Assign a value to a variable. Compound forms combine an operation with assignment:
 
@@ -63,7 +63,7 @@ b ||= 5;    // assign if falsy → b is 5
 b &&= 0;    // assign if truthy → b is 0
 ```
 
-### 1.1.3. Comparison operators (relational)
+### 1.3. Comparison operators (relational)
 
 Compare two values; return a **boolean**. Operands are coerced to numbers when comparing numbers/strings (except with `===` / `!==`).
 
@@ -82,7 +82,7 @@ null == 0;    // true
 null === 0;   // false
 ```
 
-### 1.1.4. Logical operators
+### 1.4. Logical operators
 
 Work with **boolean** logic. Operands are coerced to boolean unless using `&&` / `||` for short-circuit **value** return.
 
@@ -113,7 +113,7 @@ false && doSomething();  // doSomething never called
 true || doSomething();   // doSomething never called
 ```
 
-### 1.1.5. Unary and other operators
+### 1.5. Unary and other operators
 
 | Operator | Example | Notes |
 |----------|---------|-------|
@@ -137,7 +137,7 @@ delete obj.a;    // true (already gone, still "succeeds")
 "toString" in {};  // true — inherited from Object.prototype
 ```
 
-### 1.1.6. Operator precedence (brief)
+### 1.6. Operator precedence (brief)
 
 When multiple operators appear in one expression, **precedence** decides evaluation order. Use parentheses when in doubt.
 
@@ -165,9 +165,9 @@ High → low (partial list):
 
 ---
 
-## 1.2. Equality
+## 2. Equality
 
-### 1.2.1. `==` vs `===`
+### 2.1. `==` vs `===`
 
 | Operator | Name | Coercion? |
 |----------|------|-----------|
@@ -197,7 +197,7 @@ Loose equality algorithm (simplified):
 4. Boolean vs anything → boolean to number (`0` or `1`).
 5. Object vs primitive → object to primitive (`valueOf` / `toString`).
 
-### 1.2.2. `Object.is`
+### 2.2. `Object.is`
 
 ES6 added **`Object.is`** for cases where `===` is not enough:
 
@@ -209,7 +209,7 @@ Object.is(5, 5);       // true — same as === for normal values
 
 Use `Object.is` when you explicitly care about `NaN` equality or signed zero. For everyday checks, `===` is fine.
 
-### 1.2.3. Special equality cases
+### 2.3. Special equality cases
 
 ```js
 // NaN
@@ -237,11 +237,11 @@ a === b;               // true — same reference
 
 ---
 
-## 1.3. Type coercion
+## 3. Type coercion
 
 **Coercion** is automatic or manual conversion between types. JavaScript is **weakly typed** — it will convert values when operators or contexts require it.
 
-### 1.3.1. Implicit vs explicit coercion
+### 3.1. Implicit vs explicit coercion
 
 | Kind | Who triggers it | Example |
 |------|-----------------|---------|
@@ -261,7 +261,7 @@ Boolean("");    // false
 
 Prefer **explicit** conversion in application code — it documents intent and avoids surprises.
 
-### 1.3.2. Abstract operations (ToNumber, ToString, ToBoolean)
+### 3.2. Abstract operations (ToNumber, ToString, ToBoolean)
 
 The spec defines internal conversion rules. Practical summary:
 
@@ -291,7 +291,7 @@ The spec defines internal conversion rules. Practical summary:
 
 | Input | Result |
 |-------|--------|
-| Falsy values (see 1.4.1) | `false` |
+| Falsy values (see 4.1) | `false` |
 | Everything else | `true` |
 
 ```js
@@ -308,7 +308,7 @@ Boolean(0);          // false
 Boolean("hello");    // true
 ```
 
-### 1.3.3. Common coercion pitfalls
+### 3.3. Common coercion pitfalls
 
 ```js
 // + prefers string if either operand is string
@@ -340,7 +340,7 @@ if (value == null) { /* null OR undefined */ }
 if (value === null || value === undefined) { }
 ```
 
-### 1.3.4. Explicit conversion functions
+### 3.4. Explicit conversion functions
 
 | Goal | Use | Avoid |
 |------|-----|-------|
@@ -371,11 +371,11 @@ String(value);           // "null"
 
 ---
 
-## 1.4. Truthy & falsy
+## 4. Truthy & falsy
 
 In **boolean contexts** (`if`, `while`, `&&`, `||`, `!`, ternary), values are coerced to `true` or `false`.
 
-### 1.4.1. Falsy values (only 8)
+### 4.1. Falsy values (only 8)
 
 There are exactly **8 falsy** values in JavaScript:
 
@@ -398,7 +398,7 @@ if ([]) {
 }
 ```
 
-### 1.4.2. Truthy gotchas
+### 4.2. Truthy gotchas
 
 ```js
 // Strings that look "false"
@@ -420,7 +420,7 @@ if (arr) {
 if (arr.length === 0) { /* actually empty */ }
 ```
 
-### 1.4.3. `??` vs `||` vs `&&`
+### 4.3. `??` vs `||` vs `&&`
 
 | Operator | Picks / returns when |
 |----------|----------------------|
@@ -450,28 +450,28 @@ function setCount(count) {
 
 ---
 
-## 1.5. Common questions
+## 5. Common questions
 
-**1.5.1. What is the difference between `==` and `===`?**  
+**5.1. What is the difference between `==` and `===`?**  
 A: `===` compares **type and value** without coercion. `==` coerces operands to the same type before comparing. Use `===` by default.
 
-**1.5.2. Why does `"5" + 1` give `"51"` but `"5" - 1` gives `4`?**  
+**5.2. Why does `"5" + 1` give `"51"` but `"5" - 1` gives `4`?**  
 A: `+` does **string concatenation** if either operand is a string. `-` only works on numbers, so both operands are coerced to numbers first.
 
-**1.5.3. What are all the falsy values in JavaScript?**  
+**5.3. What are all the falsy values in JavaScript?**  
 A: `false`, `0`, `-0`, `0n`, `""`, `null`, `undefined`, and `NaN`. All other values are truthy.
 
-**1.5.4. Is an empty array `[]` truthy or falsy?**  
+**5.4. Is an empty array `[]` truthy or falsy?**  
 A: **Truthy.** Only the 8 falsy values above evaluate to `false`. To check emptiness, use `arr.length === 0`.
 
-**1.5.5. When should I use `??` instead of `||`?**  
+**5.5. When should I use `??` instead of `||`?**  
 A: Use `??` when `0`, `""`, or `false` are valid values you must preserve. `||` treats them as missing and falls through to the default.
 
-**1.5.6. What is the difference between `Object.is` and `===`?**  
+**5.6. What is the difference between `Object.is` and `===`?**  
 A: `Object.is(NaN, NaN)` is `true`; `NaN === NaN` is `false`. `Object.is(+0, -0)` is `false`; `+0 === -0` is `true`. Otherwise they agree.
 
-**1.5.7. What is type coercion?**  
+**5.7. What is type coercion?**  
 A: Automatic or manual conversion between types. Implicit coercion happens in expressions like `"5" - 1` or `if (value)`. Explicit coercion uses `Number()`, `String()`, or `Boolean()`.
 
-**1.5.8. How do I safely convert a string to a number?**  
+**5.8. How do I safely convert a string to a number?**  
 A: Use `Number(str)` when the whole string must be numeric. Use `parseInt(str, 10)` or `parseFloat(str)` when parsing prefixes like `"42px"`. Always pass radix `10` to `parseInt`.

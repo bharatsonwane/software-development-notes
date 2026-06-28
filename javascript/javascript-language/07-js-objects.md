@@ -10,9 +10,9 @@ Unlike arrays, object property order is mostly insertion order for string keys (
 
 ---
 
-## 1.1. Object basics
+## 1. Object basics
 
-### 1.1.1. Object literals
+### 1.1. Object literals
 
 The most common way to create an object:
 
@@ -43,7 +43,7 @@ obj.name = "Bharat";
 const better = { name: "Bharat" };
 ```
 
-### 1.1.2. Dot vs bracket notation
+### 1.2. Dot vs bracket notation
 
 **Dot notation** — when the key is a valid identifier and known at write time:
 
@@ -73,7 +73,7 @@ record.field;           // undefined — looks for key "field"
 | | Keys with spaces or special chars |
 | | Computed / symbol keys |
 
-### 1.1.3. Adding, updating, and deleting
+### 1.3. Adding, updating, and deleting
 
 ```js
 const user = { name: "Bharat" };
@@ -96,7 +96,7 @@ Object.keys(user);  // still includes "nickname" if set
 delete user.nickname;
 ```
 
-### 1.1.4. Nested objects
+### 1.4. Nested objects
 
 Objects can contain other objects and arrays:
 
@@ -125,7 +125,7 @@ company.contact?.phone;          // undefined — no error
 company.address?.zip ?? "N/A";   // "N/A"
 ```
 
-### 1.1.5. Checking properties
+### 1.5. Checking properties
 
 ```js
 const user = { name: "Bharat", age: 30 };
@@ -155,7 +155,7 @@ const obj2 = { a: undefined };
 obj2.a === undefined;          // true
 ```
 
-### 1.1.6. Keys, values, and entries
+### 1.6. Keys, values, and entries
 
 ```js
 const user = { name: "Bharat", age: 30 };
@@ -182,11 +182,11 @@ Object.fromEntries(pairs);  // { a: 1, b: 2 }
 
 ---
 
-## 1.2. Methods & this (intro)
+## 2. Methods & this (intro)
 
 A **method** is a function stored as an object property.
 
-### 1.2.1. Methods as properties
+### 2.1. Methods as properties
 
 ```js
 const calculator = {
@@ -214,7 +214,7 @@ user.greet = function () {
 user.greet();  // "Hi, Bharat"
 ```
 
-### 1.2.2. Method shorthand (ES6)
+### 2.2. Method shorthand (ES6)
 
 Shorthand inside literals — same as `greet: function() { }`:
 
@@ -243,7 +243,7 @@ const good = {
 };
 ```
 
-### 1.2.3. `this` in methods (intro)
+### 2.3. `this` in methods (intro)
 
 Inside a regular method, **`this`** is the object **before the dot** at call time:
 
@@ -263,7 +263,7 @@ fn();            // undefined — this is not user (strict/module)
 
 Losing `this` is a common bug — File 08 covers `bind`, `call`, and `apply`.
 
-### 1.2.4. Computed property names
+### 2.4. Computed property names
 
 Use `[expression]` as a key when defining the object:
 
@@ -309,9 +309,9 @@ Object.keys(user);  // ["name"] — symbol not listed
 
 ---
 
-## 1.3. Destructuring & spread
+## 3. Destructuring & spread
 
-### 1.3.1. Object destructuring basics
+### 3.1. Object destructuring basics
 
 Unpack properties into variables:
 
@@ -328,7 +328,7 @@ Order does not matter — names match **keys**:
 const { age, name } = user;  // same result
 ```
 
-### 1.3.2. Renaming and defaults
+### 3.2. Renaming and defaults
 
 ```js
 const user = { name: "Bharat" };
@@ -344,7 +344,7 @@ const { name: n = "Anonymous" } = {};
 console.log(n);  // "Anonymous"
 ```
 
-### 1.3.3. Nested destructuring
+### 3.3. Nested destructuring
 
 ```js
 const response = {
@@ -362,7 +362,7 @@ const {
 console.log(id, name);  // 1 "Bharat"
 ```
 
-### 1.3.4. Rest in destructuring
+### 3.4. Rest in destructuring
 
 Collect remaining properties into a new object:
 
@@ -391,7 +391,7 @@ Rest must be **last** in the pattern:
 // const { ...rest, id } = user;  // SyntaxError
 ```
 
-### 1.3.5. Object spread
+### 3.5. Object spread
 
 **Shallow copy** and merge (File 01, File 06):
 
@@ -423,7 +423,7 @@ const user = { name: "Bharat" };
 const withAge = { ...user, age: 30 };
 ```
 
-### 1.3.6. Object.assign
+### 3.6. Object.assign
 
 Older API — same shallow merge behavior:
 
@@ -454,11 +454,11 @@ createUser({ name: "Bharat" });
 
 ---
 
-## 1.4. JSON
+## 4. JSON
 
 **JSON** (JavaScript Object Notation) is a **text format** for data exchange. It is **not** the same as a JS object — only a subset of values are valid JSON.
 
-### 1.4.1. JSON.stringify
+### 4.1. JSON.stringify
 
 Convert a JS value to a JSON **string**:
 
@@ -482,7 +482,7 @@ JSON.stringify(user, (key, value) => {
 });
 ```
 
-### 1.4.2. JSON.parse
+### 4.2. JSON.parse
 
 Parse a JSON string back to JS values:
 
@@ -512,7 +512,7 @@ try {
 }
 ```
 
-### 1.4.3. JSON limitations
+### 4.3. JSON limitations
 
 | JS value | In JSON? |
 |----------|----------|
@@ -540,28 +540,28 @@ For APIs and storage, design **plain JSON-serializable** DTOs — no methods, da
 
 ---
 
-## 1.5. Common questions
+## 5. Common questions
 
-**1.5.1. What is the difference between dot and bracket notation?**  
+**5.1. What is the difference between dot and bracket notation?**  
 A: Dot works for fixed identifier keys. Brackets work for **dynamic** keys, variables, and keys with spaces or special characters.
 
-**1.5.2. How do you check if an object has its own property?**  
+**5.2. How do you check if an object has its own property?**  
 A: Use **`Object.hasOwn(obj, key)`** (or `obj.hasOwnProperty(key)` on plain objects). Avoid relying only on `obj.key === undefined`.
 
-**1.5.3. What is the difference between `in` and `Object.hasOwn`?**  
+**5.3. What is the difference between `in` and `Object.hasOwn`?**  
 A: **`in`** checks the prototype chain too. **`Object.hasOwn`** checks **own** properties only.
 
-**1.5.4. Does spread `{ ...obj }` deep copy an object?**  
+**5.4. Does spread `{ ...obj }` deep copy an object?**  
 A: **No.** It is a **shallow** copy. Nested objects are still shared. Use `structuredClone()` for deep copies of plain data (File 01).
 
-**1.5.5. What is object destructuring?**  
+**5.5. What is object destructuring?**  
 A: Syntax to unpack properties from an object into variables: `const { name, age } = user`. Supports renaming, defaults, nesting, and rest (`...rest`).
 
-**1.5.6. What is the difference between `Object.assign` and spread?**  
+**5.6. What is the difference between `Object.assign` and spread?**  
 A: Both do **shallow** merge. `Object.assign(target, src)` **mutates** `target`. Spread creates a **new** object: `{ ...a, ...b }`.
 
-**1.5.7. What is the difference between a JS object and JSON?**  
+**5.7. What is the difference between a JS object and JSON?**  
 A: A JS object is an in-memory structure (any valid property values, methods). JSON is a **string format** with a limited set of types — no functions, `undefined`, or symbols.
 
-**1.5.8. Why should arrow functions be avoided as object methods?**  
+**5.8. Why should arrow functions be avoided as object methods?**  
 A: Arrow methods do not have their own **`this`**. They inherit `this` from the enclosing scope, so `this` usually will not refer to the object. Use method shorthand instead (File 08).

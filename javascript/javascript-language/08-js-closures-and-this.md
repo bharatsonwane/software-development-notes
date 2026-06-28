@@ -10,9 +10,9 @@ A **closure** happens when a function remembers variables from the scope where i
 
 ---
 
-## 1.1. Closures
+## 1. Closures
 
-### 1.1.1. Lexical scope recap
+### 1.1. Lexical scope recap
 
 Inner functions can read variables from outer scopes. The lookup chain is fixed at **write time**:
 
@@ -33,9 +33,9 @@ const fn = outerFn();
 fn();  // "global" "middle" — even after outerFn finished
 ```
 
-See File 02, section 1.2.4 for the scope chain.
+See File 02, section 2.4 for the scope chain.
 
-### 1.1.2. What is a closure?
+### 1.2. What is a closure?
 
 A **closure** is a function plus the **reference to its surrounding lexical environment** (variables from outer scopes that are still "alive").
 
@@ -57,7 +57,7 @@ sayHello("Bharat");  // "Hello, Bharat!"
 
 Every function in JS that references outer variables forms a closure — not only returned inner functions.
 
-### 1.1.3. Closure use cases
+### 1.3. Closure use cases
 
 **Private state / encapsulation:**
 
@@ -127,7 +127,7 @@ function memoize(fn) {
 }
 ```
 
-### 1.1.4. Common closure bugs
+### 1.4. Common closure bugs
 
 **Loop with `var`** — one shared binding (File 02, File 04):
 
@@ -162,11 +162,11 @@ logger.log();  // 5 — OK when using shared mutable binding
 
 ---
 
-## 1.2. IIFE
+## 2. IIFE
 
 An **IIFE** (Immediately Invoked Function Expression) is a function that runs **right after** it is defined.
 
-### 1.2.1. Syntax
+### 2.1. Syntax
 
 ```js
 (function () {
@@ -185,7 +185,7 @@ An **IIFE** (Immediately Invoked Function Expression) is a function that runs **
 
 Wrap in parentheses so the parser treats it as an expression, not a declaration.
 
-### 1.2.2. Why IIFEs were used
+### 2.2. Why IIFEs were used
 
 **Private scope** before block-scoped `let`/`const` was common:
 
@@ -217,7 +217,7 @@ for (var i = 0; i < 3; i++) {
 // 0, 1, 2 — IIFE captures copy of i per iteration
 ```
 
-### 1.2.3. IIFE today
+### 2.3. IIFE today
 
 With **`let`/`const`** blocks and modules (File 11), IIFEs are less common. Still useful for:
 
@@ -237,9 +237,9 @@ Prefer **block scope** or **modules** for new code:
 
 ---
 
-## 1.3. `this` binding
+## 3. `this` binding
 
-### 1.3.1. What is `this`?
+### 3.1. What is `this`?
 
 **`this`** is a special reference inside functions. Its value depends on **call site** (how the function is invoked), not where the function is defined — except for **arrow functions**.
 
@@ -251,7 +251,7 @@ function show() {
 show();  // depends on strict mode / environment
 ```
 
-### 1.3.2. Default binding
+### 3.2. Default binding
 
 Standalone function call — `this` is **`undefined`** in strict mode, or the **global object** (`window` in browsers) in sloppy mode:
 
@@ -273,7 +273,7 @@ function fn() {
 fn();
 ```
 
-### 1.3.3. Implicit binding
+### 3.3. Implicit binding
 
 When called as **`obj.method()`**, `this` is **`obj`**:
 
@@ -314,9 +314,9 @@ const user = {
 user.greet();  // undefined (strict) or global name
 ```
 
-### 1.3.4. Explicit binding
+### 3.4. Explicit binding
 
-Set `this` with **`call`**, **`apply`**, or **`bind`** (section 1.4):
+Set `this` with **`call`**, **`apply`**, or **`bind`** (section 4):
 
 ```js
 function greet() {
@@ -328,7 +328,7 @@ const user = { name: "Bharat" };
 greet.call(user);  // "Bharat"
 ```
 
-### 1.3.5. `new` binding
+### 3.5. `new` binding
 
 With **`new`**, `this` is a **new empty object** that becomes the instance:
 
@@ -343,7 +343,7 @@ console.log(u.name);  // "Bharat"
 
 If the constructor returns a plain object, that object replaces the default `this` (rare pattern). File 09 covers constructors and classes.
 
-### 1.3.6. Binding priority (highest wins)
+### 3.6. Binding priority (highest wins)
 
 When multiple rules apply:
 
@@ -368,11 +368,11 @@ bound.call(a);        // 2 — bind beats call on bound function
 
 ---
 
-## 1.4. call, apply, bind
+## 4. call, apply, bind
 
 All three set **`this`** for a function. They differ in **invocation** and **arguments**.
 
-### 1.4.1. call
+### 4.1. call
 
 Invoke **immediately** with `this` and **comma-separated** arguments:
 
@@ -394,7 +394,7 @@ Array.prototype.push.call(nums, "c");
 // nums-like object now has "c" pushed
 ```
 
-### 1.4.2. apply
+### 4.2. apply
 
 Same as `call`, but arguments as an **array** (or array-like):
 
@@ -408,7 +408,7 @@ Math.max(...numbers);            // 9 — prefer spread today
 
 `apply` is mostly legacy; **`call`** + spread replaced most uses.
 
-### 1.4.3. bind
+### 4.3. bind
 
 Returns a **new function** with `this` permanently fixed (and optionally partial arguments):
 
@@ -438,7 +438,7 @@ double(5);  // 10
 
 `bind` with `new` — bound `this` is ignored when using `new` on the bound function (edge case for interviews).
 
-### 1.4.4. When to use which
+### 4.4. When to use which
 
 | API | Invokes now? | Arguments | Typical use |
 |-----|--------------|-----------|-------------|
@@ -458,9 +458,9 @@ handleClick = () => {
 
 ---
 
-## 1.5. Arrow functions & `this`
+## 5. Arrow functions & `this`
 
-### 1.5.1. Lexical `this`
+### 5.1. Lexical `this`
 
 Arrow functions **do not have their own `this`**. They inherit `this` from the **enclosing lexical scope** at definition time:
 
@@ -489,7 +489,7 @@ this.hobbies.forEach(function (hobby) {
 });
 ```
 
-### 1.5.2. When arrows help vs hurt
+### 5.2. When arrows help vs hurt
 
 | Use arrows | Avoid arrows |
 |------------|--------------|
@@ -514,9 +514,9 @@ const good = {
 };
 ```
 
-See File 07, section 1.2.3.
+See File 07, section 2.3.
 
-### 1.5.3. Other arrow differences (brief)
+### 5.3. Other arrow differences (brief)
 
 - **No `arguments`** — use rest: `(...args) =>`
 - **No `prototype`** — cannot use as constructor
@@ -530,28 +530,28 @@ sum(1, 2, 3);  // 6
 
 ---
 
-## 1.6. Common questions
+## 6. Common questions
 
-**1.6.1. What is a closure?**  
+**6.1. What is a closure?**  
 A: A function that **remembers** variables from its outer lexical scope, even after the outer function has returned. In JS, functions close over their surrounding environment.
 
-**1.6.2. What is the difference between scope and closure?**  
+**6.2. What is the difference between scope and closure?**  
 A: **Scope** is where variables are visible. A **closure** is the mechanism that lets an inner function access outer variables after the outer function finishes executing.
 
-**1.6.3. How is `this` determined in JavaScript?**  
+**6.3. How is `this` determined in JavaScript?**  
 A: By **how the function is called**: default (bare call), implicit (`obj.method()`), explicit (`call`/`apply`/`bind`), or `new`. Arrow functions use **lexical** `this` from the enclosing scope.
 
-**1.6.4. Why does `const fn = obj.method; fn()` lose `this`?**  
+**6.4. Why does `const fn = obj.method; fn()` lose `this`?**  
 A: `this` is set by the **call site**. A bare `fn()` uses **default binding**, not `obj`. Use `fn.call(obj)`, `obj.method()`, or `obj.method.bind(obj)`.
 
-**1.6.5. What is the difference between `call`, `apply`, and `bind`?**  
+**6.5. What is the difference between `call`, `apply`, and `bind`?**  
 A: `call` and `apply` **invoke** the function immediately with a given `this`; `call` takes args individually, `apply` as an array. `bind` returns a **new function** with fixed `this` (and optional partial args) without calling it yet.
 
-**1.6.6. Do arrow functions have `this`?**  
+**6.6. Do arrow functions have `this`?**  
 A: They do not have their **own** `this`. They inherit `this` from the surrounding scope where the arrow was **defined**.
 
-**1.6.7. What is an IIFE?**  
+**6.7. What is an IIFE?**  
 A: An **Immediately Invoked Function Expression** — `(function () { ... })()` runs as soon as it is defined. Historically used for private scope; less needed with `let`/`const` and modules.
 
-**1.6.8. Why did `for (var i = 0; ...)` break closures in loops?**  
+**6.8. Why did `for (var i = 0; ...)` break closures in loops?**  
 A: `var` is function-scoped — one shared `i`. All async callbacks see the final value. `let` creates a **new binding per iteration**, or use an IIFE to capture each value (File 04).

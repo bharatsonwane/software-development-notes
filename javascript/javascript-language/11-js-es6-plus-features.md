@@ -8,11 +8,11 @@ ES6 (2015) and later releases added **modules**, **new collections**, **`Symbol`
 
 ---
 
-## 1.1. Modules (ESM)
+## 1. Modules (ESM)
 
 **ES modules (ESM)** split code into files with explicit **imports** and **exports**. Each module has its own **scope** — no global pollution (File 02).
 
-### 1.1.1. Named exports
+### 1.1. Named exports
 
 Export multiple bindings by name:
 
@@ -53,7 +53,7 @@ function multiply(a, b) {
 export { multiply };
 ```
 
-### 1.1.2. Default export
+### 1.2. Default export
 
 One **default** export per module — importers choose the local name:
 
@@ -85,7 +85,7 @@ export const API_URL = "https://api.example.com";
 import fetchData, { API_URL } from "./api.js";
 ```
 
-### 1.1.3. Import rules and patterns
+### 1.3. Import rules and patterns
 
 ```js
 // Side-effect only — runs module init code
@@ -108,7 +108,7 @@ Module behavior:
 
 File extensions in browsers often require **`.js`** explicitly. Bundlers (Vite, webpack) resolve paths.
 
-### 1.1.4. Dynamic `import()`
+### 1.4. Dynamic `import()`
 
 Load a module **at runtime** — returns a **Promise**:
 
@@ -130,7 +130,7 @@ if (featureFlags.newEditor) {
 
 `import()` does not hoist — runs when called.
 
-### 1.1.5. ESM vs CommonJS (brief)
+### 1.5. ESM vs CommonJS (brief)
 
 | ESM | CommonJS (Node legacy) |
 |-----|------------------------|
@@ -142,11 +142,11 @@ Modern Node supports ESM with `"type": "module"` in `package.json` or `.mjs` ext
 
 ---
 
-## 1.2. Collections
+## 2. Collections
 
 Objects use **string/symbol** keys and inherit from `Object.prototype`. **`Map`** and **`Set`** are dedicated collections with different semantics.
 
-### 1.2.1. Map
+### 2.1. Map
 
 **Any value** as key (objects, functions), **insertion order**, **`size`** property:
 
@@ -192,7 +192,7 @@ const obj = Object.fromEntries(map);
 const map2 = new Map(Object.entries(obj));
 ```
 
-### 1.2.2. Set
+### 2.2. Set
 
 **Unique values** — duplicates ignored:
 
@@ -215,7 +215,7 @@ Dedupe array:
 const unique = [...new Set([1, 2, 2, 3])];  // [1, 2, 3]
 ```
 
-### 1.2.3. WeakMap and WeakSet
+### 2.3. WeakMap and WeakSet
 
 **Weak** references — keys (WeakMap) or values (WeakSet) must be **objects**, and entries can be **garbage-collected** when no other references exist:
 
@@ -240,9 +240,9 @@ Use **WeakMap** for private metadata on objects without preventing GC (File 12).
 
 ---
 
-## 1.3. Symbol & iterators
+## 3. Symbol & iterators
 
-### 1.3.1. Symbol (File 01 recap)
+### 3.1. Symbol (File 01 recap)
 
 **Unique** primitive — every `Symbol()` is distinct:
 
@@ -291,7 +291,7 @@ for (const n of obj) {
 
 Others: `Symbol.toStringTag`, `Symbol.hasInstance`, `Symbol.asyncIterator`.
 
-### 1.3.2. Iterable protocol
+### 3.2. Iterable protocol
 
 An object is **iterable** if it has **`Symbol.iterator`** — a function returning an **iterator**:
 
@@ -311,7 +311,7 @@ iterator.next();  // { value: "i", done: false }
 iterator.next();  // { done: true }
 ```
 
-### 1.3.3. Consumption of iterables
+### 3.3. Consumption of iterables
 
 **`for...of`** (File 04):
 
@@ -343,11 +343,11 @@ Array.from("hello");  // ["h","e","l","l","o"]
 
 ---
 
-## 1.4. Generators
+## 4. Generators
 
 **Generator functions** (`function*`) return an **iterator** that can **pause** with **`yield`**.
 
-### 1.4.1. Basic syntax
+### 4.1. Basic syntax
 
 ```js
 function* countUp() {
@@ -372,7 +372,7 @@ for (const n of countUp()) {
 }
 ```
 
-### 1.4.2. yield expression
+### 4.2. yield expression
 
 `yield` produces a value **and** can receive input on next `.next(arg)`:
 
@@ -400,7 +400,7 @@ function* combined() {
 [...combined()];  // [1, 2, "a", "b"]
 ```
 
-### 1.4.3. Use cases
+### 4.3. Use cases
 
 **Lazy sequences** — generate on demand:
 
@@ -433,9 +433,9 @@ Avoid generators when a simple array or async function suffices — adds mental 
 
 ---
 
-## 1.5. Modern syntax
+## 5. Modern syntax
 
-### 1.5.1. Template literals
+### 5.1. Template literals
 
 Strings with **interpolation** and multiline (File 01):
 
@@ -467,7 +467,7 @@ highlight`Hello, ${name}!`;
 
 Used in libraries (styled-components, Lit HTML).
 
-### 1.5.2. Optional chaining (`?.`)
+### 5.2. Optional chaining (`?.`)
 
 Short-circuit access when intermediate value is **`null`** or **`undefined`** (File 03, File 07):
 
@@ -491,7 +491,7 @@ const bad = { fn: "not a function" };
 // Optional CALL only skips if fn is null/undefined
 ```
 
-### 1.5.3. Nullish coalescing (`??`)
+### 5.3. Nullish coalescing (`??`)
 
 Default when value is **`null`** or **`undefined`** only (File 03):
 
@@ -513,7 +513,7 @@ Cannot mix with `&&` / `||` without parentheses:
 (a ?? b) || c;
 ```
 
-### 1.5.4. Other modern syntax (quick reference)
+### 5.4. Other modern syntax (quick reference)
 
 | Feature | Example | Notes |
 |---------|---------|-------|
@@ -536,34 +536,34 @@ const million = 1_000_000;
 
 ---
 
-## 1.6. Common questions
+## 6. Common questions
 
-**1.6.1. What is the difference between default and named exports?**  
+**6.1. What is the difference between default and named exports?**  
 A: **Named** exports must be imported by `{ name }` (or renamed). **Default** export allows `import Anything from "./module.js"` — one default per module.
 
-**1.6.2. When should I use `Map` instead of a plain object?**  
+**6.2. When should I use `Map` instead of a plain object?**  
 A: When keys are **not strings**, you need **insertion order** guarantees with non-integer keys, frequent **size** checks, or frequent add/delete without prototype noise.
 
-**1.6.3. What is the difference between `Set` and array `filter` for uniqueness?**  
+**6.3. What is the difference between `Set` and array `filter` for uniqueness?**  
 A: **`Set`** enforces uniqueness on every **`add`**. **`[...new Set(arr)]`** dedupes an existing array. Set also offers O(1) **`has`** checks.
 
-**1.6.4. What is `Symbol` used for?**  
+**6.4. What is `Symbol` used for?**  
 A: **Unique property keys** that won't collide with string keys, and **well-known symbols** (`Symbol.iterator`, etc.) to hook into language features.
 
-**1.6.5. What makes an object iterable?**  
+**6.5. What makes an object iterable?**  
 A: It implements **`Symbol.iterator`** — a method returning an iterator with **`next()`** returning `{ value, done }`.
 
-**1.6.6. What is a generator?**  
+**6.6. What is a generator?**  
 A: A function (`function*`) that can **pause** with **`yield`** and resume later, producing an iterable iterator. Useful for lazy sequences and custom iteration.
 
-**1.6.7. What is the difference between `?.` and `&&` for safe access?**  
+**6.7. What is the difference between `?.` and `&&` for safe access?**  
 A: **`?.`** stops on **`null`/`undefined`** only. **`&&`** stops on **any falsy** value (`0`, `""`, `false`), which may hide valid data.
 
-**1.6.8. What is dynamic `import()`?**  
+**6.8. What is dynamic `import()`?**  
 A: Runtime module loading that returns a **Promise** — enables code splitting and conditional imports unlike static `import` at top of file.
 
-**1.6.9. What is the difference between `WeakMap` and `Map`?**  
+**6.9. What is the difference between `WeakMap` and `Map`?**  
 A: **WeakMap** keys must be objects, holds **weak** references (GC-friendly), is **not iterable**, and has **no `size`**. **Map** holds keys strongly and supports full iteration.
 
-**1.6.10. Can I use `import` and `require` in the same file?**  
+**6.10. Can I use `import` and `require` in the same file?**  
 A: In modern projects, pick **one** system per file. Mixing ESM and CommonJS depends on bundler/Node config — avoid in application code when possible.

@@ -10,11 +10,11 @@ Functions create their own **scope** (File 02). How you define a function affect
 
 ---
 
-## 1.1. Function forms
+## 1. Function forms
 
-### 1.1.1. Function declarations
+### 1.1. Function declarations
 
-Defined with the `function` keyword at the top level of a scope. **Hoisted** — you can call it before its line in the source (File 02, section 1.3.3).
+Defined with the `function` keyword at the top level of a scope. **Hoisted** — you can call it before its line in the source (File 02, section 3.3).
 
 ```js
 greet("Bharat");  // works — hoisted
@@ -28,7 +28,7 @@ console.log(greet("Dev"));  // "Hello, Dev!"
 
 Creates a **named binding** in the current scope (`greet` above).
 
-### 1.1.2. Function expressions
+### 1.2. Function expressions
 
 A function assigned to a variable (or passed inline). The **variable** is hoisted, not the function value — same rules as `const`/`let`/`var` (File 02).
 
@@ -59,7 +59,7 @@ factorial(5);  // 120
 | `const` expression | No (TDZ until line) | Most assignments |
 | `var` expression | No (`undefined` until line) | Legacy — avoid |
 
-### 1.1.3. Arrow functions
+### 1.3. Arrow functions
 
 Shorter syntax, introduced in ES6. **No own `this`**, `arguments`, or `prototype`. Cannot be used as constructors (`new`).
 
@@ -110,7 +110,7 @@ obj.arrow();    // undefined (in strict module/script)
 
 See File 08 for `this` in depth.
 
-### 1.1.4. Methods (object and class shorthand)
+### 1.4. Methods (object and class shorthand)
 
 When a function is a property of an object, it is often called a **method**:
 
@@ -129,7 +129,7 @@ calculator.add(5, 3);  // 8
 
 ES6 **method shorthand** — same as `add: function(a, b) { }` but cleaner. `this` inside refers to the object (when called as `obj.add()`).
 
-### 1.1.5. When to use which
+### 1.5. When to use which
 
 | Situation | Prefer |
 |-----------|--------|
@@ -141,9 +141,9 @@ ES6 **method shorthand** — same as `add: function(a, b) { }` but cleaner. `thi
 
 ---
 
-## 1.2. Parameters & arguments
+## 2. Parameters & arguments
 
-### 1.2.1. Parameters vs arguments
+### 2.1. Parameters vs arguments
 
 - **Parameters** — names listed in the function **definition**.
 - **Arguments** — actual **values** passed at **call time**.
@@ -169,7 +169,7 @@ log(1, 2, 3, 4);  // 4 is ignored — no error
 
 Extra arguments are available via **rest** or (legacy) **`arguments`**.
 
-### 1.2.2. Default parameters
+### 2.2. Default parameters
 
 Default values apply when the argument is **`undefined`** (not when it is `null` or `0` unless you want that).
 
@@ -202,7 +202,7 @@ function range(start, end = start + 10) {
 range(5);  // { start: 5, end: 15 }
 ```
 
-### 1.2.3. Rest parameters
+### 2.3. Rest parameters
 
 **Rest** (`...name`) collects **remaining arguments** into a **real array**:
 
@@ -232,7 +232,7 @@ Rest must be the **last** parameter:
 
 Use rest instead of **`arguments`** in modern code.
 
-### 1.2.4. The `arguments` object (legacy)
+### 2.4. The `arguments` object (legacy)
 
 Non-arrow functions have an array-like **`arguments`** object with all passed values:
 
@@ -262,7 +262,7 @@ function sum(...nums) {
 }
 ```
 
-### 1.2.5. Destructuring parameters
+### 2.5. Destructuring parameters
 
 Unpack properties or array elements directly in the parameter list:
 
@@ -299,9 +299,9 @@ File 07 covers destructuring in more detail.
 
 ---
 
-## 1.3. Return & first-class functions
+## 3. Return & first-class functions
 
-### 1.3.1. return
+### 3.1. return
 
 **`return`** sends a value back to the caller and **stops** the function.
 
@@ -347,7 +347,7 @@ function minMax(nums) {
 const { min, max } = minMax([3, 1, 4, 1, 5]);
 ```
 
-### 1.3.2. Functions as values
+### 3.2. Functions as values
 
 Assign, store, and pass functions like any other value:
 
@@ -380,7 +380,7 @@ repeat(3, (i) => console.log(i));  // 0, 1, 2
 
 File 10 covers async callbacks, Promises, and event handlers.
 
-### 1.3.3. Higher-order functions
+### 3.3. Higher-order functions
 
 A **higher-order function** either **takes** a function as an argument or **returns** a function (or both).
 
@@ -411,7 +411,7 @@ triple(5);  // 15
 
 Built-in higher-order array methods (`map`, `filter`, `reduce`) are covered in File 06.
 
-### 1.3.4. Returning functions and closures (intro)
+### 3.4. Returning functions and closures (intro)
 
 Inner functions **close over** variables from the outer scope — a **closure**:
 
@@ -432,7 +432,7 @@ counter();  // 12
 
 The returned function keeps access to `count` even after `makeCounter` finishes. File 08 covers closures, IIFEs, and common patterns in depth.
 
-### 1.3.5. Pure vs impure functions (brief)
+### 3.5. Pure vs impure functions (brief)
 
 | Pure function | Impure function |
 |---------------|-----------------|
@@ -457,28 +457,28 @@ Prefer pure functions where practical; isolate side effects at boundaries (API c
 
 ---
 
-## 1.4. Common questions
+## 4. Common questions
 
-**1.4.1. What is the difference between a function declaration and a function expression?**  
+**4.1. What is the difference between a function declaration and a function expression?**  
 A: Declarations are hoisted and create a named binding you can call before the line. Expressions assign a function to a variable — the variable follows `let`/`const`/`var` hoisting rules, not full function hoisting.
 
-**1.4.2. When should I use arrow functions?**  
+**4.2. When should I use arrow functions?**  
 A: Short callbacks, when you want lexical `this`, and when you do not need `arguments`, `new`, or a `prototype`. Use regular functions or method shorthand when `this` must refer to the call site or object.
 
-**1.4.3. What is the difference between parameters and arguments?**  
+**4.3. What is the difference between parameters and arguments?**  
 A: **Parameters** are in the function definition; **arguments** are the values passed when calling. JS allows any number of arguments regardless of parameter count.
 
-**1.4.4. How do default parameters work with `null`?**  
+**4.4. How do default parameters work with `null`?**  
 A: Defaults apply only when the argument is **`undefined`**, not `null`. `fn(null)` uses `null`, not the default.
 
-**1.4.5. What is the rest parameter and how is it different from `arguments`?**  
+**4.5. What is the rest parameter and how is it different from `arguments`?**  
 A: Rest (`...args`) collects remaining arguments into a **real array** and works in all modern function forms. `arguments` is array-like, legacy, and unavailable in arrow functions.
 
-**1.4.6. What does a function return if there is no `return`?**  
+**4.6. What does a function return if there is no `return`?**  
 A: **`undefined`**.
 
-**1.4.7. What is a first-class function?**  
+**4.7. What is a first-class function?**  
 A: Functions are values — you can assign them to variables, pass them as arguments, return them, and store them in data structures.
 
-**1.4.8. What is a higher-order function?**  
+**4.8. What is a higher-order function?**  
 A: A function that takes another function as an argument, returns a function, or both. Examples: `map`, `filter`, `setTimeout`, and custom helpers like `multiplyBy(factor)`.

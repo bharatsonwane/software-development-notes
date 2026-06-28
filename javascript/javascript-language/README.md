@@ -6,20 +6,115 @@ Files are numbered in **learning order**: `01-js-topic.md`, `02-js-topic.md`, an
 
 ## Contents
 
-| # | File | Tier | Topics |
-|---|------|------|--------|
-| 01 | [01-js-types-and-values](./01-js-types-and-values.md) | Fundamental | Primitives, objects, typeof, reference vs value |
-| 02 | [02-js-variables-scope-hoisting](./02-js-variables-scope-hoisting.md) | Fundamental | var, let, const, scope chain, hoisting |
-| 03 | [03-js-operators-coercion](./03-js-operators-coercion.md) | Fundamental | Operators, == vs ===, truthy/falsy, coercion |
-| 04 | [04-js-control-flow](./04-js-control-flow.md) | Fundamental | if/else, switch, loops, break/continue |
-| 05 | [05-js-functions](./05-js-functions.md) | Fundamental | Declarations, expressions, arrows, params, return |
-| 06 | [06-js-arrays](./06-js-arrays.md) | Fundamental | Creation, mutation, map/filter/reduce, iteration |
-| 07 | [07-js-objects](./07-js-objects.md) | Fundamental | Literals, access, methods, destructuring basics |
-| 08 | [08-js-closures-and-this](./08-js-closures-and-this.md) | Intermediate | Closures, IIFE, this, call/apply/bind |
-| 09 | [09-js-prototypes-and-classes](./09-js-prototypes-and-classes.md) | Intermediate | Prototype chain, inheritance, class syntax |
-| 10 | [10-js-async-and-event-loop](./10-js-async-and-event-loop.md) | Intermediate | Callbacks, Promises, async/await, event loop |
-| 11 | [11-js-es6-plus-features](./11-js-es6-plus-features.md) | Intermediate | Modules, Map/Set, Symbol, iterators, generators |
-| 12 | [12-js-advanced-patterns](./12-js-advanced-patterns.md) | Advanced | Proxy, memory/GC, functional patterns, performance |
+**01. [Types & Values](./01-js-types-and-values.md)**  
+Tier — Fundamental
+
+1. Primitives  
+2. Objects & references  
+3. typeof & type checking  
+4. Common questions
+
+**02. [Variables, Scope & Hoisting](./02-js-variables-scope-hoisting.md)**  
+Tier — Fundamental
+
+1. var, let, const  
+2. Scope  
+3. Hoisting  
+4. Common questions
+
+**03. [Operators & Coercion](./03-js-operators-coercion.md)**  
+Tier — Fundamental
+
+1. Operators  
+2. Equality  
+3. Type coercion  
+4. Truthy & falsy  
+5. Common questions
+
+**04. [Control Flow](./04-js-control-flow.md)**  
+Tier — Fundamental
+
+1. Conditionals  
+2. Loops  
+3. break & continue  
+4. Common questions
+
+**05. [Functions](./05-js-functions.md)**  
+Tier — Fundamental
+
+1. Function forms  
+2. Parameters & arguments  
+3. Return & first-class functions  
+4. Common questions
+
+**06. [Arrays](./06-js-arrays.md)**  
+Tier — Fundamental
+
+1. Creating & accessing  
+2. Mutating methods  
+3. Iteration & transformation  
+4. Spread & copy  
+5. Common questions
+
+**07. [Objects](./07-js-objects.md)**  
+Tier — Fundamental
+
+1. Object basics  
+2. Methods & this (intro)  
+3. Destructuring & spread  
+4. JSON  
+5. Common questions
+
+**08. [Closures & this](./08-js-closures-and-this.md)**  
+Tier — Intermediate
+
+1. Closures  
+2. IIFE  
+3. `this` binding  
+4. call, apply, bind  
+5. Arrow functions & `this`  
+6. Common questions
+
+**09. [Prototypes & Classes](./09-js-prototypes-and-classes.md)**  
+Tier — Intermediate
+
+1. Prototype chain  
+2. Object creation  
+3. Inheritance  
+4. Classes  
+5. Common questions
+
+**10. [Async & Event Loop](./10-js-async-and-event-loop.md)**  
+Tier — Intermediate
+
+1. Sync vs async  
+2. Callbacks  
+3. Promises  
+4. async / await  
+5. Event loop  
+6. Common questions
+
+**11. [ES6+ Features](./11-js-es6-plus-features.md)**  
+Tier — Intermediate
+
+1. Modules (ESM)  
+2. Collections  
+3. Symbol & iterators  
+4. Generators  
+5. Modern syntax  
+6. Common questions
+
+**12. [Advanced Patterns](./12-js-advanced-patterns.md)**  
+Tier — Advanced
+
+1. Execution context  
+2. Memory & garbage collection  
+3. Proxy & Reflect  
+4. Functional patterns  
+5. Utility patterns  
+6. Performance  
+7. Strict mode  
+8. Common questions
 
 ## Learning path
 
@@ -29,4 +124,4 @@ Files are numbered in **learning order**: `01-js-topic.md`, `02-js-topic.md`, an
 12     Advanced     →  internals, patterns, optimization
 ```
 
-Add notes file by file in order. Each file has its own sections and a **Common questions** block at the end.
+Each file uses **relative** section numbers (`1.`, `1.1.`, `1.1.1.` within that file). Subsections nest under their parent (`1.1.`, `1.2.` under section 1).

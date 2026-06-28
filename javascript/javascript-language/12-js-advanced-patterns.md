@@ -10,11 +10,11 @@ You do not need to micro-optimize every line — but understanding **execution c
 
 ---
 
-## 1.1. Execution context
+## 1. Execution context
 
 An **execution context** is the environment in which JS code runs. Each function call and global/module script gets a context.
 
-### 1.1.1. Types of execution context
+### 1.1. Types of execution context
 
 | Type | When created |
 |------|--------------|
@@ -29,7 +29,7 @@ Each context has:
 - **`this` binding** — depends on call type (File 08).
 - **Outer reference** — link to parent lexical environment (scope chain).
 
-### 1.1.2. Creation vs execution phase
+### 1.2. Creation vs execution phase
 
 When a context is created, JS runs two phases:
 
@@ -54,7 +54,7 @@ console.log(b);  // ReferenceError
 let b = 5;
 ```
 
-### 1.1.3. Call stack
+### 1.3. Call stack
 
 Contexts are managed on the **call stack** (File 10):
 
@@ -77,7 +77,7 @@ first();
 
 Each push is a new function execution context. Stack overflow = too much synchronous recursion.
 
-### 1.1.4. Lexical environment
+### 1.4. Lexical environment
 
 **Lexical environment** = record of identifiers + reference to **outer** environment. Closures keep outer environments alive (File 08):
 
@@ -95,9 +95,9 @@ Module scope and block scope (`let`/`const`) each get their own lexical environm
 
 ---
 
-## 1.2. Memory & garbage collection
+## 2. Memory & garbage collection
 
-### 1.2.1. Stack vs heap
+### 2.1. Stack vs heap
 
 | Stack | Heap |
 |-------|------|
@@ -112,7 +112,7 @@ const user = { name: "Bharat" };  // object — heap; user holds reference
 
 Variables hold **references** to heap values (File 01).
 
-### 1.2.2. Garbage collection (GC)
+### 2.2. Garbage collection (GC)
 
 JS engines **automatically reclaim** memory when values are **no longer reachable** from roots (global, call stack, registers).
 
@@ -131,7 +131,7 @@ function makeUser() {
 
 You cannot manually free memory in JS (`delete` only removes object **properties**, not GC).
 
-### 1.2.3. Memory leaks (common causes)
+### 2.3. Memory leaks (common causes)
 
 **Accidental globals:**
 
@@ -168,17 +168,17 @@ function setup() {
 
 **WeakMap / WeakSet** (File 11) — attach metadata without preventing GC.
 
-### 1.2.4. Weak references (brief)
+### 2.4. Weak references (brief)
 
 **`WeakRef`** and **`FinalizationRegistry`** — advanced, rare in app code — allow observing when objects are collected. Use when building caches with size limits in libraries.
 
 ---
 
-## 1.3. Proxy & Reflect
+## 3. Proxy & Reflect
 
 **`Proxy`** wraps an object and **intercepts** operations (get, set, delete, etc.). **`Reflect`** provides methods matching proxy traps — default forwarding behavior.
 
-### 1.3.1. Basic Proxy
+### 3.1. Basic Proxy
 
 ```js
 const target = { name: "Bharat", age: 30 };
@@ -198,7 +198,7 @@ proxy.name;       // logs GET name → "Bharat"
 proxy.age = 31;   // logs SET age = 31
 ```
 
-### 1.3.2. Common traps
+### 3.2. Common traps
 
 | Trap | Intercepts |
 |------|------------|
@@ -226,7 +226,7 @@ user.age = 30;   // OK
 // user.age = "30";  // TypeError
 ```
 
-### 1.3.3. Reflect
+### 3.3. Reflect
 
 `Reflect` methods mirror proxy traps and return sensible results:
 
@@ -239,7 +239,7 @@ Reflect.deleteProperty(user, "temp");
 
 Use **`Reflect`** inside traps instead of direct `obj[prop]` to avoid recursion and handle receiver/`this` correctly.
 
-### 1.3.4. When to use Proxy
+### 3.4. When to use Proxy
 
 | Good use | Avoid |
 |----------|-------|
@@ -251,9 +251,9 @@ Proxies add overhead — powerful but not free.
 
 ---
 
-## 1.4. Functional patterns
+## 4. Functional patterns
 
-### 1.4.1. Pure functions & immutability
+### 4.1. Pure functions & immutability
 
 **Pure function** — same inputs → same output, no side effects (File 05):
 
@@ -283,7 +283,7 @@ function updateUser(user, name) {
 
 React and Redux-style state rely on immutability for change detection.
 
-### 1.4.2. Currying
+### 4.2. Currying
 
 Transform **`f(a, b, c)`** into **`f(a)(b)(c)`** — partial application one arg at a time:
 
@@ -308,7 +308,7 @@ curriedMultiply(2, 3)(4);  // 24
 
 Useful for config presets and reusable handlers.
 
-### 1.4.3. Function composition
+### 4.3. Function composition
 
 Pipe output of one function into the next:
 
@@ -327,7 +327,7 @@ pipe(double, increment)(5);  // 11
 
 Libraries: **Ramda**, **lodash/fp**.
 
-### 1.4.4. Higher-order patterns recap
+### 4.4. Higher-order patterns recap
 
 | Pattern | Idea |
 |---------|------|
@@ -338,9 +338,9 @@ Libraries: **Ramda**, **lodash/fp**.
 
 ---
 
-## 1.5. Utility patterns
+## 5. Utility patterns
 
-### 1.5.1. Debounce
+### 5.1. Debounce
 
 Run function **only after** calls **stop** for a delay — search input, resize:
 
@@ -365,7 +365,7 @@ input.addEventListener("input", (e) => onSearch(e.target.value));
 
 User types → wait 300ms idle → one API call.
 
-### 1.5.2. Throttle
+### 5.2. Throttle
 
 Run at most **once per interval** — scroll, mousemove:
 
@@ -394,7 +394,7 @@ window.addEventListener("scroll", onScroll);
 | Wait for pause | Cap frequency |
 | Search typing | Scroll / resize firehose |
 
-### 1.5.3. Memoization
+### 5.3. Memoization
 
 Cache function results by arguments (File 08):
 
@@ -423,7 +423,7 @@ slowSquare(5);  // cached
 
 Use **`Map`** when args are objects; consider cache size limits for production.
 
-### 1.5.4. once
+### 5.4. once
 
 Run function only one time:
 
@@ -452,9 +452,9 @@ init();  // silent — returns same result
 
 ---
 
-## 1.6. Performance
+## 6. Performance
 
-### 1.6.1. How engines optimize (V8 basics)
+### 6.1. How engines optimize (V8 basics)
 
 Modern engines (V8 in Chrome/Node) use:
 
@@ -476,14 +476,14 @@ const b = { y: 2, x: 1 };
 
 Details are engine-specific — **measure**, don't guess.
 
-### 1.6.2. When to optimize
+### 6.2. When to optimize
 
 1. **Make it work** — correct, readable code.
 2. **Measure** — DevTools Performance, `console.time`, benchmarks.
 3. **Optimize hot paths** — loops over huge arrays, render-critical UI.
 4. **Avoid premature optimization.**
 
-### 1.6.3. Common pitfalls
+### 6.3. Common pitfalls
 
 | Pitfall | Better approach |
 |---------|-----------------|
@@ -504,7 +504,7 @@ for (let i = 0; i < 10000; i++) parts.push(i);
 const fast = parts.join("");
 ```
 
-### 1.6.4. Micro-optimizations that rarely matter
+### 6.4. Micro-optimizations that rarely matter
 
 - `for` vs `forEach` vs `for...of` on small arrays — readability first.
 - Manual loop unrolling — engine often does it.
@@ -514,11 +514,11 @@ Focus on **algorithm choice** (O(n²) → O(n)), **network**, and **bundle size*
 
 ---
 
-## 1.7. Strict mode
+## 7. Strict mode
 
 **`"use strict"`** enables stricter parsing and runtime errors — catches silent bugs.
 
-### 1.7.1. How to enable
+### 7.1. How to enable
 
 ```js
 "use strict";
@@ -530,7 +530,7 @@ function strictFn() {
 // ES modules are strict by default
 ```
 
-### 1.7.2. Behavior changes
+### 7.2. Behavior changes
 
 | Sloppy | Strict |
 |--------|--------|
@@ -553,7 +553,7 @@ show();
 // mistype = 1;  // ReferenceError
 ```
 
-### 1.7.3. Why use strict
+### 7.3. Why use strict
 
 - Safer refactoring — typos throw instead of creating globals.
 - Required baseline for **classes** and **modules**.
@@ -563,34 +563,34 @@ Always write new code in **strict** contexts (modules or `"use strict"`).
 
 ---
 
-## 1.8. Common questions
+## 8. Common questions
 
-**1.8.1. What is an execution context?**  
+**8.1. What is an execution context?**  
 A: The environment for running a piece of JS — includes variable bindings, `this`, and the outer scope link. Created for global/module code and each function call.
 
-**1.8.2. What is the difference between the call stack and the heap?**  
+**8.2. What is the difference between the call stack and the heap?**  
 A: The **call stack** tracks active function contexts (LIFO). The **heap** stores objects and other dynamic data referenced from the stack.
 
-**1.8.3. How does garbage collection work in JavaScript?**  
+**8.3. How does garbage collection work in JavaScript?**  
 A: Engines trace **reachable** objects from roots and reclaim unreachable memory. You do not manually free memory.
 
-**1.8.4. What causes memory leaks in JS?**  
+**8.4. What causes memory leaks in JS?**  
 A: Common causes: accidental globals, uncleared timers/listeners, closures holding large unused data, and detached DOM nodes still referenced from JS.
 
-**1.8.5. What is a Proxy?**  
+**8.5. What is a Proxy?**  
 A: A wrapper that intercepts operations on an object (get, set, etc.) via **traps**. Used in frameworks for reactivity and validation.
 
-**1.8.6. What is the difference between debounce and throttle?**  
+**8.6. What is the difference between debounce and throttle?**  
 A: **Debounce** waits for a **pause** in events then runs once. **Throttle** runs at most **once per time window** during continuous events.
 
-**1.8.7. What is currying?**  
+**8.7. What is currying?**  
 A: Transforming a multi-argument function into a chain of functions each taking one (or fewer) arguments — enables partial application.
 
-**1.8.8. What does strict mode do?**  
+**8.8. What does strict mode do?**  
 A: Turns silent errors into **exceptions**, disables some unsafe features (`with`, implicit globals), and makes `this` **`undefined`** in plain function calls.
 
-**1.8.9. When should you optimize JavaScript performance?**  
+**8.9. When should you optimize JavaScript performance?**  
 A: After **measuring** a real bottleneck — hot loops, large data, UI jank, or slow API paths. Prefer better algorithms and architecture before micro-optimizations.
 
-**1.8.10. What is memoization?**  
+**8.10. What is memoization?**  
 A: Caching a function's **return values** by input arguments to avoid recomputing expensive work. Trade memory for speed.

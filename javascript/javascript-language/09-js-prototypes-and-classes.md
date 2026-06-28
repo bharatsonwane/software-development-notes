@@ -10,9 +10,9 @@ Every object (except `Object.create(null)`) has an internal link to a prototype.
 
 ---
 
-## 1.1. Prototype chain
+## 1. Prototype chain
 
-### 1.1.1. What is a prototype?
+### 1.1. What is a prototype?
 
 When you read `obj.key`, JavaScript:
 
@@ -42,7 +42,7 @@ rabbit.walk();  // "walking" — method on animal
 
 This linked list is the **prototype chain**.
 
-### 1.1.2. `[[Prototype]]`, `__proto__`, and `Object.getPrototypeOf`
+### 1.2. `[[Prototype]]`, `__proto__`, and `Object.getPrototypeOf`
 
 The spec uses internal slot **`[[Prototype]]`**. In practice:
 
@@ -72,7 +72,7 @@ dict.name = "Bharat";
 dict.toString;  // undefined — no inherited methods
 ```
 
-### 1.1.3. The `prototype` property on functions
+### 1.3. The `prototype` property on functions
 
 **Functions** (except arrows) have a **`prototype`** object. When you call the function with **`new`**, the new object's `[[Prototype]]` is set to that `prototype`:
 
@@ -99,7 +99,7 @@ u.greet();  // "Hi, Bharat"
 
 Arrow functions have **no** `prototype` property — they cannot be constructors.
 
-### 1.1.4. Own properties vs inherited
+### 1.4. Own properties vs inherited
 
 ```js
 const parent = { shared: 1, unique: "parent" };
@@ -121,7 +121,7 @@ const u = new User("Bharat");
 u.name;  // "Bharat" — own property wins
 ```
 
-### 1.1.5. `instanceof` and the prototype chain
+### 1.5. `instanceof` and the prototype chain
 
 **`instanceof`** checks if **`Constructor.prototype`** appears anywhere in the object's prototype chain:
 
@@ -145,9 +145,9 @@ checkInstance(u, User);  // true
 
 ---
 
-## 1.2. Object creation
+## 2. Object creation
 
-### 1.2.1. Object literals
+### 2.1. Object literals
 
 ```js
 const user = { name: "Bharat", age: 30 };
@@ -155,7 +155,7 @@ const user = { name: "Bharat", age: 30 };
 
 Prototype is **`Object.prototype`** automatically. Methods on the literal are **own** properties unless added to a shared prototype (unusual for literals).
 
-### 1.2.2. `Object.create`
+### 2.2. `Object.create`
 
 Create an object with an explicit prototype:
 
@@ -182,7 +182,7 @@ const user = Object.create(proto, {
 
 Pure prototypal pattern — no constructor function required.
 
-### 1.2.3. Constructor functions
+### 2.3. Constructor functions
 
 Before `class`, constructors were the standard pattern:
 
@@ -213,7 +213,7 @@ function Bad(name) {
 }
 ```
 
-### 1.2.4. The `new` keyword
+### 2.4. The `new` keyword
 
 What `new User("Bharat")` roughly does (File 08 — `new` binding):
 
@@ -241,9 +241,9 @@ const broken = User("Bharat");  // avoid — pollutes global or fails strict
 
 ---
 
-## 1.3. Inheritance
+## 3. Inheritance
 
-### 1.3.1. Prototypal inheritance
+### 3.1. Prototypal inheritance
 
 **Inheritance** in JS means one object's prototype chain includes another object's methods/properties.
 
@@ -275,7 +275,7 @@ d instanceof Dog;    // true
 d instanceof Animal; // true
 ```
 
-### 1.3.2. `Animal.call(this, ...)` pattern
+### 3.2. `Animal.call(this, ...)` pattern
 
 Constructor **stealing** — parent constructor runs with child's `this` to set up own properties:
 
@@ -292,9 +292,9 @@ function Child(a, b) {
 
 Methods still need prototype linking (`Object.create` or `class extends`).
 
-### 1.3.3. Classes vs manual prototype setup
+### 3.3. Classes vs manual prototype setup
 
-`class Dog extends Animal` does the prototype wiring for you (section 1.4). Manual pattern above is what happens under the hood — useful for debugging and interviews.
+`class Dog extends Animal` does the prototype wiring for you (section 4). Manual pattern above is what happens under the hood — useful for debugging and interviews.
 
 **Composition over inheritance** — often prefer containing objects or mixins over deep chains:
 
@@ -308,11 +308,11 @@ const user = Object.assign(Object.create(null), canWalk, { name: "Bharat" });
 
 ---
 
-## 1.4. Classes
+## 4. Classes
 
 ES6 **`class`** syntax is clearer but compiles to prototype + constructor mechanics.
 
-### 1.4.1. Class basics
+### 4.1. Class basics
 
 ```js
 class User {
@@ -343,7 +343,7 @@ typeof User;  // "function" — classes are functions
 User.prototype.greet === u.greet;  // false — bound method, but same prototype fn
 ```
 
-### 1.4.2. `extends` and `super`
+### 4.2. `extends` and `super`
 
 ```js
 class Animal {
@@ -384,7 +384,7 @@ class Dog extends Animal {
 }
 ```
 
-### 1.4.3. Static methods and fields
+### 4.3. Static methods and fields
 
 **Static** — on the **constructor**, not instances:
 
@@ -427,7 +427,7 @@ class Counter {
 }
 ```
 
-### 1.4.4. Getters and setters
+### 4.4. Getters and setters
 
 ```js
 class Rectangle {
@@ -463,7 +463,7 @@ const user = {
 };
 ```
 
-### 1.4.5. Class vs constructor function
+### 4.5. Class vs constructor function
 
 | Feature | `class` | Constructor + `.prototype` |
 |---------|---------|------------------------------|
@@ -475,7 +475,7 @@ const user = {
 
 Use **`class`** in modern codebases unless maintaining legacy constructor patterns.
 
-### 1.4.6. Private fields and methods (ES2022+)
+### 4.6. Private fields and methods (ES2022+)
 
 True instance privacy with `#`:
 
@@ -501,28 +501,28 @@ Private is **hard privacy** — not accessible via closure trick from outside. D
 
 ---
 
-## 1.5. Common questions
+## 5. Common questions
 
-**1.5.1. What is the prototype chain?**  
+**5.1. What is the prototype chain?**  
 A: The linked list of objects JavaScript walks when a property is not found on the object itself. Lookup goes **own properties → prototype → prototype's prototype → … → null**.
 
-**1.5.2. What is the difference between `__proto__` and `prototype`?**  
+**5.2. What is the difference between `__proto__` and `prototype`?**  
 A: **`__proto__`** (legacy) is an object's link to its parent prototype. **`prototype`** is a property on **constructor functions** — the object assigned as `[[Prototype]]` to instances created with `new`.
 
-**1.5.3. What does `new` do?**  
+**5.3. What does `new` do?**  
 A: Creates an object, sets its prototype to `Constructor.prototype`, runs the constructor with `this` bound to that object, and returns the object (unless the constructor returns another object).
 
-**1.5.4. Is JavaScript class-based or prototype-based?**  
+**5.4. Is JavaScript class-based or prototype-based?**  
 A: **Prototype-based** at runtime. **`class`** is syntactic sugar over constructor functions and prototype delegation.
 
-**1.5.5. What does `instanceof` check?**  
+**5.5. What does `instanceof` check?**  
 A: Whether **`Constructor.prototype`** exists anywhere in the object's prototype chain. Not a check of own properties or "type" in the OOP class sense alone.
 
-**1.5.6. Why call `Animal.call(this, name)` in subclass constructors?**  
+**5.6. Why call `Animal.call(this, name)` in subclass constructors?**  
 A: To run the **parent constructor** with the **child instance** as `this`, initializing inherited own properties. In classes, **`super(...)`** does this.
 
-**1.5.7. Can arrow functions be used as constructors?**  
+**5.7. Can arrow functions be used as constructors?**  
 A: **No.** They have no `prototype` and cannot be used with `new`.
 
-**1.5.8. What is the difference between own and inherited properties?**  
+**5.8. What is the difference between own and inherited properties?**  
 A: **Own** properties exist directly on the object. **Inherited** properties come from the prototype chain. Use **`Object.hasOwn(obj, key)`** to test own properties only.
