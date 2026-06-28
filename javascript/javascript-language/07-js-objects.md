@@ -540,28 +540,65 @@ For APIs and storage, design **plain JSON-serializable** DTOs — no methods, da
 
 ---
 
-## 5. Common questions
+## 5. Immutability & descriptors
 
-**5.1. What is the difference between dot and bracket notation?**  
+### 5.1. Property descriptors
+
+Every property has metadata — **writable**, **enumerable**, **configurable**:
+
+```js
+const obj = { name: "Ada" };
+Object.getOwnPropertyDescriptor(obj, "name");
+// { value: 'Ada', writable: true, enumerable: true, configurable: true }
+
+Object.defineProperty(obj, "id", {
+  value: 1,
+  writable: false,
+  enumerable: true,
+  configurable: false,
+});
+```
+
+### 5.2. Object.freeze, seal, preventExtensions
+
+| Method | Add props | Delete props | Change values |
+|--------|-----------|--------------|---------------|
+| **`preventExtensions`** | No | Yes | Yes |
+| **`seal`** | No | No | Yes |
+| **`freeze`** | No | No | No (shallow) |
+
+```js
+const config = Object.freeze({ theme: "dark" });
+config.theme = "light";  // silent fail (or throw in strict)
+config.newKey = 1;       // ignored
+```
+
+**Shallow only** — nested objects can still mutate unless deeply frozen.
+
+---
+
+## 6. Common questions
+
+**6.1. What is the difference between dot and bracket notation?**  
 A: Dot works for fixed identifier keys. Brackets work for **dynamic** keys, variables, and keys with spaces or special characters.
 
-**5.2. How do you check if an object has its own property?**  
+**6.2. How do you check if an object has its own property?**  
 A: Use **`Object.hasOwn(obj, key)`** (or `obj.hasOwnProperty(key)` on plain objects). Avoid relying only on `obj.key === undefined`.
 
-**5.3. What is the difference between `in` and `Object.hasOwn`?**  
+**6.3. What is the difference between `in` and `Object.hasOwn`?**  
 A: **`in`** checks the prototype chain too. **`Object.hasOwn`** checks **own** properties only.
 
-**5.4. Does spread `{ ...obj }` deep copy an object?**  
+**6.4. Does spread `{ ...obj }` deep copy an object?**  
 A: **No.** It is a **shallow** copy. Nested objects are still shared. Use `structuredClone()` for deep copies of plain data (File 01).
 
-**5.5. What is object destructuring?**  
+**6.5. What is object destructuring?**  
 A: Syntax to unpack properties from an object into variables: `const { name, age } = user`. Supports renaming, defaults, nesting, and rest (`...rest`).
 
-**5.6. What is the difference between `Object.assign` and spread?**  
+**6.6. What is the difference between `Object.assign` and spread?**  
 A: Both do **shallow** merge. `Object.assign(target, src)` **mutates** `target`. Spread creates a **new** object: `{ ...a, ...b }`.
 
-**5.7. What is the difference between a JS object and JSON?**  
+**6.7. What is the difference between a JS object and JSON?**  
 A: A JS object is an in-memory structure (any valid property values, methods). JSON is a **string format** with a limited set of types — no functions, `undefined`, or symbols.
 
-**5.8. Why should arrow functions be avoided as object methods?**  
+**6.8. Why should arrow functions be avoided as object methods?**  
 A: Arrow methods do not have their own **`this`**. They inherit `this` from the enclosing scope, so `this` usually will not refer to the object. Use method shorthand instead (File 08).

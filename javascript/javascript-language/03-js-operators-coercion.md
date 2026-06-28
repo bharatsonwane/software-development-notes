@@ -235,6 +235,42 @@ a === b;               // true — same reference
 "" === false;          // false
 ```
 
+### 2.4. Deep equality
+
+**`===`** compares **references** for objects — not structure.
+
+```js
+{ a: 1 } === { a: 1 };  // false
+```
+
+**Shallow compare** — one level:
+
+```js
+function shallowEqual(a, b) {
+  if (a === b) return true;
+  if (typeof a !== "object" || typeof b !== "object" || !a || !b) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every((k) => Object.is(a[k], b[k]));
+}
+```
+
+**Deep equality** — recursive compare (interview classic):
+
+```js
+function deepEqual(a, b) {
+  if (Object.is(a, b)) return true;
+  if (typeof a !== "object" || typeof b !== "object" || !a || !b) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every((k) => deepEqual(a[k], b[k]));
+}
+```
+
+**Practical options:** `structuredClone` + compare (heavy), **`JSON.stringify(a) === JSON.stringify(b)`** (only for JSON-safe data, key order matters), or libraries like **lodash `isEqual`**.
+
 ---
 
 ## 3. Type coercion

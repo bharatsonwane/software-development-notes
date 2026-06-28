@@ -250,21 +250,91 @@ Avoid `new String("hello")` — creates an object wrapper, rarely needed.
 
 ---
 
-## 4. Common questions
+## 4. Language basics
 
-**4.1. How many data types does JavaScript have?**  
+### 4.1. Comments
+
+```js
+// Single-line comment
+
+/*
+  Multi-line comment
+  (block comment)
+*/
+
+const x = 1; // trailing comment
+```
+
+Use comments for **why**, not **what** obvious code already shows.
+
+### 4.2. Semicolons
+
+JavaScript has **Automatic Semicolon Insertion (ASI)** — the engine inserts semicolons when you omit them at line breaks in certain cases.
+
+```js
+// Both valid
+const a = 1;
+const b = 2
+
+// ASI can surprise you — return on its own line
+function bad() {
+  return   // ASI inserts ; here — returns undefined
+    { value: 1 };
+}
+```
+
+**Default rule:** use semicolons consistently, or follow a project style guide (Prettier).
+
+### 4.3. Literals
+
+A **literal** is syntax that creates a value directly:
+
+| Literal | Example |
+|---------|---------|
+| Number | `42`, `3.14`, `0xff`, `1_000_000` |
+| String | `"hi"`, `'hi'`, `` `hi` `` |
+| Boolean | `true`, `false` |
+| Null | `null` |
+| Array | `[1, 2, 3]` |
+| Object | `{ name: "Ada" }` |
+| RegExp | `/abc/gi` |
+| Template | `` `Hello ${name}` `` |
+
+### 4.4. Expressions vs statements
+
+| Expressions | Statements |
+|-------------|------------|
+| Produce a **value** | Perform an **action** |
+| `1 + 2`, `fn()`, `a && b` | `if`, `for`, `return`, `const x = 1` |
+| Can nest inside other expressions | Usually stand alone |
+
+```js
+// Expression used as statement (value discarded)
+count + 1;
+
+// Statement — const declaration is not an expression
+const x = 1 + 2;  // 1 + 2 is expression; whole line is statement
+```
+
+Ternary (`cond ? a : b`) is an **expression**; `if/else` is a **statement** (File 04).
+
+---
+
+## 5. Common questions
+
+**5.1. How many data types does JavaScript have?**  
 A: **7 primitives** + **objects** (which includes arrays, functions, dates, etc.).
 
-**4.2. What is the difference between `undefined` and `null`?**  
+**5.2. What is the difference between `undefined` and `null`?**  
 A: `undefined` means "not assigned / missing". `null` means "intentionally empty".
 
-**4.3. Why does `typeof null` return `"object"`?**  
+**5.3. Why does `typeof null` return `"object"`?**  
 A: A long-standing language bug kept for backward compatibility. Always use `value === null` to check for null.
 
-**4.4. Primitive vs object — what is the key difference?**  
+**5.4. Primitive vs object — what is the key difference?**  
 A: Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.
 
-**4.5. Does `const` make objects immutable?**  
+**5.5. Does `const` make objects immutable?**  
 A: No. `const` prevents **reassigning** the variable. The object itself can still be mutated:
 
 ```js
@@ -273,5 +343,14 @@ obj.a = 2;       // OK
 obj = { a: 3 };  // TypeError — cannot reassign
 ```
 
-**4.6. What is `NaN` and how do you check for it?**  
+**5.6. What is `NaN` and how do you check for it?**  
 A: `NaN` means "Not a Number" (result of invalid math). Use `Number.isNaN(value)`, not `value === NaN`.
+
+**5.7. Are semicolons required in JavaScript?**  
+A: **No** — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.
+
+**5.8. What is the difference between an expression and a statement?**  
+A: An **expression** evaluates to a value. A **statement** performs an action (declare, loop, return).
+
+**5.9. What is a literal?**  
+A: Syntax that creates a value directly — `42`, `"hi"`, `{ a: 1 }`, `[1, 2]`.

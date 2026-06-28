@@ -12,7 +12,8 @@ Tier — Fundamental
 1. Primitives  
 2. Objects & references  
 3. typeof & type checking  
-4. Common questions
+4. Language basics  
+5. Common questions
 
 **02. [Variables, Scope & Hoisting](./02-js-variables-scope-hoisting.md)**  
 Tier — Fundamental
@@ -63,7 +64,8 @@ Tier — Fundamental
 2. Methods & this (intro)  
 3. Destructuring & spread  
 4. JSON  
-5. Common questions
+5. Immutability & descriptors  
+6. Common questions
 
 **08. [Closures & this](./08-js-closures-and-this.md)**  
 Tier — Intermediate
@@ -116,12 +118,51 @@ Tier — Advanced
 7. Strict mode  
 8. Common questions
 
+**13. [Strings, Numbers & Dates](./13-js-strings-numbers-dates.md)**  
+Tier — Fundamental
+
+1. Strings  
+2. Numbers & Math  
+3. Dates  
+4. Common questions
+
+**14. [Error Handling & Timers](./14-js-error-handling-timers.md)**  
+Tier — Intermediate
+
+1. Error handling  
+2. Timers  
+3. Common questions
+
+**15. [Browser & Events](./15-js-browser-and-events.md)**  
+Tier — Intermediate
+
+1. DOM and BOM  
+2. Storage APIs  
+3. Fetch & AbortController  
+4. Event handling  
+5. Common questions
+
+**16. [Interview Patterns & Polyfills](./16-js-interview-polyfills-patterns.md)**  
+Tier — Advanced
+
+1. Object-oriented concepts  
+2. Design patterns  
+3. Polyfill implementations  
+4. Coding interview problems  
+5. Security basics  
+6. Engine & performance (interview)  
+7. Common questions
+
 ## Learning path
 
 ```
 01–07  Fundamental  →  syntax, data, control flow
 08–11  Intermediate →  behavior, async, modern JS
-12     Advanced     →  internals, patterns, optimization
+12–16  Advanced     →  internals, patterns, browser, interview prep
 ```
 
-Each file uses **relative** section numbers (`1.`, `1.1.`, `1.1.1.` within that file). Subsections nest under their parent (`1.1.`, `1.2.` under section 1).
+Each file uses **relative** section numbers (`1.`, `1.1.`, `1.1.1.` within that file).
+
+## Topic map (interview index)
+
+See [notes.txt](./notes.txt) for full interview topic checklist with ✅ coverage markers.

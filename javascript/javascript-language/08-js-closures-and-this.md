@@ -235,6 +235,27 @@ Prefer **block scope** or **modules** for new code:
 // temp not visible here
 ```
 
+### 2.4. Revealing module pattern
+
+Expose a **public API** while keeping internals private via closure:
+
+```js
+const counterModule = (function () {
+  let count = 0;  // private
+
+  function increment() { count += 1; }
+  function getCount() { return count; }
+
+  return { increment, getCount };  // reveal public methods
+})();
+
+counterModule.increment();
+console.log(counterModule.getCount());  // 1
+// count is not accessible from outside
+```
+
+ES modules (`export` / `import`, File 11) replace this pattern in modern code.
+
 ---
 
 ## 3. `this` binding
@@ -297,6 +318,8 @@ greet();  // undefined — default binding, not user
 const other = { name: "Dev", greet: user.greet };
 other.greet();  // "Dev" — this === other
 ```
+
+**Event handler `this`** — classic DOM: `this` is the **element** (File 15). Arrow handlers use **lexical** `this` instead.
 
 **Nested function** — inner call does not inherit outer `this`:
 

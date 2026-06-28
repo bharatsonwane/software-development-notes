@@ -297,6 +297,37 @@ firstAndSecond([10, 20]);  // 30
 
 File 07 covers destructuring in more detail.
 
+### 2.6. Function overloading (patterns)
+
+JavaScript has **no native overloading** — same name cannot have multiple signatures. Common patterns:
+
+**Single function + typeof / length check:**
+
+```js
+function greet(nameOrOptions, maybeAge) {
+  if (typeof nameOrOptions === "object") {
+    const { name, age } = nameOrOptions;
+    return `Hello ${name}, age ${age}`;
+  }
+  return `Hello ${nameOrOptions}, age ${maybeAge}`;
+}
+```
+
+**Default parameters instead of overloads:**
+
+```js
+function connect(host = "localhost", port = 3000) { /* ... */ }
+```
+
+**Separate named functions** — clearest API:
+
+```js
+function createUser(name) { /* ... */ }
+function createUserFromDto(dto) { /* ... */ }
+```
+
+TypeScript adds compile-time overload signatures; runtime still uses one implementation.
+
 ---
 
 ## 3. Return & first-class functions

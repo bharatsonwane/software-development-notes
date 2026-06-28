@@ -523,6 +523,8 @@ Cannot mix with `&&` / `||` without parentheses:
 | Top-level await | `await fetch()` | Modules only |
 | Numeric separators | `1_000_000` | Readability |
 | `globalThis` | Cross-env global | Browser/Node |
+| `SharedArrayBuffer` | Shared memory between workers | Advanced; security constraints in browsers |
+| `Atomics` | `Atomics.add`, `Atomics.wait` | Low-level threading with SAB |
 
 ```js
 class Config {
