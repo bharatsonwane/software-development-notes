@@ -98,12 +98,21 @@ Tier — Advanced
 4. Common interview scenarios  
 5. Common questions
 
+**11. [Multiple GitHub Accounts (SSH)](./11-git-multiple-github-accounts-ssh.md)**  
+Tier — Advanced
+
+1. Create SSH keys per account  
+2. `~/.ssh/config` host entries  
+3. SSH agent and public keys on GitHub  
+4. Clone and remote URLs per account  
+5. Per-repo `user.name` and `user.email`
+
 ## Learning path
 
 ```
 01–04  Fundamental  →  commits, branches, merge
 05–08  Intermediate →  rebase, remote, workflows, recovery
-09–10  Advanced     →  hooks, troubleshooting
+09–11  Advanced     →  hooks, troubleshooting, multi-account SSH
 ```
 
 Each file uses **relative** section numbers (`1.`, `1.1.`, `1.1.1.` within that file).
