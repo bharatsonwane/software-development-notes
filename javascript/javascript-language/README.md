@@ -6,7 +6,7 @@ Files are numbered in **learning order**: `01-js-topic.md`, `02-js-topic.md`, an
 
 ## Contents
 
-**01. [Types & Values](./01-js-types-and-values.md)**  
+**01. [Types & Values](./01-js-data-types-and-values.md)**  
 Tier — Fundamental
 
 1. Primitives  

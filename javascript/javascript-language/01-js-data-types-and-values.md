@@ -228,7 +228,40 @@ Checks if an object appears in another object's prototype chain:
 "hello" instanceof String; // false — primitive, not String object
 ```
 
-### 3.4. Practical type checks
+### 3.4. `typeof` vs `instanceof` (quick table)
+
+| Check | `typeof` | `instanceof` |
+|------|----------|--------------|
+| What it checks | Built-in type tag (returns a string) | Prototype chain relationship |
+| Works well for | Primitives, functions, quick guards | Class/constructor-based objects |
+| Returns | One of values like `"string"`, `"number"`, `"object"` | `true` or `false` |
+| Arrays | `typeof []` -> `"object"` (not specific) | `[] instanceof Array` -> `true` |
+| `null` | `typeof null` -> `"object"` (historical bug) | `null instanceof Object` -> `false` |
+| Cross-realm caveat | Usually stable for primitives | Can fail across realms (e.g., different iframes) |
+
+### 3.5. Practical type checks
+
+### 3.5.1. Data types: primitive vs non-primitive
+
+| Data type | Category | `typeof` result | Recommended check |
+|------|----------|-----------------|-------------------|
+| String | Primitive | `"string"` | `typeof x === "string"` |
+| Number | Primitive | `"number"` | `typeof x === "number"` and `Number.isFinite(x)` when needed |
+| Boolean | Primitive | `"boolean"` | `typeof x === "boolean"` |
+| Undefined | Primitive | `"undefined"` | `x === undefined` or `typeof x === "undefined"` |
+| Null | Primitive | `"object"` (quirk) | `x === null` |
+| Symbol | Primitive | `"symbol"` | `typeof x === "symbol"` |
+| BigInt | Primitive | `"bigint"` | `typeof x === "bigint"` |
+| Object (plain) | Non-primitive | `"object"` | `x !== null && typeof x === "object"` |
+| Array | Non-primitive | `"object"` | `Array.isArray(x)` |
+| Function | Non-primitive | `"function"` | `typeof x === "function"` |
+| Date | Non-primitive | `"object"` | `x instanceof Date` |
+| RegExp | Non-primitive | `"object"` | `x instanceof RegExp` |
+| Map | Non-primitive | `"object"` | `x instanceof Map` |
+| Set | Non-primitive | `"object"` | `x instanceof Set` |
+| WeakMap | Non-primitive | `"object"` | `x instanceof WeakMap` |
+| WeakSet | Non-primitive | `"object"` | `x instanceof WeakSet` |
+| Promise | Non-primitive | `"object"` | `x instanceof Promise` |
 
 | Goal | How |
 |------|-----|
@@ -238,7 +271,7 @@ Checks if an object appears in another object's prototype chain:
 | Is it `null` or `undefined`? | `x == null` or `x === null \|\| x === undefined` |
 | Safe integer? | `Number.isSafeInteger(x)` |
 
-### 3.5. Boxing (brief)
+### 3.6. Boxing (brief)
 
 Primitives can be temporarily wrapped as objects when you access methods:
 
