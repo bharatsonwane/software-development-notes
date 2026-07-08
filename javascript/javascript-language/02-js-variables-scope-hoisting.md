@@ -2,34 +2,34 @@
 
 > File 02 — declaring variables and where they live.
 
-JavaScript gives you three keywords to declare variables: **`var`**, **`let`**, and **`const`**. They differ in **scope**, **redeclaration rules**, and **hoisting behavior**. Understanding those differences prevents bugs like accidental globals, stale loop variables, and "cannot access before initialization" errors.
+JavaScript gives you three keywords to declare variables: **`const`**, **`let`**, and **`var`**. They differ in **scope**, **redeclaration rules**, and **hoisting behavior**. Understanding those differences prevents bugs like accidental globals, stale loop variables, and "cannot access before initialization" errors.
 
 **Default rule today:** use **`const`** by default, **`let`** when you need to reassign, and avoid **`var`** in new code.
 
 ---
 
-## 1. var, let, const
+## 1. const, let, var
 
 ### 1.1. Quick comparison
 
-| Feature | `var` | `let` | `const` |
-|---------|-------|-------|---------|
-| Scope | Function (or global) | Block | Block |
-| Can reassign? | Yes | Yes | No |
-| Can redeclare in same scope? | Yes | No | No |
-| Hoisted? | Yes (initialized as `undefined`) | Yes (TDZ until init) | Yes (TDZ until init) |
-| Introduced | ES1 | ES6 | ES6 |
+| Feature | `const` | `let` | `var` |
+|---------|---------|-------|-------|
+| Scope | Block | Block | Function (or global) |
+| Can reassign? | No | Yes | Yes |
+| Can redeclare in same scope? | No | No | Yes |
+| Hoisted? | Yes (TDZ until init) | Yes (TDZ until init) | Yes (initialized as `undefined`) |
+| Introduced | ES6 | ES6 | ES1 |
 
 ### 1.2. Declaring and assigning
 
 ```js
-var a = 1;
+const a = 3;
 let b = 2;
-const c = 3;
+var c = 1;
 
-a = 10;   // OK — var can be reassigned
+a = 30;   // TypeError — const cannot be reassigned
 b = 20;   // OK — let can be reassigned
-c = 30;   // TypeError — const cannot be reassigned
+c = 10;   // OK — var can be reassigned
 ```
 
 ### 1.3. Reassignment vs rebinding
@@ -69,7 +69,7 @@ const x;   // SyntaxError — missing initializer
 
 ### 1.5. Temporal Dead Zone (TDZ)
 
-`let` and `const` exist from the **start of their block**, but you cannot access them **until the declaration line runs**. That gap is the **Temporal Dead Zone**.
+`const` and `let` exist from the **start of their block**, but you cannot access them **until the declaration line runs**. That gap is the **Temporal Dead Zone**.
 
 ```js
 console.log(x);  // undefined — var is hoisted and initialized
@@ -89,7 +89,7 @@ let y = 5;
 }
 ```
 
-Even `typeof` is unsafe on an undeclared `let`/`const` in the same scope:
+Even `typeof` is unsafe on an undeclared `const`/`let` in the same scope:
 
 ```js
 typeof undeclaredVar;     // "undefined" — no binding exists
@@ -116,7 +116,7 @@ let notYetDeclared = 1;
 
 ### 2.1. Global scope
 
-Variables declared **outside** any function or block live in the **global scope**. In browsers, global bindings become properties of `window` (with exceptions for `let`/`const`).
+Variables declared **outside** any function or block live in the **global scope**. In browsers, global bindings become properties of `window` (with exceptions for `const`/`let`).
 
 ```js
 const appName = "MyApp";   // global (script/module top level)
@@ -142,7 +142,7 @@ function demo() {
 
 ### 2.3. Block scope
 
-`let` and `const` are scoped to the **nearest block** (`{ ... }`) — including `if`, `for`, `while`, and standalone blocks:
+`const` and `let` are scoped to the **nearest block** (`{ ... }`) — including `if`, `for`, `while`, and standalone blocks:
 
 ```js
 if (true) {
@@ -199,7 +199,7 @@ test();
 console.log(value);      // "outer"
 ```
 
-Shadowing is legal with `let`/`const` across blocks, but you cannot shadow a `let`/`const` with `var` in the same block:
+Shadowing is legal with `const`/`let` across blocks, but you cannot shadow a `const`/`let` with `var` in the same block:
 
 ```js
 let x = 1;
@@ -228,7 +228,7 @@ function safe() {
 }
 ```
 
-Always declare with `let`/`const`/`var` — never rely on implicit globals.
+Always declare with `const`/`let`/`var` — never rely on implicit globals.
 
 ---
 
@@ -259,9 +259,9 @@ console.log(a);    // undefined
 a = 10;
 ```
 
-### 3.2. `let` and `const` hoisting
+### 3.2. `const` and `let` hoisting
 
-`let` and `const` are also hoisted, but stay in the **TDZ** until their declaration line:
+`const` and `let` are also hoisted, but stay in the **TDZ** until their declaration line:
 
 ```js
 // console.log(b);  // ReferenceError — TDZ
@@ -282,7 +282,7 @@ function greet() {
 
 ### 3.4. Function expression hoisting
 
-**Function expressions** follow variable hoisting rules (`var` → `undefined`, `let`/`const` → TDZ):
+**Function expressions** follow variable hoisting rules (`const`/`let` → TDZ, `var` → `undefined`):
 
 ```js
 // sayHi();  // TypeError — sayHi is undefined (var hoisted, not the function)
@@ -302,7 +302,7 @@ const greet = function () {
 
 ### 3.5. Class declarations
 
-`class` declarations are hoisted but **not initialized** until their line — same TDZ behavior as `let`/`const`:
+`class` declarations are hoisted but **not initialized** until their line — same TDZ behavior as `const`/`let`:
 
 ```js
 // const c = new Person();  // ReferenceError
@@ -330,23 +330,23 @@ After all lines run, `fn` is the string `"string"` because the assignment wins a
 
 | Declaration type | Hoisted? | Usable before line? | Initial value when hoisted |
 |------------------|----------|---------------------|----------------------------|
-| `var` | Yes | Yes | `undefined` |
-| `let` | Yes | No (TDZ) | — |
 | `const` | Yes | No (TDZ) | — |
+| `let` | Yes | No (TDZ) | — |
+| `var` | Yes | Yes | `undefined` |
 | Function declaration | Yes | Yes | Function |
 | Function expression (`var`) | Var only | No (undefined) | `undefined` |
-| Function expression (`let`/`const`) | Yes | No (TDZ) | — |
+| Function expression (`const`/`let`) | Yes | No (TDZ) | — |
 | `class` | Yes | No (TDZ) | — |
 
 ---
 
 ## 4. Common questions
 
-**4.1. What is the difference between `var`, `let`, and `const`?**  
-A: `var` is function-scoped and can be redeclared; it hoists as `undefined`. `let` and `const` are block-scoped, cannot be redeclared in the same scope, and sit in the TDZ until initialized. `var` and `let` allow reassignment; `const` does not.
+**4.1. What is the difference between `const`, `let`, and `var`?**  
+A: `const` and `let` are block-scoped, cannot be redeclared in the same scope, and sit in the TDZ until initialized. `const` does not allow reassignment; `let` does. `var` is function-scoped, can be redeclared, and hoists as `undefined`.
 
 **4.2. What is the Temporal Dead Zone?**  
-A: The period between entering a scope and executing the `let`/`const` declaration line. The binding exists but accessing it throws `ReferenceError`.
+A: The period between entering a scope and executing the `const`/`let` declaration line. The binding exists but accessing it throws `ReferenceError`.
 
 **4.3. Does hoisting move code physically to the top?**  
 A: No. It is a mental model. During compilation, JS registers declarations in scope first; then it executes the code top to bottom. Assignments and initializations stay on their original lines.
@@ -355,13 +355,13 @@ A: No. It is a mental model. During compilation, JS registers declarations in sc
 A: `var` is function-scoped, so there is **one** `i` shared by all iterations. `let` creates a **new binding per iteration**, which is what you want with async callbacks.
 
 **4.5. Can I use a variable before declaring it with `var`?**  
-A: You can read it without a `ReferenceError`, but the value is `undefined` until the assignment runs — a common source of bugs. Prefer `let`/`const` so TDZ catches the mistake early.
+A: You can read it without a `ReferenceError`, but the value is `undefined` until the assignment runs — a common source of bugs. Prefer `const`/`let` so TDZ catches the mistake early.
 
 **4.6. Are function declarations hoisted above `var`?**  
-A: In the same scope, the function declaration wins during the initial hoisting phase. If you later assign to the same name with `var`/`let`/`const`, that assignment overwrites it at runtime.
+A: In the same scope, the function declaration wins during the initial hoisting phase. If you later assign to the same name with `const`/`let`/`var`, that assignment overwrites it at runtime.
 
 **4.7. What is lexical scope?**  
 A: Scope is determined by **where code is written** in the source, not by the call stack at runtime. Inner functions can read outer variables; that outer lookup chain is the **scope chain**.
 
 **4.8. Should I ever use `var`?**  
-A: In modern JS, rarely. Use `let`/`const`. You may still see `var` in older tutorials, legacy codebases, or snippets that rely on function scope — know it for interviews and maintenance, not for new features.
+A: In modern JS, rarely. Use `const`/`let`. You may still see `var` in older tutorials, legacy codebases, or snippets that rely on function scope — know it for interviews and maintenance, not for new features.
