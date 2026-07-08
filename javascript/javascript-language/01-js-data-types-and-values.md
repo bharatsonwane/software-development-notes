@@ -174,7 +174,20 @@ obj2.x = 99;
 console.log(obj1.x); // 99 — obj1 changed too!
 ```
 
-### 4.3. Shallow copy
+### 4.3. Reassignment vs mutability
+
+Reassignment changes what a variable points to. Mutability changes the value itself.
+
+```js
+let n = 10;
+n = 20; // reassignment: n now points to a different primitive value
+
+const user = { name: "Bharat" };
+user.name = "B"; // mutation: same object, internal data changed
+// user = { name: "New" }; // TypeError with const: reassignment not allowed
+```
+
+### 4.4. Shallow copy
 
 Spread and `Object.assign` create a **shallow** copy — top-level keys are copied, nested objects are still shared:
 
@@ -195,7 +208,7 @@ For a deep copy of plain data, `structuredClone()` works in modern environments:
 const deep = structuredClone(original);
 ```
 
-### 4.4. Passing to functions
+### 4.5. Passing to functions
 
 Primitives are passed by value; objects are passed by reference (the reference is copied):
 
