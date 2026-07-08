@@ -101,7 +101,7 @@ console.log(s);    // still "hello"
 
 ---
 
-## 2. Objects & references
+## 2. Object data type
 
 An **object** is a collection of key–value pairs. In JS, **arrays** and **functions** are also objects.
 
@@ -115,7 +115,20 @@ typeof nums;    // "object"
 typeof greet;   // "function"
 ```
 
-### 2.1. Value copy vs reference copy
+### 2.1. Arrays are objects
+
+```js
+const arr = [1, 2, 3];
+arr.push(4);
+typeof arr;       // "object"
+Array.isArray(arr); // true — use this to check for arrays
+```
+
+---
+
+## 3. Values and references
+
+### 3.1. Values (primitive copy)
 
 **Primitives** are copied **by value**:
 
@@ -127,6 +140,8 @@ console.log(a);  // 10
 console.log(b);  // 20
 ```
 
+### 3.2. References (object copy)
+
 **Objects** are copied **by reference** — the variable holds a pointer to the same object in memory:
 
 ```js
@@ -136,7 +151,7 @@ obj2.x = 99;
 console.log(obj1.x); // 99 — obj1 changed too!
 ```
 
-### 2.2. Shallow copy
+### 3.3. Shallow copy
 
 Spread and `Object.assign` create a **shallow** copy — top-level keys are copied, nested objects are still shared:
 
@@ -157,7 +172,7 @@ For a deep copy of plain data, `structuredClone()` works in modern environments:
 const deep = structuredClone(original);
 ```
 
-### 2.3. Passing to functions
+### 3.4. Passing to functions
 
 Primitives are passed by value; objects are passed by reference (the reference is copied):
 
@@ -177,20 +192,9 @@ changeObject(o);
 console.log(o.x);  // 100
 ```
 
-### 2.4. Arrays are objects
+## 4. `typeof` & type checking
 
-```js
-const arr = [1, 2, 3];
-arr.push(4);
-typeof arr;       // "object"
-Array.isArray(arr); // true — use this to check for arrays
-```
-
----
-
-## 3. typeof & type checking
-
-### 3.1. `typeof` operator
+### 4.1. `typeof` operator
 
 Returns a **string** naming the type:
 
@@ -207,7 +211,7 @@ typeof [];          // "object"
 typeof null;        // "object"  ← famous bug, historical reason
 ```
 
-### 3.2. Checking for `null`
+### 4.2. Checking for `null`
 
 `typeof null === "object"` is misleading. Use strict equality:
 
@@ -216,7 +220,7 @@ const value = null;
 value === null;  // true
 ```
 
-### 3.3. `instanceof`
+### 4.3. `instanceof`
 
 Checks if an object appears in another object's prototype chain:
 
@@ -228,7 +232,7 @@ Checks if an object appears in another object's prototype chain:
 "hello" instanceof String; // false — primitive, not String object
 ```
 
-### 3.4. `typeof` vs `instanceof` (quick table)
+### 4.4. `typeof` vs `instanceof` (quick table)
 
 | Check | `typeof` | `instanceof` |
 |------|----------|--------------|
@@ -239,9 +243,21 @@ Checks if an object appears in another object's prototype chain:
 | `null` | `typeof null` -> `"object"` (historical bug) | `null instanceof Object` -> `false` |
 | Cross-realm caveat | Usually stable for primitives | Can fail across realms (e.g., different iframes) |
 
-### 3.5. Practical type checks
+### 4.5. Practical type checks
 
-### 3.5.1. Data types: primitive vs non-primitive
+### 4.5.1. Primitive vs non-primitive (differences)
+
+| Aspect | Primitive | Non-primitive |
+|------|-----------|---------------|
+| Nature | Single value | Collection/object value |
+| Mutability | Immutable | Mutable |
+| Stored in variable | The value itself | A reference (pointer) to the value |
+| Copy behavior | Copied by value | Reference is copied |
+| Compared with `===` | Compares actual value | Compares reference identity |
+| `typeof` output | Specific types like `"string"`, `"number"` | Usually `"object"` (functions are `"function"`) |
+| Examples | `"hi"`, `42`, `true`, `null`, `undefined`, `Symbol()`, `10n` | `{}`, `[]`, `function(){}`, `new Date()` |
+
+### 4.5.2. Data types: primitive vs non-primitive
 
 | Data type | Category | `typeof` result | Recommended check |
 |------|----------|-----------------|-------------------|
@@ -271,7 +287,7 @@ Checks if an object appears in another object's prototype chain:
 | Is it `null` or `undefined`? | `x == null` or `x === null \|\| x === undefined` |
 | Safe integer? | `Number.isSafeInteger(x)` |
 
-### 3.6. Boxing (brief)
+### 4.6. Boxing (brief)
 
 Primitives can be temporarily wrapped as objects when you access methods:
 
@@ -283,9 +299,9 @@ Avoid `new String("hello")` — creates an object wrapper, rarely needed.
 
 ---
 
-## 4. Language basics
+## 5. Language basics
 
-### 4.1. Comments
+### 5.1. Comments
 
 ```js
 // Single-line comment
@@ -300,7 +316,7 @@ const x = 1; // trailing comment
 
 Use comments for **why**, not **what** obvious code already shows.
 
-### 4.2. Semicolons
+### 5.2. Semicolons
 
 JavaScript has **Automatic Semicolon Insertion (ASI)** — the engine inserts semicolons when you omit them at line breaks in certain cases.
 
@@ -318,7 +334,7 @@ function bad() {
 
 **Default rule:** use semicolons consistently, or follow a project style guide (Prettier).
 
-### 4.3. Literals
+### 5.3. Literals
 
 A **literal** is syntax that creates a value directly:
 
@@ -333,7 +349,7 @@ A **literal** is syntax that creates a value directly:
 | RegExp | `/abc/gi` |
 | Template | `` `Hello ${name}` `` |
 
-### 4.4. Expressions vs statements
+### 5.4. Expressions vs statements
 
 | Expressions | Statements |
 |-------------|------------|
@@ -353,21 +369,21 @@ Ternary (`cond ? a : b`) is an **expression**; `if/else` is a **statement** (Fil
 
 ---
 
-## 5. Common questions
+## 6. Common questions
 
-**5.1. How many data types does JavaScript have?**  
+**6.1. How many data types does JavaScript have?**  
 A: **7 primitives** + **objects** (which includes arrays, functions, dates, etc.).
 
-**5.2. What is the difference between `undefined` and `null`?**  
+**6.2. What is the difference between `undefined` and `null`?**  
 A: `undefined` means "not assigned / missing". `null` means "intentionally empty".
 
-**5.3. Why does `typeof null` return `"object"`?**  
+**6.3. Why does `typeof null` return `"object"`?**  
 A: A long-standing language bug kept for backward compatibility. Always use `value === null` to check for null.
 
-**5.4. Primitive vs object — what is the key difference?**  
+**6.4. Primitive vs object — what is the key difference?**  
 A: Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.
 
-**5.5. Does `const` make objects immutable?**  
+**6.5. Does `const` make objects immutable?**  
 A: No. `const` prevents **reassigning** the variable. The object itself can still be mutated:
 
 ```js
@@ -376,14 +392,14 @@ obj.a = 2;       // OK
 obj = { a: 3 };  // TypeError — cannot reassign
 ```
 
-**5.6. What is `NaN` and how do you check for it?**  
+**6.6. What is `NaN` and how do you check for it?**  
 A: `NaN` means "Not a Number" (result of invalid math). Use `Number.isNaN(value)`, not `value === NaN`.
 
-**5.7. Are semicolons required in JavaScript?**  
+**6.7. Are semicolons required in JavaScript?**  
 A: **No** — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.
 
-**5.8. What is the difference between an expression and a statement?**  
+**6.8. What is the difference between an expression and a statement?**  
 A: An **expression** evaluates to a value. A **statement** performs an action (declare, loop, return).
 
-**5.9. What is a literal?**  
+**6.9. What is a literal?**  
 A: Syntax that creates a value directly — `42`, `"hi"`, `{ a: 1 }`, `[1, 2]`.
