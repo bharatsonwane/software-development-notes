@@ -272,25 +272,25 @@ Checks if an object appears in another object's prototype chain:
 
 ### 5.5. Data types: primitive vs non-primitive
 
-| Data type | Category | `typeof` result | Recommended check |
-|------|----------|-----------------|-------------------|
-| String | Primitive | `"string"` | `typeof x === "string"` |
-| Number | Primitive | `"number"` | `typeof x === "number"` and `Number.isFinite(x)` when needed |
-| Boolean | Primitive | `"boolean"` | `typeof x === "boolean"` |
-| Undefined | Primitive | `"undefined"` | `x === undefined` or `typeof x === "undefined"` |
-| Null | Primitive | `"object"` (quirk) | `x === null` |
-| Symbol | Primitive | `"symbol"` | `typeof x === "symbol"` |
-| BigInt | Primitive | `"bigint"` | `typeof x === "bigint"` |
-| Object (plain) | Non-primitive | `"object"` | `x !== null && typeof x === "object"` |
-| Array | Non-primitive | `"object"` | `Array.isArray(x)` |
-| Function | Non-primitive | `"function"` | `typeof x === "function"` |
-| Date | Non-primitive | `"object"` | `x instanceof Date` |
-| RegExp | Non-primitive | `"object"` | `x instanceof RegExp` |
-| Map | Non-primitive | `"object"` | `x instanceof Map` |
-| Set | Non-primitive | `"object"` | `x instanceof Set` |
-| WeakMap | Non-primitive | `"object"` | `x instanceof WeakMap` |
-| WeakSet | Non-primitive | `"object"` | `x instanceof WeakSet` |
-| Promise | Non-primitive | `"object"` | `x instanceof Promise` |
+| Data type | Category | `typeof` result | `instanceof` result | Recommended check |
+|------|----------|-----------------|---------------------|-------------------|
+| String | Primitive | `"string"` | `"hi" instanceof String` -> `false` | `typeof x === "string"` |
+| Number | Primitive | `"number"` | `42 instanceof Number` -> `false` | `typeof x === "number"` and `Number.isFinite(x)` when needed |
+| Boolean | Primitive | `"boolean"` | `true instanceof Boolean` -> `false` | `typeof x === "boolean"` |
+| Undefined | Primitive | `"undefined"` | `undefined instanceof Object` -> `false` | `x === undefined` or `typeof x === "undefined"` |
+| Null | Primitive | `"object"` (quirk) | `null instanceof Object` -> `false` | `x === null` |
+| Symbol | Primitive | `"symbol"` | `Symbol("id") instanceof Symbol` -> `false` | `typeof x === "symbol"` |
+| BigInt | Primitive | `"bigint"` | `100n instanceof BigInt` -> `false` | `typeof x === "bigint"` |
+| Object (plain) | Non-primitive | `"object"` | `({}) instanceof Object` -> `true` | `x !== null && typeof x === "object"` |
+| Array | Non-primitive | `"object"` | `[] instanceof Array` -> `true` | `Array.isArray(x)` |
+| Function | Non-primitive | `"function"` | `(function(){}) instanceof Function` -> `true` | `typeof x === "function"` |
+| Date | Non-primitive | `"object"` | `new Date() instanceof Date` -> `true` | `x instanceof Date` |
+| RegExp | Non-primitive | `"object"` | `/x/ instanceof RegExp` -> `true` | `x instanceof RegExp` |
+| Map | Non-primitive | `"object"` | `new Map() instanceof Map` -> `true` | `x instanceof Map` |
+| Set | Non-primitive | `"object"` | `new Set() instanceof Set` -> `true` | `x instanceof Set` |
+| WeakMap | Non-primitive | `"object"` | `new WeakMap() instanceof WeakMap` -> `true` | `x instanceof WeakMap` |
+| WeakSet | Non-primitive | `"object"` | `new WeakSet() instanceof WeakSet` -> `true` | `x instanceof WeakSet` |
+| Promise | Non-primitive | `"object"` | `Promise.resolve() instanceof Promise` -> `true` | `x instanceof Promise` |
 
 | Goal | How |
 |------|-----|
