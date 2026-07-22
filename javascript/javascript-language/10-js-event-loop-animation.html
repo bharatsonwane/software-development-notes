@@ -900,13 +900,30 @@ ${body}});`);
       return parseBlock(lines, 0, lines.length);
     }
 
-    function collectLogs(tasks) {
-      let logs = [];
-      for (const t of tasks) {
-        if (t.type === TYPE.LOG) logs.push(t.content);
-        if (t.children?.length) logs = logs.concat(collectLogs(t.children));
+    /** Pull every console.log('…') / "…" / `…` string from the editor source. */
+    function extractConsoleLogs(code) {
+      const logs = [];
+      const re = /console\.log\s*\(\s*(['"`])((?:\\.|(?!\1)[\s\S])*?)\1\s*\)/g;
+      let m;
+      while ((m = re.exec(code)) !== null) {
+        logs.push(m[2].replace(/\\(['"`\\])/g, "$1"));
       }
       return logs;
+    }
+
+    function logsSignature(logs) {
+      return [...logs].sort().join("\0");
+    }
+
+    /** Rebuild prediction cards from current code (not presets). */
+    function refreshPredictionFromCode(code, { forceShuffle = false } = {}) {
+      const logs = extractConsoleLogs(code);
+      const changed = logsSignature(logs) !== logsSignature(prediction);
+      if (forceShuffle || changed) {
+        prediction = shuffle(logs);
+        els.predStatus.textContent = "";
+        els.predStatus.className = "status";
+      }
     }
 
     function shuffle(arr) {
@@ -978,14 +995,13 @@ ${body}});`);
       }, state.speed);
     }
 
-    function loadCode(code, autoRun = false) {
+    function loadCode(code, autoRun = false, { shufflePrediction = false } = {}) {
       stopTimers();
       state = freshState(code);
       state.isRunning = autoRun;
       els.code.value = code;
-      prediction = shuffle(collectLogs(state.parsedTasks));
-      els.predStatus.textContent = "";
-      els.predStatus.className = "status";
+      // Only reshuffle when logs change (or caller asks). Run/Start must keep user's order.
+      refreshPredictionFromCode(code, { forceShuffle: shufflePrediction });
       render();
       if (autoRun) startTimers();
     }
@@ -1264,11 +1280,11 @@ ${body}});`);
       return out;
     }
 
-    // Features
+    // Features — new generated script → reshuffle prediction
     document.querySelectorAll("#features input").forEach((input) => {
       input.addEventListener("change", () => {
         features[input.dataset.feat] = input.checked;
-        loadCode(buildCode(mode, features));
+        loadCode(buildCode(mode, features), false, { shufflePrediction: true });
       });
     });
 
@@ -1276,24 +1292,33 @@ ${body}});`);
       mode = "simple";
       els.btnEasy.classList.add("on");
       els.btnComplex.classList.remove("on");
-      loadCode(buildCode(mode, features));
+      loadCode(buildCode(mode, features), false, { shufflePrediction: true });
     });
 
     els.btnComplex.addEventListener("click", () => {
       mode = "complex";
       els.btnComplex.classList.add("on");
       els.btnEasy.classList.remove("on");
-      loadCode(buildCode(mode, features));
+      loadCode(buildCode(mode, features), false, { shufflePrediction: true });
     });
 
+    let codeInputTimer = null;
     els.code.addEventListener("input", () => {
       const lines = els.code.value.split("\n");
       els.gutter.innerHTML = lines.map((_, i) => `<div>${i + 1}</div>`).join("");
+
+      // Live-update prediction from console.log list in the editor
+      clearTimeout(codeInputTimer);
+      codeInputTimer = setTimeout(() => {
+        if (state.isRunning) return;
+        refreshPredictionFromCode(els.code.value);
+        render();
+      }, 200);
     });
 
     els.btnRun.addEventListener("click", () => {
       if (state.isFinished) {
-        loadCode(els.code.value, true);
+        loadCode(els.code.value, true); // keep prediction order
         return;
       }
       const fresh =
@@ -1306,7 +1331,7 @@ ${body}});`);
 
       if (!state.isRunning && fresh) {
         const speed = Number(els.speed.value);
-        loadCode(els.code.value, true);
+        loadCode(els.code.value, true); // keep prediction order
         state.speed = speed;
         return;
       }
@@ -1339,13 +1364,14 @@ ${body}});`);
         const speed = Number(els.speed.value);
         state = freshState(els.code.value);
         state.speed = speed;
-        prediction = shuffle(collectLogs(state.parsedTasks));
+        // Keep existing order if log set unchanged
+        refreshPredictionFromCode(els.code.value);
       }
       stepOnce();
     });
 
     document.getElementById("btnReset").addEventListener("click", () => {
-      loadCode(els.code.value, false);
+      loadCode(els.code.value, false); // keep prediction order
     });
 
     els.speed.addEventListener("input", () => {
@@ -1355,10 +1381,17 @@ ${body}});`);
     });
 
     document.getElementById("btnCheck").addEventListener("click", () => {
-      const expected =
-        state.isFinished && state.consoleOutput.length
-          ? state.consoleOutput
-          : simulateExpected(els.code.value);
+      // Always score against current editor code (not a stale preset)
+      refreshPredictionFromCode(els.code.value);
+      render();
+
+      const expected = simulateExpected(els.code.value);
+
+      if (!expected.length) {
+        els.predStatus.textContent = "No console.log found in code";
+        els.predStatus.className = "status bad";
+        return;
+      }
 
       const ok =
         prediction.length === expected.length &&
@@ -1366,7 +1399,9 @@ ${body}});`);
 
       els.prediction.querySelectorAll(".pred-item").forEach((item, i) => {
         item.classList.remove("correct", "wrong");
-        item.classList.add(prediction[i] === expected[i] ? "correct" : "wrong");
+        item.classList.add(
+          i < expected.length && prediction[i] === expected[i] ? "correct" : "wrong"
+        );
       });
 
       els.predStatus.textContent = ok ? "Correct order!" : "Not quite — try again";
@@ -1388,7 +1423,7 @@ ${body}});`);
     mode = "simple";
     els.btnEasy.classList.add("on");
     els.btnComplex.classList.remove("on");
-    loadCode(buildCode(mode, features), false);
+    loadCode(buildCode(mode, features), false, { shufflePrediction: true });
   </script>
 </body>
 </html>
