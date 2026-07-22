@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Loop Visualizer — File 10</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --surface: #0b1220;
+      --panel: #111827;
+      --panel-2: #0f172a;
+      --border: #1e293b;
+      --border-2: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --blue: #3b82f6;
+      --blue-2: #60a5fa;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --green: #34d399;
+      --ok: #22c55e;
+      --danger: #ef4444;
+      --mono: "Fira Code", ui-monospace, monospace;
+      --sans: Inter, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 56px 1fr;
+    }
+
+    /* ===== Header ===== */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      display: grid;
+      place-items: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .speed-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .speed-wrap input[type="range"] {
+      width: 110px;
+      accent-color: var(--blue);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: #1e293b; }
+    .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .run-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 650;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .run-btn:hover { background: #2563eb; }
+
+    /* ===== Main 3 columns ===== */
+    .main {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(340px, 1.2fr) minmax(260px, 0.85fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100%; }
+      .main {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+
+    .col {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .card-b { padding: 12px; flex: 1; min-height: 0; }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+    }
+
+    .feat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .feat input {
+      accent-color: var(--blue);
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Script card */
+    .script-card { flex: 1; }
+
+    .seg {
+      display: inline-flex;
+      background: #0b1220;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .seg button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 650;
+      padding: 5px 12px;
+      cursor: pointer;
+    }
+
+    .seg button.on {
+      background: #1e293b;
+      color: white;
+    }
+
+    .editor {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      flex: 1;
+      min-height: 0;
+      background: #020617;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 22px;
+    }
+
+    .gutter {
+      padding: 12px 0;
+      text-align: right;
+      color: var(--dim);
+      user-select: none;
+      border-right: 1px solid var(--border);
+      background: #020617;
+    }
+
+    .gutter div {
+      height: 22px;
+      padding-right: 10px;
+    }
+
+    .gutter .active {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.08);
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      resize: none;
+      outline: none;
+      padding: 12px;
+      background: transparent;
+      color: #cbd5e1;
+      font: inherit;
+      line-height: 22px;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    /* Center viz */
+    .viz-top, .viz-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .viz-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .viz-h {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 11px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .viz-h.stack { color: var(--blue-2); }
+    .viz-h.webapi { color: var(--violet); }
+    .viz-h.micro { color: var(--amber); }
+    .viz-h.macro { color: var(--green); }
+
+    .viz-b {
+      padding: 10px;
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .stack-area {
+      justify-content: flex-end;
+      min-height: 140px;
+    }
+
+    .empty {
+      color: var(--dim);
+      font-size: 0.78rem;
+      margin: auto 0;
+      text-align: center;
+      width: 100%;
+    }
+
+    .frame {
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      border: 1px solid transparent;
+      animation: pop .16s ease;
+    }
+
+    @keyframes pop {
+      from { transform: translateY(4px); opacity: .4; }
+      to { transform: none; opacity: 1; }
+    }
+
+    .frame.stack {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .frame.stack small {
+      display: block;
+      margin-top: 2px;
+      color: var(--blue-2);
+      opacity: 0.85;
+      font-size: 0.68rem;
+    }
+
+    .frame.webapi {
+      background: rgba(167, 139, 250, 0.14);
+      border-color: rgba(167, 139, 250, 0.4);
+    }
+
+    .frame.micro {
+      background: rgba(251, 191, 36, 0.12);
+      border-color: rgba(251, 191, 36, 0.4);
+    }
+
+    .frame.macro {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+
+    /* Event loop circle */
+    .loop-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 6px 0;
+      flex: 0 0 auto;
+    }
+
+    .loop-caption {
+      margin: 0;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      max-width: 280px;
+      line-height: 1.35;
+    }
+
+    .loop-ring {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      position: relative;
+      background:
+        conic-gradient(
+          var(--blue) 0deg 120deg,
+          var(--amber) 120deg 240deg,
+          var(--green) 240deg 360deg
+        );
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 24px rgba(59, 130, 246, 0.15);
+    }
+
+    .loop-ring::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .loop-ring .arrow {
+      position: relative;
+      z-index: 1;
+      width: 28px;
+      height: 28px;
+      color: var(--blue-2);
+      animation: none;
+    }
+
+    .loop-ring.spinning .arrow {
+      animation: spin 1.2s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Right column */
+    .pred-card, .out-card { flex: 1; }
+
+    .hint {
+      margin: 0;
+      padding: 8px 12px 0;
+      font-size: 0.72rem;
+      color: var(--dim);
+    }
+
+    .pred-list, .out-list {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .pred-item {
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      background: #0b1220;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .pred-item.dragging { opacity: 0.45; }
+    .pred-item.correct {
+      border-color: var(--ok);
+      background: rgba(34, 197, 94, 0.1);
+    }
+    .pred-item.wrong {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .grip {
+      color: var(--dim);
+      font-size: 0.85rem;
+      letter-spacing: -1px;
+      line-height: 0.8;
+    }
+
+    .pred-n {
+      color: var(--dim);
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .pred-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .check-btn {
+      border: 1px solid var(--border-2);
+      background: #1e293b;
+      color: var(--text);
+      border-radius: 7px;
+      padding: 6px 12px;
+      font-size: 0.72rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .check-btn:hover { background: #334155; }
+
+    .status { font-size: 0.72rem; color: var(--muted); }
+    .status.ok { color: var(--ok); }
+    .status.bad { color: var(--danger); }
+
+    .out-card .card-h {
+      color: #86efac;
+    }
+
+    .out-list {
+      background: #020617;
+      font-family: var(--mono);
+    }
+
+    .out-item {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 0.8rem;
+    }
+
+    .out-item .n { color: var(--dim); min-width: 28px; }
+    .out-empty {
+      color: var(--dim);
+      font-style: italic;
+      font-size: 0.8rem;
+      margin: auto 0;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.blue { background: var(--blue); }
+    .dot.violet { background: var(--violet); }
+    .dot.amber { background: var(--amber); }
+    .dot.green { background: var(--green); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 12a9 9 0 1 1-3-6.7"/>
+            <polyline points="21 3 21 9 15 9"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Event Loop Visualizer</h1>
+          <p>JS Runtime Simulation</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <label class="speed-wrap">
+          Speed: <span id="speedLabel">1000ms</span>
+          <input type="range" id="speed" min="200" max="2000" step="100" value="1000" />
+        </label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="run-btn" id="btnRun">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span id="runLabel">Run</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main">
+      <!-- LEFT -->
+      <div class="col">
+        <section class="card" style="flex:0 0 auto">
+          <div class="card-h">Include Features</div>
+          <div class="card-b">
+            <div class="features-grid" id="features">
+              <label class="feat"><input type="checkbox" data-feat="log" checked /> Log</label>
+              <label class="feat"><input type="checkbox" data-feat="microtask" /> queueMicrotask</label>
+              <label class="feat"><input type="checkbox" data-feat="timeout" checked /> setTimeout</label>
+              <label class="feat"><input type="checkbox" data-feat="nextTick" /> process.nextTick</label>
+              <label class="feat"><input type="checkbox" data-feat="promise" checked /> Promise</label>
+              <label class="feat"><input type="checkbox" data-feat="setImmediate" /> setImmediate</label>
+            </div>
+          </div>
+        </section>
+
+        <section class="card script-card">
+          <div class="card-h">
+            <span>Input Script</span>
+            <div class="seg">
+              <button type="button" id="btnEasy" class="on">Easy</button>
+              <button type="button" id="btnComplex">Complex</button>
+            </div>
+          </div>
+          <div class="editor">
+            <div class="gutter" id="gutter"></div>
+            <textarea id="code" spellcheck="false"></textarea>
+          </div>
+        </section>
+      </div>
+
+      <!-- CENTER -->
+      <div class="col">
+        <div class="viz-top">
+          <div class="viz-box">
+            <div class="viz-h stack"><span class="dot blue"></span> CALL STACK</div>
+            <div class="viz-b stack-area" id="callStack"></div>
+          </div>
+          <div class="viz-box">
+            <div class="viz-h webapi"><span class="dot violet"></span> WEB APIS</div>
+            <div class="viz-b" id="webApis"></div>
+          </div>
+        </div>
+
+        <div class="loop-wrap">
+          <p class="loop-caption">Checks Stack. If empty, checks Microtasks, then Macrotasks.</p>
+          <div class="loop-ring" id="loopRing" title="Event Loop">
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 12a9 9 0 1 1-3-6.7"/>
+              <polyline points="21 3 21 9 15 9"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="viz-bottom">
+          <div class="viz-box">
+            <div class="viz-h micro">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h8l-1 8 11-14h-8l1-6z"/></svg>
+              MICROTASK QUEUE
+            </div>
+            <div class="viz-b" id="micro"></div>
+          </div>
+          <div class="viz-box">
+            <div class="viz-h macro">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              MACROTASK QUEUE
+            </div>
+            <div class="viz-b" id="macro"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col">
+        <section class="card pred-card">
+          <div class="card-h">Output Prediction</div>
+          <p class="hint">Drag logs to match the expected execution order.</p>
+          <div class="pred-list" id="prediction"></div>
+          <div class="pred-actions">
+            <button class="check-btn" id="btnCheck">Check</button>
+            <span class="status" id="predStatus"></span>
+          </div>
+        </section>
+
+        <section class="card out-card">
+          <div class="card-h">&gt;_ Actual Output</div>
+          <div class="out-list" id="output"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TYPE = { LOG: "log", TIMEOUT: "timeout", PROMISE: "promise", MAIN: "main" };
+
+    let features = {
+      log: true,
+      timeout: true,
+      promise: true,
+      microtask: false,
+      nextTick: false,
+      setImmediate: false,
+    };
+    let mode = "simple";
+    let state = null;
+    let prediction = [];
+    let dragFrom = null;
+    let runTimer = null;
+    let webTimer = null;
+
+    const els = {
+      code: document.getElementById("code"),
+      gutter: document.getElementById("gutter"),
+      callStack: document.getElementById("callStack"),
+      webApis: document.getElementById("webApis"),
+      micro: document.getElementById("micro"),
+      macro: document.getElementById("macro"),
+      output: document.getElementById("output"),
+      prediction: document.getElementById("prediction"),
+      loopRing: document.getElementById("loopRing"),
+      predStatus: document.getElementById("predStatus"),
+      btnRun: document.getElementById("btnRun"),
+      runLabel: document.getElementById("runLabel"),
+      speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+      btnEasy: document.getElementById("btnEasy"),
+      btnComplex: document.getElementById("btnComplex"),
+    };
+
+    function uid() {
+      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function buildCode(kind, f) {
+      const lines = [];
+      if (f.log) lines.push("console.log('Start');");
+
+      if (kind === "simple") {
+        if (f.nextTick) {
+          lines.push(`process.nextTick(() => {
+  ${f.log ? "console.log('Next Tick');" : "// code"}
+});`);
+        }
+        if (f.promise) {
+          lines.push(`Promise.resolve().then(() => {
+  ${f.log ? "console.log('Promise');" : "// code"}
+});`);
+        }
+        if (f.microtask) {
+          lines.push(`queueMicrotask(() => {
+  ${f.log ? "console.log('Microtask');" : "// code"}
+});`);
+        }
+        if (f.timeout) {
+          lines.push(`setTimeout(() => {
+  ${f.log ? "console.log('Timeout');" : "// code"}
+}, 0);`);
+        }
+        if (f.setImmediate) {
+          lines.push(`setImmediate(() => {
+  ${f.log ? "console.log('Immediate');" : "// code"}
+});`);
+        }
+      } else {
+        if (f.timeout) {
+          let body = "";
+          if (f.log) body += "  console.log('Timeout 1');\n";
+          if (f.promise) {
+            body += `  Promise.resolve().then(() => {
+    ${f.log ? "console.log('Promise inside Timeout');" : "// code"}
+  });\n`;
+          }
+          if (f.nextTick) {
+            body += `  process.nextTick(() => {
+    ${f.log ? "console.log('Next Tick inside Timeout');" : "// code"}
+  });\n`;
+          }
+          lines.push(`setTimeout(() => {
+${body}}, 0);`);
+        }
+        if (f.promise) {
+          let body = "";
+          if (f.log) body += "  console.log('Promise 1');\n";
+          if (f.timeout) {
+            body += `  setTimeout(() => {
+    ${f.log ? "console.log('Timeout inside Promise');" : "// code"}
+  }, 0);\n`;
+          }
+          lines.push(`Promise.resolve().then(() => {
+${body}});`);
+        }
+        if (f.setImmediate) {
+          let body = "";
+          if (f.log) body += "  console.log('Immediate 1');\n";
+          if (f.microtask) {
+            body += `  queueMicrotask(() => {
+    ${f.log ? "console.log('Microtask inside Immediate');" : "// code"}
+  });\n`;
+          }
+          lines.push(`setImmediate(() => {
+${body}});`);
+        }
+      }
+
+      if (f.log) lines.push("console.log('End');");
+      return lines.join("\n\n");
+    }
+
+    function parseBlock(lines, start, end) {
+      const tasks = [];
+      for (let i = start; i < end; i++) {
+        const raw = lines[i];
+        const line = raw.trim();
+        if (!line || line.startsWith("//")) continue;
+
+        const logMatch = line.match(/console\.log\((['"`])(.+?)\1\)/);
+        if (logMatch) {
+          tasks.push({ id: uid(), type: TYPE.LOG, content: logMatch[2], line: i + 1 });
+          continue;
+        }
+
+        if (/setTimeout\(\s*\(\)\s*=>\s*\{/.test(line)) {
+          let depth = 1;
+          let j = i + 1;
+          for (; j < end; j++) {
+            if (lines[j].includes("{")) depth++;
+            if (lines[j].includes("}")) depth--;
+            if (depth === 0) break;
+          }
+          const delayMatch = (lines[j] || "").match(/,\s*(\d+)\);?/);
+          const delay = delayMatch ? parseInt(delayMatch[1], 10) : 0;
+          tasks.push({
+            id: uid(),
+            type: TYPE.TIMEOUT,
+            content: "setTimeout",
+            delay,
+            children: parseBlock(lines, i + 1, j),
+            line: i + 1,
+          });
+          i = j;
+          continue;
+        }
+
+        if (/setImmediate\(\s*\(\)\s*=>\s*\{/.test(line)) {
+          let depth = 1;
+          let j = i + 1;
+          for (; j < end; j++) {
+            if (lines[j].includes("{")) depth++;
+            if (lines[j].includes("}")) depth--;
+            if (depth === 0) break;
+          }
+          tasks.push({
+            id: uid(),
+            type: TYPE.TIMEOUT,
+            content: "setImmediate",
+            delay: 0,
+            children: parseBlock(lines, i + 1, j),
+            line: i + 1,
+          });
+          i = j;
+          continue;
+        }
+
+        if (/(Promise\.resolve\(\)\.then|queueMicrotask|process\.nextTick)\(\s*\(\)\s*=>\s*\{/.test(line)) {
+          let depth = 1;
+          let j = i + 1;
+          for (; j < end; j++) {
+            if (lines[j].includes("{")) depth++;
+            if (lines[j].includes("}")) depth--;
+            if (depth === 0) break;
+          }
+          let name = "Promise.then";
+          if (line.includes("queueMicrotask")) name = "queueMicrotask";
+          if (line.includes("process.nextTick")) name = "process.nextTick";
+          tasks.push({
+            id: uid(),
+            type: TYPE.PROMISE,
+            content: name,
+            children: parseBlock(lines, i + 1, j),
+            line: i + 1,
+          });
+          i = j;
+        }
+      }
+      return tasks;
+    }
+
+    function parseCode(code) {
+      const lines = code.split("\n");
+      return parseBlock(lines, 0, lines.length);
+    }
+
+    function collectLogs(tasks) {
+      let logs = [];
+      for (const t of tasks) {
+        if (t.type === TYPE.LOG) logs.push(t.content);
+        if (t.children?.length) logs = logs.concat(collectLogs(t.children));
+      }
+      return logs;
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function freshState(code) {
+      const parsed = parseCode(code);
+      return {
+        code,
+        parsedTasks: parsed,
+        callStack: [
+          {
+            id: "main",
+            name: "main()",
+            type: TYPE.MAIN,
+            linesOfCode: parsed,
+            currentLineIndex: 0,
+            detail: "",
+          },
+        ],
+        webApis: [],
+        microtaskQueue: [],
+        macrotaskQueue: [],
+        consoleOutput: [],
+        isRunning: false,
+        isFinished: false,
+        activeLine: null,
+        speed: Number(els.speed.value),
+      };
+    }
+
+    function stopTimers() {
+      clearInterval(runTimer);
+      clearInterval(webTimer);
+      runTimer = null;
+      webTimer = null;
+    }
+
+    function startTimers() {
+      stopTimers();
+      webTimer = setInterval(() => {
+        if (!state.webApis.length) return;
+        const remaining = [];
+        const macros = [...state.macrotaskQueue];
+        for (const api of state.webApis) {
+          if (api.remainingTime <= 0) {
+            macros.push({
+              ...api,
+              content: api.content === "setImmediate" ? "setImmediate" : "Timeout Callback",
+            });
+          } else {
+            remaining.push({ ...api, remainingTime: api.remainingTime - 100 });
+          }
+        }
+        state.webApis = remaining;
+        state.macrotaskQueue = macros;
+        render();
+      }, 100);
+
+      runTimer = setInterval(() => {
+        if (!state.isRunning || state.isFinished) return;
+        stepOnce();
+      }, state.speed);
+    }
+
+    function loadCode(code, autoRun = false) {
+      stopTimers();
+      state = freshState(code);
+      state.isRunning = autoRun;
+      els.code.value = code;
+      prediction = shuffle(collectLogs(state.parsedTasks));
+      els.predStatus.textContent = "";
+      els.predStatus.className = "status";
+      render();
+      if (autoRun) startTimers();
+    }
+
+    function stepOnce() {
+      const stack = [...state.callStack];
+      const webApis = [...state.webApis];
+      let micro = [...state.microtaskQueue];
+      let macro = [...state.macrotaskQueue];
+      const output = [...state.consoleOutput];
+      let activeLine = state.activeLine;
+
+      if (stack.length > 0) {
+        const topIndex = stack.length - 1;
+        const frame = { ...stack[topIndex] };
+
+        if (!frame.linesOfCode || frame.currentLineIndex >= frame.linesOfCode.length) {
+          stack.pop();
+          state = { ...state, callStack: stack, activeLine: null };
+          render();
+          return;
+        }
+
+        const task = frame.linesOfCode[frame.currentLineIndex];
+        frame.currentLineIndex += 1;
+        if (task.type === TYPE.LOG) frame.detail = task.content;
+        stack[topIndex] = frame;
+        if (task.line) activeLine = task.line;
+
+        if (task.type === TYPE.LOG) {
+          output.push(task.content);
+        } else if (task.type === TYPE.TIMEOUT) {
+          webApis.push({ ...task, remainingTime: task.delay || 0 });
+        } else if (task.type === TYPE.PROMISE) {
+          micro.push({
+            id: `micro-${uid()}`,
+            type: TYPE.PROMISE,
+            content:
+              task.content === "process.nextTick"
+                ? "process.nextTick"
+                : task.content === "queueMicrotask"
+                  ? "queueMicrotask"
+                  : "Promise Callback",
+            children: task.children || [],
+            line: task.line,
+          });
+        }
+
+        state = {
+          ...state,
+          callStack: stack,
+          webApis,
+          microtaskQueue: micro,
+          consoleOutput: output,
+          activeLine,
+        };
+        render();
+        return;
+      }
+
+      if (micro.length > 0) {
+        const next = micro.shift();
+        stack.push({
+          id: next.id,
+          name: next.content,
+          type: TYPE.PROMISE,
+          linesOfCode: next.children || [],
+          currentLineIndex: 0,
+          detail: "",
+        });
+        state = {
+          ...state,
+          callStack: stack,
+          microtaskQueue: micro,
+          activeLine: next.line || null,
+        };
+        render();
+        return;
+      }
+
+      if (macro.length > 0) {
+        const next = macro.shift();
+        stack.push({
+          id: next.id,
+          name: next.content === "setImmediate" ? "setImmediate" : "setTimeout",
+          type: TYPE.TIMEOUT,
+          linesOfCode: next.children || [],
+          currentLineIndex: 0,
+          detail: "",
+        });
+        state = {
+          ...state,
+          callStack: stack,
+          macrotaskQueue: macro,
+          activeLine: next.line || null,
+        };
+        render();
+        return;
+      }
+
+      if (webApis.length === 0) {
+        state = {
+          ...state,
+          isFinished: true,
+          isRunning: false,
+          activeLine: null,
+        };
+        stopTimers();
+        render();
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function render() {
+      const lines = els.code.value.split("\n");
+      els.gutter.innerHTML = lines
+        .map((_, i) => {
+          const n = i + 1;
+          return `<div class="${state.activeLine === n ? "active" : ""}">${n}</div>`;
+        })
+        .join("");
+
+      // Call stack (bottom = older / main at bottom like screenshot)
+      if (!state.callStack.length) {
+        els.callStack.innerHTML = `<div class="empty">Stack empty</div>`;
+      } else {
+        els.callStack.innerHTML = state.callStack
+          .map((f) => {
+            const detail = f.detail ? `<small>${escapeHtml(f.detail)}</small>` : "";
+            return `<div class="frame stack">${escapeHtml(f.name)}${detail}</div>`;
+          })
+          .join("");
+      }
+
+      if (!state.webApis.length) {
+        els.webApis.innerHTML = `<div class="empty">No active background tasks</div>`;
+      } else {
+        els.webApis.innerHTML = state.webApis
+          .map(
+            (f) =>
+              `<div class="frame webapi">${escapeHtml(f.content)} <span style="opacity:.7">(${Math.max(0, f.remainingTime)}ms)</span></div>`
+          )
+          .join("");
+      }
+
+      if (!state.microtaskQueue.length) {
+        els.micro.innerHTML = `<div class="empty">Queue empty</div>`;
+      } else {
+        els.micro.innerHTML = state.microtaskQueue
+          .map((f) => `<div class="frame micro">${escapeHtml(f.content)}</div>`)
+          .join("");
+      }
+
+      if (!state.macrotaskQueue.length) {
+        els.macro.innerHTML = `<div class="empty">Queue empty</div>`;
+      } else {
+        els.macro.innerHTML = state.macrotaskQueue
+          .map((f) => `<div class="frame macro">${escapeHtml(f.content)}</div>`)
+          .join("");
+      }
+
+      if (!state.consoleOutput.length) {
+        els.output.innerHTML = `<div class="out-empty">Run code to see output...</div>`;
+      } else {
+        els.output.innerHTML = state.consoleOutput
+          .map(
+            (line, i) =>
+              `<div class="out-item"><span class="n">#${i + 1}</span><span>${escapeHtml(line)}</span></div>`
+          )
+          .join("");
+      }
+
+      if (!prediction.length) {
+        els.prediction.innerHTML = `<div class="empty">No logs to predict</div>`;
+      } else {
+        els.prediction.innerHTML = prediction
+          .map(
+            (line, i) => `
+            <div class="pred-item" draggable="true" data-index="${i}">
+              <span class="grip">⋮⋮</span>
+              <span>${escapeHtml(line)}</span>
+              <span class="pred-n">#${i + 1}</span>
+            </div>`
+          )
+          .join("");
+        bindDrag();
+      }
+
+      els.loopRing.classList.toggle("spinning", state.isRunning && !state.isFinished);
+
+      els.runLabel.textContent = state.isFinished
+        ? "Replay"
+        : state.isRunning
+          ? "Pause"
+          : "Run";
+
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function bindDrag() {
+      els.prediction.querySelectorAll(".pred-item").forEach((item) => {
+        item.addEventListener("dragstart", (e) => {
+          dragFrom = Number(item.dataset.index);
+          item.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+        });
+        item.addEventListener("dragend", () => item.classList.remove("dragging"));
+        item.addEventListener("dragover", (e) => e.preventDefault());
+        item.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const to = Number(item.dataset.index);
+          if (dragFrom === null || dragFrom === to) return;
+          const next = [...prediction];
+          const [moved] = next.splice(dragFrom, 1);
+          next.splice(to, 0, moved);
+          prediction = next;
+          dragFrom = null;
+          els.predStatus.textContent = "";
+          els.predStatus.className = "status";
+          render();
+        });
+      });
+    }
+
+    function simulateExpected(code) {
+      const parsed = parseCode(code);
+      const stack = [{ linesOfCode: parsed, currentLineIndex: 0 }];
+      let web = [];
+      let micro = [];
+      let macro = [];
+      const out = [];
+      let guard = 0;
+
+      while (guard++ < 5000) {
+        const still = [];
+        for (const w of web) {
+          if ((w.remainingTime || 0) <= 0) {
+            macro.push({ ...w, children: w.children || [] });
+          } else still.push(w);
+        }
+        web = still;
+
+        if (stack.length) {
+          const frame = stack[stack.length - 1];
+          if (frame.currentLineIndex >= frame.linesOfCode.length) {
+            stack.pop();
+            continue;
+          }
+          const task = frame.linesOfCode[frame.currentLineIndex++];
+          if (task.type === TYPE.LOG) out.push(task.content);
+          else if (task.type === TYPE.TIMEOUT) web.push({ ...task, remainingTime: 0 });
+          else if (task.type === TYPE.PROMISE) {
+            micro.push({ children: task.children || [] });
+          }
+          continue;
+        }
+
+        if (micro.length) {
+          stack.push({ linesOfCode: micro.shift().children || [], currentLineIndex: 0 });
+          continue;
+        }
+        if (macro.length) {
+          stack.push({ linesOfCode: macro.shift().children || [], currentLineIndex: 0 });
+          continue;
+        }
+        if (!web.length) break;
+        web = web.map((w) => ({ ...w, remainingTime: 0 }));
+      }
+      return out;
+    }
+
+    // Features
+    document.querySelectorAll("#features input").forEach((input) => {
+      input.addEventListener("change", () => {
+        features[input.dataset.feat] = input.checked;
+        loadCode(buildCode(mode, features));
+      });
+    });
+
+    els.btnEasy.addEventListener("click", () => {
+      mode = "simple";
+      els.btnEasy.classList.add("on");
+      els.btnComplex.classList.remove("on");
+      loadCode(buildCode(mode, features));
+    });
+
+    els.btnComplex.addEventListener("click", () => {
+      mode = "complex";
+      els.btnComplex.classList.add("on");
+      els.btnEasy.classList.remove("on");
+      loadCode(buildCode(mode, features));
+    });
+
+    els.code.addEventListener("input", () => {
+      const lines = els.code.value.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div>${i + 1}</div>`).join("");
+    });
+
+    els.btnRun.addEventListener("click", () => {
+      if (state.isFinished) {
+        loadCode(els.code.value, true);
+        return;
+      }
+      const fresh =
+        state.callStack.length === 1 &&
+        state.callStack[0].currentLineIndex === 0 &&
+        !state.consoleOutput.length &&
+        !state.webApis.length &&
+        !state.microtaskQueue.length &&
+        !state.macrotaskQueue.length;
+
+      if (!state.isRunning && fresh) {
+        const speed = Number(els.speed.value);
+        loadCode(els.code.value, true);
+        state.speed = speed;
+        return;
+      }
+
+      state.isRunning = !state.isRunning;
+      if (state.isRunning) startTimers();
+      else {
+        clearInterval(runTimer);
+        runTimer = null;
+        render();
+      }
+      render();
+    });
+
+    document.getElementById("btnStep").addEventListener("click", () => {
+      if (state.isFinished) return;
+      state.isRunning = false;
+      clearInterval(runTimer);
+      runTimer = null;
+
+      const untouched =
+        state.callStack.length === 1 &&
+        state.callStack[0].currentLineIndex === 0 &&
+        !state.consoleOutput.length &&
+        !state.webApis.length &&
+        !state.microtaskQueue.length &&
+        !state.macrotaskQueue.length;
+
+      if (untouched && state.code !== els.code.value) {
+        const speed = Number(els.speed.value);
+        state = freshState(els.code.value);
+        state.speed = speed;
+        prediction = shuffle(collectLogs(state.parsedTasks));
+      }
+      stepOnce();
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      loadCode(els.code.value, false);
+    });
+
+    els.speed.addEventListener("input", () => {
+      state.speed = Number(els.speed.value);
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+      if (state.isRunning) startTimers();
+    });
+
+    document.getElementById("btnCheck").addEventListener("click", () => {
+      const expected =
+        state.isFinished && state.consoleOutput.length
+          ? state.consoleOutput
+          : simulateExpected(els.code.value);
+
+      const ok =
+        prediction.length === expected.length &&
+        prediction.every((v, i) => v === expected[i]);
+
+      els.prediction.querySelectorAll(".pred-item").forEach((item, i) => {
+        item.classList.remove("correct", "wrong");
+        item.classList.add(prediction[i] === expected[i] ? "correct" : "wrong");
+      });
+
+      els.predStatus.textContent = ok ? "Correct order!" : "Not quite — try again";
+      els.predStatus.className = ok ? "status ok" : "status bad";
+    });
+
+    // Match screenshot defaults: all features on + complex
+    features = {
+      log: true,
+      timeout: true,
+      promise: true,
+      microtask: true,
+      nextTick: true,
+      setImmediate: true,
+    };
+    document.querySelectorAll("#features input").forEach((input) => {
+      input.checked = !!features[input.dataset.feat];
+    });
+    mode = "simple";
+    els.btnEasy.classList.add("on");
+    els.btnComplex.classList.remove("on");
+    loadCode(buildCode(mode, features), false);
+  </script>
+</body>
+</html>

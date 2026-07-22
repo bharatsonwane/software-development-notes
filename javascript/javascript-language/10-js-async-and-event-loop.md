@@ -452,6 +452,33 @@ Choose based on rate limits and whether order matters.
 
 The **event loop** coordinates the **call stack**, **Web APIs** (or Node libuv), and **task queues**.
 
+```text
+┌──────────────┐     async APIs      ┌─────────────────┐
+│  Call Stack  │ ──────────────────► │    Web APIs     │
+│  (sync JS)   │                     │ setTimeout,     │
+│              │ ◄── push callback ──│ fetch, DOM…     │
+└──────┬───────┘                     └────────┬────────┘
+       │                                      │
+       │ empty?                               │ when ready
+       ▼                                      ▼
+┌──────────────┐                     ┌─────────────────┐
+│  Event Loop  │ ◄── drain all ──────│  Microtask Q    │
+│              │     first           │ Promise.then,   │
+│              │ ◄── one per turn ───│ queueMicrotask  │
+│              │                     └─────────────────┘
+│              │                     ┌─────────────────┐
+│              │ ◄── one per turn ───│  Macrotask Q    │
+└──────────────┘                     │ setTimeout,     │
+                                     │ I/O, UI events  │
+                                     └─────────────────┘
+
+Order (simplified):
+
+  sync code → drain ALL microtasks → ONE macrotask → drain microtasks → …
+```
+
+Interactive visualizer (like [event-loop-visualizer-ruby](https://event-loop-visualizer-ruby.vercel.app/)): open [10-js-event-loop-animation.html](./10-js-event-loop-animation.html) in a browser — editable script, queues, Run/Step, output prediction.
+
 ### 5.1. Call stack
 
 The **call stack** runs synchronous function calls — LIFO (last in, first out):

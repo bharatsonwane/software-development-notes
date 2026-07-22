@@ -2,6 +2,12 @@
 
 > File 01 — primitives, objects, and how values work in memory.
 
+## 0. Theory (Foundation)
+
+JavaScript is a *dynamic, interpreted (compiled at runtime) and weakly typed* programming language. It can run inside a browser as part of a webpage or directly on a machine through a host environment (for example, Node.js).
+
+JavaScript was created to make webpages dynamic, such as updating page content directly in the browser without a full page reload. It was originally called LiveScript, but it was later renamed to JavaScript during the rise in Java's popularity.
+
 JavaScript is **dynamically typed**: a variable can hold any type, and the type is tied to the **value**, not the variable.
 
 ```js
