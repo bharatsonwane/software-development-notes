@@ -4,6 +4,10 @@
 
 JavaScript in the browser adds APIs beyond the language core. React apps abstract much of this (see React notes), but interviews still test the underlying model.
 
+**Default rule today:** default listeners run on the **bubble** phase; use **delegation** on stable parents for dynamic lists; call **`preventDefault`** / **`stopPropagation`** only when you mean to block default behavior or further propagation.
+
+Interactive visualizer: open [15-js-browser-events-animation.html](./15-js-browser-events-animation.html) in a browser — capture/target/bubble, stopPropagation, preventDefault, delegation, once/remove (Run / Step).
+
 ---
 
 ## 1. DOM and BOM

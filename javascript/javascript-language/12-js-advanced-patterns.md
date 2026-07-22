@@ -8,6 +8,8 @@ You do not need to micro-optimize every line — but understanding **execution c
 
 **Default rule today:** modules and **strict mode** by default; prefer **immutability** for predictable state; use **Proxy** sparingly (frameworks/libraries); **measure** before optimizing hot paths.
 
+Interactive visualizer: open [12-js-advanced-patterns-animation.html](./12-js-advanced-patterns-animation.html) in a browser — debounce/throttle timelines, currying, memoization, revealing module, compose/pipe (Run / Step).
+
 ---
 
 ## 1. Execution context

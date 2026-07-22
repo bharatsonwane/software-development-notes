@@ -1,0 +1,1575 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arrays Visualizer — File 06</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #111827;
+      --border: #1e293b;
+      --border-2: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --blue: #3b82f6;
+      --blue-2: #60a5fa;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --green: #34d399;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace;
+      --sans: Inter, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 56px 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #f59e0b, #8b5cf6);
+      display: grid;
+      place-items: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .speed-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .speed-wrap input[type="range"] {
+      width: 110px;
+      accent-color: var(--blue);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: #1e293b; }
+
+    .run-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 650;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .run-btn:hover { background: #2563eb; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(340px, 1.25fr) minmax(250px, 0.8fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100%; }
+      .main { grid-template-columns: 1fr; height: auto; }
+    }
+
+    .col {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .card-b { padding: 12px; }
+
+    .scenarios {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+    }
+
+    .scenario {
+      text-align: left;
+      border: 1px solid var(--border-2);
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .scenario:hover { border-color: #475569; }
+    .scenario.on {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .scenario strong {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 2px;
+    }
+
+    .scenario span {
+      color: var(--dim);
+      font-size: 0.7rem;
+      line-height: 1.3;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+    }
+
+    .tag.access { color: var(--blue-2); border-color: rgba(96, 165, 250, 0.4); }
+    .tag.mutate { color: var(--rose); border-color: rgba(251, 113, 133, 0.4); }
+    .tag.map { color: var(--violet); border-color: rgba(167, 139, 250, 0.4); }
+    .tag.filter { color: var(--cyan); border-color: rgba(34, 211, 238, 0.4); }
+    .tag.slice { color: var(--amber); border-color: rgba(251, 191, 36, 0.4); }
+    .tag.spread { color: var(--green); border-color: rgba(52, 211, 153, 0.4); }
+
+    .script-card { flex: 1; }
+
+    .editor {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      flex: 1;
+      min-height: 0;
+      background: #020617;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 22px;
+    }
+
+    .gutter {
+      padding: 12px 0;
+      text-align: right;
+      color: var(--dim);
+      user-select: none;
+      border-right: 1px solid var(--border);
+    }
+
+    .gutter div {
+      height: 22px;
+      padding-right: 10px;
+    }
+
+    .gutter .active {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.08);
+      font-weight: 700;
+    }
+
+    .code-view {
+      margin: 0;
+      padding: 12px;
+      white-space: pre;
+      color: #cbd5e1;
+      overflow: auto;
+      font: inherit;
+      line-height: 22px;
+    }
+
+    .code-view .hl {
+      background: rgba(251, 191, 36, 0.12);
+      display: block;
+      margin: 0 -12px;
+      padding: 0 12px;
+    }
+
+    .stage {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .phase-pill {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+      background: #0b1220;
+    }
+
+    .phase-pill.access { color: var(--blue-2); border-color: rgba(96, 165, 250, 0.45); background: rgba(59, 130, 246, 0.08); }
+    .phase-pill.mutate { color: var(--rose); border-color: rgba(251, 113, 133, 0.45); background: rgba(251, 113, 133, 0.08); }
+    .phase-pill.map { color: var(--violet); border-color: rgba(167, 139, 250, 0.45); background: rgba(167, 139, 250, 0.08); }
+    .phase-pill.filter { color: var(--cyan); border-color: rgba(34, 211, 238, 0.45); background: rgba(34, 211, 238, 0.08); }
+    .phase-pill.slice { color: var(--amber); border-color: rgba(251, 191, 36, 0.45); background: rgba(251, 191, 36, 0.08); }
+    .phase-pill.spread { color: var(--green); border-color: rgba(52, 211, 153, 0.45); background: rgba(52, 211, 153, 0.08); }
+
+    .narrate {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+      padding: 10px 12px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .narrate strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
+    }
+
+    .array-block {
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.65);
+      margin-bottom: 10px;
+    }
+
+    .array-block.mutated {
+      border-color: rgba(251, 113, 133, 0.45);
+      box-shadow: 0 0 0 1px rgba(251, 113, 133, 0.15);
+    }
+
+    .array-block.new-array {
+      border-color: rgba(52, 211, 153, 0.45);
+      box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.15);
+    }
+
+    .array-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.72rem;
+    }
+
+    .array-name {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--blue-2);
+    }
+
+    .array-meta {
+      color: var(--dim);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+    }
+
+    .badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+    }
+
+    .badge.mutate { color: var(--rose); border-color: rgba(251, 113, 133, 0.4); }
+    .badge.new { color: var(--green); border-color: rgba(52, 211, 153, 0.4); }
+    .badge.readonly { color: var(--muted); }
+
+    .cells {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-end;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 52px;
+    }
+
+    .cell-idx {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--dim);
+      margin-bottom: 4px;
+    }
+
+    .cell-val {
+      width: 100%;
+      min-width: 52px;
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: #020617;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      text-align: center;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .cell.active .cell-val {
+      border-color: var(--amber);
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--amber);
+      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.25);
+    }
+
+    .cell.added .cell-val {
+      border-color: var(--green);
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--green);
+    }
+
+    .cell.removed .cell-val {
+      border-color: var(--rose);
+      background: rgba(251, 113, 133, 0.1);
+      color: var(--rose);
+      text-decoration: line-through;
+      opacity: 0.75;
+    }
+
+    .cell.empty .cell-val {
+      color: var(--dim);
+      border-style: dashed;
+      font-style: italic;
+    }
+
+    .cell.keep .cell-val {
+      border-color: var(--cyan);
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--cyan);
+    }
+
+    .cell.skip .cell-val {
+      opacity: 0.35;
+    }
+
+    .op-banner {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--amber);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px dashed rgba(251, 191, 36, 0.35);
+      background: rgba(251, 191, 36, 0.06);
+      margin-bottom: 10px;
+    }
+
+    .note {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.35;
+      margin-top: 4px;
+    }
+
+    .empty {
+      color: var(--dim);
+      font-size: 0.78rem;
+      font-style: italic;
+    }
+
+    .out-list, .stack-list {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .out-item, .stack-item {
+      background: #0b1220;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .stack-item {
+      border-color: rgba(59, 130, 246, 0.35);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .rule-card .card-b {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .rule-card code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--blue-2);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="3" y="5" width="18" height="4" rx="1"/>
+            <rect x="3" y="10" width="18" height="4" rx="1"/>
+            <rect x="3" y="15" width="18" height="4" rx="1"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Arrays Visualizer</h1>
+          <p>File 06 — cells, mutators, map/filter, copy</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <label class="speed-wrap">
+          Speed: <span id="speedLabel">900ms</span>
+          <input type="range" id="speed" min="300" max="2000" step="100" value="900" />
+        </label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="run-btn" id="btnRun">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span id="runLabel">Run</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:44%">
+          <div class="card-h">Scenarios</div>
+          <div class="card-b scenarios" id="scenarios"></div>
+        </section>
+
+        <section class="card script-card">
+          <div class="card-h">
+            <span>Example Code</span>
+            <span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span>
+          </div>
+          <div class="editor">
+            <div class="gutter" id="gutter"></div>
+            <pre class="code-view" id="codeView"></pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Array Memory</div>
+          <div class="stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate">
+              <strong>Ready</strong>
+              Pick a scenario — watch array cells change as methods run. Yellow = active index, green = new array or added cell.
+            </p>
+            <div id="snapshot"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:130px">
+          <div class="card-h">Expression Stack</div>
+          <div class="stack-list" id="callStack"></div>
+        </section>
+        <section class="card" style="flex:1; min-height:150px">
+          <div class="card-h">&gt;_ Console</div>
+          <div class="out-list" id="output"></div>
+        </section>
+        <section class="card rule-card" style="flex:0 0 auto">
+          <div class="card-h">Remember</div>
+          <div class="card-b" id="remember">
+            Indexes start at <code>0</code>. <code>push</code>/<code>pop</code>/<code>splice</code> mutate;
+            <code>map</code>/<code>filter</code>/<code>slice</code>/<code>[...arr]</code> produce new arrays (shallow copy).
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCENARIOS = [
+      {
+        id: "index-length",
+        kind: "access",
+        title: "Index & length",
+        blurb: "zero-based access, length property",
+        remember: "First element is index <code>0</code>. <code>length</code> is the slot count. Out-of-bounds access returns <code>undefined</code> — no error.",
+        code: `const fruits = ["apple", "banana", "cherry"];
+
+fruits[0];      // "apple"
+fruits[2];      // "cherry"
+fruits[10];     // undefined
+
+fruits.length;  // 3`,
+        frames: [
+          {
+            line: 1,
+            title: "Create array",
+            narrate: "Literal creates three indexed slots. length is 3.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              op: "const fruits = [ … ]",
+              arrays: [{
+                name: "fruits",
+                length: 3,
+                badge: "readonly",
+                cells: [
+                  { idx: 0, val: '"apple"' },
+                  { idx: 1, val: '"banana"' },
+                  { idx: 2, val: '"cherry"' },
+                ],
+              }],
+            },
+          },
+          {
+            line: 3,
+            title: "fruits[0]",
+            narrate: "Index 0 → first element \"apple\".",
+            stack: ["<script>", "fruits[0]"],
+            output: [],
+            snapshot: {
+              op: "read fruits[0]",
+              arrays: [{
+                name: "fruits",
+                length: 3,
+                cells: [
+                  { idx: 0, val: '"apple"', state: "active" },
+                  { idx: 1, val: '"banana"' },
+                  { idx: 2, val: '"cherry"' },
+                ],
+              }],
+              note: "Result: \"apple\"",
+            },
+          },
+          {
+            line: 4,
+            title: "fruits[2]",
+            narrate: "Index 2 → last element \"cherry\" (length - 1).",
+            stack: ["<script>", "fruits[2]"],
+            output: [],
+            snapshot: {
+              op: "read fruits[2]",
+              arrays: [{
+                name: "fruits",
+                length: 3,
+                cells: [
+                  { idx: 0, val: '"apple"' },
+                  { idx: 1, val: '"banana"' },
+                  { idx: 2, val: '"cherry"', state: "active" },
+                ],
+              }],
+              note: "Result: \"cherry\"",
+            },
+          },
+          {
+            line: 5,
+            title: "fruits[10]",
+            narrate: "Index 10 is out of bounds — slot does not exist → undefined.",
+            stack: ["<script>", "fruits[10]"],
+            output: [],
+            snapshot: {
+              op: "read fruits[10] → undefined",
+              arrays: [{
+                name: "fruits",
+                length: 3,
+                cells: [
+                  { idx: 0, val: '"apple"' },
+                  { idx: 1, val: '"banana"' },
+                  { idx: 2, val: '"cherry"' },
+                  { idx: 10, val: "∅", state: "empty" },
+                ],
+              }],
+              note: "No error — just undefined",
+            },
+          },
+          {
+            line: 7,
+            title: "fruits.length",
+            narrate: "length reports 3 — number of slots, not \"defined values only\".",
+            stack: ["<script>", "fruits.length"],
+            output: ["length: 3"],
+            snapshot: {
+              op: "fruits.length → 3",
+              arrays: [{
+                name: "fruits",
+                length: 3,
+                cells: [
+                  { idx: 0, val: '"apple"' },
+                  { idx: 1, val: '"banana"' },
+                  { idx: 2, val: '"cherry"' },
+                ],
+              }],
+            },
+          },
+        ],
+      },
+      {
+        id: "push-pop-shift",
+        kind: "mutate",
+        title: "push/pop vs shift/unshift",
+        blurb: "mutate ends — stack vs queue",
+        remember: "<code>push</code>/<code>pop</code> touch the <strong>end</strong> (fast). <code>shift</code>/<code>unshift</code> touch the <strong>start</strong> (O(n) re-index). All four mutate in place.",
+        code: `const stack = [1, 2];
+
+stack.push(3);       // [1, 2, 3]
+stack.pop();         // returns 3 → [1, 2]
+
+const queue = [2, 3];
+
+queue.unshift(1);    // [1, 2, 3]
+queue.shift();       // returns 1 → [2, 3]`,
+        frames: [
+          {
+            line: 1,
+            title: "stack = [1, 2]",
+            narrate: "Start with stack at the end-mutator demo.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [{
+                name: "stack",
+                length: 2,
+                badge: "mutate",
+                mutated: true,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 3,
+            title: "push(3)",
+            narrate: "push adds to the end — length becomes 3, returns 3.",
+            stack: ["<script>", "stack.push(3)"],
+            output: [],
+            snapshot: {
+              op: "stack.push(3) → length 3",
+              arrays: [{
+                name: "stack",
+                length: 3,
+                badge: "mutate",
+                mutated: true,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3", state: "added" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 4,
+            title: "pop()",
+            narrate: "pop removes from end — returns 3, array back to [1, 2].",
+            stack: ["<script>", "stack.pop()"],
+            output: ["pop → 3"],
+            snapshot: {
+              op: "stack.pop() → 3",
+              arrays: [{
+                name: "stack",
+                length: 2,
+                badge: "mutate",
+                mutated: true,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3", state: "removed" },
+                ],
+              }],
+              note: "Removed cell shown struck — actual array is [1, 2]",
+            },
+          },
+          {
+            line: 6,
+            title: "queue = [2, 3]",
+            narrate: "New array for front-mutator demo.",
+            stack: ["<script>"],
+            output: ["pop → 3"],
+            snapshot: {
+              arrays: [{
+                name: "queue",
+                length: 2,
+                badge: "mutate",
+                mutated: true,
+                cells: [
+                  { idx: 0, val: "2" },
+                  { idx: 1, val: "3" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 8,
+            title: "unshift(1)",
+            narrate: "unshift inserts at index 0 — all indices shift right.",
+            stack: ["<script>", "queue.unshift(1)"],
+            output: ["pop → 3"],
+            snapshot: {
+              op: "queue.unshift(1)",
+              arrays: [{
+                name: "queue",
+                length: 3,
+                badge: "mutate",
+                mutated: true,
+                cells: [
+                  { idx: 0, val: "1", state: "added" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 9,
+            title: "shift()",
+            narrate: "shift removes index 0 — returns 1, remaining [2, 3].",
+            stack: ["<script>", "queue.shift()"],
+            output: ["pop → 3", "shift → 1"],
+            snapshot: {
+              op: "queue.shift() → 1",
+              arrays: [{
+                name: "queue",
+                length: 2,
+                badge: "mutate",
+                mutated: true,
+                cells: [
+                  { idx: 0, val: "1", state: "removed" },
+                  { idx: 0, val: "2", state: "active" },
+                  { idx: 1, val: "3" },
+                ],
+              }],
+              note: "Re-indexing is why shift/unshift are slower on large arrays",
+            },
+          },
+        ],
+      },
+      {
+        id: "map-new",
+        kind: "map",
+        title: "map → new array",
+        blurb: "transform each element, original unchanged",
+        remember: "<code>map</code> returns a <strong>new array</strong> of the same length. The original is not mutated.",
+        code: `const nums = [1, 2, 3];
+
+const doubled = nums.map((n) => n * 2);
+
+console.log(nums);     // [1, 2, 3]
+console.log(doubled);  // [2, 4, 6]`,
+        frames: [
+          {
+            line: 1,
+            title: "nums = [1, 2, 3]",
+            narrate: "Source array before map.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [{
+                name: "nums",
+                length: 3,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 3,
+            title: "map n * 2",
+            narrate: "map walks each index — builds new array with transformed values.",
+            stack: ["<script>", "nums.map(λ)"],
+            output: [],
+            snapshot: {
+              op: "nums.map(n => n * 2)",
+              arrays: [
+                {
+                  name: "nums",
+                  length: 3,
+                  badge: "readonly",
+                  cells: [
+                    { idx: 0, val: "1", state: "active" },
+                    { idx: 1, val: "2", state: "active" },
+                    { idx: 2, val: "3", state: "active" },
+                  ],
+                },
+                {
+                  name: "doubled (building)",
+                  length: 3,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2", state: "added" },
+                    { idx: 1, val: "4", state: "added" },
+                    { idx: 2, val: "6", state: "added" },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            line: 3,
+            title: "Assignment complete",
+            narrate: "doubled is a separate array reference — nums unchanged.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [
+                {
+                  name: "nums",
+                  length: 3,
+                  badge: "readonly",
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+                {
+                  name: "doubled",
+                  length: 3,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2" },
+                    { idx: 1, val: "4" },
+                    { idx: 2, val: "6" },
+                  ],
+                },
+              ],
+              note: "Two arrays in memory — different references",
+            },
+          },
+          {
+            line: 5,
+            title: "Log both",
+            narrate: "Console confirms nums still [1,2,3], doubled is [2,4,6].",
+            stack: ["<script>", "console.log × 2"],
+            output: ["[1, 2, 3]", "[2, 4, 6]"],
+            snapshot: {
+              arrays: [
+                {
+                  name: "nums",
+                  length: 3,
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+                {
+                  name: "doubled",
+                  length: 3,
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2" },
+                    { idx: 1, val: "4" },
+                    { idx: 2, val: "6" },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+      {
+        id: "filter",
+        kind: "filter",
+        title: "filter keeps matches",
+        blurb: "truthy callback → shorter new array",
+        remember: "<code>filter</code> keeps elements where the callback returns truthy. Result is a <strong>new array</strong> (possibly shorter).",
+        code: `const nums = [1, 2, 3, 4];
+
+const evens = nums.filter((n) => n % 2 === 0);
+
+console.log(evens);  // [2, 4]`,
+        frames: [
+          {
+            line: 1,
+            title: "nums = [1,2,3,4]",
+            narrate: "Four elements — filter will test each.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [{
+                name: "nums",
+                length: 4,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3" },
+                  { idx: 3, val: "4" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 3,
+            title: "Test each n",
+            narrate: "n % 2 === 0 → keep 2 and 4; skip 1 and 3.",
+            stack: ["<script>", "nums.filter(λ)"],
+            output: [],
+            snapshot: {
+              op: "keep if n % 2 === 0",
+              arrays: [
+                {
+                  name: "nums",
+                  length: 4,
+                  cells: [
+                    { idx: 0, val: "1", state: "skip" },
+                    { idx: 1, val: "2", state: "keep" },
+                    { idx: 2, val: "3", state: "skip" },
+                    { idx: 3, val: "4", state: "keep" },
+                  ],
+                },
+                {
+                  name: "evens (building)",
+                  length: 2,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2", state: "added" },
+                    { idx: 1, val: "4", state: "added" },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            line: 5,
+            title: "Result [2, 4]",
+            narrate: "evens has length 2 — nums still has all four elements.",
+            stack: ["<script>", "console.log"],
+            output: ["[2, 4]"],
+            snapshot: {
+              arrays: [
+                {
+                  name: "nums",
+                  length: 4,
+                  badge: "readonly",
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                    { idx: 3, val: "4" },
+                  ],
+                },
+                {
+                  name: "evens",
+                  length: 2,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2" },
+                    { idx: 1, val: "4" },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      },
+      {
+        id: "splice-slice",
+        kind: "slice",
+        title: "splice vs slice",
+        blurb: "mutate in place vs copy portion",
+        remember: "<code>splice</code> <strong>mutates</strong> — remove/insert/replace. <code>slice</code> returns a <strong>shallow copy</strong> of a range; original untouched.",
+        code: `const arr = [1, 2, 3, 4, 5];
+
+const removed = arr.splice(1, 2);
+// arr → [1, 4, 5], removed → [2, 3]
+
+const original = [1, 2, 3, 4, 5];
+const copy = original.slice(1, 3);
+// original unchanged, copy → [2, 3]`,
+        frames: [
+          {
+            line: 1,
+            title: "arr initial",
+            narrate: "Starting array for splice demo.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [{
+                name: "arr",
+                length: 5,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3" },
+                  { idx: 3, val: "4" },
+                  { idx: 4, val: "5" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 3,
+            title: "splice(1, 2)",
+            narrate: "From index 1, delete 2 elements — removes 2 and 3.",
+            stack: ["<script>", "arr.splice(1, 2)"],
+            output: [],
+            snapshot: {
+              op: "arr.splice(1, 2) — mutates arr",
+              arrays: [
+                {
+                  name: "arr",
+                  length: 3,
+                  badge: "mutate",
+                  mutated: true,
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2", state: "removed" },
+                    { idx: 2, val: "3", state: "removed" },
+                    { idx: 1, val: "4", state: "active" },
+                    { idx: 2, val: "5" },
+                  ],
+                },
+                {
+                  name: "removed (return)",
+                  length: 2,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2" },
+                    { idx: 1, val: "3" },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            line: 6,
+            title: "original for slice",
+            narrate: "Fresh array — slice will not touch it.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [{
+                name: "original",
+                length: 5,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3" },
+                  { idx: 3, val: "4" },
+                  { idx: 4, val: "5" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 7,
+            title: "slice(1, 3)",
+            narrate: "Copy from index 1 up to (not including) 3 → [2, 3].",
+            stack: ["<script>", "original.slice(1, 3)"],
+            output: [],
+            snapshot: {
+              op: "original.slice(1, 3) — end exclusive",
+              arrays: [
+                {
+                  name: "original",
+                  length: 5,
+                  badge: "readonly",
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2", state: "active" },
+                    { idx: 2, val: "3", state: "active" },
+                    { idx: 3, val: "4", state: "skip" },
+                    { idx: 4, val: "5", state: "skip" },
+                  ],
+                },
+                {
+                  name: "copy",
+                  length: 2,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "2", state: "added" },
+                    { idx: 1, val: "3", state: "added" },
+                  ],
+                },
+              ],
+              note: "original still [1,2,3,4,5]",
+            },
+          },
+        ],
+      },
+      {
+        id: "spread-copy",
+        kind: "spread",
+        title: "Spread shallow copy",
+        blurb: "[...original] — new top-level array",
+        remember: "<code>[...arr]</code> and <code>arr.slice()</code> make a <strong>shallow copy</strong>. Top-level elements copied; nested objects still shared.",
+        code: `const original = [1, 2, 3];
+
+const copy = [...original];
+
+copy[0] = 99;
+
+console.log(original[0]);  // 1
+console.log(copy);         // [99, 2, 3]`,
+        frames: [
+          {
+            line: 1,
+            title: "original",
+            narrate: "Source array before spread copy.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              arrays: [{
+                name: "original",
+                length: 3,
+                cells: [
+                  { idx: 0, val: "1" },
+                  { idx: 1, val: "2" },
+                  { idx: 2, val: "3" },
+                ],
+              }],
+            },
+          },
+          {
+            line: 3,
+            title: "copy = [...original]",
+            narrate: "Spread creates a new array with the same top-level values.",
+            stack: ["<script>", "[...original]"],
+            output: [],
+            snapshot: {
+              op: "const copy = [...original]",
+              arrays: [
+                {
+                  name: "original",
+                  length: 3,
+                  badge: "readonly",
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+                {
+                  name: "copy",
+                  length: 3,
+                  badge: "new",
+                  isNew: true,
+                  cells: [
+                    { idx: 0, val: "1", state: "added" },
+                    { idx: 1, val: "2", state: "added" },
+                    { idx: 2, val: "3", state: "added" },
+                  ],
+                },
+              ],
+              note: "Different array object — same primitive values",
+            },
+          },
+          {
+            line: 5,
+            title: "copy[0] = 99",
+            narrate: "Mutate copy only — original index 0 stays 1.",
+            stack: ["<script>"],
+            output: [],
+            snapshot: {
+              op: "copy[0] = 99",
+              arrays: [
+                {
+                  name: "original",
+                  length: 3,
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+                {
+                  name: "copy",
+                  length: 3,
+                  mutated: true,
+                  cells: [
+                    { idx: 0, val: "99", state: "active" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+              ],
+            },
+          },
+          {
+            line: 7,
+            title: "Log results",
+            narrate: "original[0] is still 1. copy is [99, 2, 3]. Shallow — nested objects would still share.",
+            stack: ["<script>", "console.log × 2"],
+            output: ["original[0]: 1", "[99, 2, 3]"],
+            snapshot: {
+              arrays: [
+                {
+                  name: "original",
+                  length: 3,
+                  cells: [
+                    { idx: 0, val: "1" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+                {
+                  name: "copy",
+                  length: 3,
+                  cells: [
+                    { idx: 0, val: "99" },
+                    { idx: 1, val: "2" },
+                    { idx: 2, val: "3" },
+                  ],
+                },
+              ],
+              note: "Use structuredClone for deep copy of plain data",
+            },
+          },
+        ],
+      },
+    ];
+
+    let scenarioIndex = 0;
+    let step = 0;
+    let playing = false;
+    let timer = null;
+
+    const els = {
+      scenarios: document.getElementById("scenarios"),
+      gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"),
+      snapshot: document.getElementById("snapshot"),
+      narrate: document.getElementById("narrate"),
+      phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"),
+      output: document.getElementById("output"),
+      remember: document.getElementById("remember"),
+      stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"),
+      speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() {
+      return SCENARIOS[scenarioIndex];
+    }
+
+    function frame() {
+      const frames = scenario().frames;
+      return frames[Math.min(step, frames.length - 1)];
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map(
+        (s, i) => `
+        <button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}">
+          <strong>${escapeHtml(s.title)}</strong>
+          <span>${escapeHtml(s.blurb)}</span>
+          <div><span class="tag ${s.kind}">${escapeHtml(s.kind)}</span></div>
+        </button>`
+      ).join("");
+
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          stopPlay();
+          scenarioIndex = Number(btn.dataset.i);
+          step = 0;
+          render();
+        });
+      });
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines
+        .map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`)
+        .join("");
+
+      els.codeView.innerHTML = lines
+        .map((line, i) => {
+          const safe = escapeHtml(line) || " ";
+          return activeLine === i + 1
+            ? `<span class="hl">${safe}</span>`
+            : `${safe}\n`;
+        })
+        .join("");
+    }
+
+    function renderCells(cells) {
+      return (cells || [])
+        .map((c) => {
+          const state = c.state || "normal";
+          return `
+            <div class="cell ${state}">
+              <div class="cell-idx">[${c.idx}]</div>
+              <div class="cell-val">${escapeHtml(c.val)}</div>
+            </div>`;
+        })
+        .join("");
+    }
+
+    function renderArrayBlock(arr) {
+      const cls = [
+        "array-block",
+        arr.mutated ? "mutated" : "",
+        arr.isNew ? "new-array" : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      const badge = arr.badge
+        ? `<span class="badge ${arr.badge}">${escapeHtml(arr.badge)}</span>`
+        : "";
+
+      return `
+        <div class="${cls}">
+          <div class="array-head">
+            <span class="array-name">${escapeHtml(arr.name)}</span>
+            <span class="array-meta">length ${arr.length ?? (arr.cells || []).length}</span>
+            ${badge}
+          </div>
+          <div class="cells">${renderCells(arr.cells)}</div>
+        </div>`;
+    }
+
+    function renderSnapshotData(snap) {
+      if (!snap) return `<div class="empty">No snapshot</div>`;
+      const op = snap.op ? `<div class="op-banner">${escapeHtml(snap.op)}</div>` : "";
+      const arrays = (snap.arrays || []).map(renderArrayBlock).join("");
+      const note = snap.note ? `<div class="note">${escapeHtml(snap.note)}</div>` : "";
+      return op + arrays + note || `<div class="empty">No arrays</div>`;
+    }
+
+    function render() {
+      const sc = scenario();
+      const fr = frame();
+      const frames = sc.frames;
+
+      renderScenarios();
+      renderCode(fr.line);
+      els.snapshot.innerHTML = renderSnapshotData(fr.snapshot);
+
+      els.phasePill.textContent = sc.kind;
+      els.phasePill.className = "phase-pill " + sc.kind;
+
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+
+      if (!fr.stack.length) {
+        els.callStack.innerHTML = `<div class="empty">Stack empty</div>`;
+      } else {
+        els.callStack.innerHTML = [...fr.stack]
+          .reverse()
+          .map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`)
+          .join("");
+      }
+
+      if (!fr.output.length) {
+        els.output.innerHTML = `<div class="empty">No output yet</div>`;
+      } else {
+        els.output.innerHTML = fr.output
+          .map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`)
+          .join("");
+      }
+
+      const atEnd = step >= frames.length - 1;
+      els.runLabel.textContent = playing ? "Pause" : atEnd ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() {
+      playing = false;
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true;
+      render();
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (step >= frames.length - 1) {
+          stopPlay();
+          render();
+          return;
+        }
+        step += 1;
+        render();
+      }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => {
+      if (playing) {
+        stopPlay();
+        render();
+        return;
+      }
+      play();
+    });
+
+    document.getElementById("btnStep").addEventListener("click", () => {
+      stopPlay();
+      const frames = scenario().frames;
+      if (step < frames.length - 1) step += 1;
+      render();
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      stopPlay();
+      step = 0;
+      render();
+    });
+
+    els.speed.addEventListener("input", () => {
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+      if (playing) play();
+    });
+
+    render();
+  </script>
+</body>
+</html>

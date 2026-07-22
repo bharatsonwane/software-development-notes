@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Browser & Events Visualizer — File 15</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #0ea5e9, #6366f1); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: var(--blue); background: rgba(59,130,246,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.capture { color: var(--violet); border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.1); }
+    .phase-pill.target { color: var(--amber); border-color: rgba(251,191,36,.45); background: rgba(251,191,36,.1); }
+    .phase-pill.bubble { color: var(--cyan); border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    .dom-tree { display: flex; flex-direction: column; gap: 8px; }
+    .dom-node { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: rgba(15,23,42,.65); margin-left: 16px; animation: pop .16s ease; }
+    .dom-node.root { margin-left: 0; }
+    .dom-node.on-path { border-color: var(--blue); box-shadow: 0 0 0 1px rgba(59,130,246,.25); }
+    .dom-node.current { border-color: var(--amber); box-shadow: 0 0 0 2px rgba(251,191,36,.35); background: rgba(251,191,36,.06); }
+    .dom-node.target-node { border-color: var(--green); }
+    .dom-node.stopped { opacity: .55; }
+    .dom-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-family: var(--mono); font-size: .76rem; }
+    .dom-tag { color: var(--blue-2); font-weight: 600; }
+    .dom-meta { font-size: .65rem; color: var(--dim); }
+    .listeners { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .listener { font-size: .65rem; font-family: var(--mono); padding: 3px 7px; border-radius: 6px; border: 1px solid var(--border); background: #020617; color: var(--muted); }
+    .listener.fire { border-color: var(--amber); color: var(--amber); background: rgba(251,191,36,.12); animation: pulse .5s ease; }
+    .listener.off { opacity: .35; text-decoration: line-through; }
+    .path-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: .68rem; color: var(--dim); padding: 0 12px 12px; }
+    .path-bar span { padding: 3px 8px; border-radius: 999px; border: 1px solid var(--border-2); background: #0b1220; font-family: var(--mono); }
+    .path-bar span.done { color: var(--green); border-color: rgba(52,211,153,.4); }
+    .path-bar span.now { color: var(--amber); border-color: rgba(251,191,36,.5); }
+    .flags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .flag { font-size: .65rem; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--rose); color: var(--rose); background: rgba(251,113,133,.08); }
+    .flag.ok { border-color: rgba(52,211,153,.45); color: var(--green); background: rgba(52,211,153,.08); }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div><h1>Browser & Events Visualizer</h1><p>File 15 — capture, bubble, delegation</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">DOM Event Flow</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Pick a scenario, then Run or Step to watch the event path.</p>
+            <div id="flags" class="flags"></div>
+            <div class="dom-tree" id="domTree"></div>
+          </div>
+          <div class="path-bar" id="pathBar"></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Events travel capture → target → bubble. Default listeners use bubble.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const DOM_BASE = {
+      id: "window", tag: "window", label: "window", listeners: [],
+      children: [{ id: "document", tag: "document", label: "document", listeners: [],
+        children: [{ id: "div", tag: "div#app", label: "div#app", listeners: [],
+          children: [{ id: "button", tag: "button.btn", label: "button.btn", listeners: [], isTarget: true, children: [] }]
+        }]
+      }]
+    };
+
+    function domTree(delegation) {
+      if (!delegation) return JSON.parse(JSON.stringify(DOM_BASE));
+      return { id: "ul", tag: "ul#list", label: "ul#list", listeners: [{ phase: "bubble", name: "onListClick", once: false, active: true }],
+        children: [
+          { id: "li1", tag: "li.item", label: 'li.item [data-id="1"]', listeners: [], isTarget: true, children: [] },
+          { id: "li2", tag: "li.item", label: 'li.item [data-id="2"]', listeners: [], children: [] }
+        ]
+      };
+    }
+
+    const SCENARIOS = [
+      {
+        id: "phases", title: "Capture → target → bubble", blurb: "Full propagation path on click",
+        remember: "Default <code>addEventListener</code> runs on <strong>bubble</strong>. Use <code>{ capture: true }</code> for capture phase.",
+        code: `window.addEventListener("click", () => log("window cap"), { capture: true });
+document.addEventListener("click", () => log("document cap"), { capture: true });
+div.addEventListener("click", () => log("div bubble"));
+button.addEventListener("click", () => log("button bubble"));
+// user clicks button → capture down, target, bubble up`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Four listeners registered. Click the button to start propagation.", stack: [], output: [], dom: { tree: domTree(), eventPhase: null, current: null, path: ["window","document","div","button","div","document","window"], pathIdx: -1, target: "button", flags: {} } },
+          { line: 5, phase: "capture", title: "Capture: window", narrate: "Phase 1 — capture travels window → target. Handler on window (capture) runs first.", stack: ["dispatch", "window cap"], output: ["window cap"], dom: { tree: (() => { const t = domTree(); t.listeners=[{phase:"capture",name:"window cap",active:true,fire:true}]; t.children[0].listeners=[{phase:"capture",name:"document cap",active:true}]; t.children[0].children[0].listeners=[{phase:"bubble",name:"div bubble",active:true}]; t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"button bubble",active:true}]; return t; })(), eventPhase: "capture", current: "window", path: ["window","document","div","button","div","document","window"], pathIdx: 0, target: "button", flags: {} } },
+          { line: 5, phase: "capture", title: "Capture: document", narrate: "Still capturing — document handler runs before reaching the button.", stack: ["dispatch", "document cap"], output: ["window cap","document cap"], dom: { tree: (() => { const t = domTree(); t.listeners=[{phase:"capture",name:"window cap",active:true}]; t.children[0].listeners=[{phase:"capture",name:"document cap",active:true,fire:true}]; t.children[0].children[0].listeners=[{phase:"bubble",name:"div bubble",active:true}]; t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"button bubble",active:true}]; return t; })(), eventPhase: "capture", current: "document", path: ["window","document","div","button","div","document","window"], pathIdx: 1, target: "button", flags: {} } },
+          { line: 5, phase: "target", title: "Target: button", narrate: "Event reaches the target — button's bubble listener runs at target phase.", stack: ["dispatch", "button bubble"], output: ["window cap","document cap","button bubble"], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"button bubble",active:true,fire:true}]; t.children[0].children[0].listeners=[{phase:"bubble",name:"div bubble",active:true}]; return t; })(), eventPhase: "target", current: "button", path: ["window","document","div","button","div","document","window"], pathIdx: 3, target: "button", flags: {} } },
+          { line: 5, phase: "bubble", title: "Bubble: div", narrate: "Phase 3 — bubble travels target → window. div handler runs.", stack: ["dispatch", "div bubble"], output: ["window cap","document cap","button bubble","div bubble"], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].listeners=[{phase:"bubble",name:"div bubble",active:true,fire:true}]; return t; })(), eventPhase: "bubble", current: "div", path: ["window","document","div","button","div","document","window"], pathIdx: 4, target: "button", flags: {} } },
+          { line: null, phase: "idle", title: "Done", narrate: "Order: capture down → target → bubble up. Most app code listens on bubble.", stack: [], output: ["window cap","document cap","button bubble","div bubble"], dom: { tree: domTree(), eventPhase: null, current: null, path: ["window","document","div","button","div","document","window"], pathIdx: 7, target: "button", flags: {} } }
+        ]
+      },
+      {
+        id: "stop-prop", title: "stopPropagation", blurb: "Bubble stops at div handler",
+        remember: "<code>e.stopPropagation()</code> prevents the event from reaching further ancestors (or descendants in capture). It does <em>not</em> cancel the default browser action.",
+        code: `button.addEventListener("click", (e) => {
+  log("button");
+});
+div.addEventListener("click", (e) => {
+  log("div — stop here");
+  e.stopPropagation();
+});
+document.addEventListener("click", () => log("document"));`,
+        frames: [
+          { line: 1, phase: "target", title: "Button handler", narrate: "Click reaches button — its handler runs first (target phase).", stack: ["dispatch","button handler"], output: ["button"], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"button",active:true,fire:true}]; t.children[0].children[0].listeners=[{phase:"bubble",name:"div (will stop)",active:true}]; t.children[0].listeners=[{phase:"bubble",name:"document",active:true}]; return t; })(), eventPhase: "target", current: "button", path: ["button","div","document"], pathIdx: 0, target: "button", flags: {} } },
+          { line: 5, phase: "bubble", title: "div stops propagation", narrate: "div handler calls e.stopPropagation() — document never hears the event.", stack: ["dispatch","div handler"], output: ["button","div — stop here"], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].listeners=[{phase:"bubble",name:"div (will stop)",active:true,fire:true}]; t.children[0].listeners=[{phase:"bubble",name:"document",active:true,off:true}]; return t; })(), eventPhase: "bubble", current: "div", path: ["button","div","document"], pathIdx: 1, target: "button", flags: { stopPropagation: true } } },
+          { line: null, phase: "idle", title: "Stopped", narrate: "document listener never ran. Siblings are unaffected — only upward propagation stops.", stack: [], output: ["button","div — stop here"], dom: { tree: domTree(), eventPhase: null, current: null, path: ["button","div"], pathIdx: 2, target: "button", flags: { stopPropagation: true } } }
+        ]
+      },
+      {
+        id: "prevent-default", title: "preventDefault", blurb: "Block link navigation / form submit",
+        remember: "<code>e.preventDefault()</code> cancels the browser's default action (follow link, submit form). Use with care on anchors and forms.",
+        code: `link.addEventListener("click", (e) => {
+  e.preventDefault();
+  log("nav blocked — stay on page");
+});
+// Without preventDefault the browser would follow href`,
+        frames: [
+          { line: null, phase: "idle", title: "Link ready", narrate: "An <a href=\"/away\"> has a click listener. Default action = navigate.", stack: [], output: [], dom: { tree: { id: "a", tag: "a[href='/away']", label: "a → /away", isTarget: true, listeners: [{ phase: "bubble", name: "block nav", active: true }], children: [] }, eventPhase: null, current: null, path: ["a"], pathIdx: -1, target: "a", flags: { defaultAction: "navigate to /away" } } },
+          { line: 1, phase: "target", title: "Click link", narrate: "User clicks the anchor. Handler runs at target.", stack: ["dispatch","link handler"], output: [], dom: { tree: { id: "a", tag: "a[href='/away']", label: "a → /away", isTarget: true, listeners: [{ phase: "bubble", name: "block nav", active: true, fire: true }], children: [] }, eventPhase: "target", current: "a", path: ["a"], pathIdx: 0, target: "a", flags: { defaultAction: "navigate to /away" } } },
+          { line: 2, phase: "target", title: "preventDefault()", narrate: "e.preventDefault() — browser skips navigation. Page stays put.", stack: ["dispatch","link handler"], output: ["nav blocked — stay on page"], dom: { tree: { id: "a", tag: "a[href='/away']", label: "a → /away", isTarget: true, listeners: [{ phase: "bubble", name: "block nav", active: true, fire: true }], children: [] }, eventPhase: "target", current: "a", path: ["a"], pathIdx: 0, target: "a", flags: { preventDefault: true, defaultAction: "navigate to /away (cancelled)" } } },
+          { line: null, phase: "idle", title: "Done", narrate: "preventDefault ≠ stopPropagation. Event could still bubble unless you also stop it.", stack: [], output: ["nav blocked — stay on page"], dom: { tree: { id: "a", tag: "a[href='/away']", label: "a → /away", isTarget: true, listeners: [{ phase: "bubble", name: "block nav", active: true }], children: [] }, eventPhase: null, current: null, path: ["a"], pathIdx: 1, target: "a", flags: { preventDefault: true } } }
+        ]
+      },
+      {
+        id: "delegation", title: "Event delegation", blurb: "One parent listener, event.target is child",
+        remember: "Attach one handler on a stable parent; inspect <code>e.target</code> (or <code>matches</code>) to handle dynamic children efficiently.",
+        code: `list.addEventListener("click", (e) => {
+  if (e.target.matches("li.item")) {
+    log("Clicked id=" + e.target.dataset.id);
+  }
+});
+// click li[data-id="1"] — only list listener runs`,
+        frames: [
+          { line: null, phase: "idle", title: "Dynamic list", narrate: "One listener on ul#list. Items may be added/removed without rebinding.", stack: [], output: [], dom: { tree: domTree(true), eventPhase: null, current: null, path: ["ul","li1"], pathIdx: -1, target: "li1", flags: {} } },
+          { line: 1, phase: "target", title: "Click li", narrate: "User clicks second li. Event.target is the li, not the ul.", stack: ["dispatch"], output: [], dom: { tree: (() => { const t = domTree(true); t.children[0].isTarget = true; return t; })(), eventPhase: "target", current: "li1", path: ["ul","li1"], pathIdx: 1, target: "li1", flags: { eventTarget: "li1" } } },
+          { line: 2, phase: "bubble", title: "Parent handler", narrate: "Event bubbles to ul. Handler checks e.target.matches('li.item') → logs id.", stack: ["dispatch","onListClick"], output: ['Clicked id=1'], dom: { tree: (() => { const t = domTree(true); t.listeners=[{phase:"bubble",name:"onListClick",active:true,fire:true}]; t.children[0].isTarget=true; return t; })(), eventPhase: "bubble", current: "ul", path: ["ul","li1"], pathIdx: 0, target: "li1", flags: { eventTarget: "li1", delegated: true } } },
+          { line: null, phase: "idle", title: "Done", narrate: "Delegation scales: one listener for many rows. React uses similar patterns at the root.", stack: [], output: ['Clicked id=1'], dom: { tree: domTree(true), eventPhase: null, current: null, path: ["ul","li1"], pathIdx: 2, target: "li1", flags: { delegated: true } } }
+        ]
+      },
+      {
+        id: "once-remove", title: "once & remove", blurb: "{ once: true } and removeEventListener",
+        remember: "<code>{ once: true }</code> auto-removes after first invoke. Otherwise call <code>removeEventListener</code> with the same function reference.",
+        code: `function onReady() { log("ready once"); }
+btn.addEventListener("click", onReady, { once: true });
+btn.click(); // logs
+btn.click(); // silent — listener gone
+
+btn.removeEventListener("click", onReady); // no-op after once`,
+        frames: [
+          { line: 2, phase: "idle", title: "Register once", narrate: "Listener registered with { once: true } — will self-remove after first fire.", stack: [], output: [], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"onReady",active:true,once:true}]; return t; })(), eventPhase: null, current: null, path: ["button"], pathIdx: -1, target: "button", flags: { once: true } } },
+          { line: 3, phase: "target", title: "First click", narrate: "First click — handler runs, then browser removes the listener automatically.", stack: ["dispatch","onReady"], output: ["ready once"], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"onReady",active:true,once:true,fire:true}]; return t; })(), eventPhase: "target", current: "button", path: ["button"], pathIdx: 0, target: "button", flags: { once: true, fired: true } } },
+          { line: 4, phase: "idle", title: "Second click", narrate: "Second click — no listener left. removeEventListener would also be a no-op.", stack: [], output: ["ready once"], dom: { tree: (() => { const t = domTree(); t.children[0].children[0].children[0].listeners=[{phase:"bubble",name:"onReady",active:false,once:true,off:true}]; return t; })(), eventPhase: null, current: "button", path: ["button"], pathIdx: 1, target: "button", flags: { once: true, removed: true } } },
+          { line: null, phase: "idle", title: "Done", narrate: "Same function reference required for removeEventListener. Arrow wrappers break removal.", stack: [], output: ["ready once"], dom: { tree: domTree(), eventPhase: null, current: null, path: [], pathIdx: 2, target: "button", flags: { removed: true } } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), domTree: document.getElementById("domTree"),
+      pathBar: document.getElementById("pathBar"), flags: document.getElementById("flags"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function renderNode(n, dom) {
+      const onPath = dom.path.includes(n.id);
+      const isCurrent = dom.current === n.id;
+      const isTarget = n.isTarget || dom.target === n.id;
+      const stopped = dom.flags.stopPropagation && dom.pathIdx >= 0 && dom.path.indexOf(n.id) > dom.pathIdx;
+      const cls = ["dom-node", n.id === dom.tree.id ? "root" : "", onPath ? "on-path" : "", isCurrent ? "current" : "", isTarget ? "target-node" : "", stopped ? "stopped" : ""].filter(Boolean).join(" ");
+      const listeners = (n.listeners || []).map((l) => {
+        const tags = [l.phase === "capture" ? "capture" : "bubble", l.name];
+        if (l.once) tags.push("once");
+        return `<span class="listener ${l.fire ? "fire" : ""} ${l.off ? "off" : ""}">${escapeHtml(tags.join(" · "))}</span>`;
+      }).join("") || `<span class="dom-meta">no listeners</span>`;
+      const kids = (n.children || []).map((c) => renderNode(c, dom)).join("");
+      return `<div class="${cls}"><div class="dom-head"><span class="dom-tag">&lt;${escapeHtml(n.tag)}&gt;</span><span class="dom-meta">${escapeHtml(n.label || "")}</span></div><div class="listeners">${listeners}</div>${kids ? `<div style="margin-top:8px">${kids}</div>` : ""}</div>`;
+    }
+
+    function renderFlags(flags) {
+      if (!flags || !Object.keys(flags).length) { els.flags.innerHTML = ""; return; }
+      const items = [];
+      if (flags.stopPropagation) items.push('<span class="flag">stopPropagation()</span>');
+      if (flags.preventDefault) items.push('<span class="flag">preventDefault()</span>');
+      if (flags.defaultAction) items.push(`<span class="flag ${flags.preventDefault ? "" : "ok"}">default: ${escapeHtml(flags.defaultAction)}</span>`);
+      if (flags.eventTarget) items.push(`<span class="flag ok">event.target → ${escapeHtml(flags.eventTarget)}</span>`);
+      if (flags.delegated) items.push('<span class="flag ok">delegated handler</span>');
+      if (flags.once) items.push('<span class="flag ok">{ once: true }</span>');
+      if (flags.removed) items.push('<span class="flag">listener removed</span>');
+      els.flags.innerHTML = items.join("");
+    }
+
+    function renderPath(dom) {
+      if (!dom.path || !dom.path.length) { els.pathBar.innerHTML = ""; return; }
+      els.pathBar.innerHTML = "Path: " + dom.path.map((id, i) => {
+        const cls = i < dom.pathIdx ? "done" : i === dom.pathIdx ? "now" : "";
+        return `<span class="${cls}">${escapeHtml(id)}</span>`;
+      }).join('<span style="opacity:.4">→</span>');
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) => `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span></button>`).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line);
+      els.domTree.innerHTML = fr.dom ? renderNode(fr.dom.tree, fr.dom) : "";
+      renderPath(fr.dom || { path: [], pathIdx: -1 });
+      renderFlags(fr.dom ? fr.dom.flags : {});
+      const ep = fr.dom && fr.dom.eventPhase;
+      els.phasePill.textContent = ep ? ep.charAt(0).toUpperCase() + ep.slice(1) + " phase" : fr.phase === "idle" ? "Idle" : "Event";
+      els.phasePill.className = "phase-pill " + (ep || "");
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

@@ -8,6 +8,8 @@ Conditions use **truthy/falsy** coercion (see File 03, section 4). A block runs 
 
 **Default rule today:** prefer **`if`/`else`** for clarity, **`===`** in conditions, **`for...of`** for arrays and iterables, and **`for...in`** only when you intentionally need object keys (not for arrays).
 
+Interactive visualizer: open [04-js-control-flow-animation.html](./04-js-control-flow-animation.html) in a browser — if/else, switch/break/fall-through, for loop, break/continue, for...of vs for...in (Run / Step).
+
 ---
 
 ## 1. Conditionals

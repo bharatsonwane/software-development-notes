@@ -4,6 +4,8 @@
 
 Builds on async (File 10) and control flow (File 04).
 
+Interactive visualizer: open [14-js-error-timers-animation.html](./14-js-error-timers-animation.html) in a browser — try/catch/finally, throw, nested rethrow, Error object, setTimeout/setInterval, clearTimeout (Run / Step).
+
 ---
 
 ## 1. Error handling

@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Polyfills Visualizer — File 16</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #6366f1, #db2777); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: var(--blue); background: rgba(59,130,246,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.exec { color: var(--green); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+    .phase-pill.loop { color: var(--violet); border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.1); }
+    .phase-pill.wait { color: var(--amber); border-color: rgba(251,191,36,.45); background: rgba(251,191,36,.1); }
+    .phase-pill.micro { color: var(--cyan); border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    .before-after { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+    @media (max-width: 600px) { .before-after { grid-template-columns: 1fr; } }
+    .arr-box { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: rgba(15,23,42,.65); }
+    .arr-box.hl { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,191,36,.25); }
+    .arr-box h4 { margin: 0 0 8px; font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--blue-2); }
+    .arr-cells { display: flex; flex-wrap: wrap; gap: 4px; font-family: var(--mono); font-size: .72rem; }
+    .arr-cell { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-2); background: #020617; }
+    .arr-cell.hl { border-color: var(--green); background: rgba(52,211,153,.1); color: var(--green); }
+    .arr-cell.cur { border-color: var(--amber); background: rgba(251,191,36,.1); color: var(--amber); }
+    .arr-cell.skip { opacity: .35; }
+    .arrow-mid { color: var(--dim); font-size: 1.2rem; text-align: center; }
+    .bind-viz { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 600px) { .bind-viz { grid-template-columns: 1fr; } }
+    .ctx-box { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: #020617; }
+    .ctx-box.hl { border-color: var(--cyan); background: rgba(34,211,238,.06); }
+    .ctx-box h4 { margin: 0 0 6px; font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .ctx-row { font-family: var(--mono); font-size: .72rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 4px; }
+    .ctx-row.hl { border-color: var(--amber); color: var(--amber); }
+    .promise-viz { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: rgba(15,23,42,.65); }
+    .promise-viz h4 { margin: 0 0 8px; font-size: .68rem; color: var(--blue-2); text-transform: uppercase; letter-spacing: .05em; }
+    .p-state { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: .68rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+    .p-state.pending { color: var(--amber); border: 1px solid rgba(251,191,36,.4); background: rgba(251,191,36,.1); }
+    .p-state.fulfilled { color: var(--green); border: 1px solid rgba(52,211,153,.4); background: rgba(52,211,153,.1); }
+    .micro-queue { font-family: var(--mono); font-size: .7rem; padding: 6px 8px; border-radius: 6px; border: 1px dashed rgba(34,211,238,.4); background: rgba(34,211,238,.06); margin-top: 6px; color: var(--cyan); }
+    .micro-queue.hl { border-color: var(--cyan); background: rgba(34,211,238,.12); }
+    .timeline { border: 1px solid var(--border-2); border-radius: 10px; padding: 12px; background: rgba(15,23,42,.65); }
+    .timeline-head { display: flex; justify-content: space-between; font-size: .65rem; color: var(--dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .timeline-track { position: relative; height: 72px; border-radius: 8px; background: #020617; border: 1px solid var(--border); overflow: hidden; }
+    .tl-row { position: absolute; left: 8px; right: 8px; font-size: .62rem; color: var(--dim); }
+    .tl-row.calls { top: 8px; }
+    .tl-row.fires { top: 38px; }
+    .tl-mark { position: absolute; transform: translateX(-50%); }
+    .tl-mark.call { top: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+    .tl-mark.call.hl { background: var(--amber); box-shadow: 0 0 0 3px rgba(251,191,36,.35); }
+    .tl-mark.fire { top: 44px; width: 10px; height: 10px; border-radius: 50%; background: var(--green); }
+    .tl-mark.fire.hl { box-shadow: 0 0 0 4px rgba(52,211,153,.45); }
+    .tl-mark.timer { top: 14px; height: 4px; border-radius: 2px; background: rgba(251,191,36,.35); border: 1px solid rgba(251,191,36,.5); }
+    .tl-mark.timer.hl { background: rgba(251,191,36,.55); }
+    .loop-note { font-family: var(--mono); font-size: .7rem; color: var(--violet); margin-top: 8px; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(167,139,250,.3); background: rgba(167,139,250,.06); }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7z"/></svg>
+        </div>
+        <div><h1>Polyfills Visualizer</h1><p>File 16 — bind, map, filter, Promise, debounce</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Polyfill View</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Step through interview polyfill implementations.</p>
+            <div id="polyViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Polyfills replicate native behavior — check edge cases like sparse arrays and <code>this</code>.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "bind", title: "bind polyfill", blurb: "Fix this + partial args",
+        remember: "<code>bind</code> returns a wrapper that calls the original with a fixed <code>this</code> and prepended arguments via <code>apply</code>.",
+        code: `function bind(fn, thisArg, ...boundArgs) {
+  return function (...args) {
+    return fn.apply(thisArg, [...boundArgs, ...args]);
+  };
+}
+
+const obj = { x: 42 };
+function sum(a, b) { return this.x + a + b; }
+
+const bound = bind(sum, obj, 10);
+bound(5);  // 57`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "bind creates a new function with locked this and optional preset args.", stack: [], output: [], snapshot: { bind: { fn: "sum(a,b)", thisArg: null, boundArgs: [], callArgs: [], merged: null, result: null } } },
+          { line: 1, phase: "exec", title: "bind() called", narrate: "Store fn=sum, thisArg=obj, boundArgs=[10].", stack: ["bind"], output: [], snapshot: { bind: { fn: "sum", thisArg: "obj { x: 42 }", boundArgs: ["10"], callArgs: [], merged: null, result: null, hl: "setup" } } },
+          { line: 2, phase: "exec", title: "Return wrapper", narrate: "Closure captures fn, thisArg, boundArgs.", stack: ["bind"], output: [], snapshot: { bind: { fn: "wrapper()", thisArg: "obj", boundArgs: ["10"], callArgs: [], merged: null, result: "bound fn", hl: "wrapper" } } },
+          { line: 10, phase: "exec", title: "bound(5) invoked", narrate: "User calls wrapper with args [5].", stack: ["bound wrapper"], output: [], snapshot: { bind: { fn: "sum", thisArg: "obj", boundArgs: ["10"], callArgs: ["5"], merged: null, result: null, hl: "call" } } },
+          { line: 3, phase: "exec", title: "Merge args", narrate: "[...boundArgs, ...args] → [10, 5].", stack: ["bound wrapper", "sum.apply"], output: [], snapshot: { bind: { fn: "sum.apply(obj, [10,5])", thisArg: "obj", boundArgs: ["10"], callArgs: ["5"], merged: "[10, 5]", result: null, hl: "apply" } } },
+          { line: 3, phase: "exec", title: "Result", narrate: "this.x + a + b → 42 + 10 + 5 = 57.", stack: ["bound wrapper"], output: ["57"], snapshot: { bind: { fn: "sum", thisArg: "obj { x: 42 }", boundArgs: ["10"], callArgs: ["5"], merged: "[10, 5]", result: "57", hl: "result" } } }
+        ]
+      },
+      {
+        id: "map", title: "Array.map polyfill", blurb: "Transform each element",
+        remember: "Loop with index, skip holes (<code>i in arr</code>), assign <code>result[i] = fn(arr[i], i, arr)</code>.",
+        code: `function map(arr, fn) {
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (i in arr) result[i] = fn(arr[i], i, arr);
+  }
+  return result;
+}
+
+map([1, 2, 3], (n) => n * 2);
+// [2, 4, 6]`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "map builds a new array — same length, transformed values.", stack: [], output: [], snapshot: { array: { before: ["1", "2", "3"], after: [], cur: null, note: null } } },
+          { line: 1, phase: "exec", title: "Empty result[]", narrate: "Start with fresh result array.", stack: ["map"], output: [], snapshot: { array: { before: ["1", "2", "3"], after: [], cur: null, note: "result = []" } } },
+          { line: 3, phase: "loop", title: "i=0", narrate: "fn(1, 0) → 2. result[0] = 2.", stack: ["map", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3"], after: ["2", "", ""], cur: 0, note: "result[0] = 2" } } },
+          { line: 3, phase: "loop", title: "i=1", narrate: "fn(2, 1) → 4. result[1] = 4.", stack: ["map", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3"], after: ["2", "4", ""], cur: 1, note: "result[1] = 4" } } },
+          { line: 3, phase: "loop", title: "i=2", narrate: "fn(3, 2) → 6. result[2] = 6.", stack: ["map", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3"], after: ["2", "4", "6"], cur: 2, note: "result[2] = 6" } } },
+          { line: 5, phase: "exec", title: "Return result", narrate: "New array returned — input unchanged.", stack: ["map"], output: ["[2, 4, 6]"], snapshot: { array: { before: ["1", "2", "3"], after: ["2", "4", "6"], cur: null, note: "return result", hl: "after" } } }
+        ]
+      },
+      {
+        id: "filter", title: "Array.filter polyfill", blurb: "Keep passing elements",
+        remember: "Push to result only when <code>fn(item, i, arr)</code> is truthy. Also check <code>i in arr</code> for sparse arrays.",
+        code: `function filter(arr, fn) {
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (i in arr && fn(arr[i], i, arr)) result.push(arr[i]);
+  }
+  return result;
+}
+
+filter([1, 2, 3, 4], (n) => n % 2 === 0);
+// [2, 4]`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "filter compacts — result may be shorter than input.", stack: [], output: [], snapshot: { array: { before: ["1", "2", "3", "4"], after: [], cur: null, keep: null, note: null } } },
+          { line: 3, phase: "loop", title: "i=0: 1 odd", narrate: "1 % 2 !== 0 — skip, no push.", stack: ["filter", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3", "4"], after: [], cur: 0, keep: false, note: "skip 1" } } },
+          { line: 3, phase: "loop", title: "i=1: 2 even", narrate: "Truthy test — push 2.", stack: ["filter", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3", "4"], after: ["2"], cur: 1, keep: true, note: "push 2" } } },
+          { line: 3, phase: "loop", title: "i=2: 3 odd", narrate: "Skip again.", stack: ["filter", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3", "4"], after: ["2"], cur: 2, keep: false, note: "skip 3" } } },
+          { line: 3, phase: "loop", title: "i=3: 4 even", narrate: "Push 4 — result grows.", stack: ["filter", "fn"], output: [], snapshot: { array: { before: ["1", "2", "3", "4"], after: ["2", "4"], cur: 3, keep: true, note: "push 4" } } },
+          { line: 5, phase: "exec", title: "Return [2, 4]", narrate: "Shorter output array with only matches.", stack: ["filter"], output: ["[2, 4]"], snapshot: { array: { before: ["1", "2", "3", "4"], after: ["2", "4"], cur: null, keep: null, note: "return result", hl: "after" } } }
+        ]
+      },
+      {
+        id: "promise", title: "Promise resolve/then", blurb: "Simplified microtask flow",
+        remember: "Executor runs synchronously. <code>then</code> callbacks queue as microtasks after resolve. State: pending → fulfilled.",
+        code: `new Promise((resolve) => {
+  resolve(42);          // sync: state → fulfilled
+}).then((val) => {
+  console.log(val);     // microtask
+});
+
+console.log("sync first");`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Promise executor runs immediately; then waits until settled.", stack: [], output: [], snapshot: { promise: { state: "pending", value: null, micro: [], sync: true } } },
+          { line: 1, phase: "exec", title: "new Promise", narrate: "Executor invoked — state pending.", stack: ["Promise executor"], output: [], snapshot: { promise: { state: "pending", value: null, micro: [], sync: true } } },
+          { line: 2, phase: "exec", title: "resolve(42)", narrate: "Sync — state → fulfilled, value = 42.", stack: ["Promise executor", "resolve"], output: [], snapshot: { promise: { state: "fulfilled", value: "42", micro: ["then callback queued"], sync: true, hl: "resolve" } } },
+          { line: 3, phase: "micro", title: ".then registered", narrate: "Handler queued — runs after sync code.", stack: ["Promise executor"], output: [], snapshot: { promise: { state: "fulfilled", value: "42", micro: ["then(fn) → microtask queue"], sync: false, hl: "micro" } } },
+          { line: 6, phase: "exec", title: "Sync log first", narrate: "Main thread continues — \"sync first\" before then.", stack: ["console.log"], output: ["sync first"], snapshot: { promise: { state: "fulfilled", value: "42", micro: ["then callback waiting"], sync: true } } },
+          { line: 4, phase: "micro", title: "Microtask runs", narrate: "Event loop drains microtasks — log 42.", stack: ["then callback"], output: ["sync first", "42"], snapshot: { promise: { state: "fulfilled", value: "42", micro: ["then callback executed"], sync: false, hl: "micro" } } }
+        ]
+      },
+      {
+        id: "debounce", title: "Debounce polyfill", blurb: "Wait for pause before fire",
+        remember: "Each call clears the previous timer and starts a new delay window. Handler runs once after calls stop.",
+        code: `function debounce(fn, delayMs) {
+  let timerId;
+  return function (...args) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => fn(...args), delayMs);
+  };
+}
+
+// Calls at t=0,50,100,150 — delay 300ms
+// Handler fires once at t=450`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Debounce coalesces rapid calls into one execution.", stack: [], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [], fires: [], timers: [] } } },
+          { line: 4, phase: "wait", title: "call @ t=0", narrate: "Start 300ms timer.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0, hl: true }], fires: [], timers: [{ from: 0, to: 300, hl: true }] } } },
+          { line: 4, phase: "wait", title: "call @ t=50", narrate: "clearTimeout — restart 50→350.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50, hl: true }], fires: [], timers: [{ from: 50, to: 350, hl: true }] } } },
+          { line: 4, phase: "wait", title: "call @ t=100", narrate: "Timer reset again.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50 }, { t: 100, hl: true }], fires: [], timers: [{ from: 100, to: 400, hl: true }] } } },
+          { line: 4, phase: "wait", title: "call @ t=150", narrate: "Last keystroke — timer 150→450.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50 }, { t: 100 }, { t: 150, hl: true }], fires: [], timers: [{ from: 150, to: 450, hl: true }] } } },
+          { line: 5, phase: "exec", title: "fire @ t=450", narrate: "300ms idle — fn runs once.", stack: ["fetchResults"], output: ["API: fetchResults(query)"], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50 }, { t: 100 }, { t: 150 }], fires: [{ t: 450, hl: true }], timers: [] } } }
+        ]
+      },
+      {
+        id: "flat", title: "flat / reduce brief", blurb: "Flatten nested arrays",
+        remember: "<code>reduce</code> accumulates left-to-right. <code>flat</code> uses reduce + concat to flatten one level (or recurse for depth).",
+        code: `function flatten(arr, depth = 1) {
+  return depth > 0
+    ? arr.reduce((acc, v) =>
+        acc.concat(Array.isArray(v) ? flatten(v, depth - 1) : v), [])
+    : arr.slice();
+}
+
+flatten([1, [2, [3]]], 1);  // [1, 2, [3]]
+flatten([1, [2, [3]]], 2);  // [1, 2, 3]`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "reduce walks the array; concat merges accumulator with each value.", stack: [], output: [], snapshot: { array: { before: ["1", "[2,[3]]"], after: [], cur: null, note: "depth=1", depth: 1 } } },
+          { line: 1, phase: "loop", title: "reduce acc=[]", narrate: "Start accumulator empty.", stack: ["flatten", "reduce"], output: [], snapshot: { array: { before: ["1", "[2,[3]]"], after: [], cur: null, note: "acc = []", depth: 1 } } },
+          { line: 3, phase: "loop", title: "v=1", narrate: "Not array — acc.concat(1).", stack: ["flatten", "reduce"], output: [], snapshot: { array: { before: ["1", "[2,[3]]"], after: ["1"], cur: 0, note: "acc → [1]", depth: 1 } } },
+          { line: 3, phase: "loop", title: "v=[2,[3]]", narrate: "Array + depth>0 — flatten one level → [2, [3]].", stack: ["flatten", "reduce"], output: [], snapshot: { array: { before: ["1", "[2,[3]]"], after: ["1", "2", "[3]"], cur: 1, note: "concat [2,[3]]", depth: 1 } } },
+          { line: 8, phase: "exec", title: "depth=1 result", narrate: "One level flattened — inner [3] stays nested.", stack: ["flatten"], output: ["[1, 2, [3]]"], snapshot: { array: { before: ["1", "[2,[3]]"], after: ["1", "2", "[3]"], cur: null, note: "depth 1 done", depth: 1, hl: "after" } } },
+          { line: 9, phase: "exec", title: "depth=2 result", narrate: "Recursion flattens [3] too → [1, 2, 3].", stack: ["flatten"], output: ["[1, 2, [3]]", "[1, 2, 3]"], snapshot: { array: { before: ["1", "[2,[3]]"], after: ["1", "2", "3"], cur: null, note: "depth 2 — fully flat", depth: 2, hl: "after" } } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), polyViz: document.getElementById("polyViz"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function pct(t, max) { return Math.min(100, Math.max(0, (t / max) * 100)); }
+
+    function renderCells(items, cur, hl) {
+      return (items || []).map((v, i) => {
+        const cls = hl && i === items.length - 1 && v ? "hl" : cur === i ? "cur" : v === "" ? "skip" : "";
+        return `<span class="arr-cell ${cls}">${escapeHtml(v || "·")}</span>`;
+      }).join("") || `<span class="empty">empty</span>`;
+    }
+
+    function renderArray(a) {
+      const note = a.note ? `<div class="loop-note">${escapeHtml(a.note)}${a.depth ? ` · depth=${a.depth}` : ""}${a.keep === true ? " · keep" : a.keep === false ? " · skip" : ""}</div>` : "";
+      return `<div class="before-after"><div class="arr-box"><h4>Before / input</h4><div class="arr-cells">${renderCells(a.before)}</div></div><div class="arrow-mid">→</div><div class="arr-box ${a.hl === "after" ? "hl" : ""}"><h4>After / result</h4><div class="arr-cells">${renderCells(a.after, a.cur, a.hl === "after")}</div></div></div>${note}`;
+    }
+
+    function renderBind(b) {
+      const rows = [
+        ["fn", b.fn], ["thisArg", b.thisArg], ["boundArgs", (b.boundArgs || []).join(", ") || "—"],
+        ["callArgs", (b.callArgs || []).join(", ") || "—"], ["merged", b.merged || "—"], ["result", b.result || "—"]
+      ].map(([k, v]) => `<div class="ctx-row ${b.hl && (b.hl === k || b.hl === "result" && k === "result" || b.hl === "apply" && k === "merged") ? "hl" : ""}"><span>${escapeHtml(k)}</span><span>${escapeHtml(String(v))}</span></div>`).join("");
+      return `<div class="bind-viz"><div class="ctx-box ${b.hl === "setup" || b.hl === "wrapper" ? "hl" : ""}"><h4>bind closure</h4>${rows}</div><div class="ctx-box ${b.hl === "apply" || b.hl === "call" ? "hl" : ""}"><h4>apply(thisArg, args)</h4><div class="ctx-row ${b.hl === "apply" ? "hl" : ""}">fn.apply(${escapeHtml(b.thisArg || "thisArg")}, ${escapeHtml(b.merged || "[...]")})</div><div class="ctx-row ${b.hl === "result" ? "hl" : ""}">→ ${escapeHtml(b.result || "…")}</div></div></div>`;
+    }
+
+    function renderPromise(p) {
+      const micro = (p.micro || []).map((m) => `<div class="micro-queue ${p.hl === "micro" ? "hl" : ""}">${escapeHtml(m)}</div>`).join("");
+      return `<div class="promise-viz"><h4>Promise state</h4><span class="p-state ${escapeHtml(p.state)}">${escapeHtml(p.state)}</span><div class="ctx-row ${p.hl === "resolve" ? "hl" : ""}"><span>value</span><span>${escapeHtml(String(p.value ?? "—"))}</span></div><div class="ctx-row"><span>run order</span><span>${p.sync ? "sync (main thread)" : "microtask queue"}</span></div>${micro}</div>`;
+    }
+
+    function renderTimeline(tl) {
+      const max = tl.max || 500;
+      const calls = (tl.calls || []).map((c) => `<span class="tl-mark call ${c.hl ? "hl" : ""}" style="left:${pct(c.t, max)}%"></span>`).join("");
+      const fires = (tl.fires || []).map((f) => `<span class="tl-mark fire ${f.hl ? "hl" : ""}" style="left:${pct(f.t, max)}%"></span>`).join("");
+      const timers = (tl.timers || []).map((tm) => `<span class="tl-mark timer ${tm.hl ? "hl" : ""}" style="left:${pct(tm.from, max)}%;width:${pct(tm.to, max) - pct(tm.from, max)}%"></span>`).join("");
+      return `<div class="timeline"><div class="timeline-head"><span>delay = ${tl.delay}ms</span><span>0 — ${max}ms</span></div><div class="timeline-track"><div class="tl-row calls">calls</div><div class="tl-row fires">fired</div>${calls}${fires}${timers}</div></div>`;
+    }
+
+    function renderSnapshot(snap) {
+      if (!snap) { els.polyViz.innerHTML = `<div class="empty">No visualization</div>`; return; }
+      if (snap.bind) els.polyViz.innerHTML = renderBind(snap.bind);
+      else if (snap.array) els.polyViz.innerHTML = renderArray(snap.array);
+      else if (snap.promise) els.polyViz.innerHTML = renderPromise(snap.promise);
+      else if (snap.timeline) els.polyViz.innerHTML = renderTimeline(snap.timeline);
+      else els.polyViz.innerHTML = `<div class="empty">No visualization</div>`;
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) => `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span></button>`).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line);
+      renderSnapshot(fr.snapshot);
+      const phaseMap = { exec: "Execute", loop: "Loop", wait: "Waiting", micro: "Microtask", idle: "Idle" };
+      els.phasePill.textContent = phaseMap[fr.phase] || "Idle";
+      els.phasePill.className = "phase-pill " + (fr.phase === "idle" ? "" : fr.phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

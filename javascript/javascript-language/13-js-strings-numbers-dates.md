@@ -4,6 +4,8 @@
 
 Builds on types (File 01) and operators (File 03).
 
+Interactive visualizer: open [13-js-strings-numbers-dates-animation.html](./13-js-strings-numbers-dates-animation.html) in a browser — string index/length, slice vs substring, includes/indexOf, Number parsing, Math.round/floor, Date getTime/ISO, padStart (Run / Step).
+
 ---
 
 ## 1. Strings

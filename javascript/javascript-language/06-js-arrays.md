@@ -8,6 +8,8 @@ Indexes are **zero-based**: first element is `[0]`, last is `[length - 1]`. Arra
 
 **Default rule today:** use **`for...of`** or **`map`/`filter`/`reduce`** instead of manual index loops when possible; use **`spread`** or **`slice()`** to copy before mutating shared data; prefer **`find`/`some`/`every`** over manual search loops.
 
+Interactive visualizer: open [06-js-arrays-animation.html](./06-js-arrays-animation.html) in a browser — index/length, push/pop/shift/unshift, map/filter, splice vs slice, spread copy (Run / Step).
+
 ---
 
 ## 1. Creating & accessing

@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Error Handling & Timers Visualizer — File 14</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee; --danger: #ef4444;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #ef4444, #f97316); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: #ef4444; background: rgba(239,68,68,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .tag { display: inline-block; margin-top: 4px; font-size: .62rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); }
+    .tag.error { color: var(--rose); border-color: rgba(251,113,133,.4); }
+    .tag.timer { color: var(--cyan); border-color: rgba(34,211,238,.4); }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.error { color: var(--rose); border-color: rgba(251,113,133,.45); background: rgba(251,113,133,.1); }
+    .phase-pill.timer { color: var(--cyan); border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    /* Error flow */
+    .flow-stack { display: flex; flex-direction: column; gap: 0; align-items: stretch; }
+    .flow-block { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px 12px; background: rgba(15,23,42,.65); font-family: var(--mono); font-size: .76rem; position: relative; animation: pop .16s ease; }
+    .flow-block.try { border-left: 3px solid var(--blue); }
+    .flow-block.catch { border-left: 3px solid var(--rose); }
+    .flow-block.finally { border-left: 3px solid var(--violet); }
+    .flow-block.inner { margin-left: 16px; border-left-width: 3px; }
+    .flow-block.active { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,191,36,.25); background: rgba(251,191,36,.06); }
+    .flow-block.done { opacity: .55; }
+    .flow-block.skipped { opacity: .35; border-style: dashed; }
+    .flow-block .lbl { font-size: .65rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); margin-bottom: 4px; }
+    .flow-block.try .lbl { color: var(--blue-2); }
+    .flow-block.catch .lbl { color: var(--rose); }
+    .flow-block.finally .lbl { color: var(--violet); }
+    .flow-arrow { text-align: center; color: var(--dim); font-size: .9rem; line-height: 1; padding: 2px 0; }
+    .flow-arrow.active { color: var(--amber); }
+    .err-card { border: 1px solid rgba(251,113,133,.45); border-radius: 10px; padding: 10px 12px; background: rgba(251,113,133,.08); font-family: var(--mono); font-size: .74rem; }
+    .err-card .name { color: var(--rose); font-weight: 700; margin-bottom: 4px; }
+    .err-card .msg { color: var(--text); }
+    .err-card .stack { color: var(--dim); font-size: .68rem; margin-top: 6px; white-space: pre-wrap; }
+    /* Timeline */
+    .timeline-wrap { border: 1px solid var(--border-2); border-radius: 10px; padding: 12px; background: #0b1220; }
+    .timeline-track { position: relative; height: 8px; background: var(--border); border-radius: 999px; margin: 24px 8px 32px; }
+    .timeline-cursor { position: absolute; top: -6px; width: 3px; height: 20px; background: var(--amber); border-radius: 2px; transform: translateX(-50%); transition: left .2s ease; }
+    .timeline-markers { position: relative; height: 40px; margin: 0 8px; }
+    .timeline-marker { position: absolute; transform: translateX(-50%); text-align: center; font-size: .68rem; color: var(--muted); }
+    .timeline-marker::before { content: ""; display: block; width: 10px; height: 10px; border-radius: 50%; background: var(--border-2); margin: 0 auto 4px; border: 2px solid var(--panel); }
+    .timeline-marker.fired::before { background: var(--green); }
+    .timeline-marker.cancelled::before { background: var(--rose); }
+    .timeline-marker.pending::before { background: var(--cyan); }
+    .timeline-marker.active::before { background: var(--amber); box-shadow: 0 0 0 3px rgba(251,191,36,.25); }
+    .timer-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .timer-item { display: grid; grid-template-columns: 72px 1fr auto; gap: 8px; align-items: center; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--border); background: #020617; font-family: var(--mono); font-size: .72rem; }
+    .timer-item.hl { outline: 1px solid var(--amber); }
+    .timer-item .kind { font-size: .62rem; font-weight: 700; text-transform: uppercase; color: var(--cyan); }
+    .timer-item .status { font-size: .62rem; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--border-2); }
+    .timer-item .status.pending { color: var(--cyan); border-color: rgba(34,211,238,.4); }
+    .timer-item .status.fired { color: var(--green); border-color: rgba(52,211,153,.4); }
+    .timer-item .status.cancelled { color: var(--rose); border-color: rgba(251,113,133,.4); }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div><h1>Error Handling & Timers Visualizer</h1><p>File 14 — try/catch/finally, throw, setTimeout/setInterval</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Control Flow / Timeline</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Step through try/catch paths or timer scheduling.</p>
+            <div id="centerViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember"><code>finally</code> always runs. Throw <code>Error</code> objects, not strings.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "try-success", title: "try success path", blurb: "No error — skip catch, run finally", tag: "error",
+        remember: "When <code>try</code> completes without throwing, <code>catch</code> is skipped. <code>finally</code> still runs — useful for cleanup.",
+        code: `try {
+  const data = JSON.parse('{"ok":true}');
+  process(data);
+} catch (err) {
+  console.error("Parse failed:", err.message);
+} finally {
+  console.log("Always runs — cleanup");
+}`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Valid JSON — expect try → finally, catch skipped.", stack: [], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "JSON.parse + process(data)", state: "idle" },
+            { id: "catch", kind: "catch", text: "console.error(...)", state: "idle" },
+            { id: "finally", kind: "finally", text: 'console.log("Always runs")', state: "idle" }
+          ] } },
+          { line: 2, phase: "error", title: "Enter try", narrate: "Execution enters try block.", stack: ["<script>", "try"], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "JSON.parse('{\"ok\":true}')", state: "active" },
+            { id: "catch", kind: "catch", text: "console.error(...)", state: "skipped" },
+            { id: "finally", kind: "finally", text: 'console.log("Always runs")', state: "idle" }
+          ] } },
+          { line: 2, phase: "error", title: "Parse succeeds", narrate: "JSON.parse returns { ok: true } — no throw.", stack: ["<script>", "try", "JSON.parse"], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "data = { ok: true } ✓", state: "active" },
+            { id: "catch", kind: "catch", text: "skipped — no error", state: "skipped" },
+            { id: "finally", kind: "finally", text: 'console.log("Always runs")', state: "idle" }
+          ] } },
+          { line: 3, phase: "error", title: "process(data)", narrate: "try body continues — process(data) runs normally.", stack: ["<script>", "try", "process"], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "process(data) ✓", state: "done" },
+            { id: "catch", kind: "catch", text: "skipped", state: "skipped" },
+            { id: "finally", kind: "finally", text: 'console.log("Always runs")', state: "idle" }
+          ] } },
+          { line: 7, phase: "error", title: "finally runs", narrate: "finally always executes — even on success.", stack: ["<script>", "finally"], output: ["Always runs — cleanup"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "completed ✓", state: "done" },
+            { id: "catch", kind: "catch", text: "skipped", state: "skipped" },
+            { id: "finally", kind: "finally", text: 'console.log("Always runs")', state: "active" }
+          ] } },
+          { line: null, phase: "idle", title: "Done", narrate: "Path: try → finally. Catch never entered.", stack: [], output: ["Always runs — cleanup"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "completed ✓", state: "done" },
+            { id: "catch", kind: "catch", text: "skipped", state: "skipped" },
+            { id: "finally", kind: "finally", text: "ran ✓", state: "done" }
+          ] } }
+        ]
+      },
+      {
+        id: "throw-catch", title: "throw → catch → finally", blurb: "Error thrown, caught, cleanup", tag: "error",
+        remember: "<code>throw</code> jumps to the nearest <code>catch</code>. <code>finally</code> runs before control leaves the construct.",
+        code: `function divide(a, b) {
+  if (b === 0) throw new Error("Division by zero");
+  return a / b;
+}
+
+try {
+  divide(10, 0);
+} catch (err) {
+  console.error(err.message);
+} finally {
+  console.log("cleanup");
+}`,
+        frames: [
+          { line: 2, phase: "error", title: "throw new Error", narrate: "b === 0 — throw creates an Error object and unwinds stack.", stack: ["divide()", "throw"], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "divide(10, 0)", state: "active" },
+            { id: "catch", kind: "catch", text: "console.error(err.message)", state: "idle" },
+            { id: "finally", kind: "finally", text: 'console.log("cleanup")', state: "idle" }
+          ], error: { name: "Error", message: "Division by zero" } } },
+          { line: 2, phase: "error", title: "Unwind to catch", narrate: "Exception propagates from divide → try → catch.", stack: ["<script>", "catch"], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "divide threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: "console.error(err.message)", state: "active" },
+            { id: "finally", kind: "finally", text: 'console.log("cleanup")', state: "idle" }
+          ], error: { name: "Error", message: "Division by zero" } } },
+          { line: 9, phase: "error", title: "catch handler", narrate: "err.message logged — error handled, execution continues.", stack: ["<script>", "catch", "console.error"], output: ["Division by zero"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "divide threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: 'logged "Division by zero"', state: "done" },
+            { id: "finally", kind: "finally", text: 'console.log("cleanup")', state: "idle" }
+          ], error: { name: "Error", message: "Division by zero", caught: true } } },
+          { line: 11, phase: "error", title: "finally", narrate: "finally runs after catch — cleanup guaranteed.", stack: ["<script>", "finally"], output: ["Division by zero", "cleanup"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: "handled ✓", state: "done" },
+            { id: "finally", kind: "finally", text: 'console.log("cleanup")', state: "active" }
+          ] } },
+          { line: null, phase: "idle", title: "Done", narrate: "Path: try (throw) → catch → finally.", stack: [], output: ["Division by zero", "cleanup"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: "handled ✓", state: "done" },
+            { id: "finally", kind: "finally", text: "ran ✓", state: "done" }
+          ] } }
+        ]
+      },
+      {
+        id: "nested-rethrow", title: "Nested try / rethrow", blurb: "Inner catch, rethrow, outer catch", tag: "error",
+        remember: "Inner <code>catch</code> can handle partially then <code>throw</code> again. Outer <code>catch</code> receives the rethrown error.",
+        code: `try {
+  try {
+    null.foo;
+  } catch (inner) {
+    console.log("inner:", inner.name);
+    throw inner;  // rethrow
+  }
+} catch (outer) {
+  console.log("outer:", outer.message);
+}`,
+        frames: [
+          { line: 3, phase: "error", title: "TypeError in inner try", narrate: "null.foo throws TypeError inside inner try.", stack: ["<script>", "inner try"], output: [], viz: { type: "flow", blocks: [
+            { id: "outer-try", kind: "try", text: "outer try { ... }", state: "active" },
+            { id: "inner-try", kind: "try", text: "null.foo ✗", state: "active", inner: true },
+            { id: "inner-catch", kind: "catch", text: "inner catch", state: "idle", inner: true },
+            { id: "outer-catch", kind: "catch", text: "outer catch", state: "idle" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null" } } },
+          { line: 5, phase: "error", title: "Inner catch", narrate: "Inner catch receives TypeError — logs inner: TypeError.", stack: ["<script>", "inner catch"], output: ["inner: TypeError"], viz: { type: "flow", blocks: [
+            { id: "outer-try", kind: "try", text: "outer try", state: "active" },
+            { id: "inner-try", kind: "try", text: "threw ✗", state: "done", inner: true },
+            { id: "inner-catch", kind: "catch", text: 'logged inner.name', state: "active", inner: true },
+            { id: "outer-catch", kind: "catch", text: "outer catch", state: "idle" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null", caught: true } } },
+          { line: 6, phase: "error", title: "Rethrow", narrate: "throw inner — error escapes inner catch to outer try.", stack: ["<script>", "inner catch", "throw"], output: ["inner: TypeError"], viz: { type: "flow", blocks: [
+            { id: "outer-try", kind: "try", text: "outer try", state: "active" },
+            { id: "inner-try", kind: "try", text: "threw ✗", state: "done", inner: true },
+            { id: "inner-catch", kind: "catch", text: "rethrowing…", state: "active", inner: true },
+            { id: "outer-catch", kind: "catch", text: "outer catch", state: "idle" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null", rethrow: true } } },
+          { line: 9, phase: "error", title: "Outer catch", narrate: "Outer catch handles the rethrown error.", stack: ["<script>", "outer catch"], output: ["inner: TypeError", "outer: Cannot read properties of null"], viz: { type: "flow", blocks: [
+            { id: "outer-try", kind: "try", text: "inner rethrew ✗", state: "done" },
+            { id: "inner-try", kind: "try", text: "threw ✗", state: "done", inner: true },
+            { id: "inner-catch", kind: "catch", text: "rethrew", state: "done", inner: true },
+            { id: "outer-catch", kind: "catch", text: "logged outer.message", state: "active" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null", caught: true } } },
+          { line: null, phase: "idle", title: "Done", narrate: "Rethrow lets outer handlers see the same error after partial handling.", stack: [], output: ["inner: TypeError", "outer: Cannot read properties of null"], viz: { type: "flow", blocks: [
+            { id: "outer-try", kind: "try", text: "done", state: "done" },
+            { id: "inner-try", kind: "try", text: "threw", state: "done", inner: true },
+            { id: "inner-catch", kind: "catch", text: "rethrew", state: "done", inner: true },
+            { id: "outer-catch", kind: "catch", text: "handled ✓", state: "done" }
+          ] } }
+        ]
+      },
+      {
+        id: "error-object", title: "Error object", blurb: "name, message, stack, instanceof", tag: "error",
+        remember: "Throw <code>Error</code> objects — not strings. Use <code>err.name</code>, <code>err.message</code>, and <code>instanceof TypeError</code> for inspection.",
+        code: `try {
+  null.foo;
+} catch (err) {
+  console.log(err.name);       // TypeError
+  console.log(err.message);
+  console.log(err instanceof TypeError);  // true
+}`,
+        frames: [
+          { line: 2, phase: "error", title: "Throw TypeError", narrate: "Accessing property on null throws TypeError.", stack: ["<script>", "try"], output: [], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "null.foo ✗", state: "active" },
+            { id: "catch", kind: "catch", text: "inspect err", state: "idle" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null (reading 'foo')" } } },
+          { line: 4, phase: "error", title: "err.name", narrate: "Built-in errors set .name automatically.", stack: ["<script>", "catch"], output: ["TypeError"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: "err.name → TypeError", state: "active" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null (reading 'foo')", hl: "name" } } },
+          { line: 5, phase: "error", title: "err.message", narrate: "Human-readable description of what went wrong.", stack: ["<script>", "catch"], output: ["TypeError", "Cannot read properties of null (reading 'foo')"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: "err.message logged", state: "active" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null (reading 'foo')", hl: "message" } } },
+          { line: 6, phase: "error", title: "instanceof", narrate: "err instanceof TypeError → true. Helps branch on error type.", stack: ["<script>", "catch"], output: ["TypeError", "Cannot read properties of null (reading 'foo')", "true"], viz: { type: "flow", blocks: [
+            { id: "try", kind: "try", text: "threw ✗", state: "done" },
+            { id: "catch", kind: "catch", text: "instanceof TypeError → true", state: "done" }
+          ], error: { name: "TypeError", message: "Cannot read properties of null (reading 'foo')", hl: "instanceof", stack: "at <script>:2:3" } } }
+        ]
+      },
+      {
+        id: "settimeout", title: "setTimeout once", blurb: "Schedule callback after delay", tag: "timer",
+        remember: "<code>setTimeout(fn, delay)</code> runs <strong>once</strong> after delay ms. Returns a timer id for <code>clearTimeout</code>.",
+        code: `console.log("start");
+
+const id = setTimeout(() => {
+  console.log("After 1 second");
+}, 1000);
+
+console.log("scheduled", id);`,
+        frames: [
+          { line: 1, phase: "timer", title: "Sync: start", narrate: "Synchronous code runs first on the call stack.", stack: ["<script>", "console.log"], output: ["start"], viz: { type: "timeline", cursor: 0, max: 1200, markers: [{ t: 0, label: "start", state: "fired" }], timers: [] } },
+          { line: 3, phase: "timer", title: "setTimeout scheduled", narrate: "Timer registered — callback queued for ~1000ms later. Sync code continues.", stack: ["<script>", "setTimeout"], output: ["start"], viz: { type: "timeline", cursor: 50, max: 1200, markers: [{ t: 0, label: "start", state: "fired" }, { t: 50, label: "scheduled", state: "fired" }], timers: [{ id: 42, kind: "timeout", delay: 1000, status: "pending", hl: true }] } },
+          { line: 7, phase: "timer", title: "Sync continues", narrate: "console.log('scheduled', id) — id is a numeric handle.", stack: ["<script>", "console.log"], output: ["start", "scheduled 42"], viz: { type: "timeline", cursor: 100, max: 1200, markers: [{ t: 0, label: "start", state: "fired" }, { t: 100, label: "scheduled 42", state: "fired" }], timers: [{ id: 42, kind: "timeout", delay: 1000, status: "pending" }] } },
+          { line: 4, phase: "timer", title: "Stack clears", narrate: "Main script finishes. Event loop waits for timer.", stack: [], output: ["start", "scheduled 42"], viz: { type: "timeline", cursor: 500, max: 1200, markers: [{ t: 0, label: "start", state: "fired" }, { t: 100, label: "scheduled", state: "fired" }], timers: [{ id: 42, kind: "timeout", delay: 1000, status: "pending", hl: true }] } },
+          { line: 4, phase: "timer", title: "Callback fires", narrate: "~1000ms later — callback runs once, then timer is done.", stack: ["timer callback"], output: ["start", "scheduled 42", "After 1 second"], viz: { type: "timeline", cursor: 1000, max: 1200, markers: [{ t: 0, label: "start", state: "fired" }, { t: 100, label: "scheduled", state: "fired" }, { t: 1000, label: "callback", state: "fired" }], timers: [{ id: 42, kind: "timeout", delay: 1000, status: "fired", hl: true }] } }
+        ]
+      },
+      {
+        id: "setinterval", title: "setInterval repeat", blurb: "Fires repeatedly until cleared", tag: "timer",
+        remember: "<code>setInterval(fn, ms)</code> repeats until <code>clearInterval(id)</code>. Always clear on unmount to prevent leaks.",
+        code: `let count = 0;
+const id = setInterval(() => {
+  count++;
+  console.log(count);
+  if (count >= 3) clearInterval(id);
+}, 500);`,
+        frames: [
+          { line: 2, phase: "timer", title: "Interval registered", narrate: "setInterval schedules repeated callbacks every 500ms.", stack: ["<script>", "setInterval"], output: [], viz: { type: "timeline", cursor: 0, max: 1600, markers: [{ t: 0, label: "register", state: "fired" }], timers: [{ id: 7, kind: "interval", delay: 500, status: "pending", hl: true }] } },
+          { line: 4, phase: "timer", title: "Tick 1", narrate: "First callback — count becomes 1.", stack: ["interval callback"], output: ["1"], viz: { type: "timeline", cursor: 500, max: 1600, markers: [{ t: 0, label: "register", state: "fired" }, { t: 500, label: "tick 1", state: "fired" }], timers: [{ id: 7, kind: "interval", delay: 500, status: "pending", tick: 1, hl: true }] } },
+          { line: 4, phase: "timer", title: "Tick 2", narrate: "Second callback — count is 2.", stack: ["interval callback"], output: ["1", "2"], viz: { type: "timeline", cursor: 1000, max: 1600, markers: [{ t: 500, label: "tick 1", state: "fired" }, { t: 1000, label: "tick 2", state: "fired" }], timers: [{ id: 7, kind: "interval", delay: 500, status: "pending", tick: 2, hl: true }] } },
+          { line: 5, phase: "timer", title: "Tick 3 + clear", narrate: "count >= 3 — clearInterval(id) stops future ticks.", stack: ["interval callback", "clearInterval"], output: ["1", "2", "3"], viz: { type: "timeline", cursor: 1500, max: 1600, markers: [{ t: 1000, label: "tick 2", state: "fired" }, { t: 1500, label: "tick 3 + clear", state: "fired" }], timers: [{ id: 7, kind: "interval", delay: 500, status: "cancelled", tick: 3, hl: true }] } },
+          { line: null, phase: "idle", title: "Done", narrate: "No tick 4 — interval was cleared inside the callback.", stack: [], output: ["1", "2", "3"], viz: { type: "timeline", cursor: 1600, max: 1600, markers: [{ t: 1500, label: "stopped", state: "cancelled" }], timers: [{ id: 7, kind: "interval", delay: 500, status: "cancelled" }] } }
+        ]
+      },
+      {
+        id: "cleartimeout", title: "clearTimeout", blurb: "Cancel before callback runs", tag: "timer",
+        remember: "<code>clearTimeout(id)</code> removes a pending timeout. If called after it fired, it's a no-op.",
+        code: `const id = setTimeout(() => {
+  console.log("This never runs");
+}, 1000);
+
+clearTimeout(id);
+console.log("cancelled");`,
+        frames: [
+          { line: 1, phase: "timer", title: "Schedule timeout", narrate: "Timeout registered for 1000ms.", stack: ["<script>", "setTimeout"], output: [], viz: { type: "timeline", cursor: 0, max: 1200, markers: [], timers: [{ id: 99, kind: "timeout", delay: 1000, status: "pending", hl: true }] } },
+          { line: 5, phase: "timer", title: "clearTimeout", narrate: "clearTimeout(id) — timer removed from queue before it fires.", stack: ["<script>", "clearTimeout"], output: [], viz: { type: "timeline", cursor: 200, max: 1200, markers: [{ t: 200, label: "clearTimeout", state: "cancelled" }], timers: [{ id: 99, kind: "timeout", delay: 1000, status: "cancelled", hl: true }] } },
+          { line: 6, phase: "timer", title: "Sync log", narrate: "Callback never runs — only sync output.", stack: ["<script>", "console.log"], output: ["cancelled"], viz: { type: "timeline", cursor: 250, max: 1200, markers: [{ t: 200, label: "clearTimeout", state: "cancelled" }, { t: 250, label: "cancelled", state: "fired" }], timers: [{ id: 99, kind: "timeout", delay: 1000, status: "cancelled" }] } },
+          { line: 2, phase: "timer", title: "1000ms passes", narrate: "At t=1000 nothing happens — timer was cancelled.", stack: [], output: ["cancelled"], viz: { type: "timeline", cursor: 1000, max: 1200, markers: [{ t: 250, label: "cancelled", state: "fired" }, { t: 1000, label: "(no callback)", state: "cancelled" }], timers: [{ id: 99, kind: "timeout", delay: 1000, status: "cancelled" }] } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), centerViz: document.getElementById("centerViz"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function renderFlow(viz) {
+      const blocks = viz.blocks || [];
+      let html = '<div class="flow-stack">';
+      blocks.forEach((b, i) => {
+        if (i > 0) html += `<div class="flow-arrow ${b.state === "active" ? "active" : ""}">↓</div>`;
+        const cls = ["flow-block", b.kind, b.state === "active" ? "active" : "", b.state === "done" ? "done" : "", b.state === "skipped" ? "skipped" : "", b.inner ? "inner" : ""].filter(Boolean).join(" ");
+        html += `<div class="${cls}"><div class="lbl">${escapeHtml(b.kind)}</div>${escapeHtml(b.text)}</div>`;
+      });
+      html += "</div>";
+      if (viz.error) {
+        const e = viz.error;
+        const hlName = e.hl === "name" ? ' style="outline:1px solid var(--amber)"' : "";
+        const hlMsg = e.hl === "message" ? ' style="outline:1px solid var(--amber)"' : "";
+        html += `<div class="err-card" style="margin-top:10px">
+          <div class="name"${hlName}>${escapeHtml(e.name)}${e.caught ? " (caught)" : ""}${e.rethrow ? " (rethrowing)" : ""}</div>
+          <div class="msg"${hlMsg}>${escapeHtml(e.message)}</div>
+          ${e.stack ? `<div class="stack">${escapeHtml(e.stack)}</div>` : ""}
+          ${e.hl === "instanceof" ? `<div class="msg" style="margin-top:6px;color:var(--green)">instanceof TypeError → true</div>` : ""}
+        </div>`;
+      }
+      return html;
+    }
+
+    function renderTimeline(viz) {
+      const max = viz.max || 1000;
+      const pct = (t) => `${Math.min(100, (t / max) * 100)}%`;
+      const markers = (viz.markers || []).map((m) =>
+        `<div class="timeline-marker ${escapeHtml(m.state)} ${m.state === "fired" && viz.cursor >= m.t && viz.cursor <= m.t + 50 ? "active" : ""}" style="left:${pct(m.t)}">${escapeHtml(m.label)}</div>`
+      ).join("");
+      const timers = (viz.timers || []).map((t) =>
+        `<div class="timer-item ${t.hl ? "hl" : ""}"><span class="kind">${escapeHtml(t.kind)}</span><span>id=${t.id} · delay=${t.delay}ms${t.tick ? ` · tick ${t.tick}` : ""}</span><span class="status ${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></div>`
+      ).join("") || `<div class="empty">No active timers</div>`;
+      return `<div class="timeline-wrap">
+        <div style="font-size:.72rem;color:var(--dim);margin-bottom:4px">Event loop time →</div>
+        <div class="timeline-track"><div class="timeline-cursor" style="left:${pct(viz.cursor || 0)}"></div></div>
+        <div class="timeline-markers">${markers}</div>
+        <div class="timer-list">${timers}</div>
+      </div>`;
+    }
+
+    function renderViz(viz) {
+      if (!viz) { els.centerViz.innerHTML = `<div class="empty">No visualization</div>`; return; }
+      els.centerViz.innerHTML = viz.type === "timeline" ? renderTimeline(viz) : renderFlow(viz);
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) =>
+        `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}">
+          <strong>${escapeHtml(s.title)}</strong>
+          <span>${escapeHtml(s.blurb)}</span>
+          <span class="tag ${escapeHtml(s.tag)}">${escapeHtml(s.tag)}</span>
+        </button>`
+      ).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line); renderViz(fr.viz);
+      const phase = fr.phase;
+      els.phasePill.textContent = phase === "error" ? "Error flow" : phase === "timer" ? "Timer timeline" : "Idle";
+      els.phasePill.className = "phase-pill " + (phase === "idle" ? "" : phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

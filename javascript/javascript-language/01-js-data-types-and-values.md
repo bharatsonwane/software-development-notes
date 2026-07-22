@@ -17,6 +17,10 @@ x = "hello";     // now string — totally valid
 
 There are two broad categories: **primitives** and **objects** (everything else).
 
+**Default rule today:** use **`typeof`** for primitives, **`=== null`** for null, **`Number.isNaN()`** for NaN, **`Array.isArray()`** for arrays; remember objects are copied by **reference**.
+
+Interactive visualizer: open [01-js-data-types-animation.html](./01-js-data-types-animation.html) in a browser — typeof, copy vs reference, null/undefined, NaN, boxing, Symbol (Run / Step).
+
 ---
 
 ## 1. Primitives

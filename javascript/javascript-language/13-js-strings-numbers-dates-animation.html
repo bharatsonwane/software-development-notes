@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Strings, Numbers & Dates Visualizer — File 13</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #f59e0b, #ef4444); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: var(--blue); background: rgba(59,130,246,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.exec { color: var(--green); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+    .phase-pill.read { color: var(--violet); border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.1); }
+    .phase-pill.check { color: var(--cyan); border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    .viz-box { border: 1px solid var(--border-2); border-radius: 10px; background: rgba(15,23,42,.65); padding: 10px; animation: pop .16s ease; }
+    .viz-box.hl { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,191,36,.25); }
+    .viz-box h4 { margin: 0 0 8px; font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--blue-2); }
+    .char-cells { display: flex; flex-wrap: wrap; gap: 4px; }
+    .char-cell { display: flex; flex-direction: column; align-items: center; min-width: 28px; }
+    .char-cell .idx { font-size: .58rem; color: var(--dim); font-family: var(--mono); margin-bottom: 2px; }
+    .char-cell .ch { width: 28px; height: 32px; display: grid; place-items: center; border-radius: 6px; border: 1px solid var(--border-2); background: #020617; font-family: var(--mono); font-size: .8rem; }
+    .char-cell.hl .ch { border-color: var(--amber); background: rgba(251,191,36,.12); color: var(--amber); }
+    .char-cell.range .ch { border-color: var(--green); background: rgba(52,211,153,.1); color: var(--green); }
+    .char-cell.match .ch { border-color: var(--cyan); background: rgba(34,211,238,.1); color: var(--cyan); }
+    .meta-row { font-family: var(--mono); font-size: .72rem; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: #020617; margin-top: 8px; display: flex; justify-content: space-between; }
+    .meta-row .k { color: var(--violet); }
+    .meta-row .v { color: var(--amber); }
+    .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 600px) { .panel-grid { grid-template-columns: 1fr; } }
+    .panel-row { font-family: var(--mono); font-size: .72rem; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border); background: #020617; margin-bottom: 5px; display: flex; justify-content: space-between; gap: 8px; }
+    .panel-row.hl { border-color: var(--green); background: rgba(52,211,153,.08); }
+    .panel-row .k { color: var(--violet); }
+    .panel-row .v { color: var(--amber); }
+    .date-block { font-family: var(--mono); font-size: .72rem; padding: 8px; border-radius: 8px; border: 1px solid var(--border-2); background: #020617; margin-bottom: 6px; }
+    .date-block.hl { border-color: var(--cyan); background: rgba(34,211,238,.08); }
+    .date-block .label { color: var(--dim); font-size: .62rem; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+    .date-block .val { color: var(--amber); word-break: break-all; }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h8M4 17h12"/></svg>
+        </div>
+        <div><h1>Strings, Numbers & Dates</h1><p>File 13 — index, slice, parse, Math, Date</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Data View</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Step through strings, numbers, and dates.</p>
+            <div id="dataViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Strings are immutable. Use <code>Number.isNaN</code>. Store dates as ISO or epoch ms.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "index", title: "Index & length", blurb: "Zero-based character access",
+        remember: "Strings are zero-indexed. <code>s[i]</code> returns a one-character string or <code>undefined</code> (ES2020+). <code>.length</code> counts UTF-16 code units.",
+        code: `const s = "  Hello, World  ";
+
+s.length;        // 17
+s[0];            // " " (leading space)
+s[7];            // "o"
+s[15];           // "d"
+
+console.log(s.length, s[7]);`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Each character sits at an index from 0 to length-1.", stack: [], output: [], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [], match: [], meta: [] } } },
+          { line: 1, phase: "read", title: "String literal", narrate: "17 characters including spaces and punctuation.", stack: ["global"], output: [], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [], match: [], meta: [{ k: "length", v: "17", hl: true }] } } },
+          { line: 3, phase: "read", title: "s.length", narrate: "Property — not a method. Returns 17.", stack: ["eval"], output: ["17"], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [], match: [], meta: [{ k: "length", v: "17", hl: true }] } } },
+          { line: 4, phase: "read", title: "s[0]", narrate: "Index 0 is a leading space — easy to miss.", stack: ["eval"], output: ["17"], snapshot: { string: { text: "  Hello, World  ", hl: [0], range: [], match: [], meta: [{ k: "s[0]", v: '" "', hl: true }] } } },
+          { line: 5, phase: "read", title: "s[7]", narrate: "7th index is lowercase 'o' in Hello.", stack: ["eval"], output: ["17"], snapshot: { string: { text: "  Hello, World  ", hl: [7], range: [], match: [], meta: [{ k: "s[7]", v: '"o"', hl: true }] } } },
+          { line: 6, phase: "read", title: "s[15]", narrate: "Index 15 is 'd' before trailing spaces.", stack: ["eval"], output: ["17"], snapshot: { string: { text: "  Hello, World  ", hl: [15], range: [], match: [], meta: [{ k: "s[15]", v: '"d"', hl: true }] } } },
+          { line: 8, phase: "exec", title: "Log", narrate: "Bracket access returns a string character, not a char code.", stack: ["console.log"], output: ["17", "17 o"], snapshot: { string: { text: "  Hello, World  ", hl: [7], range: [], match: [], meta: [{ k: "log", v: "17, o", hl: true }] } } }
+        ]
+      },
+      {
+        id: "slice", title: "slice vs substring", blurb: "Extract substrings",
+        remember: "<code>slice(start, end)</code> accepts negative indices. <code>substring</code> treats negatives as 0 and swaps if start > end.",
+        code: `const s = "  Hello, World  ";
+
+s.slice(0, 5);       // "  Hel"
+s.slice(-6, -2);   // "Worl"
+s.substring(2, 7); // "Hello"
+s.substring(7, 2); // "Hello" — args swapped`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Both extract by start/end index — slice is usually preferred.", stack: [], output: [], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [0, 5], match: [], meta: [{ k: "method", v: "slice(0,5)" }] } } },
+          { line: 3, phase: "read", title: "slice(0, 5)", narrate: "Start inclusive, end exclusive — chars 0..4.", stack: ["slice"], output: [], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [0, 5], match: [], meta: [{ k: "slice(0,5)", v: '"  Hel"', hl: true }] } } },
+          { line: 4, phase: "read", title: "slice(-6, -2)", narrate: "Negative indices from end: -6 → W, -2 exclusive → before last space.", stack: ["slice"], output: ['"  Hel"'], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [11, 15], match: [], meta: [{ k: "slice(-6,-2)", v: '"Worl"', hl: true }] } } },
+          { line: 5, phase: "read", title: "substring(2, 7)", narrate: "Same idea but no negative index support.", stack: ["substring"], output: ['"  Hel"', '"Worl"'], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [2, 7], match: [], meta: [{ k: "substring(2,7)", v: '"Hello"', hl: true }] } } },
+          { line: 6, phase: "check", title: "substring swaps", narrate: "substring(7,2) → same as (2,7). slice would NOT swap.", stack: ["substring"], output: ['"  Hel"', '"Worl"', '"Hello"'], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [2, 7], match: [], meta: [{ k: "substring(7,2)", v: '"Hello" (swapped)', hl: true }, { k: "tip", v: "slice keeps arg order" }] } } }
+        ]
+      },
+      {
+        id: "search", title: "includes / indexOf", blurb: "Find substrings",
+        remember: "<code>includes</code> returns boolean. <code>indexOf</code> returns first index or -1. Both are case-sensitive.",
+        code: `const s = "  Hello, World  ";
+
+s.includes("World");   // true
+s.includes("world");   // false
+s.indexOf("o");        // 8
+s.lastIndexOf("o");    // 8
+s.startsWith("  H");   // true`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Search methods scan left-to-right (or right for lastIndexOf).", stack: [], output: [], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [], match: [8, 9], meta: [] } } },
+          { line: 3, phase: "read", title: "includes World", narrate: "Substring found — returns true.", stack: ["includes"], output: [], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [9, 14], match: [], meta: [{ k: 'includes("World")', v: "true", hl: true }] } } },
+          { line: 4, phase: "check", title: "Case sensitive", narrate: '"world" lowercase — not found, false.', stack: ["includes"], output: ["true"], snapshot: { string: { text: "  Hello, World  ", hl: [], range: [], match: [], meta: [{ k: 'includes("world")', v: "false", hl: true }] } } },
+          { line: 5, phase: "read", title: "indexOf o", narrate: "First 'o' at index 8 (Hello).", stack: ["indexOf"], output: ["true", "false"], snapshot: { string: { text: "  Hello, World  ", hl: [8], range: [], match: [], meta: [{ k: 'indexOf("o")', v: "8", hl: true }] } } },
+          { line: 6, phase: "read", title: "lastIndexOf o", narrate: "Only one 'o' in Hello — last is also 8. World has no lowercase o.", stack: ["lastIndexOf"], output: ["true", "false", "8"], snapshot: { string: { text: "  Hello, World  ", hl: [8], range: [], match: [], meta: [{ k: 'lastIndexOf("o")', v: "8", hl: true }] } } },
+          { line: 7, phase: "read", title: "startsWith", narrate: "Checks prefix — leading spaces matter.", stack: ["startsWith"], output: ["true", "false", "8", "8"], snapshot: { string: { text: "  Hello, World  ", hl: [0, 1, 2], range: [], match: [], meta: [{ k: 'startsWith("  H")', v: "true", hl: true }] } } }
+        ]
+      },
+      {
+        id: "parse", title: "Number parsing", blurb: "parseInt vs Number",
+        remember: "<code>Number.parseInt</code> parses prefix until invalid char. <code>Number()</code> parses whole string. Prefer <code>Number.isNaN</code> over global isNaN.",
+        code: `Number.parseInt("42px");   // 42
+Number.parseInt("0xFF", 16); // 255
+Number("42px");            // NaN
+Number("3.14");            // 3.14
+Number.isNaN(NaN);         // true`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Parsing rules differ — know which function you need.", stack: [], output: [], snapshot: { number: { rows: [{ k: "input", v: '"42px"', hl: true }], panel: "parse" } } },
+          { line: 1, phase: "exec", title: "parseInt 42px", narrate: "Stops at 'p' — returns 42.", stack: ["parseInt"], output: [], snapshot: { number: { rows: [{ k: 'parseInt("42px")', v: "42", hl: true }, { k: "rule", v: "stops at first non-digit" }], panel: "parse" } } },
+          { line: 2, phase: "exec", title: "parseInt hex", narrate: "Radix 16 — 0xFF → 255.", stack: ["parseInt"], output: ["42"], snapshot: { number: { rows: [{ k: 'parseInt("0xFF", 16)', v: "255", hl: true }], panel: "parse" } } },
+          { line: 3, phase: "check", title: "Number 42px", narrate: "Number requires entire string valid — NaN.", stack: ["Number"], output: ["42", "255"], snapshot: { number: { rows: [{ k: 'Number("42px")', v: "NaN", hl: true }, { k: "rule", v: "whole string or NaN" }], panel: "parse" } } },
+          { line: 4, phase: "exec", title: "Number 3.14", narrate: "Float strings parse fine.", stack: ["Number"], output: ["42", "255", "NaN"], snapshot: { number: { rows: [{ k: 'Number("3.14")', v: "3.14", hl: true }], panel: "parse" } } },
+          { line: 5, phase: "check", title: "Number.isNaN", narrate: "Reliable NaN check — no coercion.", stack: ["Number.isNaN"], output: ["42", "255", "NaN", "3.14", "true"], snapshot: { number: { rows: [{ k: "Number.isNaN(NaN)", v: "true", hl: true }, { k: "NaN === NaN", v: "false", hl: true }], panel: "parse" } } }
+        ]
+      },
+      {
+        id: "math", title: "Math.round / floor", blurb: "Rounding doubles",
+        remember: "JS numbers are IEEE 754 doubles. <code>Math.round</code> rounds .5 up. <code>Math.floor</code> toward -∞. Watch 0.1 + 0.2 precision.",
+        code: `Math.round(4.5);   // 5
+Math.floor(4.8);   // 4
+Math.ceil(4.2);    // 5
+Math.trunc(4.9);   // 4
+
+0.1 + 0.2;         // 0.30000000000000004
+(0.1 + 0.2).toFixed(1); // "0.3"`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Math methods operate on Number primitives.", stack: [], output: [], snapshot: { number: { rows: [{ k: "input", v: "4.5", hl: true }], panel: "math" } } },
+          { line: 1, phase: "exec", title: "Math.round(4.5)", narrate: "Half values round to nearest integer — 4.5 → 5.", stack: ["Math.round"], output: [], snapshot: { number: { rows: [{ k: "Math.round(4.5)", v: "5", hl: true }], panel: "math" } } },
+          { line: 2, phase: "exec", title: "Math.floor(4.8)", narrate: "Floor drops fractional part — 4.", stack: ["Math.floor"], output: ["5"], snapshot: { number: { rows: [{ k: "Math.floor(4.8)", v: "4", hl: true }], panel: "math" } } },
+          { line: 3, phase: "exec", title: "Math.ceil(4.2)", narrate: "Ceil always rounds up — 5.", stack: ["Math.ceil"], output: ["5", "4"], snapshot: { number: { rows: [{ k: "Math.ceil(4.2)", v: "5", hl: true }], panel: "math" } } },
+          { line: 4, phase: "exec", title: "Math.trunc(4.9)", narrate: "Trunc toward zero — 4 (like floor for positives).", stack: ["Math.trunc"], output: ["5", "4", "5"], snapshot: { number: { rows: [{ k: "Math.trunc(4.9)", v: "4", hl: true }], panel: "math" } } },
+          { line: 6, phase: "check", title: "Float precision", narrate: "0.1 + 0.2 !== 0.3 — binary float limitation.", stack: ["eval"], output: ["5", "4", "5", "4", "0.30000000000000004"], snapshot: { number: { rows: [{ k: "0.1 + 0.2", v: "0.30000000000000004", hl: true }, { k: ".toFixed(1)", v: '"0.3"', hl: true }], panel: "math" } } }
+        ]
+      },
+      {
+        id: "date", title: "Date getTime / ISO", blurb: "Timestamps & ISO strings",
+        remember: "Store dates as ISO strings or epoch ms in APIs. <code>getTime()</code> returns ms since Unix epoch. Month in constructor is 0-indexed.",
+        code: `const d = new Date("2026-06-25T10:00:00Z");
+
+d.getTime();       // epoch ms
+Date.now();        // current ms
+d.toISOString();   // "2026-06-25T10:00:00.000Z"
+
+new Date(2026, 5, 25);  // month 5 = June`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Date wraps milliseconds since 1970-01-01 UTC.", stack: [], output: [], snapshot: { date: { iso: "2026-06-25T10:00:00Z", blocks: [{ label: "constructor", val: 'new Date("2026-06-25T10:00:00Z")', hl: true }] } } },
+          { line: 1, phase: "exec", title: "Parse ISO", narrate: "ISO 8601 string — unambiguous UTC.", stack: ["Date"], output: [], snapshot: { date: { iso: "2026-06-25T10:00:00Z", blocks: [{ label: "parsed", val: "Wed Jun 25 2026 10:00:00 UTC", hl: true }] } } },
+          { line: 3, phase: "read", title: "getTime()", narrate: "Returns numeric timestamp — good for JSON storage.", stack: ["getTime"], output: [], snapshot: { date: { iso: "2026-06-25T10:00:00.000Z", blocks: [{ label: "getTime()", val: "1782381600000", hl: true }] } } },
+          { line: 4, phase: "read", title: "Date.now()", narrate: "Static shortcut — same as new Date().getTime().", stack: ["Date.now"], output: ["1782381600000"], snapshot: { date: { iso: "now", blocks: [{ label: "Date.now()", val: "current epoch ms", hl: true }] } } },
+          { line: 5, phase: "exec", title: "toISOString()", narrate: "Always UTC with Z suffix — API-friendly.", stack: ["toISOString"], output: ["1782381600000"], snapshot: { date: { iso: "2026-06-25T10:00:00.000Z", blocks: [{ label: "toISOString()", val: "2026-06-25T10:00:00.000Z", hl: true }] } } },
+          { line: 7, phase: "check", title: "Month 0-indexed", narrate: "new Date(2026, 5, 25) — month 5 is June, not May.", stack: ["Date"], output: ["1782381600000", "2026-06-25T10:00:00.000Z"], snapshot: { date: { iso: "2026-06-25", blocks: [{ label: "new Date(2026, 5, 25)", val: "June 25 local midnight", hl: true }, { label: "tip", val: "month arg is 0-indexed" }] } } }
+        ]
+      },
+      {
+        id: "pad", title: "padStart & template", blurb: "Pad strings, interpolate",
+        remember: "<code>padStart(targetLength, padString)</code> pads from the left. Template literals embed expressions with <code>${}</code>.",
+        code: `const id = 7;
+const padded = String(id).padStart(3, "0");
+// "007"
+
+const name = "Ada";
+const msg = \`Order #\${padded} for \${name}\`;
+console.log(msg);`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "padStart adds characters until target length.", stack: [], output: [], snapshot: { string: { text: "7", hl: [], range: [], match: [], meta: [{ k: "id", v: "7" }] }, pad: { before: "7", after: null, target: 3 } } },
+          { line: 2, phase: "exec", title: "String(id)", narrate: "Convert number to string before padding.", stack: ["String"], output: [], snapshot: { string: { text: "7", hl: [], range: [], match: [], meta: [{ k: "String(7)", v: '"7"', hl: true }] }, pad: { before: "7", after: null, target: 3 } } },
+          { line: 2, phase: "exec", title: "padStart(3,0)", narrate: 'Pad with "0" until length 3 → "007".', stack: ["padStart"], output: [], snapshot: { string: { text: "007", hl: [0, 1, 2], range: [], match: [], meta: [{ k: "padStart(3,'0')", v: '"007"', hl: true }] }, pad: { before: "7", after: "007", target: 3, hl: true } } },
+          { line: 6, phase: "exec", title: "Template literal", narrate: "Embed padded id and name in backtick string.", stack: ["global"], output: [], snapshot: { template: { parts: ["Order #", "007", " for ", "Ada"], result: "Order #007 for Ada", hl: true } } },
+          { line: 7, phase: "exec", title: "Console", narrate: "Combined formatting — common for IDs and labels.", stack: ["console.log"], output: ["Order #007 for Ada"], snapshot: { template: { parts: [], result: "Order #007 for Ada", hl: true } } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), dataViz: document.getElementById("dataViz"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function renderCharCells(text, hl, range, match) {
+      return [...text].map((ch, i) => {
+        const cls = hl.includes(i) ? "hl" : range.length === 2 && i >= range[0] && i < range[1] ? "range" : match.includes(i) ? "match" : "";
+        return `<div class="char-cell ${cls}"><span class="idx">${i}</span><span class="ch">${escapeHtml(ch === " " ? "␣" : ch)}</span></div>`;
+      }).join("");
+    }
+
+    function renderString(s) {
+      const meta = (s.meta || []).map((m) => `<div class="meta-row ${m.hl ? "hl" : ""}"><span class="k">${escapeHtml(m.k)}</span><span class="v">${escapeHtml(m.v)}</span></div>`).join("");
+      return `<div class="viz-box hl"><h4>String cells</h4><div class="char-cells">${renderCharCells(s.text, s.hl || [], s.range || [], s.match || [])}</div>${meta}</div>`;
+    }
+
+    function renderNumber(n) {
+      const rows = (n.rows || []).map((r) => `<div class="panel-row ${r.hl ? "hl" : ""}"><span class="k">${escapeHtml(r.k)}</span><span class="v">${escapeHtml(r.v)}</span></div>`).join("");
+      return `<div class="viz-box hl"><h4>${n.panel === "math" ? "Math panel" : "Number panel"}</h4>${rows || '<div class="empty">—</div>'}</div>`;
+    }
+
+    function renderDate(d) {
+      const blocks = (d.blocks || []).map((b) => `<div class="date-block ${b.hl ? "hl" : ""}"><div class="label">${escapeHtml(b.label)}</div><div class="val">${escapeHtml(b.val)}</div></div>`).join("");
+      return `<div class="viz-box hl"><h4>Date / timestamp</h4>${blocks || '<div class="empty">—</div>'}</div>`;
+    }
+
+    function renderPad(snap) {
+      const str = snap.string ? renderString(snap.string) : "";
+      const pad = snap.pad ? `<div class="viz-box"><h4>padStart</h4><div class="panel-row ${snap.pad.hl ? "hl" : ""}"><span class="k">before</span><span class="v">${escapeHtml(snap.pad.before)}</span></div><div class="panel-row ${snap.pad.hl ? "hl" : ""}"><span class="k">after</span><span class="v">${escapeHtml(snap.pad.after || "…")}</span></div></div>` : "";
+      const tpl = snap.template ? `<div class="viz-box hl"><h4>Template</h4><div class="meta-row"><span class="k">result</span><span class="v">${escapeHtml(snap.template.result)}</span></div></div>` : "";
+      return `<div class="panel-grid">${str}${pad}${tpl}</div>`;
+    }
+
+    function renderSnapshot(snap) {
+      if (!snap) { els.dataViz.innerHTML = `<div class="empty">No visualization</div>`; return; }
+      if (snap.pad || snap.template) els.dataViz.innerHTML = renderPad(snap);
+      else if (snap.string) els.dataViz.innerHTML = renderString(snap.string);
+      else if (snap.number) els.dataViz.innerHTML = renderNumber(snap.number);
+      else if (snap.date) els.dataViz.innerHTML = renderDate(snap.date);
+      else els.dataViz.innerHTML = `<div class="empty">No visualization</div>`;
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) => `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span></button>`).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line);
+      renderSnapshot(fr.snapshot);
+      const phaseMap = { exec: "Execute", read: "Read", check: "Check", idle: "Idle" };
+      els.phasePill.textContent = phaseMap[fr.phase] || "Idle";
+      els.phasePill.className = "phase-pill " + (fr.phase === "idle" ? "" : fr.phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

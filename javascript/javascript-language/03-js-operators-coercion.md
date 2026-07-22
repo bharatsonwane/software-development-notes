@@ -8,6 +8,8 @@ These two ideas are tightly linked: many operators trigger coercion before compa
 
 **Default rule today:** use **`===`** for equality, prefer **explicit** conversions when you need them, and learn the small list of **falsy** values by heart.
 
+Interactive visualizer: open [03-js-operators-coercion-animation.html](./03-js-operators-coercion-animation.html) in a browser — `+` vs `-`, `==`/`===`, `Object.is`, `&&`/`||`/`??`, truthy/falsy (Run / Step).
+
 ---
 
 ## 1. Operators

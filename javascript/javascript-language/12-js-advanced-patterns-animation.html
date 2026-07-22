@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Patterns Visualizer — File 12</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #ec4899, #8b5cf6); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: var(--blue); background: rgba(59,130,246,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.exec { color: var(--green); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+    .phase-pill.wait { color: var(--amber); border-color: rgba(251,191,36,.45); background: rgba(251,191,36,.1); }
+    .phase-pill.check { color: var(--violet); border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    .timeline { border: 1px solid var(--border-2); border-radius: 10px; padding: 12px; background: rgba(15,23,42,.65); }
+    .timeline-head { display: flex; justify-content: space-between; font-size: .65rem; color: var(--dim); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    .timeline-track { position: relative; height: 72px; border-radius: 8px; background: #020617; border: 1px solid var(--border); overflow: hidden; }
+    .timeline-axis { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--border-2); }
+    .tl-row { position: absolute; left: 8px; right: 8px; font-size: .62rem; color: var(--dim); }
+    .tl-row.calls { top: 8px; }
+    .tl-row.fires { top: 38px; }
+    .tl-mark { position: absolute; top: 14px; width: 8px; height: 8px; border-radius: 50%; transform: translateX(-50%); }
+    .tl-mark.call { background: var(--blue); box-shadow: 0 0 0 2px rgba(59,130,246,.25); top: 14px; }
+    .tl-mark.call.hl { background: var(--amber); box-shadow: 0 0 0 3px rgba(251,191,36,.35); }
+    .tl-mark.fire { background: var(--green); box-shadow: 0 0 0 2px rgba(52,211,153,.3); top: 44px; width: 10px; height: 10px; }
+    .tl-mark.fire.hl { box-shadow: 0 0 0 4px rgba(52,211,153,.45); }
+    .tl-mark.timer { top: 14px; width: auto; height: 4px; border-radius: 2px; background: rgba(251,191,36,.35); border: 1px solid rgba(251,191,36,.5); }
+    .tl-mark.timer.hl { background: rgba(251,191,36,.55); }
+    .tl-legend { display: flex; gap: 12px; margin-top: 8px; font-size: .65rem; color: var(--muted); }
+    .tl-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot.call { background: var(--blue); }
+    .dot.fire { background: var(--green); }
+    .dot.wait { background: var(--amber); width: 16px; height: 4px; border-radius: 2px; }
+    .box-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pattern-box { border: 1px solid var(--border-2); border-radius: 10px; background: rgba(15,23,42,.65); padding: 10px; min-width: 120px; flex: 1 1 120px; animation: pop .16s ease; }
+    .pattern-box.hl { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,191,36,.25); }
+    .pattern-box h4 { margin: 0 0 8px; font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--blue-2); }
+    .pattern-box .row { font-family: var(--mono); font-size: .7rem; padding: 4px 0; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+    .pattern-box .row.hl { color: var(--text); background: rgba(251,191,36,.08); margin: 0 -6px; padding: 4px 6px; border-radius: 4px; }
+    .pattern-box .val { color: var(--amber); }
+    .pattern-box .hit { color: var(--green); }
+    .pattern-box .miss { color: var(--rose); }
+    .arity-chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--mono); font-size: .72rem; }
+    .arity-fn { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-2); background: #020617; }
+    .arity-fn.hl { border-color: var(--green); background: rgba(52,211,153,.1); color: var(--green); }
+    .arity-arrow { color: var(--dim); }
+    .module-viz { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+    @media (max-width: 600px) { .module-viz { grid-template-columns: 1fr; } }
+    .closure-box { border: 2px dashed rgba(167,139,250,.45); border-radius: 10px; padding: 10px; background: rgba(167,139,250,.06); }
+    .closure-box .priv { font-family: var(--mono); font-size: .7rem; color: var(--violet); margin-bottom: 8px; }
+    .public-api { display: flex; flex-direction: column; gap: 4px; }
+    .api-fn { font-family: var(--mono); font-size: .68rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); background: #020617; }
+    .api-fn.hl { border-color: var(--green); color: var(--green); }
+    .pipe-viz { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--mono); font-size: .72rem; }
+    .pipe-step { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-2); background: #020617; }
+    .pipe-step.hl { border-color: var(--amber); background: rgba(251,191,36,.08); }
+    .pipe-arrow { color: var(--dim); font-size: 1rem; }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <div><h1>Advanced Patterns Visualizer</h1><p>File 12 — debounce, curry, memo, modules</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Pattern View</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Step through timing utilities and functional patterns.</p>
+            <div id="patternViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Debounce waits for pause; throttle caps frequency.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "debounce", title: "Debounce", blurb: "Calls vs single fired handler",
+        remember: "<strong>Debounce</strong> resets a timer on every call — the handler runs once after calls <strong>stop</strong> for <code>delayMs</code>. Great for search input.",
+        code: `function debounce(fn, delayMs) {
+  let timerId;
+  return function (...args) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => fn(...args), delayMs);
+  };
+}
+
+// User types at t=0,50,100,150ms — delay 300ms
+// Handler fires once at t=450ms`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Each call clears the previous timer and starts a fresh delay window.", stack: [], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [], fires: [], timers: [] } } },
+          { line: 1, phase: "exec", title: "debounce setup", narrate: "Returned wrapper keeps timerId in closure.", stack: ["debounce"], output: [], snapshot: { timeline: { max: 500, delay: 300, label: "delay = 300ms", calls: [], fires: [], timers: [] } } },
+          { line: 8, phase: "wait", title: "call @ t=0", narrate: "First keystroke — start 300ms timer.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0, hl: true }], fires: [], timers: [{ from: 0, to: 300, hl: true }] } } },
+          { line: 8, phase: "wait", title: "call @ t=50", narrate: "Another key — clearTimeout, restart timer from 50→350.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50, hl: true }], fires: [], timers: [{ from: 50, to: 350, hl: true }] } } },
+          { line: 8, phase: "wait", title: "call @ t=100", narrate: "Timer reset again — still no fire.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50 }, { t: 100, hl: true }], fires: [], timers: [{ from: 100, to: 400, hl: true }] } } },
+          { line: 8, phase: "wait", title: "call @ t=150", narrate: "Last keystroke — timer now 150→450.", stack: ["onSearch"], output: [], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50 }, { t: 100 }, { t: 150, hl: true }], fires: [], timers: [{ from: 150, to: 450, hl: true }] } } },
+          { line: 5, phase: "exec", title: "fire @ t=450", narrate: "300ms idle after last call — fetchResults runs once.", stack: ["fetchResults"], output: ["API: fetchResults(query)"], snapshot: { timeline: { max: 500, delay: 300, calls: [{ t: 0 }, { t: 50 }, { t: 100 }, { t: 150 }], fires: [{ t: 450, hl: true }], timers: [] } } }
+        ]
+      },
+      {
+        id: "throttle", title: "Throttle", blurb: "At most one call per interval",
+        remember: "<strong>Throttle</strong> runs immediately when the interval elapsed — caps rate during continuous events (scroll, mousemove).",
+        code: `function throttle(fn, intervalMs) {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= intervalMs) {
+      last = now;
+      fn(...args);
+    }
+  };
+}
+
+// Scroll events every ~20ms, interval 100ms
+// Fires at t≈0, 100, 200, 300`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Throttle ignores calls that arrive too soon after the last execution.", stack: [], output: [], snapshot: { timeline: { max: 320, interval: 100, calls: [], fires: [], skipped: [] } } },
+          { line: 1, phase: "exec", title: "throttle setup", narrate: "last timestamp stored in closure.", stack: ["throttle"], output: [], snapshot: { timeline: { max: 320, interval: 100, label: "interval = 100ms", calls: [], fires: [] } } },
+          { line: 8, phase: "exec", title: "scroll @ t=0", narrate: "First event — last was 0, fn runs.", stack: ["onScroll", "updateScrollIndicator"], output: ["updateScrollIndicator()"], snapshot: { timeline: { max: 320, interval: 100, calls: [{ t: 0, hl: true }], fires: [{ t: 0, hl: true }] } } },
+          { line: 8, phase: "wait", title: "scroll @ t=20", narrate: "Only 20ms since last — skipped.", stack: ["onScroll"], output: ["updateScrollIndicator()"], snapshot: { timeline: { max: 320, interval: 100, calls: [{ t: 0 }, { t: 20, hl: true, skip: true }], fires: [{ t: 0 }], skipped: ["t=20"] } } },
+          { line: 8, phase: "wait", title: "scroll @ t=40", narrate: "Still within 100ms window — skipped.", stack: ["onScroll"], output: ["updateScrollIndicator()"], snapshot: { timeline: { max: 320, interval: 100, calls: [{ t: 0 }, { t: 20, skip: true }, { t: 40, hl: true, skip: true }], fires: [{ t: 0 }], skipped: ["t=20", "t=40"] } } },
+          { line: 8, phase: "exec", title: "scroll @ t=100", narrate: "100ms elapsed — fn runs again.", stack: ["onScroll", "updateScrollIndicator"], output: ["updateScrollIndicator()", "updateScrollIndicator()"], snapshot: { timeline: { max: 320, interval: 100, calls: [{ t: 0 }, { t: 20, skip: true }, { t: 40, skip: true }, { t: 100, hl: true }], fires: [{ t: 0 }, { t: 100, hl: true }] } } },
+          { line: 8, phase: "exec", title: "scroll @ t=200", narrate: "Another window passed — third execution.", stack: ["onScroll", "updateScrollIndicator"], output: ["updateScrollIndicator()", "updateScrollIndicator()", "updateScrollIndicator()"], snapshot: { timeline: { max: 320, interval: 100, calls: [{ t: 0 }, { t: 20, skip: true }, { t: 40, skip: true }, { t: 100 }, { t: 200, hl: true }], fires: [{ t: 0 }, { t: 100 }, { t: 200, hl: true }] } } }
+        ]
+      },
+      {
+        id: "curry", title: "Currying", blurb: "Build arity one call at a time",
+        remember: "Currying collects arguments until <code>args.length >= fn.length</code>, then invokes the original function.",
+        code: `function curry(fn) {
+  return function curried(...args) {
+    if (args.length >= fn.length)
+      return fn(...args);
+    return (...next) => curried(...args, ...next);
+  };
+}
+
+const mul = curry((a, b, c) => a * b * c);
+mul(2)(3)(4);  // 24`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Each call with fewer args returns a new function waiting for more.", stack: [], output: [], snapshot: { curry: { target: "multiply(a,b,c)", need: 3, collected: [], fns: ["curried"], hl: 0 } } },
+          { line: 10, phase: "exec", title: "mul(2)", narrate: "1 arg < 3 — return curried waiting for b,c.", stack: ["curried"], output: [], snapshot: { curry: { target: "multiply(a,b,c)", need: 3, collected: ["a=2"], fns: ["curried(2)", "→ waiting"], hl: 1 } } },
+          { line: 10, phase: "exec", title: "mul(2)(3)", narrate: "2 args still < 3 — another partial.", stack: ["curried"], output: [], snapshot: { curry: { target: "multiply(a,b,c)", need: 3, collected: ["a=2", "b=3"], fns: ["curried(2,3)", "→ waiting"], hl: 1 } } },
+          { line: 10, phase: "exec", title: "mul(2)(3)(4)", narrate: "3 args ≥ fn.length — invoke multiply(2,3,4).", stack: ["multiply"], output: ["24"], snapshot: { curry: { target: "multiply(2,3,4)", need: 3, collected: ["a=2", "b=3", "c=4"], fns: ["fn(2,3,4)", "→ 24"], hl: 2, done: true } } },
+          { line: 10, phase: "check", title: "mul(2,3)(4)", narrate: "Curry also accepts batch args: (2,3) then (4).", stack: ["multiply"], output: ["24", "24"], snapshot: { curry: { target: "multiply(2,3,4)", need: 3, collected: ["(2,3)", "4"], fns: ["curried(2,3)(4)", "→ 24"], hl: 2, done: true } } }
+        ]
+      },
+      {
+        id: "memo", title: "Memoization", blurb: "Cache hit vs miss",
+        remember: "Store results keyed by serialized args. Trade memory for speed — watch cache size in production.",
+        code: `function memoize(fn) {
+  const cache = new Map();
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+slowSquare(5);  // compute → 25
+slowSquare(5);  // cache hit → 25`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Map stores key → result. First call computes; repeat calls read cache.", stack: [], output: [], snapshot: { memo: { cache: [], lookup: null, status: "empty" } } },
+          { line: 1, phase: "exec", title: "memoize wrapper", narrate: "Closure holds private cache Map.", stack: ["memoize"], output: [], snapshot: { memo: { cache: [], lookup: null, status: "cache ready", hl: "wrapper" } } },
+          { line: 12, phase: "exec", title: "slowSquare(5) — miss", narrate: 'Key "[5]" not in cache — run expensive fn.', stack: ["slowSquare", "compute"], output: [], snapshot: { memo: { cache: [], lookup: "[5]", status: "MISS", hl: "miss" } } },
+          { line: 12, phase: "exec", title: "store result", narrate: "cache.set(\"[5]\", 25) then return 25.", stack: ["slowSquare"], output: ["25 (computed)"], snapshot: { memo: { cache: [{ key: "[5]", val: "25" }], lookup: "[5]", status: "STORED", hl: "store" } } },
+          { line: 13, phase: "check", title: "slowSquare(5) — hit", narrate: "Same args — return cached 25, skip compute.", stack: ["slowSquare"], output: ["25 (computed)", "25 (cached)"], snapshot: { memo: { cache: [{ key: "[5]", val: "25", hl: true }], lookup: "[5]", status: "HIT", hl: "hit" } } },
+          { line: 13, phase: "check", title: "slowSquare(7)", narrate: "New key — miss again, cache grows.", stack: ["slowSquare", "compute"], output: ["25 (computed)", "25 (cached)", "49 (computed)"], snapshot: { memo: { cache: [{ key: "[5]", val: "25" }, { key: "[7]", val: "49", hl: true }], lookup: "[7]", status: "MISS → STORE", hl: "miss" } } }
+        ]
+      },
+      {
+        id: "module", title: "Revealing module", blurb: "Private closure, public API",
+        remember: "IIFE + closure hides <code>count</code>. Returned object exposes only chosen methods — classic module pattern.",
+        code: `const counter = (function () {
+  let count = 0;  // private
+
+  return {
+    inc() { count++; return count; },
+    get() { return count; },
+  };
+})();
+
+counter.inc();  // 1
+counter.inc();  // 2
+counter.get();  // 2
+// count — ReferenceError`,
+        frames: [
+          { line: 1, phase: "exec", title: "IIFE runs", narrate: "count=0 lives in closure — not on counter object.", stack: ["IIFE"], output: [], snapshot: { module: { private: "count = 0", public: ["inc()", "get()"], hl: "private" } } },
+          { line: 9, phase: "exec", title: "counter.inc()", narrate: "inc closes over count — increments to 1.", stack: ["inc"], output: ["1"], snapshot: { module: { private: "count = 1", public: ["inc() ← called", "get()"], hl: "inc" } } },
+          { line: 10, phase: "exec", title: "counter.inc()", narrate: "Private state persists between calls.", stack: ["inc"], output: ["1", "2"], snapshot: { module: { private: "count = 2", public: ["inc() ← called", "get()"], hl: "inc" } } },
+          { line: 11, phase: "exec", title: "counter.get()", narrate: "Read-only access via public API.", stack: ["get"], output: ["1", "2", "2"], snapshot: { module: { private: "count = 2", public: ["inc()", "get() ← called"], hl: "get" } } },
+          { line: 12, phase: "check", title: "count direct", narrate: "count is not in scope outside IIFE — ReferenceError.", stack: ["ReferenceError"], output: ["1", "2", "2"], snapshot: { module: { private: "count = 2 (hidden)", public: ["inc()", "get()"], hl: "error", error: "count is not defined" } } }
+        ]
+      },
+      {
+        id: "compose", title: "Compose / pipe", blurb: "Chain functions left-to-right",
+        remember: "<code>compose(f,g)(x)</code> = f(g(x)). <code>pipe</code> runs left-to-right — often more readable.",
+        code: `const double = (n) => n * 2;
+const increment = (n) => n + 1;
+
+const compose = (f, g) => (x) => f(g(x));
+const pipe = (...fns) => (x) =>
+  fns.reduce((v, fn) => fn(v), x);
+
+compose(increment, double)(5);  // 11
+pipe(double, increment)(5);     // 11`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Composition nests calls; pipe folds left to right.", stack: [], output: [], snapshot: { pipe: { steps: [{ fn: "x = 5", val: "5" }], mode: "idle" } } },
+          { line: 8, phase: "exec", title: "compose(inc, double)(5)", narrate: "Inner g first: double(5)=10, then increment(10)=11.", stack: ["double", "increment"], output: ["11"], snapshot: { pipe: { mode: "compose", steps: [{ fn: "double(5)", val: "10", hl: true }, { fn: "increment(10)", val: "11", hl: true }], input: 5 } } },
+          { line: 9, phase: "exec", title: "pipe(double, inc)(5)", narrate: "Same result — pipe applies double then increment.", stack: ["double", "increment"], output: ["11", "11"], snapshot: { pipe: { mode: "pipe", steps: [{ fn: "double(5)", val: "10", hl: true }, { fn: "increment(10)", val: "11", hl: true }], input: 5 } } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), patternViz: document.getElementById("patternViz"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function pct(t, max) { return Math.min(100, Math.max(0, (t / max) * 100)); }
+
+    function renderTimeline(tl) {
+      const max = tl.max || 500;
+      const calls = (tl.calls || []).map((c) => `<span class="tl-mark call ${c.hl ? "hl" : ""} ${c.skip ? "skip" : ""}" style="left:${pct(c.t, max)}%" title="call t=${c.t}${c.skip ? " skipped" : ""}"></span>`).join("");
+      const fires = (tl.fires || []).map((f) => `<span class="tl-mark fire ${f.hl ? "hl" : ""}" style="left:${pct(f.t, max)}%" title="fired t=${f.t}"></span>`).join("");
+      const timers = (tl.timers || []).map((tm) => {
+        const w = pct(tm.to, max) - pct(tm.from, max);
+        return `<span class="tl-mark timer ${tm.hl ? "hl" : ""}" style="left:${pct(tm.from, max)}%;width:${w}%" title="timer ${tm.from}→${tm.to}"></span>`;
+      }).join("");
+      const skipped = tl.skipped && tl.skipped.length ? `<div style="margin-top:8px;font-size:.68rem;color:var(--rose)">Skipped: ${escapeHtml(tl.skipped.join(", "))}</div>` : "";
+      return `<div class="timeline"><div class="timeline-head"><span>${escapeHtml(tl.label || "Event timeline")}</span><span>0 — ${max}ms</span></div><div class="timeline-track"><div class="tl-row calls">calls</div><div class="tl-row fires">fired</div>${calls}${fires}${timers}<div class="timeline-axis"></div></div><div class="tl-legend"><span><i class="dot call"></i> call</span><span><i class="dot fire"></i> fired</span><span><i class="dot wait"></i> debounce window</span></div>${skipped}</div>`;
+    }
+
+    function renderCurry(c) {
+      const chain = (c.fns || []).map((fn, i) => `<span class="arity-fn ${c.hl === i ? "hl" : ""}">${escapeHtml(fn)}</span>${i < c.fns.length - 1 ? '<span class="arity-arrow">→</span>' : ""}`).join("");
+      const collected = (c.collected || []).map((x) => `<div class="row ${c.done && x.includes("c=4") ? "hl" : ""}"><span>${escapeHtml(x)}</span></div>`).join("");
+      return `<div class="box-grid"><div class="pattern-box hl"><h4>Arity</h4><div class="row"><span>need</span><span class="val">${escapeHtml(String(c.need))} params</span></div>${collected}</div><div class="pattern-box"><h4>Call chain</h4><div class="arity-chain">${chain}</div>${c.done ? '<div class="row hl" style="margin-top:8px"><span>result</span><span class="val hit">24</span></div>' : ""}</div></div>`;
+    }
+
+    function renderMemo(m) {
+      const rows = (m.cache || []).map((e) => `<div class="row ${e.hl ? "hl" : ""}"><span>${escapeHtml(e.key)}</span><span class="val">${escapeHtml(e.val)}</span></div>`).join("") || `<div class="empty">cache empty</div>`;
+      const stCls = m.status === "HIT" ? "hit" : m.status && m.status.includes("MISS") ? "miss" : "";
+      return `<div class="box-grid"><div class="pattern-box ${m.hl === "wrapper" ? "hl" : ""}"><h4>Map cache</h4>${rows}</div><div class="pattern-box hl"><h4>Lookup</h4><div class="row"><span>key</span><span class="val">${escapeHtml(m.lookup || "—")}</span></div><div class="row hl"><span>status</span><span class="val ${stCls}">${escapeHtml(m.status || "")}</span></div></div></div>`;
+    }
+
+    function renderModule(m) {
+      const pub = (m.public || []).map((fn) => `<div class="api-fn ${m.hl === fn.split(" ")[0].replace("()", "") || (m.hl === "inc" && fn.includes("inc")) || (m.hl === "get" && fn.includes("get")) ? "hl" : ""}">${escapeHtml(fn)}</div>`).join("");
+      const err = m.error ? `<div style="margin-top:8px;color:var(--rose);font-family:var(--mono);font-size:.7rem">${escapeHtml(m.error)}</div>` : "";
+      return `<div class="module-viz"><div class="closure-box ${m.hl === "private" ? "hl" : ""}"><div class="priv">closure (private)</div><div class="val" style="font-family:var(--mono);font-size:.75rem;color:var(--violet)">${escapeHtml(m.private)}</div></div><div class="arity-arrow">⇒</div><div class="pattern-box"><h4>counter (public)</h4><div class="public-api">${pub}</div>${err}</div></div>`;
+    }
+
+    function renderPipe(p) {
+      const steps = (p.steps || []).map((s, i) => `${i ? '<span class="pipe-arrow">→</span>' : ""}<span class="pipe-step ${s.hl ? "hl" : ""}">${escapeHtml(s.fn)} = <span class="val">${escapeHtml(s.val)}</span></span>`).join("");
+      return `<div class="pattern-box"><h4>${escapeHtml(p.mode === "compose" ? "compose(f,g)(x)" : p.mode === "pipe" ? "pipe(...fns)(x)" : "Pipeline")}</h4><div class="pipe-viz">${steps}</div></div>`;
+    }
+
+    function renderSnapshot(snap) {
+      if (!snap) { els.patternViz.innerHTML = `<div class="empty">No visualization</div>`; return; }
+      if (snap.timeline) els.patternViz.innerHTML = renderTimeline(snap.timeline);
+      else if (snap.curry) els.patternViz.innerHTML = renderCurry(snap.curry);
+      else if (snap.memo) els.patternViz.innerHTML = renderMemo(snap.memo);
+      else if (snap.module) els.patternViz.innerHTML = renderModule(snap.module);
+      else if (snap.pipe) els.patternViz.innerHTML = renderPipe(snap.pipe);
+      else els.patternViz.innerHTML = `<div class="empty">No visualization</div>`;
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) => `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span></button>`).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line);
+      renderSnapshot(fr.snapshot);
+      const phaseMap = { exec: "Execute", wait: "Waiting", check: "Check", idle: "Idle" };
+      els.phasePill.textContent = phaseMap[fr.phase] || "Idle";
+      els.phasePill.className = "phase-pill " + (fr.phase === "idle" ? "" : fr.phase === "wait" ? "wait" : fr.phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

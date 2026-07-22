@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Types & Values Visualizer — File 01</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #f59e0b, #ec4899); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: var(--blue); background: rgba(59,130,246,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.exec { color: var(--green); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+    .phase-pill.check { color: var(--violet); border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    .mem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 700px) { .mem-grid { grid-template-columns: 1fr; } }
+    .mem-panel { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: rgba(15,23,42,.65); min-height: 80px; }
+    .mem-panel h3 { margin: 0 0 8px; font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); font-weight: 700; }
+    .slot { display: grid; grid-template-columns: 64px 1fr auto; gap: 8px; align-items: center; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--border); background: #020617; font-family: var(--mono); font-size: .74rem; margin-bottom: 6px; animation: pop .16s ease; }
+    .slot.hl { outline: 1px solid var(--amber); border-color: rgba(251,191,36,.5); }
+    .slot .name { color: var(--blue-2); font-weight: 600; }
+    .slot .val { color: var(--amber); word-break: break-all; }
+    .slot .tag { font-size: .62rem; padding: 2px 6px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); }
+    .slot .tag.prim { color: var(--cyan); border-color: rgba(34,211,238,.4); }
+    .slot .tag.ref { color: var(--violet); border-color: rgba(167,139,250,.4); }
+    .heap-obj { border: 1px dashed var(--border-2); border-radius: 8px; padding: 8px; margin-bottom: 8px; font-family: var(--mono); font-size: .72rem; }
+    .heap-obj.hl { border-color: var(--amber); background: rgba(251,191,36,.06); }
+    .heap-obj .oid { color: var(--violet); font-weight: 600; margin-bottom: 6px; }
+    .heap-obj .prop { color: var(--muted); padding: 2px 0; }
+    .heap-obj .prop b { color: var(--text); }
+    .compare-box { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: #0b1220; font-family: var(--mono); font-size: .76rem; }
+    .compare-box .row { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; color: var(--muted); }
+    .compare-box .row.result { color: var(--text); font-weight: 600; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
+    .compare-box .true { color: var(--green); }
+    .compare-box .false { color: var(--rose); }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+        </div>
+        <div><h1>Data Types & Values Visualizer</h1><p>File 01 — primitives, references, typeof</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Memory Model</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Step through how values live in stack slots vs the heap.</p>
+            <div id="memoryViz"></div>
+            <div id="compareViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Primitives copy by value; objects copy references.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "typeof-prim", title: "typeof primitives", blurb: "Type tags for each primitive",
+        remember: "<code>typeof</code> returns a string. Watch the famous bug: <code>typeof null === \"object\"</code>.",
+        code: `typeof "hello";    // "string"
+typeof 42;         // "number"
+typeof true;       // "boolean"
+typeof undefined;  // "undefined"
+typeof Symbol();   // "symbol"
+typeof null;       // "object" ← quirk`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Each expression is evaluated; typeof returns a type string.", stack: [], output: [], snapshot: { vars: [], heap: [] } },
+          { line: 1, phase: "check", title: "typeof string", narrate: "String literal → typeof is \"string\".", stack: ["typeof"], output: ['"string"'], snapshot: { vars: [{ name: "expr", kind: "prim", value: '"hello"', typeof: "string", hl: true }], heap: [] } },
+          { line: 2, phase: "check", title: "typeof number", narrate: "Numbers are 64-bit floats — still typeof \"number\".", stack: ["typeof"], output: ['"string"', '"number"'], snapshot: { vars: [{ name: "expr", kind: "prim", value: "42", typeof: "number", hl: true }], heap: [] } },
+          { line: 3, phase: "check", title: "typeof boolean", narrate: "Booleans from comparisons/logic.", stack: ["typeof"], output: ['"string"', '"number"', '"boolean"'], snapshot: { vars: [{ name: "expr", kind: "prim", value: "true", typeof: "boolean", hl: true }], heap: [] } },
+          { line: 4, phase: "check", title: "typeof undefined", narrate: "Missing assignment → undefined type tag.", stack: ["typeof"], output: ['"string"', '"number"', '"boolean"', '"undefined"'], snapshot: { vars: [{ name: "expr", kind: "prim", value: "undefined", typeof: "undefined", hl: true }], heap: [] } },
+          { line: 5, phase: "check", title: "typeof symbol", narrate: "Each Symbol() is unique; typeof is \"symbol\".", stack: ["typeof"], output: ['"string"', '"number"', '"boolean"', '"undefined"', '"symbol"'], snapshot: { vars: [{ name: "expr", kind: "prim", value: "Symbol()", typeof: "symbol", hl: true }], heap: [] } },
+          { line: 6, phase: "check", title: "typeof null quirk", narrate: "null is a primitive, but typeof returns \"object\" — use x === null instead.", stack: ["typeof"], output: ['"string"', '"number"', '"boolean"', '"undefined"', '"symbol"', '"object"'], snapshot: { vars: [{ name: "expr", kind: "prim", value: "null", typeof: "object", hl: true, warn: true }], heap: [] } }
+        ]
+      },
+      {
+        id: "copy-ref", title: "Copy vs reference", blurb: "Number copy vs object mutation",
+        remember: "Primitives assign by <strong>value</strong>. Object variables hold a <strong>reference</strong> — two names can point at one object.",
+        code: `let a = 10;
+let b = a;
+b = 20;
+console.log(a); // 10
+
+const obj1 = { x: 1 };
+const obj2 = obj1;
+obj2.x = 99;
+console.log(obj1.x); // 99`,
+        frames: [
+          { line: 1, phase: "exec", title: "a = 10", narrate: "Primitive 10 stored directly in slot a.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "a", kind: "prim", value: "10", hl: true }], heap: [] } },
+          { line: 2, phase: "exec", title: "b = a", narrate: "Copy the value 10 into b — independent slots.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "a", kind: "prim", value: "10" }, { name: "b", kind: "prim", value: "10", hl: true }], heap: [] } },
+          { line: 3, phase: "exec", title: "b = 20", narrate: "Reassign b — a is unchanged.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "a", kind: "prim", value: "10" }, { name: "b", kind: "prim", value: "20", hl: true }], heap: [] } },
+          { line: 4, phase: "exec", title: "log(a)", narrate: "a still holds 10.", stack: ["<script>", "console.log"], output: ["10"], snapshot: { vars: [{ name: "a", kind: "prim", value: "10", hl: true }, { name: "b", kind: "prim", value: "20" }], heap: [] } },
+          { line: 6, phase: "exec", title: "obj1 = { x: 1 }", narrate: "Object created on heap; obj1 holds a reference.", stack: ["<script>"], output: ["10"], snapshot: { vars: [{ name: "a", kind: "prim", value: "10" }, { name: "b", kind: "prim", value: "20" }, { name: "obj1", kind: "ref", value: "→ @1", ref: "@1", hl: true }], heap: [{ id: "@1", props: [{ k: "x", v: "1" }], hl: true }] } },
+          { line: 7, phase: "exec", title: "obj2 = obj1", narrate: "Reference copied — both point to the same @1 object.", stack: ["<script>"], output: ["10"], snapshot: { vars: [{ name: "obj1", kind: "ref", value: "→ @1", ref: "@1" }, { name: "obj2", kind: "ref", value: "→ @1", ref: "@1", hl: true }], heap: [{ id: "@1", props: [{ k: "x", v: "1" }], hl: true }] } },
+          { line: 8, phase: "exec", title: "obj2.x = 99", narrate: "Mutate through obj2 — obj1 sees the change.", stack: ["<script>"], output: ["10"], snapshot: { vars: [{ name: "obj1", kind: "ref", value: "→ @1", ref: "@1" }, { name: "obj2", kind: "ref", value: "→ @1", ref: "@1", hl: true }], heap: [{ id: "@1", props: [{ k: "x", v: "99" }], hl: true }] } },
+          { line: 9, phase: "exec", title: "log(obj1.x)", narrate: "Same object in memory → prints 99.", stack: ["<script>", "console.log"], output: ["10", "99"], snapshot: { vars: [{ name: "obj1", kind: "ref", value: "→ @1", ref: "@1", hl: true }], heap: [{ id: "@1", props: [{ k: "x", v: "99" }] }] } }
+        ]
+      },
+      {
+        id: "null-undef", title: "null vs undefined", blurb: "Automatic vs intentional empty",
+        remember: "<code>undefined</code> = JS default (unassigned). <code>null</code> = you mean empty. Check null with <code>x === null</code>, not typeof.",
+        code: `let a;
+let b = null;
+
+console.log(a);        // undefined
+console.log(b);        // null
+console.log(a == null);  // true (loose)
+console.log(b === null); // true`,
+        frames: [
+          { line: 1, phase: "exec", title: "let a", narrate: "Declared but not assigned — a is undefined.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "a", kind: "prim", value: "undefined", hl: true }], heap: [] } },
+          { line: 2, phase: "exec", title: "b = null", narrate: "Explicit intentional absence of value.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "a", kind: "prim", value: "undefined" }, { name: "b", kind: "prim", value: "null", hl: true }], heap: [] } },
+          { line: 4, phase: "exec", title: "log(a)", narrate: "undefined prints as undefined (no quotes in console).", stack: ["console.log"], output: ["undefined"], snapshot: { vars: [{ name: "a", kind: "prim", value: "undefined", hl: true }], heap: [] } },
+          { line: 5, phase: "exec", title: "log(b)", narrate: "null prints as null.", stack: ["console.log"], output: ["undefined", "null"], snapshot: { vars: [{ name: "b", kind: "prim", value: "null", hl: true }], heap: [] } },
+          { line: 6, phase: "check", title: "a == null", narrate: "Loose equality treats undefined and null as equal.", stack: ["=="], output: ["undefined", "null", "true"], snapshot: { vars: [{ name: "a", kind: "prim", value: "undefined" }], heap: [], compare: { left: "a (undefined)", op: "==", right: "null", result: "true", ok: true } } },
+          { line: 7, phase: "check", title: "b === null", narrate: "Strict check for null — preferred.", stack: ["==="], output: ["undefined", "null", "true", "true"], snapshot: { vars: [{ name: "b", kind: "prim", value: "null", hl: true }], heap: [], compare: { left: "b", op: "===", right: "null", result: "true", ok: true } } }
+        ]
+      },
+      {
+        id: "nan-check", title: "NaN checks", blurb: "NaN !== NaN, use Number.isNaN",
+        remember: "<code>NaN === NaN</code> is false. Prefer <code>Number.isNaN(x)</code> over global <code>isNaN()</code>. <code>Object.is</code> treats NaN as equal to itself.",
+        code: `NaN === NaN;              // false
+Number.isNaN(NaN);        // true
+Number.isNaN("abc");      // false
+Object.is(NaN, NaN);      // true
+isNaN("abc");             // true (coerces!)`,
+        frames: [
+          { line: 1, phase: "check", title: "NaN === NaN", narrate: "NaN is the only value not equal to itself with ===.", stack: ["==="], output: ["false"], snapshot: { vars: [], heap: [], compare: { left: "NaN", op: "===", right: "NaN", result: "false", ok: false } } },
+          { line: 2, phase: "check", title: "Number.isNaN(NaN)", narrate: "Strict — only true for actual NaN value.", stack: ["Number.isNaN"], output: ["false", "true"], snapshot: { vars: [{ name: "arg", kind: "prim", value: "NaN", hl: true }], heap: [], compare: { left: "Number.isNaN(NaN)", op: "→", right: "", result: "true", ok: true } } },
+          { line: 3, phase: "check", title: "Number.isNaN('abc')", narrate: "Does not coerce string — returns false.", stack: ["Number.isNaN"], output: ["false", "true", "false"], snapshot: { vars: [{ name: "arg", kind: "prim", value: '"abc"', hl: true }], heap: [], compare: { left: "Number.isNaN('abc')", op: "→", right: "", result: "false", ok: true } } },
+          { line: 4, phase: "check", title: "Object.is(NaN, NaN)", narrate: "Same-value equality — NaN matches NaN.", stack: ["Object.is"], output: ["false", "true", "false", "true"], snapshot: { vars: [], heap: [], compare: { left: "NaN", op: "Object.is", right: "NaN", result: "true", ok: true } } },
+          { line: 5, phase: "check", title: "isNaN('abc')", narrate: "Global isNaN coerces 'abc' to NaN first — misleading true.", stack: ["isNaN"], output: ["false", "true", "false", "true", "true"], snapshot: { vars: [{ name: "arg", kind: "prim", value: '"abc"', hl: true, warn: true }], heap: [], compare: { left: "isNaN('abc')", op: "→", right: "(coerces)", result: "true", ok: false } } }
+        ]
+      },
+      {
+        id: "boxing", title: "Boxing (brief)", blurb: "Primitive method call wraps temporarily",
+        remember: "Methods on primitives auto-wrap in object boxes, then discard. Avoid <code>new String()</code> — creates unnecessary object wrappers.",
+        code: `const s = "hello";
+typeof s;                 // "string"
+s.toUpperCase();          // "HELLO" — temporary wrap
+console.log(s);           // still "hello"
+
+const boxed = new String("hi");
+typeof boxed;             // "object"`,
+        frames: [
+          { line: 1, phase: "exec", title: "s = 'hello'", narrate: "Primitive string stored in s.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "s", kind: "prim", value: '"hello"', typeof: "string", hl: true }], heap: [] } },
+          { line: 2, phase: "check", title: "typeof s", narrate: "Variable holds primitive — typeof \"string\".", stack: ["typeof"], output: ['"string"'], snapshot: { vars: [{ name: "s", kind: "prim", value: '"hello"', typeof: "string", hl: true }], heap: [] } },
+          { line: 3, phase: "exec", title: "toUpperCase()", narrate: "Engine creates temporary String object @box, calls method, discards wrapper.", stack: ["String.prototype.toUpperCase"], output: ['"string"'], snapshot: { vars: [{ name: "s", kind: "prim", value: '"hello"' }], heap: [{ id: "@box", props: [{ k: "[[PrimitiveValue]]", v: '"hello"' }], hl: true, temp: true }] } },
+          { line: 4, phase: "exec", title: "s unchanged", narrate: "Original primitive s is still \"hello\" — immutable.", stack: ["console.log"], output: ['"string"', "hello"], snapshot: { vars: [{ name: "s", kind: "prim", value: '"hello"', hl: true }], heap: [] } },
+          { line: 6, phase: "exec", title: "new String('hi')", narrate: "Explicit wrapper object — rarely needed.", stack: ["<script>"], output: ['"string"', "hello"], snapshot: { vars: [{ name: "boxed", kind: "ref", value: "→ @2", ref: "@2", typeof: "object", hl: true }], heap: [{ id: "@2", props: [{ k: "[[PrimitiveValue]]", v: '"hi"' }], hl: true }] } },
+          { line: 7, phase: "check", title: "typeof boxed", narrate: "Wrapper is an object — typeof \"object\", not \"string\".", stack: ["typeof"], output: ['"string"', "hello", '"object"'], snapshot: { vars: [{ name: "boxed", kind: "ref", value: "→ @2", typeof: "object", hl: true }], heap: [{ id: "@2", props: [{ k: "[[PrimitiveValue]]", v: '"hi"' }] }] } }
+        ]
+      },
+      {
+        id: "symbol-uniq", title: "Symbol uniqueness", blurb: "Every Symbol() is distinct",
+        remember: "Even with the same description, <code>Symbol('id') !== Symbol('id')</code>. Use symbols for hidden/unique object keys.",
+        code: `const id1 = Symbol("id");
+const id2 = Symbol("id");
+
+console.log(id1 === id2);       // false
+const user = { [id1]: 123, name: "Bharat" };
+console.log(user[id1]);         // 123
+console.log(user.id);           // undefined`,
+        frames: [
+          { line: 1, phase: "exec", title: "Symbol('id') #1", narrate: "Creates unique symbol value @sym1.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "id1", kind: "prim", value: "Symbol(id)", hl: true }], heap: [{ id: "@sym1", props: [{ k: "description", v: '"id"' }], hl: true }] } },
+          { line: 2, phase: "exec", title: "Symbol('id') #2", narrate: "Same description, different unique value @sym2.", stack: ["<script>"], output: [], snapshot: { vars: [{ name: "id1", kind: "prim", value: "Symbol(id)" }, { name: "id2", kind: "prim", value: "Symbol(id)", hl: true }], heap: [{ id: "@sym1", props: [{ k: "description", v: '"id"' }] }, { id: "@sym2", props: [{ k: "description", v: '"id"' }], hl: true }] } },
+          { line: 4, phase: "check", title: "id1 === id2", narrate: "Symbols always compare by identity — false.", stack: ["==="], output: ["false"], snapshot: { vars: [{ name: "id1", kind: "prim", value: "Symbol(id)" }, { name: "id2", kind: "prim", value: "Symbol(id)" }], heap: [{ id: "@sym1", props: [] }, { id: "@sym2", props: [] }], compare: { left: "id1", op: "===", right: "id2", result: "false", ok: false } } },
+          { line: 5, phase: "exec", title: "user object", narrate: "Computed key [id1] stores 123 — not accessible as user.id.", stack: ["<script>"], output: ["false"], snapshot: { vars: [{ name: "user", kind: "ref", value: "→ @user", ref: "@user", hl: true }], heap: [{ id: "@user", props: [{ k: "[id1]", v: "123" }, { k: "name", v: '"Bharat"' }], hl: true }] } },
+          { line: 6, phase: "exec", title: "user[id1]", narrate: "Lookup with the symbol reference works.", stack: ["console.log"], output: ["false", "123"], snapshot: { vars: [{ name: "user", kind: "ref", value: "→ @user", ref: "@user" }], heap: [{ id: "@user", props: [{ k: "[id1]", v: "123", hl: true }, { k: "name", v: '"Bharat"' }], hl: true }] } },
+          { line: 7, phase: "exec", title: "user.id", narrate: "Dot access looks for string key 'id' — undefined.", stack: ["console.log"], output: ["false", "123", "undefined"], snapshot: { vars: [{ name: "user", kind: "ref", value: "→ @user" }], heap: [{ id: "@user", props: [{ k: "[id1]", v: "123" }, { k: "name", v: '"Bharat"' }, { k: "id", v: "undefined", hl: true, miss: true }] }] } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), memoryViz: document.getElementById("memoryViz"),
+      compareViz: document.getElementById("compareViz"), narrate: document.getElementById("narrate"),
+      phasePill: document.getElementById("phasePill"), callStack: document.getElementById("callStack"),
+      output: document.getElementById("output"), remember: document.getElementById("remember"),
+      stepLabel: document.getElementById("stepLabel"), runLabel: document.getElementById("runLabel"),
+      speed: document.getElementById("speed"), speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function renderMemory(snap) {
+      if (!snap) { els.memoryViz.innerHTML = ""; return; }
+      const vars = (snap.vars || []).map((v) => {
+        const tag = v.kind === "ref" ? "ref" : "prim";
+        const extra = v.typeof ? ` · typeof ${v.typeof}` : "";
+        const warn = v.warn ? ' style="color:var(--rose)"' : "";
+        return `<div class="slot ${v.hl ? "hl" : ""}"><span class="name">${escapeHtml(v.name)}</span><span class="val"${warn}>${escapeHtml(v.value)}${escapeHtml(extra)}</span><span class="tag ${tag}">${tag}</span></div>`;
+      }).join("") || `<div class="empty">No bindings yet</div>`;
+      const heap = (snap.heap || []).map((o) => {
+        const props = (o.props || []).map((p) => `<div class="prop"><b>${escapeHtml(p.k)}</b>: ${escapeHtml(p.v)}${p.hl ? " ←" : ""}${p.miss ? " (missing)" : ""}</div>`).join("") || `<div class="prop">empty</div>`;
+        return `<div class="heap-obj ${o.hl ? "hl" : ""}"><div class="oid">${escapeHtml(o.id)}${o.temp ? " (temp box)" : ""}</div>${props}</div>`;
+      }).join("");
+      els.memoryViz.innerHTML = `<div class="mem-grid"><div class="mem-panel"><h3>Stack slots</h3>${vars}</div><div class="mem-panel"><h3>Heap</h3>${heap || `<div class="empty">No objects</div>`}</div></div>`;
+    }
+
+    function renderCompare(cmp) {
+      if (!cmp) { els.compareViz.innerHTML = ""; return; }
+      const cls = cmp.ok ? "true" : cmp.result === "false" ? "false" : "";
+      els.compareViz.innerHTML = `<div class="compare-box"><div class="row"><span>${escapeHtml(cmp.left)}</span><span>${escapeHtml(cmp.op)}</span><span>${escapeHtml(cmp.right)}</span></div><div class="row result ${cls}">→ ${escapeHtml(cmp.result)}</div></div>`;
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) => `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span></button>`).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line);
+      renderMemory(fr.snapshot); renderCompare(fr.snapshot && fr.snapshot.compare);
+      els.phasePill.textContent = fr.phase === "exec" ? "Execute" : fr.phase === "check" ? "Type check" : "Idle";
+      els.phasePill.className = "phase-pill " + (fr.phase === "idle" ? "" : fr.phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

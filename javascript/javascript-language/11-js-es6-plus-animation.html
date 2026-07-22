@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ES6+ Features Visualizer — File 11</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #059669, #3b82f6); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: var(--blue); background: rgba(59,130,246,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.exec { color: var(--green); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+    .phase-pill.unpack { color: var(--violet); border-color: rgba(167,139,250,.45); background: rgba(167,139,250,.1); }
+    .phase-pill.check { color: var(--cyan); border-color: rgba(34,211,238,.45); background: rgba(34,211,238,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    .box-grid { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+    .viz-box { border: 1px solid var(--border-2); border-radius: 10px; background: rgba(15,23,42,.65); padding: 10px; flex: 1 1 140px; animation: pop .16s ease; }
+    .viz-box.hl { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,191,36,.25); }
+    .viz-box h4 { margin: 0 0 8px; font-size: .68rem; letter-spacing: .05em; text-transform: uppercase; color: var(--blue-2); }
+    .viz-row { font-family: var(--mono); font-size: .72rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--border); background: #020617; margin-bottom: 5px; display: flex; justify-content: space-between; gap: 8px; }
+    .viz-row.hl { border-color: var(--green); background: rgba(52,211,153,.08); color: var(--green); }
+    .viz-row .k { color: var(--violet); }
+    .viz-row .v { color: var(--amber); }
+    .arrow-col { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--dim); font-size: 1.2rem; padding: 0 4px; }
+    .char-grid { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tpl-part { font-family: var(--mono); font-size: .72rem; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-2); background: #020617; }
+    .tpl-part.str { color: var(--muted); }
+    .tpl-part.val { color: var(--amber); border-color: rgba(251,191,36,.4); background: rgba(251,191,36,.08); }
+    .tpl-part.hl { outline: 1px solid var(--green); }
+    .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--mono); font-size: .72rem; }
+    .chain-step { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-2); background: #020617; }
+    .chain-step.ok { border-color: var(--green); color: var(--green); }
+    .chain-step.skip { border-color: var(--rose); color: var(--rose); opacity: .75; }
+    .chain-step.hl { border-color: var(--amber); background: rgba(251,191,36,.08); }
+    .chain-arrow { color: var(--dim); }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: .72rem; font-family: var(--mono); }
+    .compare-table td { padding: 6px 8px; border: 1px solid var(--border); }
+    .compare-table td.hl { background: rgba(52,211,153,.1); color: var(--green); }
+    .compare-table td.dim { color: var(--dim); }
+    .module-flow { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+    @media (max-width: 600px) { .module-flow { grid-template-columns: 1fr; } }
+    .mod-file { border: 1px solid var(--border-2); border-radius: 10px; padding: 10px; background: #020617; }
+    .mod-file.hl { border-color: var(--cyan); }
+    .mod-file .fname { color: var(--cyan); font-family: var(--mono); font-size: .72rem; margin-bottom: 6px; }
+    .mod-export, .mod-import { font-family: var(--mono); font-size: .68rem; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; }
+    .mod-export { color: var(--green); background: rgba(52,211,153,.08); }
+    .mod-import { color: var(--violet); background: rgba(167,139,250,.08); }
+    .spread-viz { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-family: var(--mono); font-size: .72rem; }
+    .arr-chip { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-2); background: #020617; }
+    .arr-chip.hl { border-color: var(--amber); background: rgba(251,191,36,.08); }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h10M4 17h14"/></svg>
+        </div>
+        <div><h1>ES6+ Features Visualizer</h1><p>File 11 — destructuring, spread, modules, Map/Set</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Feature View</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Step through modern ES6+ syntax and collections.</p>
+            <div id="featureViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Modern JS: modules, Map/Set, <code>?. ??</code>, spread/rest.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "destructure", title: "Destructuring", blurb: "Unpack object & array",
+        remember: "Destructuring pulls values from objects/arrays into bindings. Use defaults and rename: <code>{ city: hometown = \"Pune\" }</code>.",
+        code: `const user = { name: "Bharat", age: 30, city: "Pune" };
+const { name, age } = user;
+
+const nums = [10, 20, 30];
+const [first, second, ...rest] = nums;
+
+console.log(name, age);   // Bharat 30
+console.log(first, rest); // 10 [30]`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Pattern on the left matches shape on the right — values flow into new bindings.", stack: [], output: [], snapshot: { destructure: { source: { label: "user", rows: [{ k: "name", v: "Bharat" }, { k: "age", v: "30" }, { k: "city", v: "Pune" }] }, targets: [], mode: "object" } } },
+          { line: 1, phase: "unpack", title: "Object source", narrate: "user holds three own properties ready to unpack.", stack: ["global"], output: [], snapshot: { destructure: { source: { label: "user", rows: [{ k: "name", v: "Bharat", hl: true }, { k: "age", v: "30", hl: true }, { k: "city", v: "Pune" }] }, targets: [], mode: "object" } } },
+          { line: 2, phase: "unpack", title: "Extract name, age", narrate: "name ← user.name, age ← user.age. city skipped.", stack: ["global"], output: [], snapshot: { destructure: { source: { label: "user", rows: [{ k: "name", v: "→ name", hl: true }, { k: "age", v: "→ age", hl: true }, { k: "city", v: "Pune" }] }, targets: [{ k: "name", v: "Bharat", hl: true }, { k: "age", v: "30", hl: true }], mode: "object" } } },
+          { line: 4, phase: "unpack", title: "Array pattern", narrate: "nums = [10, 20, 30] — positional binding.", stack: ["global"], output: [], snapshot: { destructure: { source: { label: "nums", rows: [{ k: "[0]", v: "10" }, { k: "[1]", v: "20" }, { k: "[2]", v: "30" }] }, targets: [], mode: "array" } } },
+          { line: 5, phase: "unpack", title: "Rest collects remainder", narrate: "first=10, second=20, rest=[30] — rest must be last.", stack: ["global"], output: [], snapshot: { destructure: { source: { label: "nums", rows: [{ k: "[0]", v: "→ first", hl: true }, { k: "[1]", v: "→ second", hl: true }, { k: "[2]", v: "→ rest", hl: true }] }, targets: [{ k: "first", v: "10", hl: true }, { k: "second", v: "20", hl: true }, { k: "rest", v: "[30]", hl: true }], mode: "array" } } },
+          { line: 7, phase: "exec", title: "Log bindings", narrate: "Destructuring complete — bindings live in scope.", stack: ["console.log"], output: ["Bharat 30"], snapshot: { destructure: { source: { label: "done", rows: [] }, targets: [{ k: "name", v: "Bharat" }, { k: "age", v: "30" }, { k: "first", v: "10" }, { k: "rest", v: "[30]" }], mode: "array" } } },
+          { line: 8, phase: "exec", title: "Array log", narrate: "rest is a real array — [30] not the number 30.", stack: ["console.log"], output: ["Bharat 30", "10 [30]"], snapshot: { destructure: { source: { label: "done", rows: [] }, targets: [{ k: "first", v: "10" }, { k: "rest", v: "[30]", hl: true }], mode: "array" } } }
+        ]
+      },
+      {
+        id: "spread", title: "Rest / Spread", blurb: "... collects or expands",
+        remember: "<code>...rest</code> gathers remaining items. <code>...arr</code> expands iterables into new arrays or argument lists.",
+        code: `const a = [1, 2];
+const b = [3, 4];
+const merged = [...a, ...b, 5];
+
+function sum(...nums) {
+  return nums.reduce((t, n) => t + n, 0);
+}
+
+sum(1, 2, 3);  // 6
+console.log(merged);  // [1,2,3,4,5]`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Spread copies elements; rest collects them — same syntax, opposite direction.", stack: [], output: [], snapshot: { spread: { parts: [{ label: "a", vals: "1, 2" }, { label: "b", vals: "3, 4" }], result: null } } },
+          { line: 3, phase: "exec", title: "Spread arrays", narrate: "...a and ...b expand into individual elements.", stack: ["global"], output: [], snapshot: { spread: { parts: [{ label: "...a", vals: "1, 2", hl: true }, { label: "...b", vals: "3, 4", hl: true }, { label: "5", vals: "5", hl: true }], result: null, building: true } } },
+          { line: 3, phase: "exec", title: "merged created", narrate: "New array — shallow copy, not mutating a or b.", stack: ["global"], output: [], snapshot: { spread: { parts: [{ label: "a", vals: "1, 2" }, { label: "b", vals: "3, 4" }], result: "[1, 2, 3, 4, 5]", hl: "result" } } },
+          { line: 5, phase: "unpack", title: "Rest params", narrate: "sum(...nums) — all arguments collected into nums array.", stack: ["sum"], output: [], snapshot: { spread: { parts: [{ label: "args", vals: "1, 2, 3", hl: true }], result: "nums = [1, 2, 3]", mode: "rest" } } },
+          { line: 6, phase: "exec", title: "Reduce sum", narrate: "nums.reduce adds 1+2+3 = 6.", stack: ["sum", "reduce"], output: ["6"], snapshot: { spread: { parts: [{ label: "nums", vals: "1, 2, 3" }], result: "6", hl: "result" } } },
+          { line: 9, phase: "exec", title: "Log merged", narrate: "Spread in array literal — common for immutable updates.", stack: ["console.log"], output: ["6", "[1, 2, 3, 4, 5]"], snapshot: { spread: { parts: [{ label: "merged", vals: "1, 2, 3, 4, 5", hl: true }], result: "[1, 2, 3, 4, 5]" } } }
+        ]
+      },
+      {
+        id: "template", title: "Template literals", blurb: "Backticks + ${} interpolation",
+        remember: "Template literals use backticks. <code>${expr}</code> evaluates and embeds. Multiline strings need no escaping.",
+        code: `const name = "Bharat";
+const city = "Pune";
+
+const msg = \`Hello, \${name}!\`;
+const card = \`
+  <p>\${name} from \${city}</p>
+\`;
+
+console.log(msg);
+console.log(card.trim());`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Static string parts alternate with evaluated expressions.", stack: [], output: [], snapshot: { template: { parts: [{ type: "str", text: "Hello, " }, { type: "val", text: "name", val: "?" }, { type: "str", text: "!" }], result: null } } },
+          { line: 1, phase: "exec", title: "Bindings", narrate: "name = \"Bharat\", city = \"Pune\".", stack: ["global"], output: [], snapshot: { template: { parts: [{ type: "str", text: "Hello, " }, { type: "val", text: "name", val: "Bharat", hl: true }, { type: "str", text: "!" }], result: null } } },
+          { line: 4, phase: "exec", title: "Build msg", narrate: "Evaluate ${name} → embed \"Bharat\".", stack: ["global"], output: [], snapshot: { template: { parts: [{ type: "str", text: "Hello, " }, { type: "val", text: "name", val: "Bharat", hl: true }, { type: "str", text: "!", hl: true }], result: "Hello, Bharat!" } } },
+          { line: 5, phase: "exec", title: "Multiline card", narrate: "Newlines preserved — no \\n escape needed.", stack: ["global"], output: [], snapshot: { template: { parts: [{ type: "str", text: "\\n  <p>" }, { type: "val", text: "name", val: "Bharat", hl: true }, { type: "str", text: " from " }, { type: "val", text: "city", val: "Pune", hl: true }, { type: "str", text: "</p>\\n" }], result: "<p>Bharat from Pune</p>", multiline: true } } },
+          { line: 9, phase: "exec", title: "Console output", narrate: "trim() removes leading/trailing whitespace from multiline template.", stack: ["console.log"], output: ["Hello, Bharat!", "<p>Bharat from Pune</p>"], snapshot: { template: { parts: [], result: "Hello, Bharat!", hl: "result" } } }
+        ]
+      },
+      {
+        id: "optional", title: "Optional chaining", blurb: "?. short-circuits on null/undefined",
+        remember: "<code>?.</code> stops when base is null/undefined — returns undefined instead of throwing. Works on properties, calls, and brackets.",
+        code: `const user = { profile: { city: "Pune" } };
+
+user?.profile?.city;    // "Pune"
+user?.address?.city;    // undefined
+
+const fn = user?.greet?.();
+arr?.[0];
+obj?.[dynamicKey];`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Each ?. checks the left side before continuing.", stack: [], output: [], snapshot: { chain: { steps: [{ expr: "user", result: "{ profile }", ok: true }], final: null } } },
+          { line: 3, phase: "check", title: "Safe path exists", narrate: "user exists → profile exists → read city.", stack: ["eval"], output: [], snapshot: { chain: { steps: [{ expr: "user", result: "object", ok: true, hl: true }, { expr: ".profile", result: "object", ok: true, hl: true }, { expr: ".city", result: "Pune", ok: true, hl: true }], final: "Pune" } } },
+          { line: 4, phase: "check", title: "Missing branch", narrate: "user exists but address is undefined — chain stops, no TypeError.", stack: ["eval"], output: ["Pune"], snapshot: { chain: { steps: [{ expr: "user", result: "object", ok: true }, { expr: ".address", result: "undefined", ok: false, hl: true }, { expr: ".city", result: "skipped", skip: true }], final: "undefined" } } },
+          { line: 6, phase: "check", title: "Optional call", narrate: "user.greet is undefined — ?.() never invokes.", stack: ["eval"], output: ["Pune", "undefined"], snapshot: { chain: { steps: [{ expr: "user?.greet", result: "undefined", ok: false, hl: true }, { expr: "?.()", result: "skipped", skip: true }], final: "undefined" } } },
+          { line: 7, phase: "check", title: "Optional index", narrate: "arr?.[0] — if arr is nullish, returns undefined.", stack: ["eval"], output: ["Pune", "undefined"], snapshot: { chain: { steps: [{ expr: "arr?.[0]", result: "safe index access", ok: true, hl: true }], final: "undefined if arr nullish" } } }
+        ]
+      },
+      {
+        id: "nullish", title: "Nullish coalescing", blurb: "?? defaults only null/undefined",
+        remember: "<code>??</code> replaces only null/undefined — unlike <code>||</code>, it keeps 0, \"\", and false.",
+        code: `const count = 0;
+count ?? 10;        // 0
+
+const name = "";
+name ?? "Guest";    // ""
+
+const missing = null;
+missing ?? "Guest"; // "Guest"`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Compare ?? with || — falsy vs nullish.", stack: [], output: [], snapshot: { compare: { rows: [{ expr: "count = 0", op: "??", fallback: "10", result: "?", hl: false }] } } },
+          { line: 2, phase: "check", title: "count ?? 10", narrate: "0 is not nullish — keep 0. || would wrongly pick 10.", stack: ["eval"], output: [], snapshot: { compare: { rows: [{ expr: "0", op: "??", fallback: "10", result: "0", hl: true, note: "kept — not nullish" }] } } },
+          { line: 5, phase: "check", title: "name ?? Guest", narrate: "Empty string \"\" is valid — not replaced.", stack: ["eval"], output: ["0"], snapshot: { compare: { rows: [{ expr: '""', op: "??", fallback: '"Guest"', result: '""', hl: true, note: "kept — not nullish" }] } } },
+          { line: 8, phase: "check", title: "missing ?? Guest", narrate: "null triggers fallback — Guest returned.", stack: ["eval"], output: ["0", '""', "Guest"], snapshot: { compare: { rows: [{ expr: "null", op: "??", fallback: '"Guest"', result: '"Guest"', hl: true, note: "nullish → fallback" }] } } },
+          { line: 8, phase: "check", title: "vs ||", narrate: "0 || 10 → 10 (wrong). 0 ?? 10 → 0 (right).", stack: ["eval"], output: ["0", '""', "Guest"], snapshot: { compare: { rows: [{ expr: "0 || 10", op: "||", fallback: "", result: "10", hl: true, note: "|| treats 0 as falsy" }, { expr: "0 ?? 10", op: "??", fallback: "", result: "0", hl: true, note: "?? only null/undefined" }] } } }
+        ]
+      },
+      {
+        id: "modules", title: "ES modules", blurb: "import / export between files",
+        remember: "Each module has its own scope. <code>export</code> exposes bindings; <code>import</code> creates live read-only links. Imports are hoisted.",
+        code: `// math.js
+export const PI = 3.14159;
+export function add(a, b) { return a + b; }
+
+// app.js
+import { PI, add } from "./math.js";
+console.log(PI);
+console.log(add(2, 3));`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Two files — math.js exports, app.js imports.", stack: [], output: [], snapshot: { modules: { left: { file: "math.js", items: [{ t: "export", name: "PI", hl: false }, { t: "export", name: "add", hl: false }] }, right: { file: "app.js", items: [{ t: "import", name: "PI, add", hl: false }] }, arrow: false } } },
+          { line: 2, phase: "exec", title: "Export PI", narrate: "Named export — binding PI is public.", stack: ["math.js"], output: [], snapshot: { modules: { left: { file: "math.js", items: [{ t: "export", name: "PI = 3.14159", hl: true }, { t: "export", name: "add", hl: false }] }, right: { file: "app.js", items: [] }, arrow: false } } },
+          { line: 3, phase: "exec", title: "Export add", narrate: "Multiple named exports from one module.", stack: ["math.js"], output: [], snapshot: { modules: { left: { file: "math.js", items: [{ t: "export", name: "PI", hl: false }, { t: "export", name: "add()", hl: true }] }, right: { file: "app.js", items: [] }, arrow: false } } },
+          { line: 6, phase: "unpack", title: "Import bindings", narrate: "import creates live links to math.js exports.", stack: ["app.js"], output: [], snapshot: { modules: { left: { file: "math.js", items: [{ t: "export", name: "PI", hl: true }, { t: "export", name: "add", hl: true }] }, right: { file: "app.js", items: [{ t: "import", name: "PI, add", hl: true }] }, arrow: true } } },
+          { line: 7, phase: "exec", title: "Use PI", narrate: "PI resolves to 3.14159 from math.js.", stack: ["app.js", "console.log"], output: ["3.14159"], snapshot: { modules: { left: { file: "math.js", items: [{ t: "export", name: "PI", hl: true }] }, right: { file: "app.js", items: [{ t: "use", name: "PI → 3.14159", hl: true }] }, arrow: true } } },
+          { line: 8, phase: "exec", title: "Call add", narrate: "add(2, 3) → 5 — function import works like local.", stack: ["app.js", "add"], output: ["3.14159", "5"], snapshot: { modules: { left: { file: "math.js", items: [{ t: "export", name: "add(2,3)→5", hl: true }] }, right: { file: "app.js", items: [{ t: "use", name: "add(2,3)", hl: true }] }, arrow: true } } }
+        ]
+      },
+      {
+        id: "mapset", title: "Map / Set vs Object", blurb: "When to use collections",
+        remember: "Use <code>Map</code> for any-key lookups and frequent add/delete. Use <code>Set</code> for uniqueness. Plain objects for JSON-shaped records.",
+        code: `const map = new Map();
+map.set("name", "Bharat");
+map.set(42, "number key");
+map.size;  // 2
+
+const set = new Set([1, 2, 2, 3]);
+console.log(set.size);  // 3
+
+const unique = [...new Set([1, 2, 2, 3])];`,
+        frames: [
+          { line: null, phase: "idle", title: "Ready", narrate: "Map/Set are dedicated collections — different from plain objects.", stack: [], output: [], snapshot: { collections: { map: [], set: [], compare: null } } },
+          { line: 2, phase: "exec", title: "Map.set string key", narrate: "map.set(\"name\", \"Bharat\") — insertion order preserved.", stack: ["Map"], output: [], snapshot: { collections: { map: [{ k: "name", v: "Bharat", hl: true }], set: [], size: 1 } } },
+          { line: 3, phase: "exec", title: "Map.set number key", narrate: "Objects can't use number keys the same way — Map accepts any type.", stack: ["Map"], output: [], snapshot: { collections: { map: [{ k: "name", v: "Bharat" }, { k: "42", v: "number key", hl: true }], set: [], size: 2 } } },
+          { line: 4, phase: "check", title: "map.size", narrate: "Built-in size property — no manual counting.", stack: ["Map"], output: ["2"], snapshot: { collections: { map: [{ k: "name", v: "Bharat" }, { k: "42", v: "number key" }], set: [], size: 2, hl: "size" } } },
+          { line: 6, phase: "exec", title: "Set dedupes", narrate: "Set([1,2,2,3]) — duplicate 2 ignored.", stack: ["Set"], output: ["2"], snapshot: { collections: { map: [], set: ["1", "2", "3"], size: 3, hl: "set" } } },
+          { line: 9, phase: "exec", title: "Spread dedupe", narrate: "[...new Set(arr)] — common dedupe idiom.", stack: ["global"], output: ["2", "3", "[1, 2, 3]"], snapshot: { collections: { map: [], set: ["1", "2", "3"], result: "[1, 2, 3]", hl: "result", compare: "Object: string/symbol keys, JSON records" } } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), featureViz: document.getElementById("featureViz"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function renderDestructure(d) {
+      const srcRows = (d.source.rows || []).map((r) => `<div class="viz-row ${r.hl ? "hl" : ""}"><span class="k">${escapeHtml(r.k)}</span><span class="v">${escapeHtml(r.v)}</span></div>`).join("") || `<div class="empty">—</div>`;
+      const tgtRows = (d.targets || []).map((r) => `<div class="viz-row ${r.hl ? "hl" : ""}"><span class="k">${escapeHtml(r.k)}</span><span class="v">${escapeHtml(r.v)}</span></div>`).join("");
+      return `<div class="box-grid"><div class="viz-box hl"><h4>Source: ${escapeHtml(d.source.label)}</h4>${srcRows}</div><div class="arrow-col">→</div><div class="viz-box"><h4>Bindings (${escapeHtml(d.mode)})</h4>${tgtRows || '<div class="empty">waiting…</div>'}</div></div>`;
+    }
+
+    function renderSpread(s) {
+      const parts = (s.parts || []).map((p) => `<span class="arr-chip ${p.hl ? "hl" : ""}">${escapeHtml(p.label)}: ${escapeHtml(p.vals)}</span>`).join('<span class="chain-arrow"> + </span>');
+      const res = s.result ? `<div class="viz-row ${s.hl === "result" ? "hl" : ""}" style="margin-top:8px"><span class="k">result</span><span class="v">${escapeHtml(s.result)}</span></div>` : "";
+      return `<div class="viz-box hl"><h4>${s.mode === "rest" ? "Rest params" : "Spread merge"}</h4><div class="spread-viz">${parts || '<span class="empty">—</span>'}</div>${res}</div>`;
+    }
+
+    function renderTemplate(t) {
+      const parts = (t.parts || []).map((p) => `<span class="tpl-part ${p.type} ${p.hl ? "hl" : ""}">${p.type === "val" ? escapeHtml("${" + p.text + "} → " + p.val) : escapeHtml(p.text)}</span>`).join("");
+      const res = t.result ? `<div class="viz-row hl" style="margin-top:8px"><span class="k">result</span><span class="v">${escapeHtml(t.result)}</span></div>` : "";
+      return `<div class="viz-box hl"><h4>Template parts</h4><div class="char-grid">${parts || '<span class="empty">—</span>'}</div>${res}${t.multiline ? '<div style="margin-top:6px;font-size:.68rem;color:var(--dim)">multiline — newlines preserved</div>' : ""}</div>`;
+    }
+
+    function renderChain(c) {
+      const steps = (c.steps || []).map((s, i) => `${i ? '<span class="chain-arrow">→</span>' : ""}<span class="chain-step ${s.skip ? "skip" : s.ok ? "ok" : ""} ${s.hl ? "hl" : ""}">${escapeHtml(s.expr)}${s.result ? " = " + escapeHtml(s.result) : ""}</span>`).join("");
+      const fin = c.final ? `<div class="viz-row hl" style="margin-top:8px"><span class="k">returns</span><span class="v">${escapeHtml(c.final)}</span></div>` : "";
+      return `<div class="viz-box hl"><h4>Optional chain</h4><div class="chain">${steps}</div>${fin}</div>`;
+    }
+
+    function renderCompare(c) {
+      const rows = (c.rows || []).map((r) => `<tr><td class="${r.hl ? "hl" : ""}">${escapeHtml(r.expr)}</td><td class="dim">${escapeHtml(r.op)}</td><td class="dim">${escapeHtml(r.fallback)}</td><td class="${r.hl ? "hl" : ""}">${escapeHtml(r.result)}</td></tr>${r.note ? `<tr><td colspan="4" style="font-size:.65rem;color:var(--dim);border:none;padding-top:0">${escapeHtml(r.note)}</td></tr>` : ""}`).join("");
+      return `<div class="viz-box hl"><h4>?? vs ||</h4><table class="compare-table"><tr><td>value</td><td>op</td><td>fallback</td><td>result</td></tr>${rows}</table></div>`;
+    }
+
+    function renderModules(m) {
+      const leftItems = (m.left.items || []).map((it) => `<div class="mod-${it.t === "export" ? "export" : "import"} ${it.hl ? "hl" : ""}">${escapeHtml(it.t)} ${escapeHtml(it.name)}</div>`).join("");
+      const rightItems = (m.right.items || []).map((it) => `<div class="mod-${it.t === "import" ? "import" : "export"} ${it.hl ? "hl" : ""}">${escapeHtml(it.t)} ${escapeHtml(it.name)}</div>`).join("");
+      return `<div class="module-flow"><div class="mod-file ${m.left.items.some(i=>i.hl) ? "hl" : ""}"><div class="fname">${escapeHtml(m.left.file)}</div>${leftItems || '<div class="empty">—</div>'}</div><div class="arrow-col">${m.arrow ? "⇒" : "·"}</div><div class="mod-file ${m.right.items.some(i=>i.hl) ? "hl" : ""}"><div class="fname">${escapeHtml(m.right.file)}</div>${rightItems || '<div class="empty">—</div>'}</div></div>`;
+    }
+
+    function renderCollections(c) {
+      const mapRows = (c.map || []).map((e) => `<div class="viz-row ${e.hl ? "hl" : ""}"><span class="k">${escapeHtml(e.k)}</span><span class="v">${escapeHtml(e.v)}</span></div>`).join("");
+      const setChips = (c.set || []).map((v) => `<span class="arr-chip ${c.hl === "set" ? "hl" : ""}">${escapeHtml(v)}</span>`).join("");
+      const size = c.size !== undefined ? `<div class="viz-row ${c.hl === "size" ? "hl" : ""}"><span class="k">size</span><span class="v">${escapeHtml(String(c.size))}</span></div>` : "";
+      const res = c.result ? `<div class="viz-row hl"><span class="k">unique</span><span class="v">${escapeHtml(c.result)}</span></div>` : "";
+      const cmp = c.compare ? `<div style="margin-top:8px;font-size:.68rem;color:var(--dim)">${escapeHtml(c.compare)}</div>` : "";
+      return `<div class="box-grid"><div class="viz-box"><h4>Map</h4>${mapRows || '<div class="empty">empty</div>'}${size}</div><div class="viz-box"><h4>Set</h4><div class="char-grid">${setChips || '<div class="empty">empty</div>'}</div>${res}${cmp}</div></div>`;
+    }
+
+    function renderSnapshot(snap) {
+      if (!snap) { els.featureViz.innerHTML = `<div class="empty">No visualization</div>`; return; }
+      if (snap.destructure) els.featureViz.innerHTML = renderDestructure(snap.destructure);
+      else if (snap.spread) els.featureViz.innerHTML = renderSpread(snap.spread);
+      else if (snap.template) els.featureViz.innerHTML = renderTemplate(snap.template);
+      else if (snap.chain) els.featureViz.innerHTML = renderChain(snap.chain);
+      else if (snap.compare) els.featureViz.innerHTML = renderCompare(snap.compare);
+      else if (snap.modules) els.featureViz.innerHTML = renderModules(snap.modules);
+      else if (snap.collections) els.featureViz.innerHTML = renderCollections(snap.collections);
+      else els.featureViz.innerHTML = `<div class="empty">No visualization</div>`;
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) => `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span></button>`).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line);
+      renderSnapshot(fr.snapshot);
+      const phaseMap = { exec: "Execute", unpack: "Unpack", check: "Check", idle: "Idle" };
+      els.phasePill.textContent = phaseMap[fr.phase] || "Idle";
+      els.phasePill.className = "phase-pill " + (fr.phase === "idle" ? "" : fr.phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

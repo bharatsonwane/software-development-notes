@@ -6,6 +6,8 @@ ES6 (2015) and later releases added **modules**, **new collections**, **`Symbol`
 
 **Default rule today:** use **ES modules** (`import`/`export`), **`Map`/`Set`** when keys or uniqueness matter, **`for...of`** on iterables, **`?.`** and **`??`** for safe access, and **generators** only when lazy sequences or custom iteration pay off.
 
+Interactive visualizer: open [11-js-es6-plus-animation.html](./11-js-es6-plus-animation.html) in a browser — destructuring, rest/spread, template literals, optional chaining, nullish coalescing, modules, Map/Set (Run / Step).
+
 ---
 
 ## 1. Modules (ESM)

@@ -4,6 +4,8 @@
 
 Capstone for interview prep. Builds on Files 05–12.
 
+Interactive visualizer: open [16-js-interview-polyfills-animation.html](./16-js-interview-polyfills-animation.html) in a browser — bind/map/filter polyfills, Promise resolve/then, debounce, flat/reduce (Run / Step).
+
 ---
 
 ## 1. Object-oriented concepts

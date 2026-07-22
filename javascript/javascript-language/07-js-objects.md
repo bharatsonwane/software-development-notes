@@ -8,6 +8,8 @@ Unlike arrays, object property order is mostly insertion order for string keys (
 
 **Default rule today:** use **object literals** `{}`, **bracket notation** for dynamic keys, **destructuring** for unpacking, **spread** for shallow copies, and **`JSON.stringify`/`parse`** only for JSON-safe data.
 
+Interactive visualizer: open [07-js-objects-animation.html](./07-js-objects-animation.html) in a browser — dot vs bracket, shallow copy, destructuring, keys/values/entries, hasOwn vs `in`, optional chaining (Run / Step).
+
 ---
 
 ## 1. Object basics

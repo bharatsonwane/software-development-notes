@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Control Flow Visualizer — File 04</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617; --panel: #111827; --border: #1e293b; --border-2: #334155;
+      --text: #e2e8f0; --muted: #94a3b8; --dim: #64748b;
+      --blue: #3b82f6; --blue-2: #60a5fa; --violet: #a78bfa; --amber: #fbbf24;
+      --green: #34d399; --rose: #fb7185; --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace; --sans: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
+    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: rgba(2,6,23,.95); }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #6366f1, #06b6d4); display: grid; place-items: center; color: white; flex-shrink: 0; }
+    .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+    .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
+    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
+    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
+    .icon-btn:hover { background: #1e293b; }
+    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+    .run-btn:hover { background: #2563eb; }
+    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
+    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+    .card-b { padding: 12px; }
+    .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+    .scenario { text-align: left; border: 1px solid var(--border-2); background: #0b1220; color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
+    .scenario:hover { border-color: #475569; }
+    .scenario.on { border-color: #6366f1; background: rgba(99,102,241,.12); }
+    .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
+    .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
+    .script-card { flex: 1; }
+    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: #020617; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
+    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+    .gutter div { height: 22px; padding-right: 10px; }
+    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+    .code-view { margin: 0; padding: 12px; white-space: pre; color: #cbd5e1; overflow: auto; font: inherit; line-height: 22px; }
+    .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
+    .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .phase-pill { align-self: flex-start; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-2); color: var(--muted); background: #0b1220; }
+    .phase-pill.branch { color: var(--blue-2); border-color: rgba(96,165,250,.45); background: rgba(59,130,246,.1); }
+    .phase-pill.loop { color: var(--green); border-color: rgba(52,211,153,.45); background: rgba(52,211,153,.1); }
+    .narrate { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.4; padding: 10px 12px; background: #0b1220; border: 1px solid var(--border); border-radius: 10px; }
+    .narrate strong { color: var(--text); display: block; margin-bottom: 4px; font-size: .82rem; }
+    /* Branch flow */
+    .branch-flow { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+    .flow-node { border: 1px solid var(--border-2); border-radius: 10px; padding: 9px 12px; background: rgba(15,23,42,.65); font-family: var(--mono); font-size: .74rem; animation: pop .16s ease; }
+    .flow-node.cond { border-left: 3px solid var(--amber); transform: skewX(0deg); }
+    .flow-node.branch { border-left: 3px solid var(--blue); }
+    .flow-node.case { border-left: 3px solid var(--violet); margin-left: 12px; }
+    .flow-node.active { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(251,191,36,.25); background: rgba(251,191,36,.06); }
+    .flow-node.taken { border-color: var(--green); background: rgba(52,211,153,.08); }
+    .flow-node.skipped { opacity: .35; border-style: dashed; }
+    .flow-node.fall { border-left-color: var(--rose); }
+    .flow-node .lbl { font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); margin-bottom: 3px; }
+    .flow-arrow { text-align: center; color: var(--dim); font-size: .85rem; padding: 1px 0; }
+    .flow-arrow.active { color: var(--amber); }
+    .eval-badge { display: inline-block; font-size: .62rem; padding: 2px 6px; border-radius: 999px; margin-left: 6px; }
+    .eval-badge.true { color: var(--green); border: 1px solid rgba(52,211,153,.4); }
+    .eval-badge.false { color: var(--dim); border: 1px solid var(--border-2); }
+    /* Loop grid */
+    .loop-panel { border: 1px solid var(--border-2); border-radius: 10px; padding: 12px; background: #0b1220; }
+    .loop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: .72rem; color: var(--muted); }
+    .loop-counter { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--amber); }
+    .iter-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .iter-cell { min-width: 44px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: #020617; font-family: var(--mono); font-size: .72rem; text-align: center; }
+    .iter-cell.current { outline: 2px solid var(--amber); border-color: var(--amber); }
+    .iter-cell.done { opacity: .5; border-color: rgba(52,211,153,.4); background: rgba(52,211,153,.06); }
+    .iter-cell.skip { opacity: .35; text-decoration: line-through; }
+    .iter-cell.break-at { border-color: var(--rose); background: rgba(251,113,133,.08); }
+    .iter-cell .idx { display: block; font-size: .58rem; color: var(--dim); margin-bottom: 2px; }
+    .loop-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; font-size: .65rem; color: var(--dim); }
+    .state-vars { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .state-var { font-family: var(--mono); font-size: .72rem; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: #020617; }
+    .state-var.hl { outline: 1px solid var(--amber); color: var(--amber); }
+    .out-list, .stack-list { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; flex: 1; min-height: 0; }
+    .out-item, .stack-item { background: #0b1220; border: 1px solid var(--border-2); border-radius: 8px; padding: 8px 10px; font-family: var(--mono); font-size: .78rem; }
+    .stack-item { border-color: rgba(59,130,246,.35); background: rgba(59,130,246,.1); }
+    .empty { color: var(--dim); font-size: .78rem; font-style: italic; }
+    .rule-card .card-b { font-size: .78rem; color: var(--muted); line-height: 1.45; }
+    .rule-card code { font-family: var(--mono); font-size: .72rem; color: var(--blue-2); }
+    @keyframes pop { from { transform: translateY(3px); opacity: .4; } to { transform: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+        </div>
+        <div><h1>Control Flow Visualizer</h1><p>File 04 — if/else, switch, loops, break/continue</p></div>
+      </div>
+      <div class="top-controls">
+        <label class="speed-wrap">Speed: <span id="speedLabel">900ms</span><input type="range" id="speed" min="300" max="2000" step="100" value="900" /></label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="run-btn" id="btnRun"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg><span id="runLabel">Run</span></button>
+      </div>
+    </header>
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:42%;"><div class="card-h">Scenarios</div><div class="card-b scenarios" id="scenarios"></div></section>
+        <section class="card script-card">
+          <div class="card-h"><span>Example Code</span><span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span></div>
+          <div class="editor"><div class="gutter" id="gutter"></div><pre class="code-view" id="codeView"></pre></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Flow / Iterations</div>
+          <div class="viz-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate"><strong>Ready</strong>Watch which branch runs or how each loop iteration proceeds.</p>
+            <div id="centerViz"></div>
+          </div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:140px;"><div class="card-h">Call Stack</div><div class="stack-list" id="callStack"></div></section>
+        <section class="card" style="flex:1; min-height:160px;"><div class="card-h">&gt;_ Console</div><div class="out-list" id="output"></div></section>
+        <section class="card rule-card" style="flex:0 0 auto;"><div class="card-h">Remember</div><div class="card-b" id="remember">Only the first truthy branch runs. <code>for...of</code> for values, <code>for...in</code> for keys.</div></section>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SCENARIOS = [
+      {
+        id: "if-else", title: "if / else if / else", blurb: "First truthy branch wins", tag: "branch",
+        remember: "Conditions evaluate top to bottom. Only the <strong>first</strong> truthy branch executes — later branches are skipped.",
+        code: `const score = 85;
+
+if (score >= 90) {
+  console.log("A");
+} else if (score >= 80) {
+  console.log("B");   // runs
+} else if (score >= 70) {
+  console.log("C");
+} else {
+  console.log("F");
+}`,
+        frames: [
+          { line: 1, phase: "branch", title: "score = 85", narrate: "Variable score is 85 — about to evaluate conditions.", stack: ["<script>"], output: [], viz: { type: "branch", vars: [{ name: "score", value: "85", hl: true }], nodes: [
+            { id: "if90", kind: "cond", text: "score >= 90 ?", state: "idle" },
+            { id: "elif80", kind: "cond", text: "score >= 80 ?", state: "idle" },
+            { id: "elif70", kind: "cond", text: "score >= 70 ?", state: "idle" },
+            { id: "else", kind: "branch", text: 'console.log("F")', state: "idle" }
+          ] } },
+          { line: 3, phase: "branch", title: "Check >= 90", narrate: "85 >= 90 → false. Skip A branch.", stack: ["<script>"], output: [], viz: { type: "branch", vars: [{ name: "score", value: "85" }], nodes: [
+            { id: "if90", kind: "cond", text: "score >= 90 ?", state: "active", result: false },
+            { id: "branchA", kind: "branch", text: 'console.log("A")', state: "skipped" },
+            { id: "elif80", kind: "cond", text: "score >= 80 ?", state: "idle" }
+          ] } },
+          { line: 6, phase: "branch", title: "Check >= 80", narrate: "85 >= 80 → true. Enter B branch — stop checking.", stack: ["<script>"], output: [], viz: { type: "branch", vars: [{ name: "score", value: "85" }], nodes: [
+            { id: "if90", kind: "cond", text: "score >= 90 ?", state: "skipped", result: false },
+            { id: "elif80", kind: "cond", text: "score >= 80 ?", state: "active", result: true },
+            { id: "branchB", kind: "branch", text: 'console.log("B")', state: "taken" },
+            { id: "elif70", kind: "cond", text: "score >= 70 ?", state: "skipped" },
+            { id: "else", kind: "branch", text: 'console.log("F")', state: "skipped" }
+          ] } },
+          { line: 7, phase: "branch", title: "Run B branch", narrate: "console.log(\"B\") executes. C and F never evaluated.", stack: ["<script>", "console.log"], output: ["B"], viz: { type: "branch", vars: [{ name: "score", value: "85" }], nodes: [
+            { id: "elif80", kind: "cond", text: "score >= 80 ? ✓", state: "taken", result: true },
+            { id: "branchB", kind: "branch", text: 'logged "B"', state: "taken" }
+          ] } }
+        ]
+      },
+      {
+        id: "switch-break", title: "switch + break", blurb: "Match case, break exits", tag: "branch",
+        remember: "<code>switch</code> uses strict <code>===</code>. <code>break</code> exits the switch — without it, execution falls through.",
+        code: `const day = "Mon";
+
+switch (day) {
+  case "Mon":
+  case "Tue":
+  case "Wed":
+  case "Thu":
+  case "Fri":
+    console.log("Weekday");
+    break;
+  case "Sat":
+  case "Sun":
+    console.log("Weekend");
+    break;
+  default:
+    console.log("Unknown");
+}`,
+        frames: [
+          { line: 1, phase: "branch", title: "day = Mon", narrate: "Switch compares day against each case with ===.", stack: ["<script>"], output: [], viz: { type: "branch", vars: [{ name: "day", value: '"Mon"', hl: true }], nodes: [
+            { id: "sw", kind: "cond", text: 'switch (day) — "Mon"', state: "active" },
+            { id: "mon", kind: "case", text: 'case "Mon":', state: "idle" },
+            { id: "sat", kind: "case", text: 'case "Sat":', state: "idle" }
+          ] } },
+          { line: 4, phase: "branch", title: "Match Mon", narrate: "case \"Mon\" matches — enter weekday group.", stack: ["<script>", "switch"], output: [], viz: { type: "branch", vars: [{ name: "day", value: '"Mon"' }], nodes: [
+            { id: "mon", kind: "case", text: 'case "Mon": ✓ match', state: "taken" },
+            { id: "tue", kind: "case", text: 'case "Tue": (grouped)', state: "taken" },
+            { id: "body", kind: "branch", text: 'console.log("Weekday")', state: "active" }
+          ] } },
+          { line: 9, phase: "branch", title: "break", narrate: "break exits switch — Sat/Sun/default skipped.", stack: ["<script>", "switch"], output: ["Weekday"], viz: { type: "branch", vars: [{ name: "day", value: '"Mon"' }], nodes: [
+            { id: "body", kind: "branch", text: 'logged "Weekday"', state: "taken" },
+            { id: "brk", kind: "branch", text: "break → exit switch", state: "taken" },
+            { id: "sat", kind: "case", text: 'case "Sat":', state: "skipped" },
+            { id: "def", kind: "case", text: "default:", state: "skipped" }
+          ] } }
+        ]
+      },
+      {
+        id: "fall-through", title: "switch fall-through", blurb: "No break — next case runs", tag: "branch",
+        remember: "Without <code>break</code>, execution <strong>falls through</strong> to the next case. Comment intentional fall-through.",
+        code: `const grade = "B";
+
+switch (grade) {
+  case "A":
+  case "B":
+    console.log("Pass");   // runs for B
+    break;
+  case "C":
+    console.log("Marginal");
+    break;
+  default:
+    console.log("Fail");
+}`,
+        frames: [
+          { line: 1, phase: "branch", title: "grade = B", narrate: "Switch on grade.", stack: ["<script>"], output: [], viz: { type: "branch", vars: [{ name: "grade", value: '"B"', hl: true }], nodes: [
+            { id: "a", kind: "case", text: 'case "A":', state: "idle" },
+            { id: "b", kind: "case", text: 'case "B":', state: "idle" }
+          ] } },
+          { line: 4, phase: "branch", title: "A no match", narrate: "case \"A\" !== \"B\" — fall through (no break between A and B).", stack: ["<script>", "switch"], output: [], viz: { type: "branch", vars: [{ name: "grade", value: '"B"' }], nodes: [
+            { id: "a", kind: "case", text: 'case "A": ✗', state: "skipped" },
+            { id: "fall", kind: "branch", text: "fall through ↓", state: "active", fall: true },
+            { id: "b", kind: "case", text: 'case "B": ✓', state: "taken" }
+          ] } },
+          { line: 5, phase: "branch", title: "Pass runs", narrate: "Shared body for A and B — console.log(\"Pass\").", stack: ["<script>", "console.log"], output: ["Pass"], viz: { type: "branch", vars: [{ name: "grade", value: '"B"' }], nodes: [
+            { id: "b", kind: "case", text: 'case "B": ✓', state: "taken" },
+            { id: "body", kind: "branch", text: 'console.log("Pass")', state: "taken" },
+            { id: "brk", kind: "branch", text: "break", state: "taken" }
+          ] } }
+        ]
+      },
+      {
+        id: "for-loop", title: "for loop counter", blurb: "i = 0 … 4", tag: "loop",
+        remember: "Classic <code>for</code>: init once, check condition each iteration, update after body.",
+        code: `for (let i = 0; i < 5; i++) {
+  console.log(i);
+}`,
+        frames: [
+          { line: 1, phase: "loop", title: "Init i = 0", narrate: "Loop header: let i = 0", stack: ["<script>", "for"], output: [], viz: { type: "loop", i: 0, limit: 5, phase: "init", cells: [{ i: 0, state: "current" }, { i: 1, state: "pending" }, { i: 2, state: "pending" }, { i: 3, state: "pending" }, { i: 4, state: "pending" }] } },
+          { line: 2, phase: "loop", title: "i = 0", narrate: "0 < 5 → true. Body runs.", stack: ["<script>", "for", "console.log"], output: ["0"], viz: { type: "loop", i: 0, limit: 5, phase: "body", cells: [{ i: 0, state: "done" }, { i: 1, state: "current" }, { i: 2, state: "pending" }, { i: 3, state: "pending" }, { i: 4, state: "pending" }] } },
+          { line: 2, phase: "loop", title: "i = 2", narrate: "After updates — now at i = 2.", stack: ["<script>", "for", "console.log"], output: ["0", "1", "2"], viz: { type: "loop", i: 2, limit: 5, phase: "body", cells: [{ i: 0, state: "done" }, { i: 1, state: "done" }, { i: 2, state: "current" }, { i: 3, state: "pending" }, { i: 4, state: "pending" }] } },
+          { line: 2, phase: "loop", title: "i = 4", narrate: "Last iteration — i = 4.", stack: ["<script>", "for", "console.log"], output: ["0", "1", "2", "3", "4"], viz: { type: "loop", i: 4, limit: 5, phase: "body", cells: [{ i: 0, state: "done" }, { i: 1, state: "done" }, { i: 2, state: "done" }, { i: 3, state: "done" }, { i: 4, state: "current" }] } },
+          { line: null, phase: "loop", title: "i = 5, exit", narrate: "After i++ → 5. Condition 5 < 5 is false — loop ends.", stack: ["<script>"], output: ["0", "1", "2", "3", "4"], viz: { type: "loop", i: 5, limit: 5, phase: "exit", cells: [{ i: 0, state: "done" }, { i: 1, state: "done" }, { i: 2, state: "done" }, { i: 3, state: "done" }, { i: 4, state: "done" }] } }
+        ]
+      },
+      {
+        id: "break-loop", title: "break exits loop", blurb: "Stop at i === 5", tag: "loop",
+        remember: "<code>break</code> exits the innermost loop (or switch) immediately — remaining iterations are skipped.",
+        code: `for (let i = 0; i < 10; i++) {
+  if (i === 5) break;
+  console.log(i);
+}`,
+        frames: [
+          { line: 2, phase: "loop", title: "i = 0..4", narrate: "Normal iterations while i < 5.", stack: ["<script>", "for"], output: ["0", "1", "2", "3", "4"], viz: { type: "loop", i: 4, limit: 10, phase: "body", cells: [0,1,2,3,4,5,6,7,8,9].map((n) => ({ i: n, state: n < 4 ? "done" : n === 4 ? "current" : "pending" })) } },
+          { line: 3, phase: "loop", title: "i = 5, break", narrate: "i === 5 → break fires. Loop exits immediately.", stack: ["<script>", "for", "break"], output: ["0", "1", "2", "3", "4"], viz: { type: "loop", i: 5, limit: 10, phase: "break", cells: [0,1,2,3,4,5,6,7,8,9].map((n) => ({ i: n, state: n < 5 ? "done" : n === 5 ? "break-at" : "pending" })) } },
+          { line: null, phase: "loop", title: "Loop exited", narrate: "i = 6..9 never run. Output stops at 4.", stack: ["<script>"], output: ["0", "1", "2", "3", "4"], viz: { type: "loop", i: 5, limit: 10, phase: "exit", cells: [0,1,2,3,4,5,6,7,8,9].map((n) => ({ i: n, state: n <= 4 ? "done" : n === 5 ? "break-at" : "pending" })) } }
+        ]
+      },
+      {
+        id: "continue-loop", title: "continue skips", blurb: "Skip even numbers", tag: "loop",
+        remember: "<code>continue</code> skips the rest of the current iteration and jumps to the next one.",
+        code: `for (let i = 0; i < 6; i++) {
+  if (i % 2 === 0) continue;
+  console.log(i);
+}`,
+        frames: [
+          { line: 2, phase: "loop", title: "i = 0, skip", narrate: "0 % 2 === 0 → continue. Body skipped.", stack: ["<script>", "for"], output: [], viz: { type: "loop", i: 0, limit: 6, phase: "continue", cells: [0,1,2,3,4,5].map((n) => ({ i: n, state: n === 0 ? "skip" : "pending" })) } },
+          { line: 3, phase: "loop", title: "i = 1, run", narrate: "Odd — body runs.", stack: ["<script>", "for", "console.log"], output: ["1"], viz: { type: "loop", i: 1, limit: 6, phase: "body", cells: [0,1,2,3,4,5].map((n) => ({ i: n, state: n === 0 ? "skip" : n === 1 ? "current" : "pending" })) } },
+          { line: 2, phase: "loop", title: "i = 2, skip", narrate: "Even again — continue.", stack: ["<script>", "for"], output: ["1"], viz: { type: "loop", i: 2, limit: 6, phase: "continue", cells: [0,1,2,3,4,5].map((n) => ({ i: n, state: n % 2 === 0 ? "skip" : n === 1 ? "done" : "pending" })) } },
+          { line: null, phase: "loop", title: "Done: 1,3,5", narrate: "Only odd values logged.", stack: ["<script>"], output: ["1", "3", "5"], viz: { type: "loop", i: 6, limit: 6, phase: "exit", cells: [0,1,2,3,4,5].map((n) => ({ i: n, state: n % 2 === 0 ? "skip" : "done" })) } }
+        ]
+      },
+      {
+        id: "of-vs-in", title: "for...of vs for...in", blurb: "Values vs enumerable keys", tag: "loop",
+        remember: "<code>for...of</code> → iterable <strong>values</strong> (arrays, strings). <code>for...in</code> → object <strong>keys</strong> — avoid on arrays.",
+        code: `const arr = ["a", "b", "c"];
+arr.custom = "oops";
+
+for (const val of arr) {
+  console.log("of:", val);
+}
+
+const user = { name: "Bharat", age: 30 };
+for (const key in user) {
+  console.log("in:", key, user[key]);
+}`,
+        frames: [
+          { line: 4, phase: "loop", title: "for...of arr", narrate: "Iterates values — not indices. Skips non-index properties.", stack: ["<script>", "for...of"], output: [], viz: { type: "loop", mode: "of", label: "for...of arr", current: "a", cells: [{ i: "a", state: "current" }, { i: "b", state: "pending" }, { i: "c", state: "pending" }], note: "custom property ignored" } },
+          { line: 5, phase: "loop", title: "of: a, b, c", narrate: "Only iterable values — \"a\", \"b\", \"c\".", stack: ["<script>", "for...of", "console.log"], output: ["of: a", "of: b", "of: c"], viz: { type: "loop", mode: "of", label: "for...of arr", current: "c", cells: [{ i: "a", state: "done" }, { i: "b", state: "done" }, { i: "c", state: "done" }], note: "arr.custom not visited" } },
+          { line: 9, phase: "loop", title: "for...in user", narrate: "Object keys — name, age.", stack: ["<script>", "for...in"], output: ["of: a", "of: b", "of: c"], viz: { type: "loop", mode: "in", label: "for...in user", current: "name", cells: [{ i: "name", state: "current" }, { i: "age", state: "pending" }], note: "enumerable own keys" } },
+          { line: 10, phase: "loop", title: "in: name, age", narrate: "for...in on array would also yield \"0\",\"1\",\"2\",\"custom\" — usually wrong.", stack: ["<script>", "for...in", "console.log"], output: ["of: a", "of: b", "of: c", "in: name Bharat", "in: age 30"], viz: { type: "loop", mode: "in", label: "for...in user", current: "age", cells: [{ i: "name", state: "done" }, { i: "age", state: "done" }], note: "use for...of for arrays" } }
+        ]
+      }
+    ];
+
+    let scenarioIndex = 0, step = 0, playing = false, timer = null;
+    const els = {
+      scenarios: document.getElementById("scenarios"), gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"), centerViz: document.getElementById("centerViz"),
+      narrate: document.getElementById("narrate"), phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"), output: document.getElementById("output"),
+      remember: document.getElementById("remember"), stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"), speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() { return SCENARIOS[scenarioIndex]; }
+    function frame() { const f = scenario().frames; return f[Math.min(step, f.length - 1)]; }
+
+    function escapeHtml(s) {
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    function renderBranch(viz) {
+      let html = "";
+      if (viz.vars) {
+        html += `<div class="state-vars">${viz.vars.map((v) =>
+          `<span class="state-var ${v.hl ? "hl" : ""}">${escapeHtml(v.name)} = ${escapeHtml(v.value)}</span>`
+        ).join("")}</div>`;
+      }
+      html += '<div class="branch-flow">';
+      (viz.nodes || []).forEach((n, i) => {
+        if (i > 0) html += `<div class="flow-arrow ${n.state === "active" || n.state === "taken" ? "active" : ""}">↓</div>`;
+        const cls = ["flow-node", n.kind === "cond" ? "cond" : n.kind === "case" ? "case" : "branch",
+          n.state || "", n.fall ? "fall" : ""].filter(Boolean).join(" ");
+        const badge = n.result === true ? '<span class="eval-badge true">true</span>' :
+          n.result === false ? '<span class="eval-badge false">false</span>' : "";
+        html += `<div class="${cls}"><div class="lbl">${escapeHtml(n.kind)}</div>${escapeHtml(n.text)}${badge}</div>`;
+      });
+      html += "</div>";
+      return html;
+    }
+
+    function renderLoop(viz) {
+      const cells = (viz.cells || []).map((c) => {
+        const cls = ["iter-cell", c.state || ""].filter(Boolean).join(" ");
+        const label = viz.mode === "in" || viz.mode === "of" ? c.i : c.i;
+        return `<div class="${cls}"><span class="idx">${viz.mode === "in" ? "key" : viz.mode === "of" ? "val" : "i"}</span>${escapeHtml(String(label))}</div>`;
+      }).join("");
+      const counter = viz.mode ? viz.current || "—" : `i = ${viz.i}`;
+      return `<div class="loop-panel">
+        <div class="loop-header"><span>${escapeHtml(viz.label || "for loop")}</span><span class="loop-counter">${escapeHtml(String(counter))}</span></div>
+        ${viz.note ? `<div style="font-size:.7rem;color:var(--dim);margin-bottom:8px">${escapeHtml(viz.note)}</div>` : ""}
+        <div class="iter-grid">${cells}</div>
+        <div class="loop-legend">
+          <span>■ current</span><span>■ done</span><span>■ skip (continue)</span><span>■ break</span>
+        </div>
+      </div>`;
+    }
+
+    function renderViz(viz) {
+      if (!viz) { els.centerViz.innerHTML = `<div class="empty">No visualization</div>`; return; }
+      els.centerViz.innerHTML = viz.type === "loop" ? renderLoop(viz) : renderBranch(viz);
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map((s, i) =>
+        `<button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}">
+          <strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.blurb)}</span>
+        </button>`
+      ).join("");
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => btn.addEventListener("click", () => { stopPlay(); scenarioIndex = Number(btn.dataset.i); step = 0; render(); }));
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines.map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`).join("");
+      els.codeView.innerHTML = lines.map((line, i) => { const safe = escapeHtml(line) || " "; return activeLine === i + 1 ? `<span class="hl">${safe}</span>` : `${safe}\n`; }).join("");
+    }
+
+    function render() {
+      const sc = scenario(), fr = frame(), frames = sc.frames;
+      renderScenarios(); renderCode(fr.line); renderViz(fr.viz);
+      const phase = fr.phase;
+      els.phasePill.textContent = phase === "branch" ? "Branching" : phase === "loop" ? "Loop iteration" : "Idle";
+      els.phasePill.className = "phase-pill " + (phase === "idle" ? "" : phase);
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+      els.callStack.innerHTML = fr.stack.length ? [...fr.stack].reverse().map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`).join("") : `<div class="empty">Stack empty</div>`;
+      els.output.innerHTML = fr.output.length ? fr.output.map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`).join("") : `<div class="empty">No output yet</div>`;
+      els.runLabel.textContent = playing ? "Pause" : step >= frames.length - 1 ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() { playing = false; clearInterval(timer); timer = null; }
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true; render(); clearInterval(timer);
+      timer = setInterval(() => { if (step >= frames.length - 1) { stopPlay(); render(); return; } step += 1; render(); }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => { if (playing) { stopPlay(); render(); return; } play(); });
+    document.getElementById("btnStep").addEventListener("click", () => { stopPlay(); if (step < scenario().frames.length - 1) step += 1; render(); });
+    document.getElementById("btnReset").addEventListener("click", () => { stopPlay(); step = 0; render(); });
+    els.speed.addEventListener("input", () => { els.speedLabel.textContent = `${els.speed.value}ms`; if (playing) play(); });
+    render();
+  </script>
+</body>
+</html>

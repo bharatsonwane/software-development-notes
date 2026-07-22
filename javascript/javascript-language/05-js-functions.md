@@ -8,6 +8,8 @@ Functions create their own **scope** (File 02). How you define a function affect
 
 **Default rule today:** use **function declarations** for top-level named helpers, **arrow functions** for short callbacks and when you want lexical `this`, and **default/rest parameters** instead of the legacy `arguments` object.
 
+Interactive visualizer: open [05-js-functions-animation.html](./05-js-functions-animation.html) in a browser — call stack, params/defaults, rest, return, callbacks, hoisting (Run / Step).
+
 ---
 
 ## 1. Function forms
