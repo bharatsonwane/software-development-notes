@@ -1,0 +1,1745 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prototypes & Classes Visualizer — File 09</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #111827;
+      --border: #1e293b;
+      --border-2: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --blue: #3b82f6;
+      --blue-2: #60a5fa;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --green: #34d399;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace;
+      --sans: Inter, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 56px 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #059669, #2563eb);
+      display: grid;
+      place-items: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .speed-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .speed-wrap input[type="range"] {
+      width: 110px;
+      accent-color: var(--blue);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: #1e293b; }
+
+    .run-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 650;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .run-btn:hover { background: #2563eb; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(340px, 1.25fr) minmax(250px, 0.8fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100%; }
+      .main { grid-template-columns: 1fr; height: auto; }
+    }
+
+    .col {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .card-b { padding: 12px; }
+
+    .scenarios {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+    }
+
+    .scenario {
+      text-align: left;
+      border: 1px solid var(--border-2);
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .scenario:hover { border-color: #475569; }
+    .scenario.on {
+      border-color: #059669;
+      background: rgba(5, 150, 105, 0.12);
+    }
+
+    .scenario strong {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 2px;
+    }
+
+    .scenario span {
+      color: var(--dim);
+      font-size: 0.7rem;
+      line-height: 1.3;
+    }
+
+    .script-card { flex: 1; }
+
+    .editor {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      flex: 1;
+      min-height: 0;
+      background: #020617;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 22px;
+    }
+
+    .gutter {
+      padding: 12px 0;
+      text-align: right;
+      color: var(--dim);
+      user-select: none;
+      border-right: 1px solid var(--border);
+    }
+
+    .gutter div {
+      height: 22px;
+      padding-right: 10px;
+    }
+
+    .gutter .active {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.08);
+      font-weight: 700;
+    }
+
+    .code-view {
+      margin: 0;
+      padding: 12px;
+      white-space: pre;
+      color: #cbd5e1;
+      overflow: auto;
+      font: inherit;
+      line-height: 22px;
+    }
+
+    .code-view .hl {
+      background: rgba(251, 191, 36, 0.12);
+      display: block;
+      margin: 0 -12px;
+      padding: 0 12px;
+    }
+
+    .stage {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .phase-pill {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      color: var(--green);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .narrate {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+      padding: 10px 12px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .narrate strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
+    }
+
+    .chain {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .proto-node {
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      animation: pop .16s ease;
+    }
+
+    .proto-node.current {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+    }
+
+    .proto-node.checking {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.35);
+    }
+
+    .proto-node.found {
+      border-color: var(--green);
+      box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.35);
+    }
+
+    .proto-node.miss {
+      border-color: var(--rose);
+      opacity: 0.85;
+    }
+
+    .proto-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--blue-2);
+      font-family: var(--mono);
+    }
+
+    .proto-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--dim);
+      border: 1px solid var(--border-2);
+      border-radius: 999px;
+      padding: 2px 7px;
+    }
+
+    .props {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .prop {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: var(--text);
+    }
+
+    .prop.own {
+      border-color: rgba(59, 130, 246, 0.45);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .prop.inherited {
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.08);
+      color: var(--violet);
+    }
+
+    .prop.hit {
+      border-color: var(--green);
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--green);
+      outline: 1px solid rgba(52, 211, 153, 0.5);
+    }
+
+    .prop.skip {
+      opacity: 0.45;
+    }
+
+    .arrow {
+      align-self: center;
+      color: var(--dim);
+      font-size: 0.75rem;
+      padding: 4px 0;
+      font-family: var(--mono);
+    }
+
+    .arrow.live {
+      color: var(--amber);
+    }
+
+    .side-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .side-grid { grid-template-columns: 1fr; }
+    }
+
+    .mini {
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 10px;
+      background: #0b1220;
+      min-height: 90px;
+    }
+
+    .mini h4 {
+      margin: 0 0 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .mini .val {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--amber);
+      word-break: break-word;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .step-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 0.72rem;
+      color: var(--dim);
+      padding: 5px 8px;
+      border-radius: 6px;
+    }
+
+    .step-row.on {
+      color: var(--text);
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    .step-row .n {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: #1e293b;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .step-row.on .n {
+      background: var(--blue);
+      color: white;
+    }
+
+    .out-list, .stack-list {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .out-item, .stack-item {
+      background: #0b1220;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .stack-item {
+      border-color: rgba(59, 130, 246, 0.35);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .empty {
+      color: var(--dim);
+      font-size: 0.78rem;
+      font-style: italic;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 12px 12px;
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-right: 4px;
+      vertical-align: -1px;
+    }
+
+    .legend .own { background: var(--blue); }
+    .legend .inh { background: var(--violet); }
+    .legend .hit { background: var(--green); }
+
+    .rule-card .card-b {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .rule-card code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--blue-2);
+    }
+
+    @keyframes pop {
+      from { transform: translateY(3px); opacity: .4; }
+      to { transform: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="7" cy="7" r="3"/>
+            <circle cx="17" cy="7" r="3"/>
+            <circle cx="12" cy="17" r="3"/>
+            <path d="M9.2 9.2l2 5.6M14.8 9.2l-2 5.6M10 7h4"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Prototypes & Classes Visualizer</h1>
+          <p>File 09 — chain lookup, new, extends</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <label class="speed-wrap">
+          Speed: <span id="speedLabel">900ms</span>
+          <input type="range" id="speed" min="300" max="2000" step="100" value="900" />
+        </label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="run-btn" id="btnRun">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span id="runLabel">Run</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:44%">
+          <div class="card-h">Scenarios</div>
+          <div class="card-b scenarios" id="scenarios"></div>
+        </section>
+
+        <section class="card script-card">
+          <div class="card-h">
+            <span>Example Code</span>
+            <span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span>
+          </div>
+          <div class="editor">
+            <div class="gutter" id="gutter"></div>
+            <pre class="code-view" id="codeView"></pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Prototype Chain</div>
+          <div class="stage">
+            <div class="phase-pill" id="phasePill">Lookup</div>
+            <p class="narrate" id="narrate">
+              <strong>Ready</strong>
+              Pick a scenario to watch property lookup walk the chain, or see how <code>new</code> / <code>class</code> wires prototypes.
+            </p>
+            <div id="snapshot"></div>
+          </div>
+          <div class="legend">
+            <span><i class="own"></i> own property</span>
+            <span><i class="inh"></i> on this prototype object</span>
+            <span><i class="hit"></i> lookup hit</span>
+          </div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:120px">
+          <div class="card-h">Call Stack</div>
+          <div class="stack-list" id="callStack"></div>
+        </section>
+        <section class="card" style="flex:1; min-height:140px">
+          <div class="card-h">&gt;_ Console</div>
+          <div class="out-list" id="output"></div>
+        </section>
+        <section class="card rule-card" style="flex:0 0 auto">
+          <div class="card-h">Remember</div>
+          <div class="card-b" id="remember">
+            Lookup: own props → <code>[[Prototype]]</code> → … → <code>null</code>.
+            <code>class</code> is sugar over constructors + <code>.prototype</code>.
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * chain: [{ id, label, badge, state, props:[{key,value,kind,hit?}] }]
+     * state: current | checking | found | miss | ""
+     * kind: own | proto
+     * extra: { lookup?, result?, newSteps?, newStep?, instanceof? }
+     */
+
+    const SCENARIOS = [
+      {
+        id: "chain-lookup",
+        title: "Prototype chain lookup",
+        blurb: "rabbit.eats walks to animal",
+        remember: "Read path: own property first, then follow <code>[[Prototype]]</code> until found or <code>null</code>.",
+        code: `const animal = {
+  eats: true,
+  walk() { console.log("walking"); },
+};
+
+const rabbit = { jumps: true };
+Object.setPrototypeOf(rabbit, animal);
+
+console.log(rabbit.jumps);
+console.log(rabbit.eats);
+rabbit.walk();`,
+        frames: [
+          {
+            line: 9,
+            title: "Read rabbit.jumps",
+            narrate: "Start on rabbit. jumps is an own property — stop. No chain walk needed.",
+            stack: ["<script>"],
+            output: ["true"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "rabbit",
+                label: "rabbit",
+                badge: "instance",
+                state: "found",
+                props: [
+                  { key: "jumps", value: "true", kind: "own", hit: true },
+                ],
+              },
+              {
+                id: "animal",
+                label: "animal",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [
+                  { key: "eats", value: "true", kind: "proto" },
+                  { key: "walk", value: "ƒ", kind: "proto" },
+                ],
+              },
+              {
+                id: "object",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [
+                  { key: "toString", value: "ƒ", kind: "proto" },
+                ],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "rabbit.jumps", result: "true (own)" },
+          },
+          {
+            line: 10,
+            title: "Read rabbit.eats — miss on rabbit",
+            narrate: "eats is not own on rabbit. Follow [[Prototype]] → animal.",
+            stack: ["<script>"],
+            output: ["true"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "rabbit",
+                label: "rabbit",
+                badge: "instance",
+                state: "checking",
+                props: [
+                  { key: "jumps", value: "true", kind: "own", skip: true },
+                ],
+              },
+              {
+                id: "animal",
+                label: "animal",
+                badge: "[[Prototype]]",
+                state: "checking",
+                props: [
+                  { key: "eats", value: "true", kind: "proto" },
+                  { key: "walk", value: "ƒ", kind: "proto" },
+                ],
+              },
+              {
+                id: "object",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "rabbit.eats", result: "searching…" },
+          },
+          {
+            line: 10,
+            title: "Found on animal",
+            narrate: "animal.eats exists → return true. Chain walk stops.",
+            stack: ["<script>"],
+            output: ["true", "true"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "rabbit",
+                label: "rabbit",
+                badge: "instance",
+                state: "miss",
+                props: [{ key: "jumps", value: "true", kind: "own", skip: true }],
+              },
+              {
+                id: "animal",
+                label: "animal",
+                badge: "[[Prototype]]",
+                state: "found",
+                props: [
+                  { key: "eats", value: "true", kind: "proto", hit: true },
+                  { key: "walk", value: "ƒ", kind: "proto" },
+                ],
+              },
+              {
+                id: "object",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "rabbit.eats", result: "true (inherited)" },
+          },
+          {
+            line: 11,
+            title: "Call rabbit.walk()",
+            narrate: "Method found on animal. this is still rabbit (call site), so methods use the instance.",
+            stack: ["<script>", "rabbit.walk()"],
+            output: ["true", "true", "walking"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "rabbit",
+                label: "rabbit",
+                badge: "instance",
+                state: "current",
+                props: [{ key: "jumps", value: "true", kind: "own" }],
+              },
+              {
+                id: "animal",
+                label: "animal",
+                badge: "[[Prototype]]",
+                state: "found",
+                props: [
+                  { key: "eats", value: "true", kind: "proto" },
+                  { key: "walk", value: "ƒ", kind: "proto", hit: true },
+                ],
+              },
+              {
+                id: "object",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "rabbit.walk", result: "ƒ on animal; this = rabbit" },
+          },
+        ],
+      },
+      {
+        id: "own-vs-shadow",
+        title: "Own vs inherited / shadow",
+        blurb: "Own property hides prototype key",
+        remember: "Own properties win. <code>Object.hasOwn</code> tells you if a key is on the object itself.",
+        code: `const parent = { shared: 1, unique: "parent" };
+const child = Object.create(parent);
+child.unique = "child";
+
+console.log(child.shared);
+console.log(child.unique);
+console.log(Object.hasOwn(child, "shared"));
+console.log(Object.hasOwn(child, "unique"));`,
+        frames: [
+          {
+            line: 5,
+            title: "child.shared",
+            narrate: "Not own on child → inherit from parent → 1.",
+            stack: ["<script>"],
+            output: ["1"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "child",
+                label: "child",
+                badge: "instance",
+                state: "miss",
+                props: [{ key: "unique", value: '"child"', kind: "own", skip: true }],
+              },
+              {
+                id: "parent",
+                label: "parent",
+                badge: "[[Prototype]]",
+                state: "found",
+                props: [
+                  { key: "shared", value: "1", kind: "proto", hit: true },
+                  { key: "unique", value: '"parent"', kind: "proto", skip: true },
+                ],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "child.shared", result: "1 · hasOwn=false" },
+          },
+          {
+            line: 6,
+            title: "child.unique shadows",
+            narrate: "Own unique on child hides parent.unique. Lookup never reaches parent for this key.",
+            stack: ["<script>"],
+            output: ["1", "child"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "child",
+                label: "child",
+                badge: "instance",
+                state: "found",
+                props: [{ key: "unique", value: '"child"', kind: "own", hit: true }],
+              },
+              {
+                id: "parent",
+                label: "parent",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [
+                  { key: "shared", value: "1", kind: "proto" },
+                  { key: "unique", value: '"parent"', kind: "proto", skip: true },
+                ],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "child.unique", result: '"child" · hasOwn=true' },
+          },
+        ],
+      },
+      {
+        id: "new-user",
+        title: "new + Fn.prototype",
+        blurb: "Instance links to User.prototype",
+        remember: "<code>new User()</code> sets <code>[[Prototype]]</code> to <code>User.prototype</code>. Shared methods live there — one copy for all instances.",
+        code: `function User(name) {
+  this.name = name;
+}
+
+User.prototype.greet = function () {
+  return "Hi, " + this.name;
+};
+
+const u = new User("Bharat");
+console.log(u.greet());
+console.log(Object.getPrototypeOf(u) === User.prototype);`,
+        frames: [
+          {
+            line: 9,
+            title: "new step 1–2",
+            narrate: "Create {} and set [[Prototype]] → User.prototype.",
+            stack: ["<script>", "new User"],
+            output: [],
+            phase: "new",
+            chain: [
+              {
+                id: "u",
+                label: "u {}",
+                badge: "new instance",
+                state: "current",
+                props: [],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "Fn.prototype",
+                state: "",
+                props: [{ key: "greet", value: "ƒ", kind: "proto" }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: {
+              newSteps: [
+                "Create empty object {}",
+                "Link [[Prototype]] → User.prototype",
+                "Call User with this = new object",
+                "Return this (unless object returned)",
+              ],
+              newStep: 1,
+            },
+          },
+          {
+            line: 2,
+            title: "new step 3 — constructor",
+            narrate: "Run User with this = u. Own property name is set on the instance.",
+            stack: ["<script>", "new User", "User()"],
+            output: [],
+            phase: "new",
+            chain: [
+              {
+                id: "u",
+                label: "u",
+                badge: "instance",
+                state: "current",
+                props: [{ key: "name", value: '"Bharat"', kind: "own" }],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "Fn.prototype",
+                state: "",
+                props: [{ key: "greet", value: "ƒ", kind: "proto" }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: {
+              newSteps: [
+                "Create empty object {}",
+                "Link [[Prototype]] → User.prototype",
+                "Call User with this = new object",
+                "Return this (unless object returned)",
+              ],
+              newStep: 2,
+            },
+          },
+          {
+            line: 10,
+            title: "u.greet()",
+            narrate: "greet not own on u → found on User.prototype. this is u.",
+            stack: ["<script>", "u.greet()"],
+            output: ["Hi, Bharat"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "u",
+                label: "u",
+                badge: "instance",
+                state: "miss",
+                props: [{ key: "name", value: '"Bharat"', kind: "own", skip: true }],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "Fn.prototype",
+                state: "found",
+                props: [{ key: "greet", value: "ƒ", kind: "proto", hit: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: {
+              lookup: "u.greet",
+              result: "ƒ on User.prototype",
+              newSteps: [
+                "Create empty object {}",
+                "Link [[Prototype]] → User.prototype",
+                "Call User with this = new object",
+                "Return this (unless object returned)",
+              ],
+              newStep: 3,
+            },
+          },
+          {
+            line: 11,
+            title: "getPrototypeOf",
+            narrate: "Object.getPrototypeOf(u) === User.prototype → true.",
+            stack: ["<script>"],
+            output: ["Hi, Bharat", "true"],
+            phase: "new",
+            chain: [
+              {
+                id: "u",
+                label: "u",
+                badge: "instance",
+                state: "current",
+                props: [{ key: "name", value: '"Bharat"', kind: "own" }],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "Fn.prototype",
+                state: "found",
+                props: [{ key: "greet", value: "ƒ", kind: "proto" }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [{ key: "toString", value: "ƒ", kind: "proto" }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { result: "prototype link confirmed" },
+          },
+        ],
+      },
+      {
+        id: "instanceof",
+        title: "instanceof",
+        blurb: "Is Constructor.prototype in the chain?",
+        remember: "<code>obj instanceof C</code> checks whether <code>C.prototype</code> appears anywhere in obj’s prototype chain.",
+        code: `function User(name) {
+  this.name = name;
+}
+const u = new User("Bharat");
+
+console.log(u instanceof User);
+console.log(u instanceof Object);
+console.log(u instanceof Array);`,
+        frames: [
+          {
+            line: 6,
+            title: "u instanceof User",
+            narrate: "Walk chain looking for User.prototype — found immediately after u.",
+            stack: ["<script>"],
+            output: ["true"],
+            phase: "instanceof",
+            chain: [
+              {
+                id: "u",
+                label: "u",
+                badge: "instance",
+                state: "current",
+                props: [{ key: "name", value: '"Bharat"', kind: "own" }],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "match!",
+                state: "found",
+                props: [{ key: "constructor", value: "User", kind: "proto", hit: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "instanceof User", result: "true" },
+          },
+          {
+            line: 7,
+            title: "u instanceof Object",
+            narrate: "User.prototype is not Object.prototype — keep walking → Object.prototype found.",
+            stack: ["<script>"],
+            output: ["true", "true"],
+            phase: "instanceof",
+            chain: [
+              {
+                id: "u",
+                label: "u",
+                badge: "instance",
+                state: "current",
+                props: [{ key: "name", value: '"Bharat"', kind: "own" }],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "skip",
+                state: "miss",
+                props: [],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "match!",
+                state: "found",
+                props: [{ key: "constructor", value: "Object", kind: "proto", hit: true }],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "instanceof Object", result: "true" },
+          },
+          {
+            line: 8,
+            title: "u instanceof Array",
+            narrate: "Array.prototype never appears in the chain → false.",
+            stack: ["<script>"],
+            output: ["true", "true", "false"],
+            phase: "instanceof",
+            chain: [
+              {
+                id: "u",
+                label: "u",
+                badge: "instance",
+                state: "current",
+                props: [{ key: "name", value: '"Bharat"', kind: "own" }],
+              },
+              {
+                id: "up",
+                label: "User.prototype",
+                badge: "no",
+                state: "miss",
+                props: [],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "no",
+                state: "miss",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "miss", props: [] },
+            ],
+            extra: { lookup: "instanceof Array", result: "false" },
+          },
+        ],
+      },
+      {
+        id: "manual-inherit",
+        title: "Manual inheritance",
+        blurb: "Dog.prototype → Animal.prototype",
+        remember: "Link child.prototype with <code>Object.create(Parent.prototype)</code>, call parent with <code>Parent.call(this,…)</code>, fix <code>constructor</code>.",
+        code: `function Animal(name) {
+  this.name = name;
+}
+Animal.prototype.speak = function () {
+  return this.name + " sound";
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name);
+  this.breed = breed;
+}
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+Dog.prototype.speak = function () {
+  return this.name + " barks";
+};
+
+const d = new Dog("Rex", "Lab");
+console.log(d.speak());
+console.log(d instanceof Animal);`,
+        frames: [
+          {
+            line: 17,
+            title: "new Dog — own props",
+            narrate: "Animal.call(this, name) sets name on d. breed is own too. Methods come from the chain.",
+            stack: ["<script>", "new Dog"],
+            output: [],
+            phase: "Inheritance",
+            chain: [
+              {
+                id: "d",
+                label: "d",
+                badge: "Dog instance",
+                state: "current",
+                props: [
+                  { key: "name", value: '"Rex"', kind: "own" },
+                  { key: "breed", value: '"Lab"', kind: "own" },
+                ],
+              },
+              {
+                id: "dp",
+                label: "Dog.prototype",
+                badge: "child proto",
+                state: "",
+                props: [
+                  { key: "constructor", value: "Dog", kind: "proto" },
+                  { key: "speak", value: "ƒ barks", kind: "proto" },
+                ],
+              },
+              {
+                id: "ap",
+                label: "Animal.prototype",
+                badge: "parent proto",
+                state: "",
+                props: [{ key: "speak", value: "ƒ sound", kind: "proto", skip: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { result: "chain wired: d → Dog.prototype → Animal.prototype" },
+          },
+          {
+            line: 18,
+            title: "d.speak() — shadow method",
+            narrate: "Dog.prototype.speak shadows Animal.prototype.speak. Own-chain hit on Dog.prototype.",
+            stack: ["<script>", "d.speak()"],
+            output: ["Rex barks"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "d",
+                label: "d",
+                badge: "Dog instance",
+                state: "miss",
+                props: [
+                  { key: "name", value: '"Rex"', kind: "own", skip: true },
+                  { key: "breed", value: '"Lab"', kind: "own", skip: true },
+                ],
+              },
+              {
+                id: "dp",
+                label: "Dog.prototype",
+                badge: "child proto",
+                state: "found",
+                props: [
+                  { key: "constructor", value: "Dog", kind: "proto" },
+                  { key: "speak", value: "ƒ barks", kind: "proto", hit: true },
+                ],
+              },
+              {
+                id: "ap",
+                label: "Animal.prototype",
+                badge: "parent proto",
+                state: "",
+                props: [{ key: "speak", value: "ƒ sound", kind: "proto", skip: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "d.speak", result: "Dog override wins" },
+          },
+          {
+            line: 19,
+            title: "instanceof Animal",
+            narrate: "Animal.prototype is in the chain → true.",
+            stack: ["<script>"],
+            output: ["Rex barks", "true"],
+            phase: "instanceof",
+            chain: [
+              {
+                id: "d",
+                label: "d",
+                badge: "Dog instance",
+                state: "current",
+                props: [
+                  { key: "name", value: '"Rex"', kind: "own" },
+                  { key: "breed", value: '"Lab"', kind: "own" },
+                ],
+              },
+              {
+                id: "dp",
+                label: "Dog.prototype",
+                badge: "skip",
+                state: "miss",
+                props: [],
+              },
+              {
+                id: "ap",
+                label: "Animal.prototype",
+                badge: "match!",
+                state: "found",
+                props: [{ key: "speak", value: "ƒ", kind: "proto", hit: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "instanceof Animal", result: "true" },
+          },
+        ],
+      },
+      {
+        id: "class-extends",
+        title: "class extends / super",
+        blurb: "Sugar over the same prototype links",
+        remember: "<code>class Dog extends Animal</code> does the prototype wiring for you. <code>super()</code> is the parent constructor call.",
+        code: `class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    return this.name + " sound";
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name);
+    this.breed = breed;
+  }
+  speak() {
+    return this.name + " barks";
+  }
+}
+
+const d = new Dog("Rex", "Lab");
+console.log(d.speak());`,
+        frames: [
+          {
+            line: 20,
+            title: "class wires the chain",
+            narrate: "Under the hood: Dog.prototype → Animal.prototype → Object.prototype. Same model as manual inheritance.",
+            stack: ["<script>"],
+            output: [],
+            phase: "class",
+            chain: [
+              {
+                id: "d",
+                label: "d",
+                badge: "instance",
+                state: "current",
+                props: [
+                  { key: "name", value: '"Rex"', kind: "own" },
+                  { key: "breed", value: '"Lab"', kind: "own" },
+                ],
+              },
+              {
+                id: "dp",
+                label: "Dog.prototype",
+                badge: "class methods",
+                state: "",
+                props: [{ key: "speak", value: "ƒ barks", kind: "proto" }],
+              },
+              {
+                id: "ap",
+                label: "Animal.prototype",
+                badge: "extends",
+                state: "",
+                props: [{ key: "speak", value: "ƒ sound", kind: "proto", skip: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: {
+              newSteps: [
+                "super(name) → Animal constructor on this",
+                "Set breed on instance",
+                "Methods live on .prototype (not per instance)",
+                "extends linked Dog.prototype to Animal.prototype",
+              ],
+              newStep: 3,
+            },
+          },
+          {
+            line: 21,
+            title: "d.speak()",
+            narrate: "Lookup hits Dog.prototype.speak — class override, same shadowing rules.",
+            stack: ["<script>", "d.speak()"],
+            output: ["Rex barks"],
+            phase: "Lookup",
+            chain: [
+              {
+                id: "d",
+                label: "d",
+                badge: "instance",
+                state: "miss",
+                props: [
+                  { key: "name", value: '"Rex"', kind: "own", skip: true },
+                  { key: "breed", value: '"Lab"', kind: "own", skip: true },
+                ],
+              },
+              {
+                id: "dp",
+                label: "Dog.prototype",
+                badge: "class methods",
+                state: "found",
+                props: [{ key: "speak", value: "ƒ barks", kind: "proto", hit: true }],
+              },
+              {
+                id: "ap",
+                label: "Animal.prototype",
+                badge: "extends",
+                state: "",
+                props: [{ key: "speak", value: "ƒ sound", kind: "proto", skip: true }],
+              },
+              {
+                id: "op",
+                label: "Object.prototype",
+                badge: "[[Prototype]]",
+                state: "",
+                props: [],
+              },
+              { id: "null", label: "null", badge: "end", state: "", props: [] },
+            ],
+            extra: { lookup: "d.speak", result: "class method on Dog.prototype" },
+          },
+        ],
+      },
+    ];
+
+    let scenarioIndex = 0;
+    let step = 0;
+    let playing = false;
+    let timer = null;
+
+    const els = {
+      scenarios: document.getElementById("scenarios"),
+      gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"),
+      snapshot: document.getElementById("snapshot"),
+      narrate: document.getElementById("narrate"),
+      phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"),
+      output: document.getElementById("output"),
+      remember: document.getElementById("remember"),
+      stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"),
+      speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() {
+      return SCENARIOS[scenarioIndex];
+    }
+
+    function frame() {
+      const frames = scenario().frames;
+      return frames[Math.min(step, frames.length - 1)];
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map(
+        (s, i) => `
+        <button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}">
+          <strong>${escapeHtml(s.title)}</strong>
+          <span>${escapeHtml(s.blurb)}</span>
+        </button>`
+      ).join("");
+
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          stopPlay();
+          scenarioIndex = Number(btn.dataset.i);
+          step = 0;
+          render();
+        });
+      });
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines
+        .map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`)
+        .join("");
+
+      els.codeView.innerHTML = lines
+        .map((line, i) => {
+          const safe = escapeHtml(line) || " ";
+          return activeLine === i + 1
+            ? `<span class="hl">${safe}</span>`
+            : `${safe}\n`;
+        })
+        .join("");
+    }
+
+    function renderChain(chain) {
+      if (!chain || !chain.length) return `<div class="empty">No chain</div>`;
+
+      return `
+        <div class="chain">
+          ${chain
+            .map((node, i) => {
+              const props =
+                node.props && node.props.length
+                  ? `<div class="props">${node.props
+                      .map((p) => {
+                        const cls = [
+                          "prop",
+                          p.kind === "own" ? "own" : "inherited",
+                          p.hit ? "hit" : "",
+                          p.skip ? "skip" : "",
+                        ].join(" ");
+                        return `<span class="${cls}">${escapeHtml(p.key)}${
+                          p.value != null ? `: ${escapeHtml(p.value)}` : ""
+                        }</span>`;
+                      })
+                      .join("")}</div>`
+                  : node.id === "null"
+                    ? `<div class="empty">chain ends</div>`
+                    : `<div class="empty">no own keys shown</div>`;
+
+              const arrow =
+                i < chain.length - 1
+                  ? `<div class="arrow ${
+                      node.state === "checking" || node.state === "miss" ? "live" : ""
+                    }>[[Prototype]] ↓</div>`
+                  : "";
+
+              return `
+                <div class="proto-node ${node.state || ""}">
+                  <div class="proto-title">
+                    <span>${escapeHtml(node.label)}</span>
+                    <span class="proto-badge">${escapeHtml(node.badge || "")}</span>
+                  </div>
+                  ${props}
+                </div>
+                ${arrow}`;
+            })
+            .join("")}
+        </div>`;
+    }
+
+    function renderExtra(extra) {
+      if (!extra) return "";
+
+      const lookupBox =
+        extra.lookup || extra.result
+          ? `<div class="mini">
+              <h4>Query</h4>
+              <div class="val">${escapeHtml(extra.lookup || "—")}</div>
+              <div class="val" style="margin-top:8px;color:var(--green)">${escapeHtml(
+                extra.result || ""
+              )}</div>
+            </div>`
+          : "";
+
+      const stepsBox =
+        extra.newSteps
+          ? `<div class="mini">
+              <h4>Mechanics</h4>
+              <div class="steps">
+                ${extra.newSteps
+                  .map(
+                    (s, i) => `
+                  <div class="step-row ${extra.newStep === i ? "on" : ""}">
+                    <span class="n">${i + 1}</span>
+                    <span>${escapeHtml(s)}</span>
+                  </div>`
+                  )
+                  .join("")}
+              </div>
+            </div>`
+          : "";
+
+      if (!lookupBox && !stepsBox) return "";
+      return `<div class="side-grid">${lookupBox}${stepsBox}</div>`;
+    }
+
+    function render() {
+      const sc = scenario();
+      const fr = frame();
+      const frames = sc.frames;
+
+      renderScenarios();
+      renderCode(fr.line);
+
+      els.snapshot.innerHTML =
+        renderChain(fr.chain) +
+        (fr.extra ? `<div style="height:10px"></div>${renderExtra(fr.extra)}` : "");
+
+      els.phasePill.textContent = fr.phase || "Lookup";
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+
+      if (!fr.stack.length) {
+        els.callStack.innerHTML = `<div class="empty">Stack empty</div>`;
+      } else {
+        els.callStack.innerHTML = [...fr.stack]
+          .reverse()
+          .map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`)
+          .join("");
+      }
+
+      if (!fr.output.length) {
+        els.output.innerHTML = `<div class="empty">No output yet</div>`;
+      } else {
+        els.output.innerHTML = fr.output
+          .map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`)
+          .join("");
+      }
+
+      const atEnd = step >= frames.length - 1;
+      els.runLabel.textContent = playing ? "Pause" : atEnd ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() {
+      playing = false;
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true;
+      render();
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (step >= frames.length - 1) {
+          stopPlay();
+          render();
+          return;
+        }
+        step += 1;
+        render();
+      }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => {
+      if (playing) {
+        stopPlay();
+        render();
+        return;
+      }
+      play();
+    });
+
+    document.getElementById("btnStep").addEventListener("click", () => {
+      stopPlay();
+      const frames = scenario().frames;
+      if (step < frames.length - 1) step += 1;
+      render();
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      stopPlay();
+      step = 0;
+      render();
+    });
+
+    els.speed.addEventListener("input", () => {
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+      if (playing) play();
+    });
+
+    render();
+  </script>
+</body>
+</html>

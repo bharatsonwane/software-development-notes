@@ -8,6 +8,8 @@ Every object (except `Object.create(null)`) has an internal link to a prototype.
 
 **Default rule today:** use **`class`** for constructors and inheritance in application code; know **prototypes** for debugging, interviews, and reading legacy code.
 
+Interactive visualizer: open [09-js-prototypes-classes-animation.html](./09-js-prototypes-classes-animation.html) in a browser — chain lookup, `new`, `instanceof`, manual inheritance, `class extends` (Run / Step).
+
 ---
 
 ## 1. Prototype chain
