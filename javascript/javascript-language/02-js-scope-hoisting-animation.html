@@ -1,0 +1,1500 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Scope & Hoisting Visualizer — File 02</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #111827;
+      --border: #1e293b;
+      --border-2: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --blue: #3b82f6;
+      --blue-2: #60a5fa;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --green: #34d399;
+      --rose: #fb7185;
+      --ok: #22c55e;
+      --danger: #ef4444;
+      --mono: "Fira Code", ui-monospace, monospace;
+      --sans: Inter, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 56px 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      display: grid;
+      place-items: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .speed-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .speed-wrap input[type="range"] {
+      width: 110px;
+      accent-color: var(--blue);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: #1e293b; }
+
+    .run-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 650;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .run-btn:hover { background: #2563eb; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(340px, 1.25fr) minmax(250px, 0.8fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100%; }
+      .main { grid-template-columns: 1fr; height: auto; }
+    }
+
+    .col {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .card-b { padding: 12px; }
+
+    .scenarios {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .scenario {
+      text-align: left;
+      border: 1px solid var(--border-2);
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .scenario:hover { border-color: #475569; }
+    .scenario.on {
+      border-color: var(--blue);
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    .scenario strong {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 2px;
+    }
+
+    .scenario span {
+      color: var(--dim);
+      font-size: 0.7rem;
+      line-height: 1.3;
+    }
+
+    .script-card { flex: 1; }
+
+    .editor {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      flex: 1;
+      min-height: 0;
+      background: #020617;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 22px;
+    }
+
+    .gutter {
+      padding: 12px 0;
+      text-align: right;
+      color: var(--dim);
+      user-select: none;
+      border-right: 1px solid var(--border);
+    }
+
+    .gutter div {
+      height: 22px;
+      padding-right: 10px;
+    }
+
+    .gutter .active {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.08);
+      font-weight: 700;
+    }
+
+    .code-view {
+      margin: 0;
+      padding: 12px;
+      white-space: pre;
+      color: #cbd5e1;
+      overflow: auto;
+      font: inherit;
+      line-height: 22px;
+    }
+
+    .code-view .hl {
+      background: rgba(251, 191, 36, 0.12);
+      display: block;
+      margin: 0 -12px;
+      padding: 0 12px;
+    }
+
+    /* Scope tree */
+    .scope-stage {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .phase-pill {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+      background: #0b1220;
+    }
+
+    .phase-pill.create {
+      color: var(--violet);
+      border-color: rgba(167, 139, 250, 0.45);
+      background: rgba(167, 139, 250, 0.1);
+    }
+
+    .phase-pill.execute {
+      color: var(--green);
+      border-color: rgba(52, 211, 153, 0.45);
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    .narrate {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+      padding: 10px 12px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .narrate strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
+    }
+
+    .scope-box {
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.65);
+      animation: pop .16s ease;
+    }
+
+    .scope-box.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+    }
+
+    .scope-box.lookup {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.25);
+    }
+
+    .scope-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--blue-2);
+      text-transform: uppercase;
+    }
+
+    .scope-kind {
+      font-size: 0.65rem;
+      color: var(--dim);
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .bindings {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .binding {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #020617;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+    }
+
+    .binding.tdz {
+      border-color: rgba(251, 113, 133, 0.45);
+      background: rgba(251, 113, 133, 0.08);
+    }
+
+    .binding.undef {
+      border-color: rgba(167, 139, 250, 0.4);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    .binding.ready {
+      border-color: rgba(52, 211, 153, 0.4);
+      background: rgba(52, 211, 153, 0.08);
+    }
+
+    .binding.hit {
+      outline: 1px solid var(--amber);
+    }
+
+    .binding .kw { color: var(--violet); font-weight: 600; }
+    .binding .name { color: var(--text); }
+    .binding .val { color: var(--amber); }
+    .binding .val.tdz-val { color: var(--rose); }
+    .binding .val.undef-val { color: var(--violet); }
+
+    .children {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-left: 8px;
+      border-left: 2px dashed rgba(51, 65, 85, 0.9);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+
+    .legend span {
+      font-size: 0.68rem;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch.tdz { background: var(--rose); }
+    .swatch.undef { background: var(--violet); }
+    .swatch.ready { background: var(--green); }
+
+    .out-list, .stack-list {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .out-item, .stack-item {
+      background: #0b1220;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .stack-item { border-color: rgba(59, 130, 246, 0.35); background: rgba(59, 130, 246, 0.1); }
+
+    .empty {
+      color: var(--dim);
+      font-size: 0.78rem;
+      font-style: italic;
+    }
+
+    .rule-card .card-b {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .rule-card code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--blue-2);
+    }
+
+    @keyframes pop {
+      from { transform: translateY(3px); opacity: .4; }
+      to { transform: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M4 19V5"/>
+            <path d="M4 7h10v5H4"/>
+            <path d="M4 14h7v5H4"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Scope & Hoisting Visualizer</h1>
+          <p>File 02 — bindings, TDZ, scope chain</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <label class="speed-wrap">
+          Speed: <span id="speedLabel">900ms</span>
+          <input type="range" id="speed" min="300" max="2000" step="100" value="900" />
+        </label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="run-btn" id="btnRun">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span id="runLabel">Run</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main">
+      <!-- LEFT -->
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height: 42%;">
+          <div class="card-h">Scenarios</div>
+          <div class="card-b scenarios" id="scenarios" style="overflow:auto"></div>
+        </section>
+
+        <section class="card script-card">
+          <div class="card-h">
+            <span>Example Code</span>
+            <span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span>
+          </div>
+          <div class="editor">
+            <div class="gutter" id="gutter"></div>
+            <pre class="code-view" id="codeView"></pre>
+          </div>
+        </section>
+      </div>
+
+      <!-- CENTER -->
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Scope Chain</div>
+          <div class="scope-stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate">
+              <strong>Ready</strong>
+              Pick a scenario, then Run or Step to watch bindings get created and resolved.
+            </p>
+            <div id="scopeTree"></div>
+          </div>
+          <div class="legend">
+            <span><i class="swatch tdz"></i> TDZ (uninitialized)</span>
+            <span><i class="swatch undef"></i> var → undefined</span>
+            <span><i class="swatch ready"></i> Initialized</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height: 140px;">
+          <div class="card-h">Call Stack</div>
+          <div class="stack-list" id="callStack"></div>
+        </section>
+
+        <section class="card" style="flex:1; min-height: 160px;">
+          <div class="card-h">&gt;_ Console</div>
+          <div class="out-list" id="output"></div>
+        </section>
+
+        <section class="card rule-card" style="flex:0 0 auto;">
+          <div class="card-h">Remember</div>
+          <div class="card-b" id="remember">
+            Declarations are created first. Assignments run later.
+            <code>var</code> starts as <code>undefined</code>;
+            <code>let</code>/<code>const</code> stay in the TDZ until their line.
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Frame shape:
+     * {
+     *   line: number|null,
+     *   phase: "create"|"execute"|"idle",
+     *   title, narrate,
+     *   stack: string[],
+     *   output: string[],
+     *   lookup: string|null, // binding name being resolved
+     *   scopes: ScopeNode
+     * }
+     * ScopeNode: { id, label, kind, active?, bindings:[{kw,name,status,value}], children?:[] }
+     * status: "tdz" | "undefined" | "ready" | "missing"
+     */
+
+    const SCENARIOS = [
+      {
+        id: "var-hoisting",
+        title: "var hoisting",
+        blurb: "Declared early, value assigned later",
+        remember: "<code>var</code> is hoisted and initialized to <code>undefined</code>. Assignment still happens on its line.",
+        code: `console.log(a);
+var a = 10;
+console.log(a);`,
+        frames: [
+          {
+            line: null,
+            phase: "idle",
+            title: "Ready",
+            narrate: "Script about to run. No bindings yet.",
+            stack: [],
+            output: [],
+            lookup: null,
+            scopes: { id: "g", label: "Global", kind: "script", bindings: [], children: [] },
+          },
+          {
+            line: null,
+            phase: "create",
+            title: "Create phase",
+            narrate: "Hoisting: register var a in Global and initialize it to undefined.",
+            stack: ["<script>"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "var", name: "a", status: "undefined", value: "undefined" }],
+              children: [],
+            },
+          },
+          {
+            line: 1,
+            phase: "execute",
+            title: "Read a",
+            narrate: "console.log(a) — lookup finds a in Global. Value is still undefined.",
+            stack: ["<script>", "console.log"],
+            output: ["undefined"],
+            lookup: "a",
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "var", name: "a", status: "undefined", value: "undefined" }],
+              children: [],
+            },
+          },
+          {
+            line: 2,
+            phase: "execute",
+            title: "Assign a",
+            narrate: "var a = 10 runs — binding already exists; now set value to 10.",
+            stack: ["<script>"],
+            output: ["undefined"],
+            lookup: "a",
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "var", name: "a", status: "ready", value: "10" }],
+              children: [],
+            },
+          },
+          {
+            line: 3,
+            phase: "execute",
+            title: "Read a again",
+            narrate: "console.log(a) now prints 10.",
+            stack: ["<script>", "console.log"],
+            output: ["undefined", "10"],
+            lookup: "a",
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "var", name: "a", status: "ready", value: "10" }],
+              children: [],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Done",
+            narrate: "Order: create binding (undefined) → read → assign → read.",
+            stack: [],
+            output: ["undefined", "10"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "var", name: "a", status: "ready", value: "10" }],
+              children: [],
+            },
+          },
+        ],
+      },
+      {
+        id: "tdz",
+        title: "let / const TDZ",
+        blurb: "Hoisted but unusable until init",
+        remember: "<code>let</code>/<code>const</code> are hoisted too, but stay in the Temporal Dead Zone until their declaration line runs.",
+        code: `console.log(y);
+let y = 5;`,
+        frames: [
+          {
+            line: null,
+            phase: "idle",
+            title: "Ready",
+            narrate: "Same shape as var example — different binding rules.",
+            stack: [],
+            output: [],
+            lookup: null,
+            scopes: { id: "g", label: "Global", kind: "script", bindings: [], children: [] },
+          },
+          {
+            line: null,
+            phase: "create",
+            title: "Create phase",
+            narrate: "Hoisting: register let y, but leave it uninitialized (TDZ starts).",
+            stack: ["<script>"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "let", name: "y", status: "tdz", value: "<uninitialized>" }],
+              children: [],
+            },
+          },
+          {
+            line: 1,
+            phase: "execute",
+            title: "Read in TDZ",
+            narrate: "console.log(y) — binding exists, but TDZ → ReferenceError.",
+            stack: ["<script>", "console.log"],
+            output: ["ReferenceError: Cannot access 'y' before initialization"],
+            lookup: "y",
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "let", name: "y", status: "tdz", value: "<uninitialized>" }],
+              children: [],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Stopped",
+            narrate: "Execution aborts. Line let y = 5 never runs. That is why TDZ errors feel 'early'.",
+            stack: [],
+            output: ["ReferenceError: Cannot access 'y' before initialization"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "let", name: "y", status: "tdz", value: "<uninitialized>" }],
+              children: [],
+            },
+          },
+        ],
+      },
+      {
+        id: "tdz-ok",
+        title: "TDZ ends",
+        blurb: "Access after declaration is fine",
+        remember: "TDZ ends at the declaration line. After that, <code>let</code>/<code>const</code> behave like normal bindings.",
+        code: `{
+  // TDZ for message
+  let message = "hello";
+  console.log(message);
+}`,
+        frames: [
+          {
+            line: null,
+            phase: "create",
+            title: "Enter block",
+            narrate: "Entering { } creates a block scope. let message is registered in TDZ.",
+            stack: ["<script>", "block"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [],
+              children: [{
+                id: "b", label: "Block", kind: "{ … }", active: true,
+                bindings: [{ kw: "let", name: "message", status: "tdz", value: "<uninitialized>" }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 3,
+            phase: "execute",
+            title: "Initialize",
+            narrate: "let message = \"hello\" — TDZ ends, value is ready.",
+            stack: ["<script>", "block"],
+            output: [],
+            lookup: "message",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [],
+              children: [{
+                id: "b", label: "Block", kind: "{ … }", active: true,
+                bindings: [{ kw: "let", name: "message", status: "ready", value: '"hello"' }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 4,
+            phase: "execute",
+            title: "Read message",
+            narrate: "Lookup finds message in the Block scope.",
+            stack: ["<script>", "block", "console.log"],
+            output: ["hello"],
+            lookup: "message",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [],
+              children: [{
+                id: "b", label: "Block", kind: "{ … }", active: true,
+                bindings: [{ kw: "let", name: "message", status: "ready", value: '"hello"' }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Leave block",
+            narrate: "Block ends — message binding is discarded. Outside, it does not exist.",
+            stack: [],
+            output: ["hello"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [],
+              children: [],
+            },
+          },
+        ],
+      },
+      {
+        id: "block-vs-function",
+        title: "Block vs function scope",
+        blurb: "let stays in if-block; var leaks",
+        remember: "<code>let</code>/<code>const</code> = block scope. <code>var</code> = function (or global) scope — ignores block braces.",
+        code: `function demo() {
+  if (true) {
+    let a = 1;
+    var b = 2;
+  }
+  console.log(typeof a);
+  console.log(b);
+}
+demo();`,
+        frames: [
+          {
+            line: null,
+            phase: "create",
+            title: "Hoist demo + var b",
+            narrate: "Function demo is fully hoisted. Inside demo, var b is function-scoped (not block).",
+            stack: ["<script>"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "function", name: "demo", status: "ready", value: "ƒ demo" }],
+              children: [],
+            },
+          },
+          {
+            line: 9,
+            phase: "execute",
+            title: "Call demo()",
+            narrate: "Enter function scope. Create var b = undefined. let a is not created yet (block not entered).",
+            stack: ["<script>", "demo()"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "demo", status: "ready", value: "ƒ demo" }],
+              children: [{
+                id: "f", label: "demo()", kind: "function", active: true,
+                bindings: [{ kw: "var", name: "b", status: "undefined", value: "undefined" }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 3,
+            phase: "execute",
+            title: "Enter if-block",
+            narrate: "Block scope created. let a registered then initialized to 1. var b assignment updates function scope.",
+            stack: ["<script>", "demo()", "if-block"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "demo", status: "ready", value: "ƒ demo" }],
+              children: [{
+                id: "f", label: "demo()", kind: "function", active: true,
+                bindings: [{ kw: "var", name: "b", status: "ready", value: "2" }],
+                children: [{
+                  id: "b", label: "if-block", kind: "block", active: true,
+                  bindings: [{ kw: "let", name: "a", status: "ready", value: "1" }],
+                  children: [],
+                }],
+              }],
+            },
+          },
+          {
+            line: 6,
+            phase: "execute",
+            title: "typeof a outside block",
+            narrate: "Block gone. a is not in demo scope → typeof a is \"undefined\" (no ReferenceError for typeof missing binding).",
+            stack: ["<script>", "demo()", "console.log"],
+            output: ['"undefined"'],
+            lookup: "a",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "demo", status: "ready", value: "ƒ demo" }],
+              children: [{
+                id: "f", label: "demo()", kind: "function", active: true,
+                bindings: [{ kw: "var", name: "b", status: "ready", value: "2" }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 7,
+            phase: "execute",
+            title: "Read b",
+            narrate: "b still lives on the function — prints 2. That is the classic var leak.",
+            stack: ["<script>", "demo()", "console.log"],
+            output: ['"undefined"', "2"],
+            lookup: "b",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "demo", status: "ready", value: "ƒ demo" }],
+              children: [{
+                id: "f", label: "demo()", kind: "function", active: true,
+                bindings: [{ kw: "var", name: "b", status: "ready", value: "2" }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Done",
+            narrate: "Prefer let/const so block boundaries actually bound variables.",
+            stack: [],
+            output: ['"undefined"', "2"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "demo", status: "ready", value: "ƒ demo" }],
+              children: [],
+            },
+          },
+        ],
+      },
+      {
+        id: "scope-chain",
+        title: "Scope chain lookup",
+        blurb: "Walk outward until name is found",
+        remember: "Lexical scope: look in current scope, then parents, until found (or ReferenceError).",
+        code: `const outer = "global";
+
+function outerFn() {
+  const middle = "middle";
+
+  function innerFn() {
+    const inner = "inner";
+    console.log(inner);
+    console.log(middle);
+    console.log(outer);
+  }
+
+  innerFn();
+}
+
+outerFn();`,
+        frames: [
+          {
+            line: 15,
+            phase: "execute",
+            title: "Call outerFn",
+            narrate: "Nested scopes exist. About to call innerFn.",
+            stack: ["<script>", "outerFn()"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "const", name: "outer", status: "ready", value: '"global"' },
+                { kw: "function", name: "outerFn", status: "ready", value: "ƒ outerFn" },
+              ],
+              children: [{
+                id: "o", label: "outerFn()", kind: "function", active: true,
+                bindings: [
+                  { kw: "const", name: "middle", status: "ready", value: '"middle"' },
+                  { kw: "function", name: "innerFn", status: "ready", value: "ƒ innerFn" },
+                ],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 8,
+            phase: "execute",
+            title: "Read inner",
+            narrate: "Found in innerFn’s own scope — stop walking.",
+            stack: ["<script>", "outerFn()", "innerFn()", "console.log"],
+            output: ["inner"],
+            lookup: "inner",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "const", name: "outer", status: "ready", value: '"global"' },
+                { kw: "function", name: "outerFn", status: "ready", value: "ƒ outerFn" },
+              ],
+              children: [{
+                id: "o", label: "outerFn()", kind: "function",
+                bindings: [
+                  { kw: "const", name: "middle", status: "ready", value: '"middle"' },
+                  { kw: "function", name: "innerFn", status: "ready", value: "ƒ innerFn" },
+                ],
+                children: [{
+                  id: "i", label: "innerFn()", kind: "function", active: true,
+                  bindings: [{ kw: "const", name: "inner", status: "ready", value: '"inner"' }],
+                  children: [],
+                }],
+              }],
+            },
+          },
+          {
+            line: 9,
+            phase: "execute",
+            title: "Read middle",
+            narrate: "Not in innerFn → walk to outerFn → found middle.",
+            stack: ["<script>", "outerFn()", "innerFn()", "console.log"],
+            output: ["inner", "middle"],
+            lookup: "middle",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "const", name: "outer", status: "ready", value: '"global"' },
+                { kw: "function", name: "outerFn", status: "ready", value: "ƒ outerFn" },
+              ],
+              children: [{
+                id: "o", label: "outerFn()", kind: "function", lookup: true,
+                bindings: [
+                  { kw: "const", name: "middle", status: "ready", value: '"middle"' },
+                  { kw: "function", name: "innerFn", status: "ready", value: "ƒ innerFn" },
+                ],
+                children: [{
+                  id: "i", label: "innerFn()", kind: "function", active: true,
+                  bindings: [{ kw: "const", name: "inner", status: "ready", value: '"inner"' }],
+                  children: [],
+                }],
+              }],
+            },
+          },
+          {
+            line: 10,
+            phase: "execute",
+            title: "Read outer",
+            narrate: "Not in innerFn or outerFn → walk to Global → found outer.",
+            stack: ["<script>", "outerFn()", "innerFn()", "console.log"],
+            output: ["inner", "middle", "global"],
+            lookup: "outer",
+            scopes: {
+              id: "g", label: "Global", kind: "script", lookup: true,
+              bindings: [
+                { kw: "const", name: "outer", status: "ready", value: '"global"' },
+                { kw: "function", name: "outerFn", status: "ready", value: "ƒ outerFn" },
+              ],
+              children: [{
+                id: "o", label: "outerFn()", kind: "function",
+                bindings: [
+                  { kw: "const", name: "middle", status: "ready", value: '"middle"' },
+                  { kw: "function", name: "innerFn", status: "ready", value: "ƒ innerFn" },
+                ],
+                children: [{
+                  id: "i", label: "innerFn()", kind: "function", active: true,
+                  bindings: [{ kw: "const", name: "inner", status: "ready", value: '"inner"' }],
+                  children: [],
+                }],
+              }],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Done",
+            narrate: "Lookup is lexical (where written), not where called.",
+            stack: [],
+            output: ["inner", "middle", "global"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "const", name: "outer", status: "ready", value: '"global"' },
+                { kw: "function", name: "outerFn", status: "ready", value: "ƒ outerFn" },
+              ],
+              children: [],
+            },
+          },
+        ],
+      },
+      {
+        id: "shadowing",
+        title: "Shadowing",
+        blurb: "Inner name hides outer name",
+        remember: "Inner bindings with the same name hide outer ones. Outer value is unchanged.",
+        code: `let value = "outer";
+
+function test() {
+  let value = "inner";
+  console.log(value);
+}
+
+test();
+console.log(value);`,
+        frames: [
+          {
+            line: 4,
+            phase: "execute",
+            title: "Inner binding",
+            narrate: "test() creates its own let value — shadows Global value.",
+            stack: ["<script>", "test()"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "let", name: "value", status: "ready", value: '"outer"' },
+                { kw: "function", name: "test", status: "ready", value: "ƒ test" },
+              ],
+              children: [{
+                id: "t", label: "test()", kind: "function", active: true,
+                bindings: [{ kw: "let", name: "value", status: "ready", value: '"inner"' }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 5,
+            phase: "execute",
+            title: "Read value in test",
+            narrate: "Lookup stops at the inner binding → \"inner\".",
+            stack: ["<script>", "test()", "console.log"],
+            output: ["inner"],
+            lookup: "value",
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "let", name: "value", status: "ready", value: '"outer"' },
+                { kw: "function", name: "test", status: "ready", value: "ƒ test" },
+              ],
+              children: [{
+                id: "t", label: "test()", kind: "function", active: true,
+                bindings: [{ kw: "let", name: "value", status: "ready", value: '"inner"' }],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: 9,
+            phase: "execute",
+            title: "Read value outside",
+            narrate: "Back in Global — outer value is still \"outer\".",
+            stack: ["<script>", "console.log"],
+            output: ["inner", "outer"],
+            lookup: "value",
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [
+                { kw: "let", name: "value", status: "ready", value: '"outer"' },
+                { kw: "function", name: "test", status: "ready", value: "ƒ test" },
+              ],
+              children: [],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Done",
+            narrate: "Two different bindings, same name — shadowing, not mutation of the outer variable.",
+            stack: [],
+            output: ["inner", "outer"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [
+                { kw: "let", name: "value", status: "ready", value: '"outer"' },
+                { kw: "function", name: "test", status: "ready", value: "ƒ test" },
+              ],
+              children: [],
+            },
+          },
+        ],
+      },
+      {
+        id: "fn-hoist",
+        title: "Function declaration hoist",
+        blurb: "Callable before its line",
+        remember: "Function declarations are fully hoisted (name + body). Function expressions follow variable rules.",
+        code: `greet();
+
+function greet() {
+  console.log("hi");
+}`,
+        frames: [
+          {
+            line: null,
+            phase: "create",
+            title: "Create phase",
+            narrate: "Hoisting installs greet as a callable function before any line runs.",
+            stack: ["<script>"],
+            output: [],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "function", name: "greet", status: "ready", value: "ƒ greet" }],
+              children: [],
+            },
+          },
+          {
+            line: 1,
+            phase: "execute",
+            title: "Call greet() early",
+            narrate: "Works — declaration was already available from create phase.",
+            stack: ["<script>", "greet()"],
+            output: [],
+            lookup: "greet",
+            scopes: {
+              id: "g", label: "Global", kind: "script", active: true,
+              bindings: [{ kw: "function", name: "greet", status: "ready", value: "ƒ greet" }],
+              children: [],
+            },
+          },
+          {
+            line: 4,
+            phase: "execute",
+            title: "Body runs",
+            narrate: "Inside greet → prints hi.",
+            stack: ["<script>", "greet()", "console.log"],
+            output: ["hi"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "greet", status: "ready", value: "ƒ greet" }],
+              children: [{
+                id: "f", label: "greet()", kind: "function", active: true,
+                bindings: [],
+                children: [],
+              }],
+            },
+          },
+          {
+            line: null,
+            phase: "idle",
+            title: "Done",
+            narrate: "Contrast: const greet = () => {} would be in TDZ / not callable early.",
+            stack: [],
+            output: ["hi"],
+            lookup: null,
+            scopes: {
+              id: "g", label: "Global", kind: "script",
+              bindings: [{ kw: "function", name: "greet", status: "ready", value: "ƒ greet" }],
+              children: [],
+            },
+          },
+        ],
+      },
+    ];
+
+    let scenarioIndex = 0;
+    let step = 0;
+    let playing = false;
+    let timer = null;
+
+    const els = {
+      scenarios: document.getElementById("scenarios"),
+      gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"),
+      scopeTree: document.getElementById("scopeTree"),
+      narrate: document.getElementById("narrate"),
+      phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"),
+      output: document.getElementById("output"),
+      remember: document.getElementById("remember"),
+      stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"),
+      speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() {
+      return SCENARIOS[scenarioIndex];
+    }
+
+    function frame() {
+      const frames = scenario().frames;
+      return frames[Math.min(step, frames.length - 1)];
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map(
+        (s, i) => `
+        <button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}">
+          <strong>${escapeHtml(s.title)}</strong>
+          <span>${escapeHtml(s.blurb)}</span>
+        </button>`
+      ).join("");
+
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          stopPlay();
+          scenarioIndex = Number(btn.dataset.i);
+          step = 0;
+          render();
+        });
+      });
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines
+        .map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`)
+        .join("");
+
+      els.codeView.innerHTML = lines
+        .map((line, i) => {
+          const safe = escapeHtml(line) || " ";
+          return activeLine === i + 1
+            ? `<span class="hl">${safe}</span>`
+            : `${safe}\n`;
+        })
+        .join("");
+    }
+
+    function renderBinding(b, lookup) {
+      const hit = lookup && b.name === lookup ? "hit" : "";
+      const statusClass =
+        b.status === "tdz" ? "tdz" : b.status === "undefined" ? "undef" : "ready";
+      const valClass =
+        b.status === "tdz" ? "tdz-val" : b.status === "undefined" ? "undef-val" : "";
+      return `
+        <div class="binding ${statusClass} ${hit}">
+          <span class="kw">${escapeHtml(b.kw)}</span>
+          <span class="name">${escapeHtml(b.name)}</span>
+          <span class="val ${valClass}">${escapeHtml(b.value)}</span>
+        </div>`;
+    }
+
+    function renderScope(node, lookup) {
+      if (!node) return "";
+      const cls = [
+        "scope-box",
+        node.active ? "active" : "",
+        node.lookup ? "lookup" : "",
+      ].join(" ");
+
+      const bindings =
+        node.bindings && node.bindings.length
+          ? `<div class="bindings">${node.bindings
+              .map((b) => renderBinding(b, lookup))
+              .join("")}</div>`
+          : `<div class="empty" style="padding:4px 0">No bindings</div>`;
+
+      const kids =
+        node.children && node.children.length
+          ? `<div class="children">${node.children
+              .map((c) => renderScope(c, lookup))
+              .join("")}</div>`
+          : "";
+
+      return `
+        <div class="${cls}">
+          <div class="scope-title">
+            <span>${escapeHtml(node.label)}</span>
+            <span class="scope-kind">${escapeHtml(node.kind || "")}</span>
+          </div>
+          ${bindings}
+          ${kids}
+        </div>`;
+    }
+
+    function render() {
+      const sc = scenario();
+      const fr = frame();
+      const frames = sc.frames;
+
+      renderScenarios();
+      renderCode(fr.line);
+      els.scopeTree.innerHTML = renderScope(fr.scopes, fr.lookup);
+
+      els.phasePill.textContent =
+        fr.phase === "create"
+          ? "1 · Create / Hoist"
+          : fr.phase === "execute"
+            ? "2 · Execute"
+            : "Idle";
+      els.phasePill.className =
+        "phase-pill " + (fr.phase === "idle" ? "" : fr.phase);
+
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+
+      if (!fr.stack.length) {
+        els.callStack.innerHTML = `<div class="empty">Stack empty</div>`;
+      } else {
+        els.callStack.innerHTML = [...fr.stack]
+          .reverse()
+          .map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`)
+          .join("");
+      }
+
+      if (!fr.output.length) {
+        els.output.innerHTML = `<div class="empty">No output yet</div>`;
+      } else {
+        els.output.innerHTML = fr.output
+          .map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`)
+          .join("");
+      }
+
+      const atEnd = step >= frames.length - 1;
+      els.runLabel.textContent = playing ? "Pause" : atEnd ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() {
+      playing = false;
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true;
+      render();
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (step >= frames.length - 1) {
+          stopPlay();
+          render();
+          return;
+        }
+        step += 1;
+        render();
+      }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => {
+      if (playing) {
+        stopPlay();
+        render();
+        return;
+      }
+      play();
+    });
+
+    document.getElementById("btnStep").addEventListener("click", () => {
+      stopPlay();
+      const frames = scenario().frames;
+      if (step < frames.length - 1) step += 1;
+      render();
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      stopPlay();
+      step = 0;
+      render();
+    });
+
+    els.speed.addEventListener("input", () => {
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+      if (playing) play();
+    });
+
+    render();
+  </script>
+</body>
+</html>

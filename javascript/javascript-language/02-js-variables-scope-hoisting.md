@@ -6,6 +6,8 @@ JavaScript gives you three keywords to declare variables: **`const`**, **`let`**
 
 **Default rule today:** use **`const`** by default, **`let`** when you need to reassign, and avoid **`var`** in new code.
 
+Interactive visualizer: open [02-js-scope-hoisting-animation.html](./02-js-scope-hoisting-animation.html) in a browser — TDZ, `var` hoisting, block vs function scope, scope chain, shadowing (Run / Step).
+
 ---
 
 ## 1. const, let, var
