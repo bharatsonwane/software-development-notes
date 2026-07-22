@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Closures & this Visualizer — File 08</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #111827;
+      --border: #1e293b;
+      --border-2: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --dim: #64748b;
+      --blue: #3b82f6;
+      --blue-2: #60a5fa;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --green: #34d399;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --mono: "Fira Code", ui-monospace, monospace;
+      --sans: Inter, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 56px 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 23, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #db2777, #7c3aed);
+      display: grid;
+      place-items: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.7rem;
+      color: var(--dim);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .speed-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .speed-wrap input[type="range"] {
+      width: 110px;
+      accent-color: var(--blue);
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-2);
+      background: var(--panel);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .icon-btn:hover { background: #1e293b; }
+
+    .run-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 650;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .run-btn:hover { background: #2563eb; }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.95fr) minmax(340px, 1.25fr) minmax(250px, 0.8fr);
+      gap: 12px;
+      padding: 12px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    @media (max-width: 1100px) {
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100%; }
+      .main { grid-template-columns: 1fr; height: auto; }
+    }
+
+    .col {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .card-h {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .card-b { padding: 12px; }
+
+    .scenarios {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+    }
+
+    .scenario {
+      text-align: left;
+      border: 1px solid var(--border-2);
+      background: #0b1220;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 0.78rem;
+    }
+
+    .scenario:hover { border-color: #475569; }
+    .scenario.on {
+      border-color: #db2777;
+      background: rgba(219, 39, 119, 0.12);
+    }
+
+    .scenario strong {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 2px;
+    }
+
+    .scenario span {
+      color: var(--dim);
+      font-size: 0.7rem;
+      line-height: 1.3;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+    }
+
+    .tag.closure { color: var(--cyan); border-color: rgba(34, 211, 238, 0.4); }
+    .tag.thisbind { color: var(--amber); border-color: rgba(251, 191, 36, 0.4); }
+
+    .script-card { flex: 1; }
+
+    .editor {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      flex: 1;
+      min-height: 0;
+      background: #020617;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 22px;
+    }
+
+    .gutter {
+      padding: 12px 0;
+      text-align: right;
+      color: var(--dim);
+      user-select: none;
+      border-right: 1px solid var(--border);
+    }
+
+    .gutter div {
+      height: 22px;
+      padding-right: 10px;
+    }
+
+    .gutter .active {
+      color: var(--amber);
+      background: rgba(251, 191, 36, 0.08);
+      font-weight: 700;
+    }
+
+    .code-view {
+      margin: 0;
+      padding: 12px;
+      white-space: pre;
+      color: #cbd5e1;
+      overflow: auto;
+      font: inherit;
+      line-height: 22px;
+    }
+
+    .code-view .hl {
+      background: rgba(251, 191, 36, 0.12);
+      display: block;
+      margin: 0 -12px;
+      padding: 0 12px;
+    }
+
+    .stage {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .phase-pill {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-2);
+      color: var(--muted);
+      background: #0b1220;
+    }
+
+    .phase-pill.closure {
+      color: var(--cyan);
+      border-color: rgba(34, 211, 238, 0.45);
+      background: rgba(34, 211, 238, 0.08);
+    }
+
+    .phase-pill.thisbind {
+      color: var(--amber);
+      border-color: rgba(251, 191, 36, 0.45);
+      background: rgba(251, 191, 36, 0.08);
+    }
+
+    .narrate {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+      padding: 10px 12px;
+      background: #0b1220;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .narrate strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.82rem;
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .panels { grid-template-columns: 1fr; }
+    }
+
+    .box {
+      border: 1px solid var(--border-2);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.65);
+      min-height: 120px;
+    }
+
+    .box.active {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.25);
+    }
+
+    .box.closure-box.active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.25);
+    }
+
+    .box.this-box.active {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.25);
+    }
+
+    .box-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .box-title.closure { color: var(--cyan); }
+    .box-title.thisbind { color: var(--amber); }
+
+    .binding, .rule, .env-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #020617;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      margin-bottom: 6px;
+    }
+
+    .binding .k, .env-item .k { color: var(--violet); }
+    .binding .v, .env-item .v { color: var(--amber); }
+    .rule {
+      color: var(--text);
+      justify-content: flex-start;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .rule .who {
+      color: var(--amber);
+      font-weight: 650;
+    }
+
+    .rule .how {
+      color: var(--dim);
+      font-size: 0.68rem;
+      font-family: var(--sans);
+    }
+
+    .fn-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px dashed rgba(34, 211, 238, 0.45);
+      background: rgba(34, 211, 238, 0.08);
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+
+    .empty {
+      color: var(--dim);
+      font-size: 0.78rem;
+      font-style: italic;
+    }
+
+    .priority {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .prio {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      color: var(--dim);
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+    }
+
+    .prio.on {
+      color: var(--text);
+      border-color: rgba(251, 191, 36, 0.45);
+      background: rgba(251, 191, 36, 0.1);
+    }
+
+    .prio .n {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: #1e293b;
+      color: var(--muted);
+    }
+
+    .prio.on .n {
+      background: var(--amber);
+      color: #111;
+    }
+
+    .out-list, .stack-list {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .out-item, .stack-item {
+      background: #0b1220;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .stack-item {
+      border-color: rgba(59, 130, 246, 0.35);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .rule-card .card-b {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .rule-card code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--blue-2);
+    }
+
+    .heap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .heap-fn {
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      border-radius: 10px;
+      padding: 8px;
+      background: rgba(34, 211, 238, 0.05);
+    }
+
+    .heap-fn.active {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.2);
+    }
+
+    .heap-fn .name {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--cyan);
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>
+            <path d="M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Closures & this Visualizer</h1>
+          <p>File 08 — lexical env vs call-site this</p>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <label class="speed-wrap">
+          Speed: <span id="speedLabel">900ms</span>
+          <input type="range" id="speed" min="300" max="2000" step="100" value="900" />
+        </label>
+        <button class="icon-btn" id="btnReset" title="Reset" aria-label="Reset">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="btnStep" title="Step" aria-label="Step">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <button class="run-btn" id="btnRun">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span id="runLabel">Run</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main">
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; max-height:44%">
+          <div class="card-h">Scenarios</div>
+          <div class="card-b scenarios" id="scenarios"></div>
+        </section>
+
+        <section class="card script-card">
+          <div class="card-h">
+            <span>Example Code</span>
+            <span id="stepLabel" style="text-transform:none;letter-spacing:0;font-weight:600;color:var(--dim)">Step 1</span>
+          </div>
+          <div class="editor">
+            <div class="gutter" id="gutter"></div>
+            <pre class="code-view" id="codeView"></pre>
+          </div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card" style="flex:1">
+          <div class="card-h">Runtime Snapshot</div>
+          <div class="stage">
+            <div class="phase-pill" id="phasePill">Idle</div>
+            <p class="narrate" id="narrate">
+              <strong>Ready</strong>
+              Pick a scenario — closures keep outer variables; <code>this</code> follows the call site (except arrows).
+            </p>
+            <div id="snapshot"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card" style="flex:0 0 auto; min-height:130px">
+          <div class="card-h">Call Stack</div>
+          <div class="stack-list" id="callStack"></div>
+        </section>
+        <section class="card" style="flex:1; min-height:150px">
+          <div class="card-h">&gt;_ Console</div>
+          <div class="out-list" id="output"></div>
+        </section>
+        <section class="card rule-card" style="flex:0 0 auto">
+          <div class="card-h">Remember</div>
+          <div class="card-b" id="remember">
+            Closure = function + lexical environment.
+            <code>this</code> = how the function is <em>called</em> (arrows inherit outer <code>this</code>).
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCENARIOS = [
+      {
+        id: "basic-closure",
+        kind: "closure",
+        title: "Basic closure",
+        blurb: "Inner fn keeps greeting after outer returns",
+        remember: "A closure is a function plus its surrounding lexical environment. Outer can finish — closed-over vars stay alive.",
+        code: `function makeGreeter(greeting) {
+  return function (name) {
+    return greeting + ", " + name + "!";
+  };
+}
+
+const sayHi = makeGreeter("Hi");
+console.log(sayHi("Bharat"));`,
+        frames: [
+          {
+            line: 7,
+            title: "Call makeGreeter",
+            narrate: "Enter makeGreeter(\"Hi\"). Local binding greeting = \"Hi\".",
+            stack: ["<script>", "makeGreeter(\"Hi\")"],
+            output: [],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [],
+              locals: [{ k: "greeting", v: '"Hi"' }],
+              note: "Outer frame still on stack",
+            },
+          },
+          {
+            line: 2,
+            title: "Return inner function",
+            narrate: "Return anonymous function. It closes over greeting. makeGreeter can pop — environment stays.",
+            stack: ["<script>"],
+            output: [],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "sayHi ƒ",
+                  active: true,
+                  env: [{ k: "greeting", v: '"Hi"' }],
+                },
+              ],
+              locals: [],
+              note: "Closure bag attached to sayHi",
+            },
+          },
+          {
+            line: 8,
+            title: "Call sayHi",
+            narrate: "sayHi(\"Bharat\") — parameter name is local; greeting comes from the closure.",
+            stack: ["<script>", "sayHi(\"Bharat\")"],
+            output: [],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "sayHi ƒ",
+                  active: true,
+                  env: [{ k: "greeting", v: '"Hi"' }],
+                  locals: [{ k: "name", v: '"Bharat"' }],
+                },
+              ],
+              locals: [],
+              note: "Lexical lookup finds greeting in closed-over env",
+            },
+          },
+          {
+            line: 8,
+            title: "Result",
+            narrate: "Returns \"Hi, Bharat!\" — greeting survived after makeGreeter returned.",
+            stack: [],
+            output: ["Hi, Bharat!"],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "sayHi ƒ",
+                  active: true,
+                  env: [{ k: "greeting", v: '"Hi"' }],
+                },
+              ],
+              locals: [],
+              note: "Each makeGreeter() call would create a separate bag",
+            },
+          },
+        ],
+      },
+      {
+        id: "private-counter",
+        kind: "closure",
+        title: "Private state",
+        blurb: "count hidden; methods share one bag",
+        remember: "Closures enable private state: outer locals are unreachable except through returned methods.",
+        code: `function createCounter(start) {
+  let count = start;
+  return {
+    increment() { count++; return count; },
+    getCount() { return count; },
+  };
+}
+
+const counter = createCounter(10);
+console.log(counter.increment());
+console.log(counter.getCount());`,
+        frames: [
+          {
+            line: 8,
+            title: "Create counter",
+            narrate: "createCounter(10) builds one shared environment with count = 10. Methods close over it.",
+            stack: ["<script>"],
+            output: [],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "counter methods",
+                  active: true,
+                  env: [{ k: "count", v: "10" }],
+                },
+              ],
+              locals: [],
+              note: "count is not on counter as a public property",
+            },
+          },
+          {
+            line: 9,
+            title: "increment()",
+            narrate: "counter.increment() mutates the closed-over count → 11.",
+            stack: ["<script>", "increment()"],
+            output: ["11"],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "counter methods",
+                  active: true,
+                  env: [{ k: "count", v: "11" }],
+                },
+              ],
+              locals: [],
+              note: "Same bag shared by increment & getCount",
+            },
+          },
+          {
+            line: 10,
+            title: "getCount()",
+            narrate: "Reads the same count binding — still 11. Outside code cannot touch count directly.",
+            stack: ["<script>", "getCount()"],
+            output: ["11", "11"],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "counter methods",
+                  active: true,
+                  env: [{ k: "count", v: "11" }],
+                },
+              ],
+              locals: [],
+              note: "Encapsulation via closure",
+            },
+          },
+        ],
+      },
+      {
+        id: "loop-var-let",
+        kind: "closure",
+        title: "Loop bug: var vs let",
+        blurb: "One shared i vs per-iteration binding",
+        remember: "<code>var</code> → one function-scoped i (all callbacks see final 3). <code>let</code> → new i each iteration.",
+        code: `// var — shared binding
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log("var", i), 0);
+}
+
+// let — new binding each loop
+for (let j = 0; j < 3; j++) {
+  setTimeout(() => console.log("let", j), 0);
+}`,
+        frames: [
+          {
+            line: 2,
+            title: "Schedule var callbacks",
+            narrate: "Three timeouts close over the SAME var i (one binding).",
+            stack: ["<script>"],
+            output: [],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "3 × timeout (var)",
+                  active: true,
+                  env: [{ k: "i", v: "→ shared" }],
+                },
+              ],
+              locals: [{ k: "i (live)", v: "0…2 then 3" }],
+              note: "Callbacks not run yet — loop finishes first",
+            },
+          },
+          {
+            line: 3,
+            title: "After loop (var)",
+            narrate: "Loop done: i === 3. Later, every callback reads that one i → 3, 3, 3.",
+            stack: [],
+            output: ["var 3", "var 3", "var 3"],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                {
+                  name: "3 × timeout (var)",
+                  active: true,
+                  env: [{ k: "i", v: "3" }],
+                },
+              ],
+              locals: [],
+              note: "Classic interview trap",
+            },
+          },
+          {
+            line: 7,
+            title: "let per iteration",
+            narrate: "Each iteration creates a new j binding. Each timeout closes over its own j.",
+            stack: ["<script>"],
+            output: ["var 3", "var 3", "var 3"],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                { name: "timeout #0", active: true, env: [{ k: "j", v: "0" }] },
+                { name: "timeout #1", active: true, env: [{ k: "j", v: "1" }] },
+                { name: "timeout #2", active: true, env: [{ k: "j", v: "2" }] },
+              ],
+              locals: [],
+              note: "Three separate environments",
+            },
+          },
+          {
+            line: 8,
+            title: "Callbacks fire (let)",
+            narrate: "Prints 0, 1, 2 — each closure kept its iteration’s j.",
+            stack: [],
+            output: ["var 3", "var 3", "var 3", "let 0", "let 1", "let 2"],
+            phase: "closure",
+            snapshot: {
+              type: "closure",
+              closures: [
+                { name: "timeout #0", env: [{ k: "j", v: "0" }] },
+                { name: "timeout #1", env: [{ k: "j", v: "1" }] },
+                { name: "timeout #2", env: [{ k: "j", v: "2" }] },
+              ],
+              locals: [],
+              note: "Prefer let/const in loops with async callbacks",
+            },
+          },
+        ],
+      },
+      {
+        id: "implicit-this",
+        kind: "thisbind",
+        title: "Implicit this",
+        blurb: "obj.method() → this === obj",
+        remember: "Implicit binding: the object left of the dot at the call site becomes <code>this</code>.",
+        code: `const user = {
+  name: "Bharat",
+  greet() {
+    console.log(this.name);
+  },
+};
+
+user.greet();`,
+        frames: [
+          {
+            line: 8,
+            title: "Call site: user.greet()",
+            narrate: "Call site has an object receiver → implicit binding. this = user.",
+            stack: ["<script>", "user.greet()"],
+            output: [],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user { name: \"Bharat\" }",
+              rule: "implicit",
+              callSite: "user.greet()",
+              priority: "implicit",
+            },
+          },
+          {
+            line: 4,
+            title: "Inside greet",
+            narrate: "this.name → \"Bharat\". Defined on user, but this came from how it was called.",
+            stack: ["<script>", "user.greet()", "console.log"],
+            output: ["Bharat"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user { name: \"Bharat\" }",
+              rule: "implicit",
+              callSite: "user.greet()",
+              priority: "implicit",
+            },
+          },
+        ],
+      },
+      {
+        id: "lost-this",
+        kind: "thisbind",
+        title: "Lost this",
+        blurb: "Extract method → default binding",
+        remember: "Copying a method breaks the receiver. Bare greet() uses default binding (undefined in strict mode).",
+        code: `"use strict";
+const user = {
+  name: "Bharat",
+  greet() {
+    console.log(this.name);
+  },
+};
+
+const greet = user.greet;
+greet();`,
+        frames: [
+          {
+            line: 9,
+            title: "Extract method",
+            narrate: "greet holds the function reference only — no user attached.",
+            stack: ["<script>"],
+            output: [],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "(not called yet)",
+              rule: "—",
+              callSite: "const greet = user.greet",
+              priority: null,
+            },
+          },
+          {
+            line: 10,
+            title: "Call site: greet()",
+            narrate: "Bare call — default binding. Strict mode → this === undefined.",
+            stack: ["<script>", "greet()"],
+            output: [],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "undefined",
+              rule: "default",
+              callSite: "greet()",
+              priority: "default",
+            },
+          },
+          {
+            line: 5,
+            title: "this.name blows up",
+            narrate: "Reading undefined.name → TypeError (or undefined in sloppy mode).",
+            stack: ["<script>", "greet()", "console.log"],
+            output: ["TypeError: Cannot read properties of undefined"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "undefined",
+              rule: "default",
+              callSite: "greet()",
+              priority: "default",
+            },
+          },
+        ],
+      },
+      {
+        id: "call-bind",
+        kind: "thisbind",
+        title: "call & bind",
+        blurb: "Explicit this for callbacks",
+        remember: "<code>call</code>/<code>apply</code> set this and run now. <code>bind</code> returns a new function with this fixed.",
+        code: `function greet() {
+  console.log(this.name);
+}
+
+const user = { name: "Bharat" };
+
+greet.call(user);
+
+const bound = greet.bind(user);
+bound();`,
+        frames: [
+          {
+            line: 7,
+            title: "greet.call(user)",
+            narrate: "Explicit binding — call sets this to user and invokes immediately.",
+            stack: ["<script>", "greet.call(user)"],
+            output: ["Bharat"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user { name: \"Bharat\" }",
+              rule: "explicit (call)",
+              callSite: "greet.call(user)",
+              priority: "explicit",
+            },
+          },
+          {
+            line: 9,
+            title: "bind creates new fn",
+            narrate: "bound = greet.bind(user) — does not run yet; permanently locks this to user.",
+            stack: ["<script>"],
+            output: ["Bharat"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "(bound fn ready)",
+              rule: "explicit (bind)",
+              callSite: "greet.bind(user)",
+              priority: "explicit",
+            },
+          },
+          {
+            line: 10,
+            title: "bound()",
+            narrate: "Even as a bare call, this stays user — bind beats default.",
+            stack: ["<script>", "bound()"],
+            output: ["Bharat", "Bharat"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user { name: \"Bharat\" }",
+              rule: "explicit (bound)",
+              callSite: "bound()",
+              priority: "explicit",
+            },
+          },
+        ],
+      },
+      {
+        id: "arrow-this",
+        kind: "thisbind",
+        title: "Arrow lexical this",
+        blurb: "Arrow keeps outer this; nested fn does not",
+        remember: "Arrows have no own this — they capture the enclosing this. Regular nested functions get a new this.",
+        code: `const user = {
+  name: "Bharat",
+  regular() {
+    function inner() {
+      console.log("fn", this?.name);
+    }
+    inner();
+  },
+  withArrow() {
+    const inner = () => {
+      console.log("arrow", this.name);
+    };
+    inner();
+  },
+};
+
+user.regular();
+user.withArrow();`,
+        frames: [
+          {
+            line: 16,
+            title: "user.regular()",
+            narrate: "Outer this is user (implicit). Then inner() is a bare call.",
+            stack: ["<script>", "user.regular()"],
+            output: [],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user (in regular)",
+              rule: "implicit → then default inside",
+              callSite: "user.regular()",
+              priority: "implicit",
+            },
+          },
+          {
+            line: 5,
+            title: "inner() loses this",
+            narrate: "Nested function uses default binding — not user. this?.name → undefined.",
+            stack: ["<script>", "user.regular()", "inner()"],
+            output: ["fn undefined"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "undefined (inner)",
+              rule: "default",
+              callSite: "inner()",
+              priority: "default",
+            },
+          },
+          {
+            line: 17,
+            title: "user.withArrow()",
+            narrate: "Outer this is user. Arrow inner inherits that lexical this.",
+            stack: ["<script>", "user.withArrow()"],
+            output: ["fn undefined"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user (in withArrow)",
+              rule: "implicit",
+              callSite: "user.withArrow()",
+              priority: "implicit",
+            },
+          },
+          {
+            line: 11,
+            title: "Arrow keeps user",
+            narrate: "inner() arrow still has this === user → prints Bharat.",
+            stack: ["<script>", "user.withArrow()", "inner()"],
+            output: ["fn undefined", "arrow Bharat"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "user (lexical arrow)",
+              rule: "lexical (arrow)",
+              callSite: "inner()  // arrow",
+              priority: "lexical",
+            },
+          },
+        ],
+      },
+      {
+        id: "new-binding",
+        kind: "thisbind",
+        title: "new binding",
+        blurb: "Constructor gets a fresh this object",
+        remember: "Priority: new > bind/call/apply > obj.fn() > bare fn(). new creates a new object as this.",
+        code: `function User(name) {
+  this.name = name;
+}
+
+const u = new User("Bharat");
+console.log(u.name);`,
+        frames: [
+          {
+            line: 5,
+            title: "new User(...)",
+            narrate: "new creates {} → links prototype → sets this to that object → runs User.",
+            stack: ["<script>", "new User(\"Bharat\")"],
+            output: [],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "{}  (new instance)",
+              rule: "new",
+              callSite: "new User(\"Bharat\")",
+              priority: "new",
+            },
+          },
+          {
+            line: 2,
+            title: "Assign this.name",
+            narrate: "Inside constructor, this is the new instance. Set name.",
+            stack: ["<script>", "new User(\"Bharat\")"],
+            output: [],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "{ name: \"Bharat\" }",
+              rule: "new",
+              callSite: "new User(\"Bharat\")",
+              priority: "new",
+            },
+          },
+          {
+            line: 6,
+            title: "Instance returned",
+            narrate: "u holds the object. new binding beat every other rule.",
+            stack: ["<script>", "console.log"],
+            output: ["Bharat"],
+            phase: "thisbind",
+            snapshot: {
+              type: "this",
+              thisValue: "u { name: \"Bharat\" }",
+              rule: "new (done)",
+              callSite: "new User(\"Bharat\")",
+              priority: "new",
+            },
+          },
+        ],
+      },
+    ];
+
+    let scenarioIndex = 0;
+    let step = 0;
+    let playing = false;
+    let timer = null;
+
+    const els = {
+      scenarios: document.getElementById("scenarios"),
+      gutter: document.getElementById("gutter"),
+      codeView: document.getElementById("codeView"),
+      snapshot: document.getElementById("snapshot"),
+      narrate: document.getElementById("narrate"),
+      phasePill: document.getElementById("phasePill"),
+      callStack: document.getElementById("callStack"),
+      output: document.getElementById("output"),
+      remember: document.getElementById("remember"),
+      stepLabel: document.getElementById("stepLabel"),
+      runLabel: document.getElementById("runLabel"),
+      speed: document.getElementById("speed"),
+      speedLabel: document.getElementById("speedLabel"),
+    };
+
+    function scenario() {
+      return SCENARIOS[scenarioIndex];
+    }
+
+    function frame() {
+      const frames = scenario().frames;
+      return frames[Math.min(step, frames.length - 1)];
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderScenarios() {
+      els.scenarios.innerHTML = SCENARIOS.map(
+        (s, i) => `
+        <button type="button" class="scenario ${i === scenarioIndex ? "on" : ""}" data-i="${i}">
+          <strong>${escapeHtml(s.title)}</strong>
+          <span>${escapeHtml(s.blurb)}</span>
+          <div><span class="tag ${s.kind}">${s.kind === "closure" ? "closure" : "this"}</span></div>
+        </button>`
+      ).join("");
+
+      els.scenarios.querySelectorAll(".scenario").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          stopPlay();
+          scenarioIndex = Number(btn.dataset.i);
+          step = 0;
+          render();
+        });
+      });
+    }
+
+    function renderCode(activeLine) {
+      const lines = scenario().code.split("\n");
+      els.gutter.innerHTML = lines
+        .map((_, i) => `<div class="${activeLine === i + 1 ? "active" : ""}">${i + 1}</div>`)
+        .join("");
+
+      els.codeView.innerHTML = lines
+        .map((line, i) => {
+          const safe = escapeHtml(line) || " ";
+          return activeLine === i + 1
+            ? `<span class="hl">${safe}</span>`
+            : `${safe}\n`;
+        })
+        .join("");
+    }
+
+    function renderClosureSnapshot(snap) {
+      const closures = (snap.closures || [])
+        .map(
+          (c) => `
+          <div class="heap-fn ${c.active ? "active" : ""}">
+            <div class="name">${escapeHtml(c.name)}</div>
+            ${(c.env || [])
+              .map(
+                (e) =>
+                  `<div class="env-item"><span class="k">${escapeHtml(e.k)}</span><span class="v">${escapeHtml(e.v)}</span></div>`
+              )
+              .join("")}
+            ${(c.locals || [])
+              .map(
+                (e) =>
+                  `<div class="env-item"><span class="k">local ${escapeHtml(e.k)}</span><span class="v">${escapeHtml(e.v)}</span></div>`
+              )
+              .join("")}
+          </div>`
+        )
+        .join("");
+
+      const locals =
+        snap.locals && snap.locals.length
+          ? snap.locals
+              .map(
+                (e) =>
+                  `<div class="binding"><span class="k">${escapeHtml(e.k)}</span><span class="v">${escapeHtml(e.v)}</span></div>`
+              )
+              .join("")
+          : `<div class="empty">No active locals</div>`;
+
+      return `
+        <div class="panels">
+          <div class="box closure-box active">
+            <div class="box-title closure">Closure environment</div>
+            <div class="heap">${closures || `<div class="empty">No closures yet</div>`}</div>
+          </div>
+          <div class="box">
+            <div class="box-title">Active locals / notes</div>
+            ${locals}
+            ${snap.note ? `<div class="empty" style="margin-top:8px;font-style:normal;color:var(--muted)">${escapeHtml(snap.note)}</div>` : ""}
+          </div>
+        </div>`;
+    }
+
+    function renderThisSnapshot(snap) {
+      const order = [
+        { id: "new", label: "new binding" },
+        { id: "explicit", label: "explicit (call/apply/bind)" },
+        { id: "implicit", label: "implicit (obj.fn)" },
+        { id: "default", label: "default (bare fn)" },
+        { id: "lexical", label: "lexical (arrow)" },
+      ];
+
+      return `
+        <div class="panels">
+          <div class="box this-box active">
+            <div class="box-title thisbind">Current this</div>
+            <div class="rule">
+              <div class="who">${escapeHtml(snap.thisValue)}</div>
+              <div class="how">Rule: ${escapeHtml(snap.rule)}</div>
+            </div>
+            <div class="fn-chip">call site → ${escapeHtml(snap.callSite)}</div>
+          </div>
+          <div class="box">
+            <div class="box-title">Priority (high → low)</div>
+            <div class="priority">
+              ${order
+                .map(
+                  (p, i) => `
+                <div class="prio ${snap.priority === p.id ? "on" : ""}">
+                  <span class="n">${i + 1}</span>
+                  <span>${escapeHtml(p.label)}</span>
+                </div>`
+                )
+                .join("")}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderSnapshot(fr) {
+      if (!fr.snapshot) {
+        els.snapshot.innerHTML = `<div class="empty">No snapshot</div>`;
+        return;
+      }
+      if (fr.snapshot.type === "closure") {
+        els.snapshot.innerHTML = renderClosureSnapshot(fr.snapshot);
+      } else {
+        els.snapshot.innerHTML = renderThisSnapshot(fr.snapshot);
+      }
+    }
+
+    function render() {
+      const sc = scenario();
+      const fr = frame();
+      const frames = sc.frames;
+
+      renderScenarios();
+      renderCode(fr.line);
+      renderSnapshot(fr);
+
+      els.phasePill.textContent =
+        sc.kind === "closure" ? "Closure" : "this binding";
+      els.phasePill.className = "phase-pill " + sc.kind;
+
+      els.narrate.innerHTML = `<strong>${escapeHtml(fr.title)}</strong>${escapeHtml(fr.narrate)}`;
+      els.remember.innerHTML = sc.remember;
+      els.stepLabel.textContent = `Step ${step + 1} / ${frames.length}`;
+
+      if (!fr.stack.length) {
+        els.callStack.innerHTML = `<div class="empty">Stack empty</div>`;
+      } else {
+        els.callStack.innerHTML = [...fr.stack]
+          .reverse()
+          .map((s) => `<div class="stack-item">${escapeHtml(s)}</div>`)
+          .join("");
+      }
+
+      if (!fr.output.length) {
+        els.output.innerHTML = `<div class="empty">No output yet</div>`;
+      } else {
+        els.output.innerHTML = fr.output
+          .map((line, i) => `<div class="out-item">#${i + 1} ${escapeHtml(line)}</div>`)
+          .join("");
+      }
+
+      const atEnd = step >= frames.length - 1;
+      els.runLabel.textContent = playing ? "Pause" : atEnd ? "Replay" : "Run";
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+    }
+
+    function stopPlay() {
+      playing = false;
+      clearInterval(timer);
+      timer = null;
+    }
+
+    function play() {
+      const frames = scenario().frames;
+      if (step >= frames.length - 1) step = 0;
+      playing = true;
+      render();
+      clearInterval(timer);
+      timer = setInterval(() => {
+        if (step >= frames.length - 1) {
+          stopPlay();
+          render();
+          return;
+        }
+        step += 1;
+        render();
+      }, Number(els.speed.value));
+    }
+
+    document.getElementById("btnRun").addEventListener("click", () => {
+      if (playing) {
+        stopPlay();
+        render();
+        return;
+      }
+      play();
+    });
+
+    document.getElementById("btnStep").addEventListener("click", () => {
+      stopPlay();
+      const frames = scenario().frames;
+      if (step < frames.length - 1) step += 1;
+      render();
+    });
+
+    document.getElementById("btnReset").addEventListener("click", () => {
+      stopPlay();
+      step = 0;
+      render();
+    });
+
+    els.speed.addEventListener("input", () => {
+      els.speedLabel.textContent = `${els.speed.value}ms`;
+      if (playing) play();
+    });
+
+    render();
+  </script>
+</body>
+</html>

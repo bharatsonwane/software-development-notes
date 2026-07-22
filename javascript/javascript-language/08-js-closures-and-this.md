@@ -8,6 +8,8 @@ A **closure** happens when a function remembers variables from the scope where i
 
 **Default rule today:** use closures for **private state** and **factories**; use **regular methods** when you need `this` on objects; use **arrows** for callbacks that should keep outer `this`; use **`bind`** when passing methods as handlers.
 
+Interactive visualizer: open [08-js-closures-this-animation.html](./08-js-closures-this-animation.html) in a browser — closures, private state, lost `this`, `call`/`bind`, arrows (Run / Step).
+
 ---
 
 ## 1. Closures
