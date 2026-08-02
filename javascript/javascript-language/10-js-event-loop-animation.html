@@ -3,6 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/styles/animation-common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
   <title>Event Loop Visualizer — File 10</title>
   <script>
     (function () {
@@ -12,6 +17,8 @@
       }
     })();
   </script>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* ===== Light mode (default) ===== */
@@ -91,10 +98,7 @@
       --amber-hl: rgba(251, 191, 36, 0.08);
       --loop-glow: rgba(59, 130, 246, 0.15);
     }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
+body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
@@ -183,9 +187,7 @@
       place-items: center;
       cursor: pointer;
     }
-
-    .icon-btn:hover { background: var(--hover); }
-    .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .run-btn {
       height: 34px;
@@ -201,27 +203,7 @@
       gap: 7px;
       cursor: pointer;
     }
-
-    .run-btn:hover { filter: brightness(0.92); }
-
-    .theme-toggle {
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-2);
-      background: var(--panel);
-      color: var(--text);
-      font-size: 0.75rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    .theme-toggle:hover { background: var(--hover); }
-
-    /* ===== Main 3 columns ===== */
+/* ===== Main 3 columns ===== */
     .main {
       display: grid;
       grid-template-columns: minmax(280px, 0.95fr) minmax(340px, 1.2fr) minmax(260px, 0.85fr);
@@ -323,8 +305,7 @@
     }
 
     .editor {
-      display: grid;
-      grid-template-columns: 42px 1fr;
+      display: block;
       flex: 1;
       min-height: 0;
       background: var(--code-bg);
@@ -335,6 +316,7 @@
     }
 
     .gutter {
+      display: none;
       padding: 12px 0;
       text-align: right;
       color: var(--dim);
@@ -352,21 +334,6 @@
       color: var(--amber);
       background: var(--amber-hl);
       font-weight: 700;
-    }
-
-    textarea {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      resize: none;
-      outline: none;
-      padding: 12px;
-      background: transparent;
-      color: var(--code-fg);
-      font: inherit;
-      line-height: 22px;
-      white-space: pre;
-      tab-size: 2;
     }
 
     /* Center viz */
@@ -803,10 +770,12 @@
     let dragFrom = null;
     let runTimer = null;
     let webTimer = null;
+    let codeInputTimer = null;
+    let cm = null;
+    let activeEditorLine = null;
 
     const els = {
       code: document.getElementById("code"),
-      gutter: document.getElementById("gutter"),
       callStack: document.getElementById("callStack"),
       webApis: document.getElementById("webApis"),
       micro: document.getElementById("micro"),
@@ -822,6 +791,54 @@
       btnEasy: document.getElementById("btnEasy"),
       btnComplex: document.getElementById("btnComplex"),
     };
+
+    function getEditorValue() {
+      return cm ? cm.getValue() : els.code.value;
+    }
+
+    function setEditorValue(value) {
+      if (cm) cm.setValue(value);
+      else els.code.value = value;
+    }
+
+    function setEditorTheme() {
+      if (!cm) return;
+      const isDark = document.documentElement.classList.contains("dark");
+      cm.setOption("theme", isDark ? "material-darker" : "eclipse");
+    }
+
+    function setActiveEditorLine(lineNumber) {
+      if (!cm) return;
+      if (activeEditorLine !== null) {
+        cm.removeLineClass(activeEditorLine, "background", "cm-step-line");
+        activeEditorLine = null;
+      }
+      if (lineNumber && lineNumber > 0) {
+        const lineIndex = lineNumber - 1;
+        cm.addLineClass(lineIndex, "background", "cm-step-line");
+        cm.scrollIntoView({ line: lineIndex, ch: 0 }, 80);
+        activeEditorLine = lineIndex;
+      }
+    }
+
+    function initCodeMirror() {
+      cm = CodeMirror.fromTextArea(els.code, {
+        mode: "javascript",
+        lineNumbers: true,
+        lineWrapping: false,
+        tabSize: 2,
+        indentUnit: 2,
+      });
+      setEditorTheme();
+      cm.on("change", () => {
+        clearTimeout(codeInputTimer);
+        codeInputTimer = setTimeout(() => {
+          if (state && state.isRunning) return;
+          refreshPredictionFromCode(getEditorValue());
+          render();
+        }, 200);
+      });
+    }
 
     function uid() {
       return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -1085,7 +1102,7 @@ ${body}});`);
       stopTimers();
       state = freshState(code);
       state.isRunning = autoRun;
-      els.code.value = code;
+      setEditorValue(code);
       // Only reshuffle when logs change (or caller asks). Run/Start must keep user's order.
       refreshPredictionFromCode(code, { forceShuffle: shufflePrediction });
       render();
@@ -1209,13 +1226,7 @@ ${body}});`);
     }
 
     function render() {
-      const lines = els.code.value.split("\n");
-      els.gutter.innerHTML = lines
-        .map((_, i) => {
-          const n = i + 1;
-          return `<div class="${state.activeLine === n ? "active" : ""}">${n}</div>`;
-        })
-        .join("");
+      setActiveEditorLine(state.activeLine);
 
       // Call stack (bottom = older / main at bottom like screenshot)
       if (!state.callStack.length) {
@@ -1388,23 +1399,9 @@ ${body}});`);
       loadCode(buildCode(mode, features), false, { shufflePrediction: true });
     });
 
-    let codeInputTimer = null;
-    els.code.addEventListener("input", () => {
-      const lines = els.code.value.split("\n");
-      els.gutter.innerHTML = lines.map((_, i) => `<div>${i + 1}</div>`).join("");
-
-      // Live-update prediction from console.log list in the editor
-      clearTimeout(codeInputTimer);
-      codeInputTimer = setTimeout(() => {
-        if (state.isRunning) return;
-        refreshPredictionFromCode(els.code.value);
-        render();
-      }, 200);
-    });
-
     els.btnRun.addEventListener("click", () => {
       if (state.isFinished) {
-        loadCode(els.code.value, true); // keep prediction order
+        loadCode(getEditorValue(), true); // keep prediction order
         return;
       }
       const fresh =
@@ -1417,7 +1414,7 @@ ${body}});`);
 
       if (!state.isRunning && fresh) {
         const speed = Number(els.speed.value);
-        loadCode(els.code.value, true); // keep prediction order
+        loadCode(getEditorValue(), true); // keep prediction order
         state.speed = speed;
         return;
       }
@@ -1446,18 +1443,18 @@ ${body}});`);
         !state.microtaskQueue.length &&
         !state.macrotaskQueue.length;
 
-      if (untouched && state.code !== els.code.value) {
+      if (untouched && state.code !== getEditorValue()) {
         const speed = Number(els.speed.value);
-        state = freshState(els.code.value);
+        state = freshState(getEditorValue());
         state.speed = speed;
         // Keep existing order if log set unchanged
-        refreshPredictionFromCode(els.code.value);
+        refreshPredictionFromCode(getEditorValue());
       }
       stepOnce();
     });
 
     document.getElementById("btnReset").addEventListener("click", () => {
-      loadCode(els.code.value, false); // keep prediction order
+      loadCode(getEditorValue(), false); // keep prediction order
     });
 
     els.speed.addEventListener("input", () => {
@@ -1468,10 +1465,10 @@ ${body}});`);
 
     document.getElementById("btnCheck").addEventListener("click", () => {
       // Always score against current editor code (not a stale preset)
-      refreshPredictionFromCode(els.code.value);
+      refreshPredictionFromCode(getEditorValue());
       render();
 
-      const expected = simulateExpected(els.code.value);
+      const expected = simulateExpected(getEditorValue());
 
       if (!expected.length) {
         els.predStatus.textContent = "No console.log found in code";
@@ -1509,6 +1506,7 @@ ${body}});`);
     mode = "simple";
     els.btnEasy.classList.add("on");
     els.btnComplex.classList.remove("on");
+    initCodeMirror();
     loadCode(buildCode(mode, features), false, { shufflePrediction: true });
 
     function updateToggleUI() {
@@ -1523,6 +1521,7 @@ ${body}});`);
       document.documentElement.classList.toggle("dark");
       const isDark = document.documentElement.classList.contains("dark");
       localStorage.setItem("theme", isDark ? "dark" : "light");
+      setEditorTheme();
       updateToggleUI();
     });
 

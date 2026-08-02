@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/styles/animation-common.css" />
   <title>Strings, Numbers & Dates Visualizer — File 13</title>
   <script>
     (function () {
@@ -75,44 +77,14 @@
       --mono: "Fira Code", ui-monospace, monospace;
       --sans: Inter, system-ui, sans-serif;
     }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); overflow: hidden; }
-    .app { height: 100%; display: grid; grid-template-rows: 56px 1fr; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: var(--topbar-bg); }
-    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #f59e0b, #ef4444); display: grid; place-items: center; color: white; flex-shrink: 0; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 18px; border-bottom: 1px solid var(--border); background: var(--topbar-bg); }
+.brand-icon { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, #f59e0b, #ef4444); display: grid; place-items: center; color: white; flex-shrink: 0; }
     .brand h1 { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
     .brand p { margin: 0; font-size: .7rem; color: var(--dim); }
-    .top-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-    .speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
-    .speed-wrap input[type="range"] { width: 110px; accent-color: var(--blue); }
-    .icon-btn { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border-2); background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer; }
-    .icon-btn:hover { background: var(--hover); }
-    .run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
-    .run-btn:hover { filter: brightness(0.92); }
-
-    .theme-toggle {
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-2);
-      background: var(--panel);
-      color: var(--text);
-      font-size: 0.75rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
-    .theme-toggle:hover { background: var(--hover); }
-    .main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
-    @media (max-width: 1100px) { body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { grid-template-columns: 1fr; height: auto; } }
-    .col { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
-    .card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+.speed-wrap { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .75rem; font-weight: 500; }
+.run-btn { height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--blue); color: white; font-weight: 650; font-size: .82rem; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.main { display: grid; grid-template-columns: minmax(280px,.95fr) minmax(340px,1.25fr) minmax(250px,.8fr); gap: 12px; padding: 12px; min-height: 0; height: 100%; }
+.card-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
     .card-b { padding: 12px; }
     .scenarios { display: flex; flex-direction: column; gap: 6px; overflow: auto; }
     .scenario { text-align: left; border: 1px solid var(--border-2); background: var(--surface); color: var(--text); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: .78rem; }
@@ -121,10 +93,8 @@
     .scenario strong { display: block; font-size: .8rem; margin-bottom: 2px; }
     .scenario span { color: var(--dim); font-size: .7rem; line-height: 1.3; }
     .script-card { flex: 1; }
-    .editor { display: grid; grid-template-columns: 42px 1fr; flex: 1; min-height: 0; background: var(--code-bg); border-top: 1px solid var(--border); font-family: var(--mono); font-size: 12.5px; line-height: 22px; }
-    .gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
-    .gutter div { height: 22px; padding-right: 10px; }
-    .gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
+.gutter { padding: 12px 0; text-align: right; color: var(--dim); user-select: none; border-right: 1px solid var(--border); }
+.gutter .active { color: var(--amber); background: rgba(251,191,36,.08); font-weight: 700; }
     .code-view { margin: 0; padding: 12px; white-space: pre; color: var(--code-fg); overflow: auto; font: inherit; line-height: 22px; }
     .code-view .hl { background: rgba(251,191,36,.12); display: block; margin: 0 -12px; padding: 0 12px; }
     .viz-stage { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
