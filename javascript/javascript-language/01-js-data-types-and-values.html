@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
   <title>01. Data Types and Values - JavaScript Notes</title>
   <style>
     /* ===== Light mode (default) ===== */
@@ -291,32 +294,6 @@
       background: var(--callout-warn-bg);
     }
 
-    /* Code blocks — Dark+ */
-    .code {
-      background: var(--code-bg);
-      border: 1px solid var(--code-border);
-      border-radius: calc(var(--radius) - 2px);
-      padding: 12px 14px;
-      overflow-x: auto;
-      margin: 10px 0;
-    }
-
-    .code pre {
-      margin: 0;
-      font-size: 0.9rem;
-      line-height: 1.55;
-      color: var(--code-fg);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-    }
-
-    .c-comment { color: var(--code-comment); }
-    .c-keyword { color: var(--code-keyword); }
-    .c-var     { color: var(--code-var); }
-    .c-string  { color: var(--code-string); }
-    .c-number  { color: var(--code-number); }
-    .c-fn      { color: var(--code-fn); }
-    .c-type    { color: var(--code-type); }
-
     /* Tables */
     table {
       width: 100%;
@@ -346,17 +323,6 @@
     }
 
     tr:last-child td { border-bottom: none; }
-
-    /* Inline code */
-    code.inline {
-      background: var(--input);
-      border: 1px solid var(--border);
-      color: var(--foreground);
-      padding: 1px 6px;
-      border-radius: calc(var(--radius) - 4px);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-      font-size: 0.88em;
-    }
 
     /* Footer */
     footer {
@@ -580,12 +546,67 @@
       </footer>
     </main>
   </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
   <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: 'nocursor',
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: 'nocursor',
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
     (function () {
       var saved = localStorage.getItem('theme');
       if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
       }
+      initCodeMirrorSnippets();
       updateToggleUI();
     })();
 
@@ -593,6 +614,7 @@
       document.documentElement.classList.toggle('dark');
       var isDark = document.documentElement.classList.contains('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
       updateToggleUI();
     }
 
