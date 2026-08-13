@@ -370,7 +370,10 @@
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> JavaScript Notes</div>
       <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
         <a href="#intro">Intro</a>
+        <a href="#theory">0. Theory</a>
         <a href="#primitives">1. Primitives</a>
         <a href="#objects">2. Object Data Type</a>
         <a href="#compare">3. Primitive vs Non-primitive</a>
@@ -378,6 +381,7 @@
         <a href="#type-checks">5. typeof and instanceof</a>
         <a href="#language-basics">6. Language Basics</a>
         <a href="#common-questions">7. Common Questions</a>
+        <a href="./01-js-data-types-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -386,9 +390,16 @@
     </aside>
 
     <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">01. Data Types and Values</span>
+      </nav>
       <header class="hero" id="intro">
         <h1>01. Data Types and Values</h1>
-        <p class="subtitle">Primitives, objects, memory behavior, and practical type checks in JavaScript.</p>
+        <p class="subtitle">Primitives, objects, and how values work in memory.</p>
         <div class="chip-row">
           <span class="chip prim">Primitives</span>
           <span class="chip obj">Objects</span>
@@ -397,152 +408,378 @@
         </div>
       </header>
 
-      <section>
-        <p>JavaScript is dynamically typed. A variable can hold any type, and type is tied to the value, not the variable.</p>
-        <div class="code"><pre><span class="c-keyword">let</span> <span class="c-var">x</span> = <span class="c-number">10</span>;      <span class="c-comment">// number</span>
-<span class="c-var">x</span> = <span class="c-string">"hello"</span>;     <span class="c-comment">// now string</span></pre></div>
+      <section id="theory">
+        <h2>0. Theory (Foundation)</h2>
+        <p>JavaScript is a <em>dynamic, interpreted (compiled at runtime) and weakly typed</em> programming language. It can run inside a browser as part of a webpage or directly on a machine through a host environment (for example, Node.js).</p>
+        <p>JavaScript was created to make webpages dynamic, such as updating page content directly in the browser without a full page reload. It was originally called LiveScript, but it was later renamed to JavaScript during the rise in Java's popularity.</p>
+        <p>JavaScript is <strong>dynamically typed</strong>: a variable can hold any type, and the type is tied to the <strong>value</strong>, not the variable.</p>
+        <div class="code"><pre>let x = 10;      // number
+x = "hello";     // now string — totally valid</pre></div>
         <div class="callout">Two broad categories: <strong>primitives</strong> and <strong>objects</strong> (everything else).</div>
+        <p><strong>Default rule today:</strong> use <code class="inline">typeof</code> for primitives, <code class="inline">=== null</code> for null, <code class="inline">Number.isNaN()</code> for NaN, <code class="inline">Array.isArray()</code> for arrays; remember objects are copied by <strong>reference</strong>.</p>
+        <p>Interactive visualizer: open <a href="./01-js-data-types-animation.html">01-js-data-types-animation.html</a> in a browser — typeof, copy vs reference, null/undefined, NaN, boxing, Symbol (Run / Step).</p>
       </section>
 
       <section id="primitives">
         <h2>1. Primitives</h2>
-        <p>A primitive is a single, immutable value stored directly.</p>
+        <p>A <strong>primitive</strong> is a single, immutable value stored directly. JavaScript has <strong>7 primitive types</strong>:</p>
 
         <table>
           <thead>
             <tr><th>Type</th><th>Example</th><th>Notes</th></tr>
           </thead>
           <tbody>
-            <tr><td>string</td><td>"hello", 'world', `hi`</td><td>Text</td></tr>
-            <tr><td>number</td><td>42, 3.14, NaN, Infinity</td><td>64-bit float</td></tr>
-            <tr><td>boolean</td><td>true, false</td><td>Logic values</td></tr>
-            <tr><td>undefined</td><td>undefined</td><td>Unassigned value</td></tr>
-            <tr><td>null</td><td>null</td><td>Intentional empty</td></tr>
-            <tr><td>symbol</td><td>Symbol("id")</td><td>Unique id</td></tr>
-            <tr><td>bigint</td><td>100n</td><td>Large integers</td></tr>
+            <tr><td><code class="inline">string</code></td><td><code class="inline">"hello"</code>, <code class="inline">'world'</code>, backticks</td><td>Text; template literals use backticks</td></tr>
+            <tr><td><code class="inline">number</code></td><td><code class="inline">42</code>, <code class="inline">3.14</code>, <code class="inline">NaN</code>, <code class="inline">Infinity</code></td><td>All numbers are 64-bit floats (no separate int)</td></tr>
+            <tr><td><code class="inline">boolean</code></td><td><code class="inline">true</code>, <code class="inline">false</code></td><td>Result of comparisons and logic</td></tr>
+            <tr><td><code class="inline">undefined</code></td><td><code class="inline">undefined</code></td><td>Variable declared but not assigned</td></tr>
+            <tr><td><code class="inline">null</code></td><td><code class="inline">null</code></td><td>Intentional absence of value</td></tr>
+            <tr><td><code class="inline">symbol</code></td><td><code class="inline">Symbol("id")</code></td><td>Unique identifier, ES6+</td></tr>
+            <tr><td><code class="inline">bigint</code></td><td><code class="inline">100n</code>, <code class="inline">BigInt(100)</code></td><td>Arbitrarily large integers, ES2020+</td></tr>
           </tbody>
         </table>
 
-        <h3>1.1 undefined vs null</h3>
-        <div class="code"><pre><span class="c-keyword">let</span> <span class="c-var">a</span>;           <span class="c-comment">// undefined</span>
-<span class="c-keyword">let</span> <span class="c-var">b</span> = <span class="c-keyword">null</span>;   <span class="c-comment">// intentionally empty</span></pre></div>
+        <h3>1.1. Strings, numbers, booleans</h3>
+        <div class="code"><pre>const name = "Bharat";
+const age = 30;
+const isActive = true;
 
-        <h3>1.2 NaN and Infinity</h3>
-        <div class="code"><pre><span class="c-keyword">typeof</span> <span class="c-var">NaN</span>;          <span class="c-comment">// "number"</span>
-<span class="c-type">Number</span>.<span class="c-fn">isNaN</span>(<span class="c-var">NaN</span>);   <span class="c-comment">// true</span>
-<span class="c-number">1</span> / <span class="c-number">0</span>;               <span class="c-comment">// Infinity</span></pre></div>
+// Template literals
+const greeting = `Hello, ${name}!`;</pre></div>
 
-        <h3>1.3 Immutability</h3>
-        <div class="code"><pre><span class="c-keyword">const</span> <span class="c-var">s</span> = <span class="c-string">"hello"</span>;
-<span class="c-var">s</span>.<span class="c-fn">toUpperCase</span>();   <span class="c-comment">// "HELLO"</span>
-<span class="c-comment">// s is still "hello"</span></pre></div>
+        <h3>1.2. undefined vs null</h3>
+        <div class="code"><pre>let a;           // undefined — no value assigned
+let b = null;    // null — explicitly empty
+
+console.log(a);  // undefined
+console.log(b);  // null</pre></div>
+        <ul>
+          <li><strong>undefined</strong> — JS sets this automatically (unassigned variable, missing function return, missing object property).</li>
+          <li><strong>null</strong> — you set this when you mean "no value on purpose".</li>
+        </ul>
+
+        <h3>1.3. NaN and Infinity</h3>
+        <div class="code"><pre>typeof NaN;        // "number" (quirk!)
+Number("abc");     // NaN
+1 / 0;             // Infinity</pre></div>
+        <p><code class="inline">NaN</code> is the only value that is not equal to itself:</p>
+        <div class="code"><pre>NaN === NaN;       // false
+Number.isNaN(NaN); // true — prefer this over global isNaN()</pre></div>
+
+        <h3>1.4. symbol</h3>
+        <p>Used for unique property keys, often to avoid name collisions:</p>
+        <div class="code"><pre>const id = Symbol("id");
+const user = { [id]: 123, name: "Bharat" };</pre></div>
+        <p>Every <code class="inline">Symbol()</code> call creates a <strong>new</strong> unique value, even with the same description.</p>
+
+        <h3>1.5. bigint</h3>
+        <p>For integers larger than <code class="inline">Number.MAX_SAFE_INTEGER</code> (<code class="inline">2^53 - 1</code>):</p>
+        <div class="code"><pre>const big = 9007199254740991n;
+typeof big;        // "bigint"
+
+// Cannot mix bigint and number without conversion
+// 1n + 1  → TypeError</pre></div>
+
+        <h3>1.6. Primitives are immutable</h3>
+        <p>You cannot change a primitive in place — operations return <strong>new</strong> values:</p>
+        <div class="code"><pre>const s = "hello";
+s.toUpperCase();   // "HELLO"
+console.log(s);    // still "hello"</pre></div>
       </section>
 
       <section id="objects">
-        <h2>2. Object Data Type</h2>
-        <p>Objects are key-value collections. Arrays, functions, Date, Map, Set, and RegExp are objects too.</p>
+        <h2>2. Object data type</h2>
+        <p>An <strong>object</strong> is a collection of key–value pairs. In JS, <strong>arrays</strong>, <strong>functions</strong>, <strong>Date</strong>, <strong>Map</strong>, <strong>Set</strong>, and <strong>RegExp</strong> are also objects.</p>
+        <div class="code"><pre>const person = { name: "Bharat", age: 30 };
+const nums = [1, 2, 3];
+const greet = function () { return "hi"; };
+const today = new Date();
+const tags = new Set(["js", "web"]);
+const cache = new Map([["id", 1]]);
+const pattern = /js/i;
 
-        <div class="code"><pre><span class="c-keyword">const</span> <span class="c-var">person</span> = { <span class="c-var">name</span>: <span class="c-string">"Bharat"</span>, <span class="c-var">age</span>: <span class="c-number">30</span> };
-<span class="c-keyword">const</span> <span class="c-var">nums</span> = [<span class="c-number">1</span>, <span class="c-number">2</span>, <span class="c-number">3</span>];
-<span class="c-keyword">typeof</span> <span class="c-var">person</span>;  <span class="c-comment">// "object"</span>
-<span class="c-keyword">typeof</span> <span class="c-var">nums</span>;    <span class="c-comment">// "object"</span>
-<span class="c-type">Array</span>.<span class="c-fn">isArray</span>(<span class="c-var">nums</span>); <span class="c-comment">// true</span></pre></div>
+typeof person;  // "object"
+typeof nums;    // "object"
+typeof greet;   // "function"
+typeof today;   // "object"
+typeof tags;    // "object"
+typeof cache;   // "object"
+typeof pattern; // "object"</pre></div>
+
+        <h3>2.1. Arrays are objects</h3>
+        <div class="code"><pre>const arr = [1, 2, 3];
+arr.push(4);
+typeof arr;         // "object"
+Array.isArray(arr); // true — use this to check for arrays</pre></div>
       </section>
 
       <section id="compare">
-        <h2>3. Primitive vs Non-primitive</h2>
+        <h2>3. Primitive vs non-primitive (differences)</h2>
         <table>
           <thead>
             <tr><th>Aspect</th><th>Primitive</th><th>Non-primitive</th></tr>
           </thead>
           <tbody>
-            <tr><td>Nature</td><td>Single value</td><td>Collection/object</td></tr>
+            <tr><td>Nature</td><td>Single value</td><td>Collection/object value</td></tr>
             <tr><td>Mutability</td><td>Immutable</td><td>Mutable</td></tr>
-            <tr><td>Copy behavior</td><td>By value</td><td>By reference</td></tr>
-            <tr><td>Equality with ===</td><td>Value comparison</td><td>Reference identity</td></tr>
-            <tr><td>Examples</td><td>"hi", 42, true, null</td><td>{}, [], function(){}</td></tr>
+            <tr><td>Stored in variable</td><td>The value itself</td><td>A reference (pointer) to the value</td></tr>
+            <tr><td>Copy behavior</td><td>Copied by value</td><td>Reference is copied</td></tr>
+            <tr><td>Compared with ===</td><td>Compares actual value</td><td>Compares reference identity</td></tr>
+            <tr><td>typeof output</td><td>Specific types like "string", "number"</td><td>Usually "object" (functions are "function")</td></tr>
+            <tr><td>Examples</td><td>"hi", 42, true, null, undefined, Symbol(), 10n</td><td>{}, [], function(){}, new Date()</td></tr>
           </tbody>
         </table>
       </section>
 
       <section id="references">
-        <h2>4. Values and References</h2>
+        <h2>4. Values and references</h2>
 
-        <h3>4.1 Primitive copy</h3>
-        <div class="code"><pre><span class="c-keyword">let</span> <span class="c-var">a</span> = <span class="c-number">10</span>;
-<span class="c-keyword">let</span> <span class="c-var">b</span> = <span class="c-var">a</span>;
-<span class="c-var">b</span> = <span class="c-number">20</span>;
-<span class="c-comment">// a is 10, b is 20</span></pre></div>
+        <h3>4.1. Values (primitive copy)</h3>
+        <p><strong>Primitives</strong> are copied <strong>by value</strong>:</p>
+        <div class="code"><pre>let a = 10;
+let b = a;   // b gets a copy of the value
+b = 20;
+console.log(a);  // 10
+console.log(b);  // 20</pre></div>
 
-        <h3>4.2 Object reference copy</h3>
-        <div class="code"><pre><span class="c-keyword">const</span> <span class="c-var">obj1</span> = { <span class="c-var">x</span>: <span class="c-number">1</span> };
-<span class="c-keyword">const</span> <span class="c-var">obj2</span> = <span class="c-var">obj1</span>;
-<span class="c-var">obj2</span>.<span class="c-var">x</span> = <span class="c-number">99</span>;
-<span class="c-comment">// obj1.x is 99</span></pre></div>
+        <h3>4.2. References (object copy)</h3>
+        <p><strong>Objects</strong> are copied <strong>by reference</strong> — the variable holds a pointer to the same object in memory:</p>
+        <div class="code"><pre>const obj1 = { x: 1 };
+const obj2 = obj1;   // both point to the same object
+obj2.x = 99;
+console.log(obj1.x); // 99 — obj1 changed too!</pre></div>
 
-        <h3>4.3 Shallow vs deep copy</h3>
-        <div class="code"><pre><span class="c-keyword">const</span> <span class="c-var">original</span> = { <span class="c-var">a</span>: <span class="c-number">1</span>, <span class="c-var">nested</span>: { <span class="c-var">b</span>: <span class="c-number">2</span> } };
-<span class="c-keyword">const</span> <span class="c-var">copy</span> = { ...<span class="c-var">original</span> };  <span class="c-comment">// shallow</span>
-<span class="c-keyword">const</span> <span class="c-var">deep</span> = <span class="c-fn">structuredClone</span>(<span class="c-var">original</span>);</pre></div>
+        <h3>4.3. Reassignment vs mutability</h3>
+        <p>Reassignment changes what a variable points to. Mutability changes the value itself.</p>
+        <div class="code"><pre>let n = 10;
+n = 20; // reassignment: n now points to a different primitive value
+
+const user = { name: "Bharat" };
+user.name = "B"; // mutation: same object, internal data changed
+// user = { name: "New" }; // TypeError with const: reassignment not allowed</pre></div>
+
+        <h3>4.4. Shallow copy</h3>
+        <p>Spread and <code class="inline">Object.assign</code> create a <strong>shallow</strong> copy — top-level keys are copied, nested objects are still shared:</p>
+        <div class="code"><pre>const original = { a: 1, nested: { b: 2 } };
+const copy = { ...original };
+
+copy.a = 100;
+copy.nested.b = 200;
+
+console.log(original.a);        // 1
+console.log(original.nested.b); // 200 — nested object is shared!</pre></div>
+        <p>For a deep copy of plain data, <code class="inline">structuredClone()</code> works in modern environments:</p>
+        <div class="code"><pre>const deep = structuredClone(original);</pre></div>
+
+        <h3>4.5. Passing to functions</h3>
+        <p>Primitives are passed by value; objects are passed by reference (the reference is copied):</p>
+        <div class="code"><pre>function changePrimitive(n) {
+  n = 100;
+}
+let num = 5;
+changePrimitive(num);
+console.log(num);  // 5
+
+function changeObject(obj) {
+  obj.x = 100;
+}
+const o = { x: 1 };
+changeObject(o);
+console.log(o.x);  // 100</pre></div>
       </section>
 
       <section id="type-checks">
-        <h2>5. typeof and instanceof</h2>
+        <h2>5. typeof and instanceof (type and instance) checking</h2>
 
-        <h3>5.1 typeof quick checks</h3>
-        <div class="code"><pre><span class="c-keyword">typeof</span> <span class="c-string">"hello"</span>;      <span class="c-comment">// "string"</span>
-<span class="c-keyword">typeof</span> <span class="c-number">42</span>;           <span class="c-comment">// "number"</span>
-<span class="c-keyword">typeof</span> <span class="c-keyword">undefined</span>;    <span class="c-comment">// "undefined"</span>
-<span class="c-keyword">typeof</span> <span class="c-keyword">null</span>;         <span class="c-comment">// "object" (legacy quirk)</span></pre></div>
+        <h3>5.1. typeof operator</h3>
+        <p>Returns a <strong>string</strong> naming the type:</p>
+        <div class="code"><pre>typeof "hello";     // "string"
+typeof 42;          // "number"
+typeof true;        // "boolean"
+typeof undefined;   // "undefined"
+typeof Symbol();    // "symbol"
+typeof 10n;         // "bigint"
+typeof function(){};// "function"
+typeof {};          // "object"
+typeof [];          // "object"
+typeof new Date();  // "object"
+typeof new Map();   // "object"
+typeof new Set();   // "object"
+typeof null;        // "object"  ← famous bug, historical reason</pre></div>
 
-        <h3>5.2 instanceof</h3>
-        <div class="code"><pre>[] <span class="c-keyword">instanceof</span> <span class="c-type">Array</span>;      <span class="c-comment">// true</span>
-[] <span class="c-keyword">instanceof</span> <span class="c-type">Object</span>;     <span class="c-comment">// true</span>
-<span class="c-string">"hello"</span> <span class="c-keyword">instanceof</span> <span class="c-type">String</span>; <span class="c-comment">// false</span></pre></div>
+        <h3>5.2. Checking for null</h3>
+        <p><code class="inline">typeof null === "object"</code> is misleading. Use strict equality:</p>
+        <div class="code"><pre>const value = null;
+value === null;  // true</pre></div>
+
+        <h3>5.3. instanceof</h3>
+        <p>Checks if an object appears in another object's prototype chain:</p>
+        <div class="code"><pre>[] instanceof Array;        // true
+[] instanceof Object;       // true
+({}) instanceof Object;     // true
+
+"hello" instanceof String;  // false — primitive, not String object</pre></div>
+
+        <h3>5.4. typeof vs instanceof (quick table)</h3>
+        <table>
+          <thead>
+            <tr><th>Check</th><th>typeof</th><th>instanceof</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>What it checks</td><td>Built-in type tag (returns a string)</td><td>Prototype chain relationship</td></tr>
+            <tr><td>Works well for</td><td>Primitives, functions, quick guards</td><td>Class/constructor-based objects</td></tr>
+            <tr><td>Returns</td><td>One of values like "string", "number", "object"</td><td>true or false</td></tr>
+            <tr><td>Arrays</td><td>typeof [] → "object" (not specific)</td><td>[] instanceof Array → true</td></tr>
+            <tr><td>null</td><td>typeof null → "object" (historical bug)</td><td>null instanceof Object → false</td></tr>
+            <tr><td>Cross-realm caveat</td><td>Usually stable for primitives</td><td>Can fail across realms (e.g., different iframes)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>5.5. Data types: primitive vs non-primitive</h3>
+        <table>
+          <thead>
+            <tr><th>Data type</th><th>Category</th><th>typeof result</th><th>instanceof result</th><th>Recommended check</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>String</td><td>Primitive</td><td>"string"</td><td>"hi" instanceof String → false</td><td>typeof x === "string"</td></tr>
+            <tr><td>Number</td><td>Primitive</td><td>"number"</td><td>42 instanceof Number → false</td><td>typeof x === "number" and Number.isFinite(x) when needed</td></tr>
+            <tr><td>Boolean</td><td>Primitive</td><td>"boolean"</td><td>true instanceof Boolean → false</td><td>typeof x === "boolean"</td></tr>
+            <tr><td>Undefined</td><td>Primitive</td><td>"undefined"</td><td>undefined instanceof Object → false</td><td>x === undefined or typeof x === "undefined"</td></tr>
+            <tr><td>Null</td><td>Primitive</td><td>"object" (quirk)</td><td>null instanceof Object → false</td><td>x === null</td></tr>
+            <tr><td>Symbol</td><td>Primitive</td><td>"symbol"</td><td>Symbol("id") instanceof Symbol → false</td><td>typeof x === "symbol"</td></tr>
+            <tr><td>BigInt</td><td>Primitive</td><td>"bigint"</td><td>100n instanceof BigInt → false</td><td>typeof x === "bigint"</td></tr>
+            <tr><td>Object (plain)</td><td>Non-primitive</td><td>"object"</td><td>({}) instanceof Object → true</td><td>x !== null &amp;&amp; typeof x === "object"</td></tr>
+            <tr><td>Array</td><td>Non-primitive</td><td>"object"</td><td>[] instanceof Array → true</td><td>Array.isArray(x)</td></tr>
+            <tr><td>Function</td><td>Non-primitive</td><td>"function"</td><td>(function(){}) instanceof Function → true</td><td>typeof x === "function"</td></tr>
+            <tr><td>Date</td><td>Non-primitive</td><td>"object"</td><td>new Date() instanceof Date → true</td><td>x instanceof Date</td></tr>
+            <tr><td>RegExp</td><td>Non-primitive</td><td>"object"</td><td>/x/ instanceof RegExp → true</td><td>x instanceof RegExp</td></tr>
+            <tr><td>Map</td><td>Non-primitive</td><td>"object"</td><td>new Map() instanceof Map → true</td><td>x instanceof Map</td></tr>
+            <tr><td>Set</td><td>Non-primitive</td><td>"object"</td><td>new Set() instanceof Set → true</td><td>x instanceof Set</td></tr>
+            <tr><td>WeakMap</td><td>Non-primitive</td><td>"object"</td><td>new WeakMap() instanceof WeakMap → true</td><td>x instanceof WeakMap</td></tr>
+            <tr><td>WeakSet</td><td>Non-primitive</td><td>"object"</td><td>new WeakSet() instanceof WeakSet → true</td><td>x instanceof WeakSet</td></tr>
+            <tr><td>Promise</td><td>Non-primitive</td><td>"object"</td><td>Promise.resolve() instanceof Promise → true</td><td>x instanceof Promise</td></tr>
+          </tbody>
+        </table>
 
         <table>
           <thead>
-            <tr><th>Goal</th><th>Recommended check</th></tr>
+            <tr><th>Goal</th><th>How</th></tr>
           </thead>
           <tbody>
-            <tr><td>Is array?</td><td><code class="inline">Array.isArray(x)</code></td></tr>
-            <tr><td>Is NaN?</td><td><code class="inline">Number.isNaN(x)</code></td></tr>
-            <tr><td>Is finite number?</td><td><code class="inline">Number.isFinite(x)</code></td></tr>
-            <tr><td>Is null?</td><td><code class="inline">x === null</code></td></tr>
+            <tr><td>Is it an array?</td><td><code class="inline">Array.isArray(x)</code></td></tr>
+            <tr><td>Is it NaN?</td><td><code class="inline">Number.isNaN(x)</code></td></tr>
+            <tr><td>Is it a finite number?</td><td><code class="inline">Number.isFinite(x)</code></td></tr>
+            <tr><td>Is it null or undefined?</td><td><code class="inline">x == null</code> or <code class="inline">x === null || x === undefined</code></td></tr>
+            <tr><td>Safe integer?</td><td><code class="inline">Number.isSafeInteger(x)</code></td></tr>
           </tbody>
         </table>
+
+        <h3>5.6. Boxing (brief)</h3>
+        <p>Primitives can be temporarily wrapped as objects when you access methods:</p>
+        <div class="code"><pre>"hello".toUpperCase();  // works — JS wraps in String object, then discards it</pre></div>
+        <p>Avoid <code class="inline">new String("hello")</code> — creates an object wrapper, rarely needed.</p>
       </section>
 
       <section id="language-basics">
-        <h2>6. Language Basics</h2>
+        <h2>6. Language basics</h2>
 
-        <h3>6.1 Comments</h3>
-        <div class="code"><pre><span class="c-comment">// Single-line comment</span>
+        <h3>6.1. Comments</h3>
+        <div class="code"><pre>// Single-line comment
 
-<span class="c-comment">/* Multi-line
-   comment */</span></pre></div>
+/*
+  Multi-line comment
+  (block comment)
+*/
 
-        <h3>6.2 Semicolons and ASI</h3>
-        <div class="code"><pre><span class="c-keyword">function</span> <span class="c-fn">bad</span>() {
-  <span class="c-keyword">return</span>    <span class="c-comment">// ASI inserts semicolon</span>
-    { <span class="c-var">value</span>: <span class="c-number">1</span> };
+const x = 1; // trailing comment</pre></div>
+        <p>Use comments for <strong>why</strong>, not <strong>what</strong> obvious code already shows.</p>
+
+        <h3>6.2. Semicolons</h3>
+        <p>JavaScript has <strong>Automatic Semicolon Insertion (ASI)</strong> — the engine inserts semicolons when you omit them at line breaks in certain cases.</p>
+        <div class="code"><pre>// Both valid
+const a = 1;
+const b = 2
+
+// ASI can surprise you — return on its own line
+function bad() {
+  return   // ASI inserts ; here — returns undefined
+    { value: 1 };
 }</pre></div>
-        <div class="callout warn">Use semicolons consistently or rely on a formatter like Prettier to avoid edge cases.</div>
+        <div class="callout warn"><strong>Default rule:</strong> use semicolons consistently, or follow a project style guide (Prettier).</div>
+
+        <h3>6.3. Literals</h3>
+        <p>A <strong>literal</strong> is syntax that creates a value directly:</p>
+        <table>
+          <thead>
+            <tr><th>Literal</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Number</td><td><code class="inline">42</code>, <code class="inline">3.14</code>, <code class="inline">0xff</code>, <code class="inline">1_000_000</code></td></tr>
+            <tr><td>String</td><td><code class="inline">"hi"</code>, <code class="inline">'hi'</code>, backticks</td></tr>
+            <tr><td>Boolean</td><td><code class="inline">true</code>, <code class="inline">false</code></td></tr>
+            <tr><td>Null</td><td><code class="inline">null</code></td></tr>
+            <tr><td>Array</td><td><code class="inline">[1, 2, 3]</code></td></tr>
+            <tr><td>Object</td><td><code class="inline">{ name: "Ada" }</code></td></tr>
+            <tr><td>RegExp</td><td><code class="inline">/abc/gi</code></td></tr>
+            <tr><td>Template</td><td><code class="inline">`Hello ${name}`</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>6.4. Expressions vs statements</h3>
+        <table>
+          <thead>
+            <tr><th>Expressions</th><th>Statements</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Produce a <strong>value</strong></td><td>Perform an <strong>action</strong></td></tr>
+            <tr><td><code class="inline">1 + 2</code>, <code class="inline">fn()</code>, <code class="inline">a &amp;&amp; b</code></td><td><code class="inline">if</code>, <code class="inline">for</code>, <code class="inline">return</code>, <code class="inline">const x = 1</code></td></tr>
+            <tr><td>Can nest inside other expressions</td><td>Usually stand alone</td></tr>
+          </tbody>
+        </table>
+        <div class="code"><pre>// Expression used as statement (value discarded)
+count + 1;
+
+// Statement — const declaration is not an expression
+const x = 1 + 2;  // 1 + 2 is expression; whole line is statement</pre></div>
+        <p>Ternary (<code class="inline">cond ? a : b</code>) is an <strong>expression</strong>; <code class="inline">if/else</code> is a <strong>statement</strong> (File 04).</p>
       </section>
 
       <section id="common-questions">
-        <h2>7. Common Questions</h2>
-        <ol>
-          <li>How many data types in JavaScript? 7 primitives plus object family.</li>
-          <li>undefined vs null? Missing value vs intentional empty.</li>
-          <li>Why is typeof null "object"? Historical compatibility behavior.</li>
-          <li>Does const freeze objects? No. It prevents reassignment, not mutation.</li>
-          <li>How to check NaN? Use <code class="inline">Number.isNaN(value)</code>.</li>
-        </ol>
+        <h2>7. Common questions</h2>
+
+        <h3>7.1. How many data types does JavaScript have?</h3>
+        <p><strong>A:</strong> <strong>7 primitives</strong> + <strong>objects</strong> (which includes arrays, functions, dates, etc.).</p>
+
+        <h3>7.2. What is the difference between undefined and null?</h3>
+        <p><strong>A:</strong> <code class="inline">undefined</code> means "not assigned / missing". <code class="inline">null</code> means "intentionally empty".</p>
+
+        <h3>7.3. Why does typeof null return "object"?</h3>
+        <p><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null.</p>
+
+        <h3>7.4. Primitive vs object — what is the key difference?</h3>
+        <p><strong>A:</strong> Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.</p>
+
+        <h3>7.5. Does const make objects immutable?</h3>
+        <p><strong>A:</strong> No. <code class="inline">const</code> prevents <strong>reassigning</strong> the variable. The object itself can still be mutated:</p>
+        <div class="code"><pre>const obj = { a: 1 };
+obj.a = 2;       // OK
+obj = { a: 3 };  // TypeError — cannot reassign</pre></div>
+
+        <h3>7.6. What is NaN and how do you check for it?</h3>
+        <p><strong>A:</strong> <code class="inline">NaN</code> means "Not a Number" (result of invalid math). Use <code class="inline">Number.isNaN(value)</code>, not <code class="inline">value === NaN</code>.</p>
+
+        <h3>7.7. Are semicolons required in JavaScript?</h3>
+        <p><strong>A:</strong> <strong>No</strong> — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.</p>
+
+        <h3>7.8. What is the difference between an expression and a statement?</h3>
+        <p><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</p>
+
+        <h3>7.9. What is a literal?</h3>
+        <p><strong>A:</strong> Syntax that creates a value directly — <code class="inline">42</code>, <code class="inline">"hi"</code>, <code class="inline">{ a: 1 }</code>, <code class="inline">[1, 2]</code>.</p>
       </section>
 
       <footer>
-        Self-contained HTML note. No external CSS, JS, fonts, or network dependencies.
+        HTML note for JavaScript File 01. Open from the JS Language index.
       </footer>
     </main>
   </div>
@@ -572,7 +809,7 @@
         var cm = CodeMirror(host, {
           value: pre.textContent.replace(/\n+$/, ''),
           mode: 'javascript',
-          readOnly: 'nocursor',
+          readOnly: true,
           lineNumbers: false,
           lineWrapping: false,
           viewportMargin: Infinity,
@@ -588,7 +825,7 @@
         var cm = CodeMirror(host, {
           value: inlineCode.textContent,
           mode: 'text/plain',
-          readOnly: 'nocursor',
+          readOnly: true,
           lineNumbers: false,
           lineWrapping: false,
           viewportMargin: Infinity,

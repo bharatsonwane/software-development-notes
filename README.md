@@ -2,25 +2,28 @@
 
 Personal notes for technical learning and reference. Topics are organized by folder; each section will be built out gradually.
 
-Files use **numbered learning order**: `01-topic-name.md`, `02-topic-name.md`, and so on. Topic prefix varies by track (`html`, `css`, `js`, `ts`, `node`, `react`, `rn`, `pg`, `mongo`, etc.). Each file uses **relative** section numbers (`1.`, `1.1.` within that file).
+**Notes website:** [https://bharatsonwane.github.io/software-development-notes/](https://bharatsonwane.github.io/software-development-notes/)  
+**Local:** [http://localhost:5500/](http://localhost:5500/)
+
+Files use **numbered learning order**: `01-topic-name.html`, `02-topic-name.html`, and so on. Topic prefix varies by track (`html`, `css`, `js`, `ts`, `node`, `react`, `rn`, `pg`, `mongo`, etc.). Each file uses **relative** section numbers (`1.`, `1.1.` within that file).
 
 ## Topics
 
 | Topic | Folder | Index |
 | ----- | ------ | ----- |
-| HTML & CSS | [html-css/](html-css/) | [HTML](./html-css/html/README.md)<br>[CSS](./html-css/css/README.md) |
-| JavaScript | [javascript/](javascript/) | [Javascript Language](./javascript/javascript-language/README.md)<br>[TypeScript](./javascript/typescript/README.md)<br>[Node.js](./javascript/nodejs/README.md)<br>[React.js](./javascript/reactjs/README.md)<br>[React Native](./javascript/react-native/README.md) |
-| Database | [database/](database/) | [PostgreSQL](./database/postgresql/README.md)<br>[MongoDB](./database/mongodb/README.md) |
-| Python | [python/](python/) | [README](./python/README.md) |
-| Git | [git/](git/) | [README](./git/README.md) |
-| Docker | [docker/](docker/) | [README](./docker/README.md) |
-| System Design | [system-design/](system-design/) | [README](./system-design/README.md) |
-| AWS | [aws/](aws/) | [README](./aws/README.md) |
+| HTML & CSS | html-css/ | HTML<br>CSS |
+| JavaScript | javascript/ | Javascript Language<br>TypeScript<br>Node.js<br>React.js<br>React Native |
+| Database | database/ | PostgreSQL<br>MongoDB |
+| Python | python/ | README |
+| Git | git/ | README |
+| Docker | docker/ | README |
+| System Design | system-design/ | README |
+| AWS | aws/ | README |
 
 ## How to use
 
-- Use the **Index** links in the table above for full chapter lists per track.
-- Add and expand notes in the individual `.md` files as you study.
+- Open the **Notes website** above for full chapter lists per track (HTML pages).
+- Add and expand notes in the individual `.html` files as you study.
 - Keep entries concise: concept, example, and key points to remember.
 
 ## Suggested learning order
@@ -43,8 +46,8 @@ Notes for building web pages. Prefix: `html`, `css`.
 
 | Track | Folder | Chapters |
 | ----- | ------ | -------- |
-| HTML | [html-css/html/](./html-css/html/) | 10 — [full list](./html-css/html/README.md) |
-| CSS | [html-css/css/](./html-css/css/) | 12 — [full list](./html-css/css/README.md) |
+| HTML | html-css/html/ | 10 |
+| CSS | html-css/css/ | 12 |
 
 ---
 
@@ -58,13 +61,13 @@ Notes for the JavaScript language and related ecosystems. Prefix: `js`, `ts`, `n
 
 | Track | Folder | Chapters |
 | ----- | ------ | -------- |
-| JavaScript language | [javascript/javascript-language/](./javascript/javascript-language/) | 16 — [full list](./javascript/javascript-language/README.md) |
-| TypeScript | [javascript/typescript/](./javascript/typescript/) | 12 — [full list](./javascript/typescript/README.md) |
-| Node.js | [javascript/nodejs/](./javascript/nodejs/) | 14 — [full list](./javascript/nodejs/README.md) |
-| React.js | [javascript/reactjs/](./javascript/reactjs/) | 14 — [full list](./javascript/reactjs/README.md) |
-| React Native | [javascript/react-native/](./javascript/react-native/) | 14 — [full list](./javascript/react-native/README.md) |
+| JavaScript language | javascript/javascript-language/ | 16 |
+| TypeScript | javascript/typescript/ | 12 |
+| Node.js | javascript/nodejs/ | 14 |
+| React.js | javascript/reactjs/ | 14 |
+| React Native | javascript/react-native/ | 14 |
 
-Interview topic checklist: [javascript-language/notes.txt](./javascript/javascript-language/notes.txt)
+Interview topic checklist: `javascript/javascript-language/notes.txt`
 
 ---
 
@@ -78,8 +81,8 @@ Notes for relational and document databases. Prefix: `pg`, `mongo`.
 
 | Track | Folder | Chapters |
 | ----- | ------ | -------- |
-| PostgreSQL (SQL) | [database/postgresql/](./database/postgresql/) | 10 — [full list](./database/postgresql/README.md) |
-| MongoDB (NoSQL) | [database/mongodb/](./database/mongodb/) | 10 — [full list](./database/mongodb/README.md) |
+| PostgreSQL (SQL) | database/postgresql/ | 10 |
+| MongoDB (NoSQL) | database/mongodb/ | 10 |
 
 ---
 
