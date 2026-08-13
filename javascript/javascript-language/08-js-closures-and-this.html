@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>08. Closures &amp; this - JavaScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-closures">1. Closures</a>
+        <a href="#2-iife">2. IIFE</a>
+        <a href="#3-this-binding">3. `this` binding</a>
+        <a href="#4-call-apply-bind">4. call, apply, bind</a>
+        <a href="#5-arrow-functions-this">5. Arrow functions &amp; `this`</a>
+        <a href="#6-common-questions">6. Common questions</a>
+        <a href="./08-js-closures-this-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">08. Closures &amp; this</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>08. Closures &amp; this</h1>
+        <p class="subtitle">File 08 — lexical scope, closures, and dynamic this binding.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p><strong>Closures</strong> and <strong><code class="inline">this</code></strong> are two of the most important behavior topics in JavaScript — and two of the most misunderstood.</p>
+        <p>A <strong>closure</strong> happens when a function remembers variables from the scope where it was <strong>created</strong> (lexical scope, File 02). <strong><code class="inline">this</code></strong> is different — it is set by <strong>how a function is called</strong>, not where it is written (except arrow functions).</p>
+        <p><strong>Default rule today:</strong> use closures for <strong>private state</strong> and <strong>factories</strong>; use <strong>regular methods</strong> when you need <code class="inline">this</code> on objects; use <strong>arrows</strong> for callbacks that should keep outer <code class="inline">this</code>; use <strong><code class="inline">bind</code></strong> when passing methods as handlers.</p>
+        <p>Interactive visualizer: open <a href="./08-js-closures-this-animation.html">08-js-closures-this-animation.html</a> in a browser — closures, private state, lost <code class="inline">this</code>, <code class="inline">call</code>/<code class="inline">bind</code>, arrows (Run / Step).</p>
+      </section>
+      <section id="1-closures">
+        <h2>1. Closures</h2>
+        <h3>1.1. Lexical scope recap</h3>
+        <p>Inner functions can read variables from outer scopes. The lookup chain is fixed at <strong>write time</strong>:</p>
+        <div class="code"><pre>const outer = &quot;global&quot;;
+
+function outerFn() {
+  const middle = &quot;middle&quot;;
+
+  function innerFn() {
+    console.log(outer, middle);  // sees both
+  }
+
+  return innerFn;
+}
+
+const fn = outerFn();
+fn();  // &quot;global&quot; &quot;middle&quot; — even after outerFn finished</pre></div>
+        <p>See File 02, section 2.4 for the scope chain.</p>
+        <h3>1.2. What is a closure?</h3>
+        <p>A <strong>closure</strong> is a function plus the <strong>reference to its surrounding lexical environment</strong> (variables from outer scopes that are still &quot;alive&quot;).</p>
+        <div class="code"><pre>function makeGreeter(greeting) {
+  return function (name) {
+    return `${greeting}, ${name}!`;
+  };
+}
+
+const sayHi = makeGreeter(&quot;Hi&quot;);
+const sayHello = makeGreeter(&quot;Hello&quot;);
+
+sayHi(&quot;Bharat&quot;);     // &quot;Hi, Bharat!&quot;
+sayHello(&quot;Bharat&quot;);  // &quot;Hello, Bharat!&quot;</pre></div>
+        <p><code class="inline">makeGreeter</code> returns — but the inner function still closes over <code class="inline">greeting</code>. Each call to <code class="inline">makeGreeter</code> creates a <strong>new</strong> closure with its own <code class="inline">greeting</code>.</p>
+        <p>Every function in JS that references outer variables forms a closure — not only returned inner functions.</p>
+        <h3>1.3. Closure use cases</h3>
+        <p><strong>Private state / encapsulation:</strong></p>
+        <div class="code"><pre>function createCounter(start = 0) {
+  let count = start;
+
+  return {
+    increment() {
+      count++;
+      return count;
+    },
+    decrement() {
+      count--;
+      return count;
+    },
+    getCount() {
+      return count;
+    },
+  };
+}
+
+const counter = createCounter(10);
+counter.increment();  // 11
+counter.getCount();   // 11
+// count — not accessible from outside</pre></div>
+        <p><strong>Function factories:</strong></p>
+        <div class="code"><pre>function multiplyBy(factor) {
+  return (n) =&gt; n * factor;
+}
+
+const double = multiplyBy(2);
+const triple = multiplyBy(3);
+
+double(5);  // 10
+triple(5);  // 15</pre></div>
+        <p><strong>Callbacks and event handlers</strong> — closures capture context (File 05, File 10):</p>
+        <div class="code"><pre>function setupButton(label) {
+  const button = { label, clicks: 0 };
+
+  return function handleClick() {
+    button.clicks++;
+    console.log(`${button.label}: ${button.clicks}`);
+  };
+}</pre></div>
+        <p><strong>Memoization</strong> — cache inside closure:</p>
+        <div class="code"><pre>function memoize(fn) {
+  const cache = {};
+
+  return function (key) {
+    if (key in cache) return cache[key];
+    cache[key] = fn(key);
+    return cache[key];
+  };
+}</pre></div>
+        <h3>1.4. Common closure bugs</h3>
+        <p><strong>Loop with <code class="inline">var</code></strong> — one shared binding (File 02, File 04):</p>
+        <div class="code"><pre>for (var i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 0);  // 3, 3, 3
+}
+
+for (let i = 0; i &lt; 3; i++) {
+  setTimeout(() =&gt; console.log(i), 0);  // 0, 1, 2
+}</pre></div>
+        <p><strong>Stale closure in React-style patterns</strong> — inner function sees old state if not updated:</p>
+        <div class="code"><pre>function makeLogger() {
+  let value = 0;
+
+  return {
+    set(v) { value = v; },
+    log() { console.log(value); },
+  };
+}
+
+const logger = makeLogger();
+logger.set(5);
+logger.log();  // 5 — OK when using shared mutable binding</pre></div>
+        <p><strong>Memory</strong> — closures keep outer variables alive. Holding large objects in closures when only a small field is needed can prevent garbage collection.</p>
+      </section>
+      <section id="2-iife">
+        <h2>2. IIFE</h2>
+        <p>An <strong>IIFE</strong> (Immediately Invoked Function Expression) is a function that runs <strong>right after</strong> it is defined.</p>
+        <h3>2.1. Syntax</h3>
+        <div class="code"><pre>(function () {
+  console.log(&quot;runs once&quot;);
+})();
+
+(function (name) {
+  console.log(`Hello, ${name}`);
+})(&quot;Bharat&quot;);
+
+// Arrow IIFE
+(() =&gt; {
+  console.log(&quot;arrow IIFE&quot;);
+})();</pre></div>
+        <p>Wrap in parentheses so the parser treats it as an expression, not a declaration.</p>
+        <h3>2.2. Why IIFEs were used</h3>
+        <p><strong>Private scope</strong> before block-scoped <code class="inline">let</code>/<code class="inline">const</code> was common:</p>
+        <div class="code"><pre>var app = (function () {
+  var secret = &quot;hidden&quot;;
+
+  return {
+    getSecret() {
+      return secret;
+    },
+  };
+})();
+
+app.getSecret();  // &quot;hidden&quot;
+// secret — not in global scope</pre></div>
+        <p><strong>Avoid polluting global</strong> — wrap script in IIFE so locals stay local.</p>
+        <p><strong>Loop closures with <code class="inline">var</code></strong> (legacy pattern):</p>
+        <div class="code"><pre>for (var i = 0; i &lt; 3; i++) {
+  (function (j) {
+    setTimeout(() =&gt; console.log(j), 0);
+  })(i);
+}
+// 0, 1, 2 — IIFE captures copy of i per iteration</pre></div>
+        <h3>2.3. IIFE today</h3>
+        <p>With <strong><code class="inline">let</code>/<code class="inline">const</code></strong> blocks and modules (File 11), IIFEs are less common. Still useful for:</p>
+        <ul><li>One-time initialization</li><li>Isolating legacy scripts</li><li>Quick scope in snippets</li></ul>
+        <p>Prefer <strong>block scope</strong> or <strong>modules</strong> for new code:</p>
+        <div class="code"><pre>{
+  const temp = computeSomething();
+  use(temp);
+}
+// temp not visible here</pre></div>
+        <h3>2.4. Revealing module pattern</h3>
+        <p>Expose a <strong>public API</strong> while keeping internals private via closure:</p>
+        <div class="code"><pre>const counterModule = (function () {
+  let count = 0;  // private
+
+  function increment() { count += 1; }
+  function getCount() { return count; }
+
+  return { increment, getCount };  // reveal public methods
+})();
+
+counterModule.increment();
+console.log(counterModule.getCount());  // 1
+// count is not accessible from outside</pre></div>
+        <p>ES modules (<code class="inline">export</code> / <code class="inline">import</code>, File 11) replace this pattern in modern code.</p>
+      </section>
+      <section id="3-this-binding">
+        <h2>3. <code class="inline">this</code> binding</h2>
+        <h3>3.1. What is <code class="inline">this</code>?</h3>
+        <p><strong><code class="inline">this</code></strong> is a special reference inside functions. Its value depends on <strong>call site</strong> (how the function is invoked), not where the function is defined — except for <strong>arrow functions</strong>.</p>
+        <div class="code"><pre>function show() {
+  console.log(this);
+}
+
+show();  // depends on strict mode / environment</pre></div>
+        <h3>3.2. Default binding</h3>
+        <p>Standalone function call — <code class="inline">this</code> is <strong><code class="inline">undefined</code></strong> in strict mode, or the <strong>global object</strong> (<code class="inline">window</code> in browsers) in sloppy mode:</p>
+        <div class="code"><pre>&quot;use strict&quot;;
+
+function fn() {
+  console.log(this);
+}
+
+fn();  // undefined</pre></div>
+        <div class="code"><pre>// sloppy mode (non-module script)
+function fn() {
+  console.log(this === window);  // true in browser
+}
+fn();</pre></div>
+        <h3>3.3. Implicit binding</h3>
+        <p>When called as <strong><code class="inline">obj.method()</code></strong>, <code class="inline">this</code> is <strong><code class="inline">obj</code></strong>:</p>
+        <div class="code"><pre>const user = {
+  name: &quot;Bharat&quot;,
+  greet() {
+    console.log(this.name);
+  },
+};
+
+user.greet();  // &quot;Bharat&quot; — this === user</pre></div>
+        <p><strong>Lost <code class="inline">this</code></strong> — method extracted from object:</p>
+        <div class="code"><pre>const greet = user.greet;
+greet();  // undefined — default binding, not user
+
+const other = { name: &quot;Dev&quot;, greet: user.greet };
+other.greet();  // &quot;Dev&quot; — this === other</pre></div>
+        <p><strong>Event handler <code class="inline">this</code></strong> — classic DOM: <code class="inline">this</code> is the <strong>element</strong> (File 15). Arrow handlers use <strong>lexical</strong> <code class="inline">this</code> instead.</p>
+        <p><strong>Nested function</strong> — inner call does not inherit outer <code class="inline">this</code>:</p>
+        <div class="code"><pre>const user = {
+  name: &quot;Bharat&quot;,
+  greet() {
+    function inner() {
+      console.log(this.name);  // not user!
+    }
+    inner();
+  },
+};
+
+user.greet();  // undefined (strict) or global name</pre></div>
+        <h3>3.4. Explicit binding</h3>
+        <p>Set <code class="inline">this</code> with <strong><code class="inline">call</code></strong>, <strong><code class="inline">apply</code></strong>, or <strong><code class="inline">bind</code></strong> (section 4):</p>
+        <div class="code"><pre>function greet() {
+  console.log(this.name);
+}
+
+const user = { name: &quot;Bharat&quot; };
+
+greet.call(user);  // &quot;Bharat&quot;</pre></div>
+        <h3>3.5. <code class="inline">new</code> binding</h3>
+        <p>With <strong><code class="inline">new</code></strong>, <code class="inline">this</code> is a <strong>new empty object</strong> that becomes the instance:</p>
+        <div class="code"><pre>function User(name) {
+  this.name = name;
+}
+
+const u = new User(&quot;Bharat&quot;);
+console.log(u.name);  // &quot;Bharat&quot;</pre></div>
+        <p>If the constructor returns a plain object, that object replaces the default <code class="inline">this</code> (rare pattern). File 09 covers constructors and classes.</p>
+        <h3>3.6. Binding priority (highest wins)</h3>
+        <p>When multiple rules apply:</p>
+        <ol><li><strong><code class="inline">new</code> binding</strong> — <code class="inline">new fn()</code></li><li><strong>Explicit</strong> — <code class="inline">call</code> / <code class="inline">apply</code> / <code class="inline">bind</code></li><li><strong>Implicit</strong> — <code class="inline">obj.fn()</code></li><li><strong>Default</strong> — bare <code class="inline">fn()</code></li></ol>
+        <div class="code"><pre>function fn() {
+  console.log(this.x);
+}
+
+const a = { x: 1 };
+const b = { x: 2 };
+
+fn.call(a);           // 1 — explicit beats default
+a.fn();               // 1 — implicit
+const bound = fn.bind(b);
+bound.call(a);        // 2 — bind beats call on bound function</pre></div>
+      </section>
+      <section id="4-call-apply-bind">
+        <h2>4. call, apply, bind</h2>
+        <p>All three set <strong><code class="inline">this</code></strong> for a function. They differ in <strong>invocation</strong> and <strong>arguments</strong>.</p>
+        <h3>4.1. call</h3>
+        <p>Invoke <strong>immediately</strong> with <code class="inline">this</code> and <strong>comma-separated</strong> arguments:</p>
+        <div class="code"><pre>function greet(greeting, punct) {
+  console.log(`${greeting}, ${this.name}${punct}`);
+}
+
+const user = { name: &quot;Bharat&quot; };
+
+greet.call(user, &quot;Hello&quot;, &quot;!&quot;);  // &quot;Hello, Bharat!&quot;</pre></div>
+        <p>Borrow a method from another object:</p>
+        <div class="code"><pre>const nums = { 0: &quot;a&quot;, 1: &quot;b&quot;, length: 2 };
+Array.prototype.push.call(nums, &quot;c&quot;);
+// nums-like object now has &quot;c&quot; pushed</pre></div>
+        <h3>4.2. apply</h3>
+        <p>Same as <code class="inline">call</code>, but arguments as an <strong>array</strong> (or array-like):</p>
+        <div class="code"><pre>greet.apply(user, [&quot;Hi&quot;, &quot;.&quot;]);  // &quot;Hi, Bharat.&quot;
+
+const numbers = [5, 2, 9, 1];
+Math.max.apply(null, numbers);   // 9 — legacy pattern
+Math.max(...numbers);            // 9 — prefer spread today</pre></div>
+        <p><code class="inline">apply</code> is mostly legacy; <strong><code class="inline">call</code></strong> + spread replaced most uses.</p>
+        <h3>4.3. bind</h3>
+        <p>Returns a <strong>new function</strong> with <code class="inline">this</code> permanently fixed (and optionally partial arguments):</p>
+        <div class="code"><pre>const user = { name: &quot;Bharat&quot; };
+
+function greet() {
+  console.log(this.name);
+}
+
+const boundGreet = greet.bind(user);
+boundGreet();  // &quot;Bharat&quot; — even as callback
+
+setTimeout(user.greet.bind(user), 100);  // fix lost this</pre></div>
+        <p><strong>Partial application:</strong></p>
+        <div class="code"><pre>function multiply(a, b) {
+  return a * b;
+}
+
+const double = multiply.bind(null, 2);
+double(5);  // 10</pre></div>
+        <p><code class="inline">bind</code> with <code class="inline">new</code> — bound <code class="inline">this</code> is ignored when using <code class="inline">new</code> on the bound function (edge case for interviews).</p>
+        <h3>4.4. When to use which</h3>
+        <table>
+        <thead>
+        <tr><th>API</th><th>Invokes now?</th><th>Arguments</th><th>Typical use</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">call</code></td><td>Yes</td><td>Comma-separated</td><td>Borrow method, one-off <code class="inline">this</code></td></tr>
+        <tr><td><code class="inline">apply</code></td><td>Yes</td><td>Array</td><td>Legacy <code class="inline">Math.max</code> on array</td></tr>
+        <tr><td><code class="inline">bind</code></td><td>No — returns fn</td><td>Comma-separated (+ partial)</td><td>Event handlers, callbacks</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// React class component (legacy pattern)
+this.handleClick = this.handleClick.bind(this);
+
+// Modern alternative — class fields with arrows
+handleClick = () =&gt; {
+  this.setState({ clicked: true });
+};</pre></div>
+      </section>
+      <section id="5-arrow-functions-this">
+        <h2>5. Arrow functions &amp; <code class="inline">this</code></h2>
+        <h3>5.1. Lexical <code class="inline">this</code></h3>
+        <p>Arrow functions <strong>do not have their own <code class="inline">this</code></strong>. They inherit <code class="inline">this</code> from the <strong>enclosing lexical scope</strong> at definition time:</p>
+        <div class="code"><pre>const user = {
+  name: &quot;Bharat&quot;,
+  hobbies: [&quot;code&quot;, &quot;read&quot;],
+
+  listHobbies() {
+    this.hobbies.forEach((hobby) =&gt; {
+      console.log(`${this.name} likes ${hobby}`);
+    });
+  },
+};
+
+user.listHobbies();
+// &quot;Bharat likes code&quot;
+// &quot;Bharat likes read&quot;</pre></div>
+        <p>With a regular <code class="inline">function</code> callback, <code class="inline">this</code> would not be <code class="inline">user</code>:</p>
+        <div class="code"><pre>this.hobbies.forEach(function (hobby) {
+  console.log(this.name);  // undefined — default binding
+});</pre></div>
+        <h3>5.2. When arrows help vs hurt</h3>
+        <table>
+        <thead>
+        <tr><th>Use arrows</th><th>Avoid arrows</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Callbacks inside methods (<code class="inline">map</code>, <code class="inline">forEach</code>, <code class="inline">setTimeout</code>)</td><td>Object methods that need <code class="inline">this</code> on the object</td></tr>
+        <tr><td>When you want outer <code class="inline">this</code></td><td>Constructors (<code class="inline">new</code>)</td></tr>
+        <tr><td>Short inline handlers</td><td>Methods on prototypes/classes (usually)</td></tr>
+        <tr><td></td><td>When you need dynamic <code class="inline">this</code> from call site</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// Bad — arrow as object method
+const bad = {
+  name: &quot;Bharat&quot;,
+  greet: () =&gt; console.log(this.name),
+};
+
+// Good — method shorthand
+const good = {
+  name: &quot;Bharat&quot;,
+  greet() {
+    console.log(this.name);
+  },
+};</pre></div>
+        <p>See File 07, section 2.3.</p>
+        <h3>5.3. Other arrow differences (brief)</h3>
+        <ul><li><strong>No <code class="inline">arguments</code></strong> — use rest: <code class="inline">(...args) =&gt;</code></li><li><strong>No <code class="inline">prototype</code></strong> — cannot use as constructor</li><li><strong>Cannot be used with <code class="inline">new</code></strong></li><li><strong>Not hoisted</strong> as callable before line (expression only, File 02)</li></ul>
+        <div class="code"><pre>const sum = (...nums) =&gt; nums.reduce((a, b) =&gt; a + b, 0);
+sum(1, 2, 3);  // 6</pre></div>
+      </section>
+      <section id="6-common-questions">
+        <h2>6. Common questions</h2>
+        <h3>6.1. What is a closure?</h3>
+        <p><strong>A:</strong> A function that <strong>remembers</strong> variables from its outer lexical scope, even after the outer function has returned. In JS, functions close over their surrounding environment.</p>
+        <h3>6.2. What is the difference between scope and closure?</h3>
+        <p><strong>A:</strong> <strong>Scope</strong> is where variables are visible. A <strong>closure</strong> is the mechanism that lets an inner function access outer variables after the outer function finishes executing.</p>
+        <h3>6.3. How is <code class="inline">this</code> determined in JavaScript?</h3>
+        <p><strong>A:</strong> By <strong>how the function is called</strong>: default (bare call), implicit (<code class="inline">obj.method()</code>), explicit (<code class="inline">call</code>/<code class="inline">apply</code>/<code class="inline">bind</code>), or <code class="inline">new</code>. Arrow functions use <strong>lexical</strong> <code class="inline">this</code> from the enclosing scope.</p>
+        <h3>6.4. Why does <code class="inline">const fn = obj.method; fn()</code> lose <code class="inline">this</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">this</code> is set by the <strong>call site</strong>. A bare <code class="inline">fn()</code> uses <strong>default binding</strong>, not <code class="inline">obj</code>. Use <code class="inline">fn.call(obj)</code>, <code class="inline">obj.method()</code>, or <code class="inline">obj.method.bind(obj)</code>.</p>
+        <h3>6.5. What is the difference between <code class="inline">call</code>, <code class="inline">apply</code>, and <code class="inline">bind</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">call</code> and <code class="inline">apply</code> <strong>invoke</strong> the function immediately with a given <code class="inline">this</code>; <code class="inline">call</code> takes args individually, <code class="inline">apply</code> as an array. <code class="inline">bind</code> returns a <strong>new function</strong> with fixed <code class="inline">this</code> (and optional partial args) without calling it yet.</p>
+        <h3>6.6. Do arrow functions have <code class="inline">this</code>?</h3>
+        <p><strong>A:</strong> They do not have their <strong>own</strong> <code class="inline">this</code>. They inherit <code class="inline">this</code> from the surrounding scope where the arrow was <strong>defined</strong>.</p>
+        <h3>6.7. What is an IIFE?</h3>
+        <p><strong>A:</strong> An <strong>Immediately Invoked Function Expression</strong> — <code class="inline">(function () { ... })()</code> runs as soon as it is defined. Historically used for private scope; less needed with <code class="inline">let</code>/<code class="inline">const</code> and modules.</p>
+        <h3>6.8. Why did <code class="inline">for (var i = 0; ...)</code> break closures in loops?</h3>
+        <p><strong>A:</strong> <code class="inline">var</code> is function-scoped — one shared <code class="inline">i</code>. All async callbacks see the final value. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, or use an IIFE to capture each value (File 04).</p>
+      </section>
+      <footer>HTML note for JavaScript File 08. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

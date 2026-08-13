@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>05. Functions - JavaScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-function-forms">1. Function forms</a>
+        <a href="#2-parameters-arguments">2. Parameters &amp; arguments</a>
+        <a href="#3-return-first-class-functions">3. Return &amp; first-class functions</a>
+        <a href="#4-common-questions">4. Common questions</a>
+        <a href="./05-js-functions-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">05. Functions</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>05. Functions</h1>
+        <p class="subtitle">File 05 — defining and using functions.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>A <strong>function</strong> is a reusable block of code that can take <strong>inputs</strong> (parameters), perform work, and optionally <strong>return</strong> a value. In JavaScript, functions are <strong>first-class</strong> — you can assign them to variables, pass them as arguments, and return them from other functions.</p>
+        <p>Functions create their own <strong>scope</strong> (File 02). How you define a function affects <strong>hoisting</strong> and, for arrow functions, <strong><code class="inline">this</code></strong> binding (File 08).</p>
+        <p><strong>Default rule today:</strong> use <strong>function declarations</strong> for top-level named helpers, <strong>arrow functions</strong> for short callbacks and when you want lexical <code class="inline">this</code>, and <strong>default/rest parameters</strong> instead of the legacy <code class="inline">arguments</code> object.</p>
+        <p>Interactive visualizer: open <a href="./05-js-functions-animation.html">05-js-functions-animation.html</a> in a browser — call stack, params/defaults, rest, return, callbacks, hoisting (Run / Step).</p>
+      </section>
+      <section id="1-function-forms">
+        <h2>1. Function forms</h2>
+        <h3>1.1. Function declarations</h3>
+        <p>Defined with the <code class="inline">function</code> keyword at the top level of a scope. <strong>Hoisted</strong> — you can call it before its line in the source (File 02, section 3.3).</p>
+        <div class="code"><pre>greet(&quot;Bharat&quot;);  // works — hoisted
+
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+
+console.log(greet(&quot;Dev&quot;));  // &quot;Hello, Dev!&quot;</pre></div>
+        <p>Creates a <strong>named binding</strong> in the current scope (<code class="inline">greet</code> above).</p>
+        <h3>1.2. Function expressions</h3>
+        <p>A function assigned to a variable (or passed inline). The <strong>variable</strong> is hoisted, not the function value — same rules as <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code> (File 02).</p>
+        <div class="code"><pre>// greet();  // ReferenceError or TypeError — depends on var vs const
+
+const greet = function (name) {
+  return `Hello, ${name}!`;
+};
+
+console.log(greet(&quot;Bharat&quot;));</pre></div>
+        <p><strong>Named function expression</strong> — useful for stack traces and recursion inside the function:</p>
+        <div class="code"><pre>const factorial = function fact(n) {
+  return n &lt;= 1 ? 1 : n * fact(n - 1);
+};
+
+factorial(5);  // 120
+// fact(5);    // ReferenceError — name only visible inside</pre></div>
+        <table>
+        <thead>
+        <tr><th>Declaration</th><th>Hoisted as callable?</th><th>Typical use</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Function declaration</td><td>Yes</td><td>Top-level utilities, hoisting needed</td></tr>
+        <tr><td><code class="inline">const</code> expression</td><td>No (TDZ until line)</td><td>Most assignments</td></tr>
+        <tr><td><code class="inline">var</code> expression</td><td>No (<code class="inline">undefined</code> until line)</td><td>Legacy — avoid</td></tr>
+        </tbody>
+        </table>
+        <h3>1.3. Arrow functions</h3>
+        <p>Shorter syntax, introduced in ES6. <strong>No own <code class="inline">this</code></strong>, <code class="inline">arguments</code>, or <code class="inline">prototype</code>. Cannot be used as constructors (<code class="inline">new</code>).</p>
+        <div class="code"><pre>const add = (a, b) =&gt; a + b;
+
+const double = x =&gt; x * 2;           // one param — parens optional
+
+const log = () =&gt; console.log(&quot;hi&quot;); // no params
+
+const buildUser = (name, age) =&gt; {
+  return { name, age };              // block body needs explicit return
+};</pre></div>
+        <p>Implicit return with expression body:</p>
+        <div class="code"><pre>const sum = (a, b) =&gt; a + b;
+const makePoint = (x, y) =&gt; ({ x, y });  // parens around object literal</pre></div>
+        <p>Arrow vs regular — quick comparison:</p>
+        <table>
+        <thead>
+        <tr><th>Feature</th><th>Regular function</th><th>Arrow function</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">this</code></td><td>Dynamic (File 08)</td><td>Lexical — inherits from enclosing scope</td></tr>
+        <tr><td><code class="inline">arguments</code></td><td>Yes</td><td>No — use rest <code class="inline">...args</code></td></tr>
+        <tr><td>Hoisting</td><td>Yes (declaration)</td><td>No — expression only</td></tr>
+        <tr><td><code class="inline">new</code> / constructor</td><td>Yes</td><td>No</td></tr>
+        <tr><td><code class="inline">prototype</code> property</td><td>Yes</td><td>No</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>const obj = {
+  name: &quot;Bharat&quot;,
+  regular: function () {
+    return this.name;
+  },
+  arrow: () =&gt; {
+    // `this` is NOT obj — usually global/window or outer scope
+    return this?.name;
+  },
+};
+
+obj.regular();  // &quot;Bharat&quot;
+obj.arrow();    // undefined (in strict module/script)</pre></div>
+        <p>See File 08 for <code class="inline">this</code> in depth.</p>
+        <h3>1.4. Methods (object and class shorthand)</h3>
+        <p>When a function is a property of an object, it is often called a <strong>method</strong>:</p>
+        <div class="code"><pre>const calculator = {
+  add(a, b) {
+    return a + b;
+  },
+  subtract(a, b) {
+    return a - b;
+  },
+};
+
+calculator.add(5, 3);  // 8</pre></div>
+        <p>ES6 <strong>method shorthand</strong> — same as <code class="inline">add: function(a, b) { }</code> but cleaner. <code class="inline">this</code> inside refers to the object (when called as <code class="inline">obj.add()</code>).</p>
+        <h3>1.5. When to use which</h3>
+        <table>
+        <thead>
+        <tr><th>Situation</th><th>Prefer</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Top-level named helper in a file</td><td>Function declaration or <code class="inline">const fn = () =&gt;</code></td></tr>
+        <tr><td>Callback in <code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">setTimeout</code></td><td>Arrow function</td></tr>
+        <tr><td>Object method that needs <code class="inline">this</code></td><td>Regular method shorthand</td></tr>
+        <tr><td>Generator function</td><td><code class="inline">function*</code> (File 11)</td></tr>
+        <tr><td>Constructor / class</td><td><code class="inline">class</code> or <code class="inline">function</code> + <code class="inline">new</code> (File 09)</td></tr>
+        </tbody>
+        </table>
+      </section>
+      <section id="2-parameters-arguments">
+        <h2>2. Parameters &amp; arguments</h2>
+        <h3>2.1. Parameters vs arguments</h3>
+        <ul><li><strong>Parameters</strong> — names listed in the function <strong>definition</strong>.</li><li><strong>Arguments</strong> — actual <strong>values</strong> passed at <strong>call time</strong>.</li></ul>
+        <div class="code"><pre>function multiply(a, b) {   // a, b are parameters
+  return a * b;
+}
+
+multiply(3, 4);             // 3 and 4 are arguments</pre></div>
+        <p>JavaScript does <strong>not</strong> enforce arity — you can pass fewer or more arguments than parameters:</p>
+        <div class="code"><pre>function log(a, b, c) {
+  console.log(a, b, c);
+}
+
+log(1);           // 1, undefined, undefined
+log(1, 2, 3, 4);  // 4 is ignored — no error</pre></div>
+        <p>Extra arguments are available via <strong>rest</strong> or (legacy) <strong><code class="inline">arguments</code></strong>.</p>
+        <h3>2.2. Default parameters</h3>
+        <p>Default values apply when the argument is <strong><code class="inline">undefined</code></strong> (not when it is <code class="inline">null</code> or <code class="inline">0</code> unless you want that).</p>
+        <div class="code"><pre>function greet(name = &quot;Guest&quot;) {
+  return `Hello, ${name}!`;
+}
+
+greet();              // &quot;Hello, Guest!&quot;
+greet(&quot;Bharat&quot;);      // &quot;Hello, Bharat!&quot;
+greet(undefined);     // &quot;Hello, Guest!&quot;
+greet(null);          // &quot;Hello, null!&quot; — null is not undefined</pre></div>
+        <p>Defaults can be <strong>expressions</strong> evaluated at call time:</p>
+        <div class="code"><pre>function createId(prefix = &quot;id&quot;, suffix = Date.now()) {
+  return `${prefix}-${suffix}`;
+}</pre></div>
+        <p>Later defaults can reference earlier parameters:</p>
+        <div class="code"><pre>function range(start, end = start + 10) {
+  return { start, end };
+}
+
+range(5);  // { start: 5, end: 15 }</pre></div>
+        <h3>2.3. Rest parameters</h3>
+        <p><strong>Rest</strong> (<code class="inline">...name</code>) collects <strong>remaining arguments</strong> into a <strong>real array</strong>:</p>
+        <div class="code"><pre>function sum(...nums) {
+  return nums.reduce((total, n) =&gt; total + n, 0);
+}
+
+sum(1, 2, 3, 4);  // 10</pre></div>
+        <p>Combine fixed params with rest:</p>
+        <div class="code"><pre>function log(level, ...messages) {
+  console.log(`[${level}]`, ...messages);
+}
+
+log(&quot;ERROR&quot;, &quot;failed&quot;, &quot;timeout&quot;);</pre></div>
+        <p>Rest must be the <strong>last</strong> parameter:</p>
+        <div class="code"><pre>// function bad(a, ...rest, b) { }  // SyntaxError</pre></div>
+        <p>Use rest instead of <strong><code class="inline">arguments</code></strong> in modern code.</p>
+        <h3>2.4. The <code class="inline">arguments</code> object (legacy)</h3>
+        <p>Non-arrow functions have an array-like <strong><code class="inline">arguments</code></strong> object with all passed values:</p>
+        <div class="code"><pre>function oldSum() {
+  let total = 0;
+  for (let i = 0; i &lt; arguments.length; i++) {
+    total += arguments[i];
+  }
+  return total;
+}
+
+oldSum(1, 2, 3);  // 6</pre></div>
+        <p>Limitations:</p>
+        <ul><li>Not a real array (no <code class="inline">map</code>/<code class="inline">filter</code> without converting)</li><li>Not available in <strong>arrow functions</strong></li><li>Confusing with rest parameters</li></ul>
+        <p>Prefer <strong><code class="inline">...rest</code></strong>:</p>
+        <div class="code"><pre>function sum(...nums) {
+  return nums.reduce((a, b) =&gt; a + b, 0);
+}</pre></div>
+        <h3>2.5. Destructuring parameters</h3>
+        <p>Unpack properties or array elements directly in the parameter list:</p>
+        <div class="code"><pre>function printUser({ name, age }) {
+  console.log(name, age);
+}
+
+printUser({ name: &quot;Bharat&quot;, age: 30 });</pre></div>
+        <p>With defaults:</p>
+        <div class="code"><pre>function connect({ host = &quot;localhost&quot;, port = 3000 } = {}) {
+  console.log(`${host}:${port}`);
+}
+
+connect();                    // localhost:3000
+connect({ port: 8080 });      // localhost:8080</pre></div>
+        <p>Array destructuring:</p>
+        <div class="code"><pre>function firstAndSecond([a, b]) {
+  return a + b;
+}
+
+firstAndSecond([10, 20]);  // 30</pre></div>
+        <p>File 07 covers destructuring in more detail.</p>
+        <h3>2.6. Function overloading (patterns)</h3>
+        <p>JavaScript has <strong>no native overloading</strong> — same name cannot have multiple signatures. Common patterns:</p>
+        <p><strong>Single function + typeof / length check:</strong></p>
+        <div class="code"><pre>function greet(nameOrOptions, maybeAge) {
+  if (typeof nameOrOptions === &quot;object&quot;) {
+    const { name, age } = nameOrOptions;
+    return `Hello ${name}, age ${age}`;
+  }
+  return `Hello ${nameOrOptions}, age ${maybeAge}`;
+}</pre></div>
+        <p><strong>Default parameters instead of overloads:</strong></p>
+        <div class="code"><pre>function connect(host = &quot;localhost&quot;, port = 3000) { /* ... */ }</pre></div>
+        <p><strong>Separate named functions</strong> — clearest API:</p>
+        <div class="code"><pre>function createUser(name) { /* ... */ }
+function createUserFromDto(dto) { /* ... */ }</pre></div>
+        <p>TypeScript adds compile-time overload signatures; runtime still uses one implementation.</p>
+      </section>
+      <section id="3-return-first-class-functions">
+        <h2>3. Return &amp; first-class functions</h2>
+        <h3>3.1. return</h3>
+        <p><strong><code class="inline">return</code></strong> sends a value back to the caller and <strong>stops</strong> the function.</p>
+        <div class="code"><pre>function double(n) {
+  return n * 2;
+}
+
+const result = double(5);  // 10</pre></div>
+        <p>Without <code class="inline">return</code>, or with bare <code class="inline">return;</code>, the function returns <strong><code class="inline">undefined</code></strong>:</p>
+        <div class="code"><pre>function noop() {
+  // implicit return undefined
+}
+
+function early() {
+  return;
+  console.log(&quot;never runs&quot;);
+}</pre></div>
+        <p><strong>Early return</strong> — guard clauses keep logic flat:</p>
+        <div class="code"><pre>function processUser(user) {
+  if (!user) return null;
+  if (!user.isActive) return null;
+
+  return { id: user.id, name: user.name };
+}</pre></div>
+        <p>Only one value per <code class="inline">return</code> — return multiple values with an <strong>object</strong> or <strong>array</strong>:</p>
+        <div class="code"><pre>function minMax(nums) {
+  return { min: Math.min(...nums), max: Math.max(...nums) };
+}
+
+const { min, max } = minMax([3, 1, 4, 1, 5]);</pre></div>
+        <h3>3.2. Functions as values</h3>
+        <p>Assign, store, and pass functions like any other value:</p>
+        <div class="code"><pre>const fn = function (x) { return x * 2; };
+
+const ops = {
+  add: (a, b) =&gt; a + b,
+  sub: (a, b) =&gt; a - b,
+};
+
+function apply(op, a, b) {
+  return op(a, b);
+}
+
+apply(ops.add, 5, 3);  // 8</pre></div>
+        <p>Functions passed as arguments are <strong>callbacks</strong>:</p>
+        <div class="code"><pre>function repeat(n, action) {
+  for (let i = 0; i &lt; n; i++) {
+    action(i);
+  }
+}
+
+repeat(3, (i) =&gt; console.log(i));  // 0, 1, 2</pre></div>
+        <p>File 10 covers async callbacks, Promises, and event handlers.</p>
+        <h3>3.3. Higher-order functions</h3>
+        <p>A <strong>higher-order function</strong> either <strong>takes</strong> a function as an argument or <strong>returns</strong> a function (or both).</p>
+        <div class="code"><pre>// Takes a function
+function filter(arr, predicate) {
+  const result = [];
+  for (const item of arr) {
+    if (predicate(item)) result.push(item);
+  }
+  return result;
+}
+
+filter([1, 2, 3, 4], (n) =&gt; n % 2 === 0);  // [2, 4]</pre></div>
+        <div class="code"><pre>// Returns a function
+function multiplyBy(factor) {
+  return function (n) {
+    return n * factor;
+  };
+}
+
+const triple = multiplyBy(3);
+triple(5);  // 15</pre></div>
+        <p>Built-in higher-order array methods (<code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">reduce</code>) are covered in File 06.</p>
+        <h3>3.4. Returning functions and closures (intro)</h3>
+        <p>Inner functions <strong>close over</strong> variables from the outer scope — a <strong>closure</strong>:</p>
+        <div class="code"><pre>function makeCounter(start = 0) {
+  let count = start;
+
+  return function () {
+    count++;
+    return count;
+  };
+}
+
+const counter = makeCounter(10);
+counter();  // 11
+counter();  // 12</pre></div>
+        <p>The returned function keeps access to <code class="inline">count</code> even after <code class="inline">makeCounter</code> finishes. File 08 covers closures, IIFEs, and common patterns in depth.</p>
+        <h3>3.5. Pure vs impure functions (brief)</h3>
+        <table>
+        <thead>
+        <tr><th>Pure function</th><th>Impure function</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Same inputs → same output</td><td>Depends on or mutates external state</td></tr>
+        <tr><td>No side effects</td><td>Logs, DOM updates, network calls, mutates args</td></tr>
+        <tr><td>Easier to test and reason about</td><td>Often necessary in apps</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// Pure
+function add(a, b) {
+  return a + b;
+}
+
+// Impure — mutates external array
+function pushItem(arr, item) {
+  arr.push(item);
+  return arr;
+}</pre></div>
+        <p>Prefer pure functions where practical; isolate side effects at boundaries (API calls, UI updates).</p>
+      </section>
+      <section id="4-common-questions">
+        <h2>4. Common questions</h2>
+        <h3>4.1. What is the difference between a function declaration and a function expression?</h3>
+        <p><strong>A:</strong> Declarations are hoisted and create a named binding you can call before the line. Expressions assign a function to a variable — the variable follows <code class="inline">let</code>/<code class="inline">const</code>/<code class="inline">var</code> hoisting rules, not full function hoisting.</p>
+        <h3>4.2. When should I use arrow functions?</h3>
+        <p><strong>A:</strong> Short callbacks, when you want lexical <code class="inline">this</code>, and when you do not need <code class="inline">arguments</code>, <code class="inline">new</code>, or a <code class="inline">prototype</code>. Use regular functions or method shorthand when <code class="inline">this</code> must refer to the call site or object.</p>
+        <h3>4.3. What is the difference between parameters and arguments?</h3>
+        <p><strong>A:</strong> <strong>Parameters</strong> are in the function definition; <strong>arguments</strong> are the values passed when calling. JS allows any number of arguments regardless of parameter count.</p>
+        <h3>4.4. How do default parameters work with <code class="inline">null</code>?</h3>
+        <p><strong>A:</strong> Defaults apply only when the argument is <strong><code class="inline">undefined</code></strong>, not <code class="inline">null</code>. <code class="inline">fn(null)</code> uses <code class="inline">null</code>, not the default.</p>
+        <h3>4.5. What is the rest parameter and how is it different from <code class="inline">arguments</code>?</h3>
+        <p><strong>A:</strong> Rest (<code class="inline">...args</code>) collects remaining arguments into a <strong>real array</strong> and works in all modern function forms. <code class="inline">arguments</code> is array-like, legacy, and unavailable in arrow functions.</p>
+        <h3>4.6. What does a function return if there is no <code class="inline">return</code>?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">undefined</code></strong>.</p>
+        <h3>4.7. What is a first-class function?</h3>
+        <p><strong>A:</strong> Functions are values — you can assign them to variables, pass them as arguments, return them, and store them in data structures.</p>
+        <h3>4.8. What is a higher-order function?</h3>
+        <p><strong>A:</strong> A function that takes another function as an argument, returns a function, or both. Examples: <code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">setTimeout</code>, and custom helpers like <code class="inline">multiplyBy(factor)</code>.</p>
+      </section>
+      <footer>HTML note for JavaScript File 05. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>03. Operators &amp; Coercion - JavaScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-operators">1. Operators</a>
+        <a href="#2-equality">2. Equality</a>
+        <a href="#3-type-coercion">3. Type coercion</a>
+        <a href="#4-truthy-falsy">4. Truthy &amp; falsy</a>
+        <a href="#5-common-questions">5. Common questions</a>
+        <a href="./03-js-operators-coercion-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">03. Operators &amp; Coercion</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>03. Operators &amp; Coercion</h1>
+        <p class="subtitle">File 03 — operators and how JavaScript converts types.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p><strong>Operators</strong> act on values and produce a result. <strong>Coercion</strong> is when JavaScript converts a value from one type to another — sometimes automatically (implicit), sometimes because you asked (explicit).</p>
+        <p>These two ideas are tightly linked: many operators trigger coercion before comparing or combining values. Knowing which operators coerce and how helps you avoid bugs like <code class="inline">&quot;5&quot; + 1</code> vs <code class="inline">&quot;5&quot; - 1</code>.</p>
+        <p><strong>Default rule today:</strong> use <strong><code class="inline">===</code></strong> for equality, prefer <strong>explicit</strong> conversions when you need them, and learn the small list of <strong>falsy</strong> values by heart.</p>
+        <p>Interactive visualizer: open <a href="./03-js-operators-coercion-animation.html">03-js-operators-coercion-animation.html</a> in a browser — <code class="inline">+</code> vs <code class="inline">-</code>, <code class="inline">==</code>/<code class="inline">===</code>, <code class="inline">Object.is</code>, <code class="inline">&amp;&amp;</code>/<code class="inline">||</code>/<code class="inline">??</code>, truthy/falsy (Run / Step).</p>
+      </section>
+      <section id="1-operators">
+        <h2>1. Operators</h2>
+        <h3>1.1. Arithmetic operators</h3>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Name</th><th>Example</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">+</code></td><td>Addition</td><td><code class="inline">2 + 3</code> → <code class="inline">5</code></td><td>Also string concatenation if either side is a string</td></tr>
+        <tr><td><code class="inline">-</code></td><td>Subtraction</td><td><code class="inline">5 - 2</code> → <code class="inline">3</code></td><td>Coerces operands to numbers</td></tr>
+        <tr><td><code class="inline">*</code></td><td>Multiplication</td><td><code class="inline">3 * 4</code> → <code class="inline">12</code></td><td></td></tr>
+        <tr><td><code class="inline">/</code></td><td>Division</td><td><code class="inline">10 / 4</code> → <code class="inline">2.5</code></td><td></td></tr>
+        <tr><td><code class="inline">%</code></td><td>Remainder</td><td><code class="inline">10 % 3</code> → <code class="inline">1</code></td><td>Sign follows dividend</td></tr>
+        <tr><td><code class="inline">**</code></td><td>Exponent</td><td><code class="inline">2 ** 3</code> → <code class="inline">8</code></td><td>ES2016+</td></tr>
+        <tr><td><code class="inline">++</code></td><td>Increment</td><td><code class="inline">i++</code>, <code class="inline">++i</code></td><td>Prefix vs postfix matters for expression value</td></tr>
+        <tr><td><code class="inline">--</code></td><td>Decrement</td><td><code class="inline">i--</code>, <code class="inline">--i</code></td><td>Same as increment</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>&quot;5&quot; + 1;    // &quot;51&quot;  — string concat (left operand is string)
+&quot;5&quot; - 1;    // 4     — both coerced to numbers
+&quot;5&quot; * &quot;2&quot;;  // 10
+10 % 3;     // 1
+
+let n = 5;
+n++;        // n is 6; expression evaluates to 5 (postfix)
+++n;        // n is 7; expression evaluates to 7 (prefix)</pre></div>
+        <h3>1.2. Assignment operators</h3>
+        <p>Assign a value to a variable. Compound forms combine an operation with assignment:</p>
+        <div class="code"><pre>let x = 10;
+
+x += 5;   // x = x + 5  → 15
+x -= 3;   // 12
+x *= 2;   // 24
+x /= 4;   // 6
+x %= 5;   // 1
+x **= 3;  // 1</pre></div>
+        <p>Logical assignment (ES2021+):</p>
+        <div class="code"><pre>let a = null;
+a ??= 10;   // assign only if null/undefined → a is 10
+a ??= 20;   // no change → still 10
+
+let b = 0;
+b ||= 5;    // assign if falsy → b is 5
+b &amp;&amp;= 0;    // assign if truthy → b is 0</pre></div>
+        <h3>1.3. Comparison operators (relational)</h3>
+        <p>Compare two values; return a <strong>boolean</strong>. Operands are coerced to numbers when comparing numbers/strings (except with <code class="inline">===</code> / <code class="inline">!==</code>).</p>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">&gt;</code></td><td>Greater than</td><td><code class="inline">5 &gt; 3</code> → <code class="inline">true</code></td></tr>
+        <tr><td><code class="inline">&lt;</code></td><td>Less than</td><td><code class="inline">5 &lt; 3</code> → <code class="inline">false</code></td></tr>
+        <tr><td><code class="inline">&gt;=</code></td><td>Greater or equal</td><td><code class="inline">5 &gt;= 5</code> → <code class="inline">true</code></td></tr>
+        <tr><td><code class="inline">&lt;=</code></td><td>Less or equal</td><td><code class="inline">3 &lt;= 5</code> → <code class="inline">true</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>&quot;10&quot; &gt; 9;     // true — &quot;10&quot; coerced to 10
+&quot;a&quot; &gt; &quot;b&quot;;    // false — lexicographic string compare
+null &gt;= 0;    // true — null coerces to 0
+null == 0;    // true
+null === 0;   // false</pre></div>
+        <h3>1.4. Logical operators</h3>
+        <p>Work with <strong>boolean</strong> logic. Operands are coerced to boolean unless using <code class="inline">&amp;&amp;</code> / <code class="inline">||</code> for short-circuit <strong>value</strong> return.</p>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Name</th><th>Behavior</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">&amp;&amp;</code></td><td>AND</td><td>Returns first <strong>falsy</strong> value, or last value if all truthy</td></tr>
+        <tr><td>`\</td><td>\</td><td>`</td></tr>
+        <tr><td><code class="inline">!</code></td><td>NOT</td><td>Converts to boolean and inverts</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>true &amp;&amp; &quot;hello&quot;;   // &quot;hello&quot;
+0 &amp;&amp; &quot;hello&quot;;      // 0
+null || &quot;default&quot;; // &quot;default&quot;
+&quot;&quot; || 42;          // 42
+
+!true;             // false
+!&quot;hello&quot;;          // false
+!0;                // true</pre></div>
+        <p>Short-circuit evaluation — right side may never run:</p>
+        <div class="code"><pre>const user = null;
+const name = user &amp;&amp; user.name;   // null — no error, user.name not accessed
+
+false &amp;&amp; doSomething();  // doSomething never called
+true || doSomething();   // doSomething never called</pre></div>
+        <h3>1.5. Unary and other operators</h3>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Example</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">+</code> (unary)</td><td><code class="inline">+&quot;42&quot;</code> → <code class="inline">42</code></td><td>Coerces to number</td></tr>
+        <tr><td><code class="inline">-</code> (unary)</td><td><code class="inline">-&quot;5&quot;</code> → <code class="inline">-5</code></td><td>Coerces to number, negates</td></tr>
+        <tr><td><code class="inline">typeof</code></td><td><code class="inline">typeof 42</code> → <code class="inline">&quot;number&quot;</code></td><td>Returns type string</td></tr>
+        <tr><td><code class="inline">void</code></td><td><code class="inline">void 0</code> → <code class="inline">undefined</code></td><td>Evaluates expr, returns <code class="inline">undefined</code></td></tr>
+        <tr><td><code class="inline">delete</code></td><td><code class="inline">delete obj.key</code></td><td>Removes property; returns boolean</td></tr>
+        <tr><td><code class="inline">in</code></td><td><code class="inline">&quot;name&quot; in obj</code></td><td>Checks if key exists (own or inherited)</td></tr>
+        <tr><td><code class="inline">?.</code></td><td><code class="inline">user?.address?.city</code></td><td>Optional chaining — stops on <code class="inline">null</code>/<code class="inline">undefined</code></td></tr>
+        <tr><td><code class="inline">??</code></td><td><code class="inline">value ?? &quot;default&quot;</code></td><td>Nullish coalescing — only for <code class="inline">null</code>/<code class="inline">undefined</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>+&quot;42&quot;;           // 42
++&quot;hello&quot;;        // NaN
+
+const obj = { a: 1 };
+delete obj.a;    // true
+delete obj.a;    // true (already gone, still &quot;succeeds&quot;)
+
+&quot;toString&quot; in {};  // true — inherited from Object.prototype</pre></div>
+        <h3>1.6. Operator precedence (brief)</h3>
+        <p>When multiple operators appear in one expression, <strong>precedence</strong> decides evaluation order. Use parentheses when in doubt.</p>
+        <p>High → low (partial list):</p>
+        <ol><li><code class="inline">()</code> grouping</li><li><code class="inline">++</code> <code class="inline">--</code> (postfix), <code class="inline">?.</code> <code class="inline">??</code> <code class="inline">?.</code></li><li><code class="inline">!</code> unary <code class="inline">+</code> unary <code class="inline">-</code> <code class="inline">typeof</code></li><li><code class="inline">**</code></li><li><code class="inline">*</code> <code class="inline">/</code> <code class="inline">%</code></li><li><code class="inline">+</code> <code class="inline">-</code></li><li><code class="inline">&lt;</code> <code class="inline">&lt;=</code> <code class="inline">&gt;</code> <code class="inline">&gt;=</code></li><li><code class="inline">==</code> <code class="inline">!=</code> <code class="inline">===</code> <code class="inline">!==</code></li><li><code class="inline">&amp;&amp;</code></li><li><code class="inline">||</code></li><li><code class="inline">??</code> (cannot mix with <code class="inline">&amp;&amp;</code>/<code class="inline">||</code> without parentheses)</li><li><code class="inline">=</code> <code class="inline">+=</code> <code class="inline">-=</code> …</li></ol>
+        <div class="code"><pre>2 + 3 * 4;       // 14, not 20
+(2 + 3) * 4;     // 20
+
+1 + 2 &amp;&amp; 3;      // 3 — + before &amp;&amp;</pre></div>
+      </section>
+      <section id="2-equality">
+        <h2>2. Equality</h2>
+        <h3>2.1. <code class="inline">==</code> vs <code class="inline">===</code></h3>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Name</th><th>Coercion?</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">===</code></td><td>Strict equality</td><td>No — types must match</td></tr>
+        <tr><td><code class="inline">!==</code></td><td>Strict inequality</td><td>No</td></tr>
+        <tr><td><code class="inline">==</code></td><td>Loose equality</td><td>Yes — converts then compares</td></tr>
+        <tr><td><code class="inline">!=</code></td><td>Loose inequality</td><td>Yes</td></tr>
+        </tbody>
+        </table>
+        <p><strong>Always prefer <code class="inline">===</code> and <code class="inline">!==</code></strong> unless you have a specific reason for loose equality.</p>
+        <div class="code"><pre>5 === 5;       // true
+5 === &quot;5&quot;;     // false — different types
+
+5 == &quot;5&quot;;      // true — string coerced to number
+0 == false;    // true
+&quot;&quot; == false;   // true
+null == undefined;  // true (special case)
+null === undefined; // false</pre></div>
+        <p>Loose equality algorithm (simplified):</p>
+        <ol><li>Same type → compare with <code class="inline">===</code> rules.</li><li><code class="inline">null == undefined</code> → <code class="inline">true</code> (only each other).</li><li>Number vs string → string to number.</li><li>Boolean vs anything → boolean to number (<code class="inline">0</code> or <code class="inline">1</code>).</li><li>Object vs primitive → object to primitive (<code class="inline">valueOf</code> / <code class="inline">toString</code>).</li></ol>
+        <h3>2.2. <code class="inline">Object.is</code></h3>
+        <p>ES6 added <strong><code class="inline">Object.is</code></strong> for cases where <code class="inline">===</code> is not enough:</p>
+        <div class="code"><pre>Object.is(NaN, NaN);   // true  (NaN === NaN is false)
+Object.is(+0, -0);     // false ( +0 === -0 is true)
+Object.is(5, 5);       // true — same as === for normal values</pre></div>
+        <p>Use <code class="inline">Object.is</code> when you explicitly care about <code class="inline">NaN</code> equality or signed zero. For everyday checks, <code class="inline">===</code> is fine.</p>
+        <h3>2.3. Special equality cases</h3>
+        <div class="code"><pre>// NaN
+NaN == NaN;            // false
+NaN === NaN;           // false
+Object.is(NaN, NaN);   // true
+Number.isNaN(NaN);     // true — best way to test for NaN
+
+// null and undefined
+null == undefined;     // true
+null == 0;             // false (common interview trap)
+undefined == 0;        // false
+
+// Arrays and objects — compared by reference
+[] === [];             // false
+{} === {};             // false
+const a = [];
+const b = a;
+a === b;               // true — same reference
+
+// Empty string and false
+&quot;&quot; == false;           // true
+&quot;&quot; === false;          // false</pre></div>
+        <h3>2.4. Deep equality</h3>
+        <p><strong><code class="inline">===</code></strong> compares <strong>references</strong> for objects — not structure.</p>
+        <div class="code"><pre>{ a: 1 } === { a: 1 };  // false</pre></div>
+        <p><strong>Shallow compare</strong> — one level:</p>
+        <div class="code"><pre>function shallowEqual(a, b) {
+  if (a === b) return true;
+  if (typeof a !== &quot;object&quot; || typeof b !== &quot;object&quot; || !a || !b) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every((k) =&gt; Object.is(a[k], b[k]));
+}</pre></div>
+        <p><strong>Deep equality</strong> — recursive compare (interview classic):</p>
+        <div class="code"><pre>function deepEqual(a, b) {
+  if (Object.is(a, b)) return true;
+  if (typeof a !== &quot;object&quot; || typeof b !== &quot;object&quot; || !a || !b) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every((k) =&gt; deepEqual(a[k], b[k]));
+}</pre></div>
+        <p><strong>Practical options:</strong> <code class="inline">structuredClone</code> + compare (heavy), <strong><code class="inline">JSON.stringify(a) === JSON.stringify(b)</code></strong> (only for JSON-safe data, key order matters), or libraries like <strong>lodash <code class="inline">isEqual</code></strong>.</p>
+      </section>
+      <section id="3-type-coercion">
+        <h2>3. Type coercion</h2>
+        <p><strong>Coercion</strong> is automatic or manual conversion between types. JavaScript is <strong>weakly typed</strong> — it will convert values when operators or contexts require it.</p>
+        <h3>3.1. Implicit vs explicit coercion</h3>
+        <table>
+        <thead>
+        <tr><th>Kind</th><th>Who triggers it</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Implicit</strong></td><td>JavaScript automatically</td><td><code class="inline">&quot;5&quot; - 1</code>, <code class="inline">if (&quot;hello&quot;)</code>, <code class="inline">5 == &quot;5&quot;</code></td></tr>
+        <tr><td><strong>Explicit</strong></td><td>You call a function or operator</td><td><code class="inline">Number(&quot;5&quot;)</code>, <code class="inline">String(42)</code>, <code class="inline">Boolean(0)</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// Implicit
+if (&quot;0&quot;) { /* runs — non-empty string is truthy */ }
+&quot;5&quot; + 1;   // &quot;51&quot;
+
+// Explicit
+Number(&quot;5&quot;);    // 5
+String(42);     // &quot;42&quot;
+Boolean(&quot;&quot;);    // false</pre></div>
+        <p>Prefer <strong>explicit</strong> conversion in application code — it documents intent and avoids surprises.</p>
+        <h3>3.2. Abstract operations (ToNumber, ToString, ToBoolean)</h3>
+        <p>The spec defines internal conversion rules. Practical summary:</p>
+        <p><strong>ToNumber:</strong></p>
+        <table>
+        <thead>
+        <tr><th>Input</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">undefined</code></td><td><code class="inline">NaN</code></td></tr>
+        <tr><td><code class="inline">null</code></td><td><code class="inline">0</code></td></tr>
+        <tr><td><code class="inline">true</code> / <code class="inline">false</code></td><td><code class="inline">1</code> / <code class="inline">0</code></td></tr>
+        <tr><td><code class="inline">&quot;&quot;</code></td><td><code class="inline">0</code></td></tr>
+        <tr><td><code class="inline">&quot;123&quot;</code></td><td><code class="inline">123</code></td></tr>
+        <tr><td><code class="inline">&quot;hello&quot;</code></td><td><code class="inline">NaN</code></td></tr>
+        <tr><td>Objects</td><td>Call <code class="inline">valueOf</code> / <code class="inline">toString</code>, then convert again</td></tr>
+        </tbody>
+        </table>
+        <p><strong>ToString:</strong></p>
+        <table>
+        <thead>
+        <tr><th>Input</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">null</code></td><td><code class="inline">&quot;null&quot;</code></td></tr>
+        <tr><td><code class="inline">undefined</code></td><td><code class="inline">&quot;undefined&quot;</code></td></tr>
+        <tr><td><code class="inline">true</code> / <code class="inline">false</code></td><td><code class="inline">&quot;true&quot;</code> / <code class="inline">&quot;false&quot;</code></td></tr>
+        <tr><td>Numbers</td><td>Decimal string (<code class="inline">NaN</code> → <code class="inline">&quot;NaN&quot;</code>)</td></tr>
+        <tr><td>Objects</td><td>Call <code class="inline">toString</code> (often <code class="inline">&quot;[object Object]&quot;</code>)</td></tr>
+        </tbody>
+        </table>
+        <p><strong>ToBoolean:</strong></p>
+        <table>
+        <thead>
+        <tr><th>Input</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Falsy values (see 4.1)</td><td><code class="inline">false</code></td></tr>
+        <tr><td>Everything else</td><td><code class="inline">true</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>Number(undefined);   // NaN
+Number(null);        // 0
+Number(true);        // 1
+Number(&quot;&quot;);          // 0
+Number(&quot;  42  &quot;);    // 42 (whitespace trimmed)
+
+String(null);        // &quot;null&quot;
+String(undefined);   // &quot;undefined&quot;
+
+Boolean(0);          // false
+Boolean(&quot;hello&quot;);    // true</pre></div>
+        <h3>3.3. Common coercion pitfalls</h3>
+        <div class="code"><pre>// + prefers string if either operand is string
+[] + [];             // &quot;&quot; (empty string)
+[] + {};             // &quot;[object Object]&quot;
+{} + [];             // 0 in some engines — avoid ambiguous mixes
+
+// Comparison traps with ==
+0 == false;          // true
+&quot;&quot; == 0;             // true
+&quot;0&quot; == false;        // true
+null == 0;           // false
+
+// typeof null quirk (from File 01)
+typeof null;         // &quot;object&quot;
+
+// parseInt vs Number
+parseInt(&quot;42px&quot;);    // 42 — parses until invalid char
+Number(&quot;42px&quot;);      // NaN — whole string must be valid</pre></div>
+        <p>When reviewing code, treat <strong><code class="inline">==</code></strong> as a red flag unless comparing <code class="inline">null</code>/<code class="inline">undefined</code> with intent:</p>
+        <div class="code"><pre>// Idiomatic null/undefined check
+if (value == null) { /* null OR undefined */ }
+
+// Prefer explicit in strict codebases
+if (value === null || value === undefined) { }</pre></div>
+        <h3>3.4. Explicit conversion functions</h3>
+        <table>
+        <thead>
+        <tr><th>Goal</th><th>Use</th><th>Avoid</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>To number</td><td><code class="inline">Number(x)</code>, <code class="inline">parseInt(s, 10)</code>, <code class="inline">parseFloat(s)</code></td><td>Unary <code class="inline">+</code> in complex expressions</td></tr>
+        <tr><td>To string</td><td><code class="inline">String(x)</code>, template literals <code class="inline"></code> <code class="inline">${x}</code> <code class="inline"></code></td><td><code class="inline">.toString()</code> on <code class="inline">null</code>/<code class="inline">undefined</code> (throws)</td></tr>
+        <tr><td>To boolean</td><td><code class="inline">Boolean(x)</code></td><td>Double negation <code class="inline">!!x</code> is OK but less readable</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>Number(&quot;42&quot;);        // 42
+parseInt(&quot;42px&quot;, 10); // 42
+parseFloat(&quot;3.14&quot;);  // 3.14
+
+String(42);          // &quot;42&quot;
+String(null);        // &quot;null&quot;
+
+Boolean(0);          // false
+Boolean([]);         // true — empty array is truthy!
+Boolean({});         // true</pre></div>
+        <p>Safe string conversion:</p>
+        <div class="code"><pre>const value = null;
+String(value);           // &quot;null&quot;
+// value.toString();     // TypeError</pre></div>
+      </section>
+      <section id="4-truthy-falsy">
+        <h2>4. Truthy &amp; falsy</h2>
+        <p>In <strong>boolean contexts</strong> (<code class="inline">if</code>, <code class="inline">while</code>, <code class="inline">&amp;&amp;</code>, <code class="inline">||</code>, <code class="inline">!</code>, ternary), values are coerced to <code class="inline">true</code> or <code class="inline">false</code>.</p>
+        <h3>4.1. Falsy values (only 8)</h3>
+        <p>There are exactly <strong>8 falsy</strong> values in JavaScript:</p>
+        <table>
+        <thead>
+        <tr><th>Value</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">false</code></td><td>Boolean false</td></tr>
+        <tr><td><code class="inline">0</code></td><td>Number zero</td></tr>
+        <tr><td><code class="inline">-0</code></td><td>Negative zero (falsy like <code class="inline">0</code>)</td></tr>
+        <tr><td><code class="inline">0n</code></td><td>BigInt zero</td></tr>
+        <tr><td><code class="inline">&quot;&quot;</code></td><td>Empty string</td></tr>
+        <tr><td><code class="inline">null</code></td><td>Intentional empty</td></tr>
+        <tr><td><code class="inline">undefined</code></td><td>Missing value</td></tr>
+        <tr><td><code class="inline">NaN</code></td><td>Not a Number</td></tr>
+        </tbody>
+        </table>
+        <p><strong>Everything else is truthy</strong> — including <code class="inline">&quot;0&quot;</code>, <code class="inline">&quot;false&quot;</code>, <code class="inline">[]</code>, <code class="inline">{}</code>, <code class="inline">function(){}</code>.</p>
+        <div class="code"><pre>if ([]) {
+  console.log(&quot;empty array is truthy&quot;);  // runs!
+}</pre></div>
+        <h3>4.2. Truthy gotchas</h3>
+        <div class="code"><pre>// Strings that look &quot;false&quot;
+Boolean(&quot;false&quot;);    // true — non-empty string
+Boolean(&quot;0&quot;);        // true
+
+// Objects and arrays
+Boolean([]);         // true
+Boolean({});         // true
+
+// document.all (legacy browser quirk — rare today)
+// Special object that can be both truthy and falsy in very old code
+
+// Checking for empty array/object — truthiness is not enough
+const arr = [];
+if (arr) {
+  // true — but arr.length is 0
+}
+if (arr.length === 0) { /* actually empty */ }</pre></div>
+        <h3>4.3. <code class="inline">??</code> vs <code class="inline">||</code> vs <code class="inline">&amp;&amp;</code></h3>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Picks / returns when</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>`\</td><td>\</td></tr>
+        <tr><td><code class="inline">??</code></td><td>First <strong>not null/undefined</strong> (or last if both nullish)</td></tr>
+        <tr><td><code class="inline">&amp;&amp;</code></td><td>First <strong>falsy</strong> (or last if all truthy)</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>0 || 10;        // 10 — 0 is falsy, skipped
+0 ?? 10;        // 0  — 0 is not nullish, kept
+
+&quot;&quot; || &quot;default&quot;;   // &quot;default&quot;
+&quot;&quot; ?? &quot;default&quot;;   // &quot;&quot; — empty string is not nullish
+
+null ?? undefined ?? &quot;fallback&quot;;  // &quot;fallback&quot;</pre></div>
+        <p>Use <strong><code class="inline">??</code></strong> when <code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, or <code class="inline">false</code> are valid values you want to keep:</p>
+        <div class="code"><pre>function setCount(count) {
+  const value = count ?? 0;   // only default if null/undefined
+  // not: count || 0  — would turn -0 into 0 (OK) but also reject... 
+  // actually 0 || 0 is 0, but if count could be explicitly passed as 0, ?? is safer
+}</pre></div>
+      </section>
+      <section id="5-common-questions">
+        <h2>5. Common questions</h2>
+        <h3>5.1. What is the difference between <code class="inline">==</code> and <code class="inline">===</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">===</code> compares <strong>type and value</strong> without coercion. <code class="inline">==</code> coerces operands to the same type before comparing. Use <code class="inline">===</code> by default.</p>
+        <h3>5.2. Why does <code class="inline">&quot;5&quot; + 1</code> give <code class="inline">&quot;51&quot;</code> but <code class="inline">&quot;5&quot; - 1</code> gives <code class="inline">4</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">+</code> does <strong>string concatenation</strong> if either operand is a string. <code class="inline">-</code> only works on numbers, so both operands are coerced to numbers first.</p>
+        <h3>5.3. What are all the falsy values in JavaScript?</h3>
+        <p><strong>A:</strong> <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, and <code class="inline">NaN</code>. All other values are truthy.</p>
+        <h3>5.4. Is an empty array <code class="inline">[]</code> truthy or falsy?</h3>
+        <p><strong>A:</strong> <strong>Truthy.</strong> Only the 8 falsy values above evaluate to <code class="inline">false</code>. To check emptiness, use <code class="inline">arr.length === 0</code>.</p>
+        <h3>5.5. When should I use <code class="inline">??</code> instead of <code class="inline">||</code>?</h3>
+        <p><strong>A:</strong> Use <code class="inline">??</code> when <code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, or <code class="inline">false</code> are valid values you must preserve. <code class="inline">||</code> treats them as missing and falls through to the default.</p>
+        <h3>5.6. What is the difference between <code class="inline">Object.is</code> and <code class="inline">===</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">Object.is(NaN, NaN)</code> is <code class="inline">true</code>; <code class="inline">NaN === NaN</code> is <code class="inline">false</code>. <code class="inline">Object.is(+0, -0)</code> is <code class="inline">false</code>; <code class="inline">+0 === -0</code> is <code class="inline">true</code>. Otherwise they agree.</p>
+        <h3>5.7. What is type coercion?</h3>
+        <p><strong>A:</strong> Automatic or manual conversion between types. Implicit coercion happens in expressions like <code class="inline">&quot;5&quot; - 1</code> or <code class="inline">if (value)</code>. Explicit coercion uses <code class="inline">Number()</code>, <code class="inline">String()</code>, or <code class="inline">Boolean()</code>.</p>
+        <h3>5.8. How do I safely convert a string to a number?</h3>
+        <p><strong>A:</strong> Use <code class="inline">Number(str)</code> when the whole string must be numeric. Use <code class="inline">parseInt(str, 10)</code> or <code class="inline">parseFloat(str)</code> when parsing prefixes like <code class="inline">&quot;42px&quot;</code>. Always pass radix <code class="inline">10</code> to <code class="inline">parseInt</code>.</p>
+      </section>
+      <footer>HTML note for JavaScript File 03. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

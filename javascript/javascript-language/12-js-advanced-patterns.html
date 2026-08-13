@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>12. Advanced Patterns - JavaScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-execution-context">1. Execution context</a>
+        <a href="#2-memory-garbage-collection">2. Memory &amp; garbage collection</a>
+        <a href="#3-proxy-reflect">3. Proxy &amp; Reflect</a>
+        <a href="#4-functional-patterns">4. Functional patterns</a>
+        <a href="#5-utility-patterns">5. Utility patterns</a>
+        <a href="#6-performance">6. Performance</a>
+        <a href="#7-strict-mode">7. Strict mode</a>
+        <a href="#8-common-questions">8. Common questions</a>
+        <a href="./12-js-advanced-patterns-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">12. Advanced Patterns</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>12. Advanced Patterns</h1>
+        <p class="subtitle">File 12 — internals, patterns, and performance.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>This chapter covers <strong>how JS runs code in memory</strong>, <strong>advanced object APIs</strong>, <strong>functional utilities</strong>, and <strong>practical performance habits</strong>. It builds on scope (File 02), closures (File 08), and modern syntax (File 11).</p>
+        <p>You do not need to micro-optimize every line — but understanding <strong>execution context</strong>, <strong>GC</strong>, and patterns like <strong>debounce</strong> helps you write reliable production code and debug hard issues.</p>
+        <p><strong>Default rule today:</strong> modules and <strong>strict mode</strong> by default; prefer <strong>immutability</strong> for predictable state; use <strong>Proxy</strong> sparingly (frameworks/libraries); <strong>measure</strong> before optimizing hot paths.</p>
+        <p>Interactive visualizer: open <a href="./12-js-advanced-patterns-animation.html">12-js-advanced-patterns-animation.html</a> in a browser — debounce/throttle timelines, currying, memoization, revealing module, compose/pipe (Run / Step).</p>
+      </section>
+      <section id="1-execution-context">
+        <h2>1. Execution context</h2>
+        <p>An <strong>execution context</strong> is the environment in which JS code runs. Each function call and global/module script gets a context.</p>
+        <h3>1.1. Types of execution context</h3>
+        <table>
+        <thead>
+        <tr><th>Type</th><th>When created</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Global</strong></td><td>Program / module start</td></tr>
+        <tr><td><strong>Function</strong></td><td>Each function invocation</td></tr>
+        <tr><td><strong>Eval</strong></td><td><code class="inline">eval()</code> (avoid)</td></tr>
+        <tr><td><strong>Module</strong></td><td>ES module top level</td></tr>
+        </tbody>
+        </table>
+        <p>Each context has:</p>
+        <ul><li><strong>Variable environment</strong> — <code class="inline">var</code>, function declarations, <code class="inline">let</code>/<code class="inline">const</code> bindings (in modern spec: lexical environment).</li><li><strong><code class="inline">this</code> binding</strong> — depends on call type (File 08).</li><li><strong>Outer reference</strong> — link to parent lexical environment (scope chain).</li></ul>
+        <h3>1.2. Creation vs execution phase</h3>
+        <p>When a context is created, JS runs two phases:</p>
+        <p><strong>1. Creation (compile) phase</strong></p>
+        <ul><li>Create variable bindings (hoisting — File 02).</li><li>Set up scope chain.</li><li>Determine <code class="inline">this</code>.</li></ul>
+        <p><strong>2. Execution phase</strong></p>
+        <ul><li>Run code line by line.</li><li>Assign values.</li><li>Execute function bodies on call.</li></ul>
+        <div class="code"><pre>console.log(a);  // undefined — var hoisted
+var a = 10;
+
+// let b; — TDZ
+console.log(b);  // ReferenceError
+let b = 5;</pre></div>
+        <h3>1.3. Call stack</h3>
+        <p>Contexts are managed on the <strong>call stack</strong> (File 10):</p>
+        <div class="code"><pre>function first() {
+  second();
+}
+
+function second() {
+  third();
+}
+
+function third() {
+  console.log(&quot;deep&quot;);
+}
+
+first();
+// Stack: first → second → third → pop...</pre></div>
+        <p>Each push is a new function execution context. Stack overflow = too much synchronous recursion.</p>
+        <h3>1.4. Lexical environment</h3>
+        <p><strong>Lexical environment</strong> = record of identifiers + reference to <strong>outer</strong> environment. Closures keep outer environments alive (File 08):</p>
+        <div class="code"><pre>function outer() {
+  const x = 10;
+
+  return function inner() {
+    console.log(x);  // inner&#x27;s environment references outer&#x27;s
+  };
+}</pre></div>
+        <p>Module scope and block scope (<code class="inline">let</code>/<code class="inline">const</code>) each get their own lexical environment.</p>
+      </section>
+      <section id="2-memory-garbage-collection">
+        <h2>2. Memory &amp; garbage collection</h2>
+        <h3>2.1. Stack vs heap</h3>
+        <table>
+        <thead>
+        <tr><th>Stack</th><th>Heap</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Fixed-size, fast</td><td>Larger, dynamic</td></tr>
+        <tr><td>Stores execution context frames, primitives (often)</td><td>Stores <strong>objects</strong>, functions, closures</td></tr>
+        <tr><td>LIFO — call stack</td><td>GC-managed</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>let n = 42;              // primitive — often stack-like
+const user = { name: &quot;Bharat&quot; };  // object — heap; user holds reference</pre></div>
+        <p>Variables hold <strong>references</strong> to heap values (File 01).</p>
+        <h3>2.2. Garbage collection (GC)</h3>
+        <p>JS engines <strong>automatically reclaim</strong> memory when values are <strong>no longer reachable</strong> from roots (global, call stack, registers).</p>
+        <p><strong>Mark-and-sweep</strong> (simplified):</p>
+        <ol><li>Start from roots — mark reachable objects.</li><li>Unmarked objects are collected.</li></ol>
+        <div class="code"><pre>function makeUser() {
+  const temp = { huge: new Array(1_000_000) };
+  return { name: &quot;Bharat&quot; };
+  // temp becomes unreachable after return — eligible for GC
+}</pre></div>
+        <p>You cannot manually free memory in JS (<code class="inline">delete</code> only removes object <strong>properties</strong>, not GC).</p>
+        <h3>2.3. Memory leaks (common causes)</h3>
+        <p><strong>Accidental globals:</strong></p>
+        <div class="code"><pre>function leak() {
+  accidental = { data: [] };  // no var/let/const — global in sloppy mode
+}</pre></div>
+        <p><strong>Forgotten timers / listeners:</strong></p>
+        <div class="code"><pre>setInterval(() =&gt; { /* holds closure over bigData */ }, 1000);
+// clearInterval(id) when done
+
+element.addEventListener(&quot;click&quot;, handler);
+// removeEventListener when component unmounts</pre></div>
+        <p><strong>Closures holding large objects</strong> longer than needed:</p>
+        <div class="code"><pre>function setup() {
+  const huge = loadHugeCache();
+
+  return function onClick() {
+    // only needs huge.id but closes over entire huge
+    console.log(huge.id);
+  };
+}</pre></div>
+        <p><strong>Detached DOM nodes</strong> — JS still references removed DOM elements.</p>
+        <p><strong>WeakMap / WeakSet</strong> (File 11) — attach metadata without preventing GC.</p>
+        <h3>2.4. Weak references (brief)</h3>
+        <p><strong><code class="inline">WeakRef</code></strong> and <strong><code class="inline">FinalizationRegistry</code></strong> — advanced, rare in app code — allow observing when objects are collected. Use when building caches with size limits in libraries.</p>
+      </section>
+      <section id="3-proxy-reflect">
+        <h2>3. Proxy &amp; Reflect</h2>
+        <p><strong><code class="inline">Proxy</code></strong> wraps an object and <strong>intercepts</strong> operations (get, set, delete, etc.). <strong><code class="inline">Reflect</code></strong> provides methods matching proxy traps — default forwarding behavior.</p>
+        <h3>3.1. Basic Proxy</h3>
+        <div class="code"><pre>const target = { name: &quot;Bharat&quot;, age: 30 };
+
+const proxy = new Proxy(target, {
+  get(obj, prop, receiver) {
+    console.log(`GET ${String(prop)}`);
+    return Reflect.get(obj, prop, receiver);
+  },
+  set(obj, prop, value, receiver) {
+    console.log(`SET ${String(prop)} = ${value}`);
+    return Reflect.set(obj, prop, value, receiver);
+  },
+});
+
+proxy.name;       // logs GET name → &quot;Bharat&quot;
+proxy.age = 31;   // logs SET age = 31</pre></div>
+        <h3>3.2. Common traps</h3>
+        <table>
+        <thead>
+        <tr><th>Trap</th><th>Intercepts</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">get</code></td><td>Property read</td></tr>
+        <tr><td><code class="inline">set</code></td><td>Property write</td></tr>
+        <tr><td><code class="inline">has</code></td><td><code class="inline">in</code> operator</td></tr>
+        <tr><td><code class="inline">deleteProperty</code></td><td><code class="inline">delete</code></td></tr>
+        <tr><td><code class="inline">apply</code></td><td>Function call</td></tr>
+        <tr><td><code class="inline">construct</code></td><td><code class="inline">new</code></td></tr>
+        </tbody>
+        </table>
+        <p><strong>Validation example:</strong></p>
+        <div class="code"><pre>const user = new Proxy({}, {
+  set(obj, prop, value) {
+    if (prop === &quot;age&quot; &amp;&amp; typeof value !== &quot;number&quot;) {
+      throw new TypeError(&quot;age must be number&quot;);
+    }
+    obj[prop] = value;
+    return true;
+  },
+});
+
+user.age = 30;   // OK
+// user.age = &quot;30&quot;;  // TypeError</pre></div>
+        <h3>3.3. Reflect</h3>
+        <p><code class="inline">Reflect</code> methods mirror proxy traps and return sensible results:</p>
+        <div class="code"><pre>Reflect.get(user, &quot;name&quot;);
+Reflect.set(user, &quot;name&quot;, &quot;Dev&quot;);
+Reflect.has(user, &quot;name&quot;);
+Reflect.deleteProperty(user, &quot;temp&quot;);</pre></div>
+        <p>Use <strong><code class="inline">Reflect</code></strong> inside traps instead of direct <code class="inline">obj[prop]</code> to avoid recursion and handle receiver/<code class="inline">this</code> correctly.</p>
+        <h3>3.4. When to use Proxy</h3>
+        <table>
+        <thead>
+        <tr><th>Good use</th><th>Avoid</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Library/framework internals (Vue 3 reactivity)</td><td>Everyday app objects</td></tr>
+        <tr><td>Validation / logging layers</td><td>Hot loops without profiling</td></tr>
+        <tr><td>Immutable-style wrappers</td><td>Replacing simple classes</td></tr>
+        </tbody>
+        </table>
+        <p>Proxies add overhead — powerful but not free.</p>
+      </section>
+      <section id="4-functional-patterns">
+        <h2>4. Functional patterns</h2>
+        <h3>4.1. Pure functions &amp; immutability</h3>
+        <p><strong>Pure function</strong> — same inputs → same output, no side effects (File 05):</p>
+        <div class="code"><pre>function add(a, b) {
+  return a + b;
+}
+
+// Impure — mutates external state
+let total = 0;
+function addToTotal(n) {
+  total += n;
+}</pre></div>
+        <p><strong>Immutability</strong> — return new data instead of mutating:</p>
+        <div class="code"><pre>function addItem(cart, item) {
+  return [...cart, item];  // new array
+}
+
+function updateUser(user, name) {
+  return { ...user, name };  // new object
+}</pre></div>
+        <p>React and Redux-style state rely on immutability for change detection.</p>
+        <h3>4.2. Currying</h3>
+        <p>Transform <strong><code class="inline">f(a, b, c)</code></strong> into <strong><code class="inline">f(a)(b)(c)</code></strong> — partial application one arg at a time:</p>
+        <div class="code"><pre>function curry(fn) {
+  return function curried(...args) {
+    if (args.length &gt;= fn.length) {
+      return fn.apply(this, args);
+    }
+    return (...next) =&gt; curried(...args, ...next);
+  };
+}
+
+function multiply(a, b, c) {
+  return a * b * c;
+}
+
+const curriedMultiply = curry(multiply);
+curriedMultiply(2)(3)(4);  // 24
+curriedMultiply(2, 3)(4);  // 24</pre></div>
+        <p>Useful for config presets and reusable handlers.</p>
+        <h3>4.3. Function composition</h3>
+        <p>Pipe output of one function into the next:</p>
+        <div class="code"><pre>const compose = (f, g) =&gt; (x) =&gt; f(g(x));
+const pipe = (...fns) =&gt; (x) =&gt; fns.reduce((v, fn) =&gt; fn(v), x);
+
+const double = (n) =&gt; n * 2;
+const increment = (n) =&gt; n + 1;
+
+const doubleThenInc = compose(increment, double);
+doubleThenInc(5);  // 11
+
+pipe(double, increment)(5);  // 11</pre></div>
+        <p>Libraries: <strong>Ramda</strong>, <strong>lodash/fp</strong>.</p>
+        <h3>4.4. Higher-order patterns recap</h3>
+        <table>
+        <thead>
+        <tr><th>Pattern</th><th>Idea</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Map/filter/reduce</td><td>Transform collections (File 06)</td></tr>
+        <tr><td>Factory functions</td><td>Return configured objects (File 08)</td></tr>
+        <tr><td>Middleware</td><td><code class="inline">(next) =&gt; (action) =&gt; ...</code></td></tr>
+        <tr><td>Decorators</td><td>Wrap behavior (stage 3 decorators in TS/legacy Babel)</td></tr>
+        </tbody>
+        </table>
+      </section>
+      <section id="5-utility-patterns">
+        <h2>5. Utility patterns</h2>
+        <h3>5.1. Debounce</h3>
+        <p>Run function <strong>only after</strong> calls <strong>stop</strong> for a delay — search input, resize:</p>
+        <div class="code"><pre>function debounce(fn, delayMs) {
+  let timerId;
+
+  return function (...args) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() =&gt; {
+      fn.apply(this, args);
+    }, delayMs);
+  };
+}
+
+const onSearch = debounce((query) =&gt; {
+  fetchResults(query);
+}, 300);
+
+input.addEventListener(&quot;input&quot;, (e) =&gt; onSearch(e.target.value));</pre></div>
+        <p>User types → wait 300ms idle → one API call.</p>
+        <h3>5.2. Throttle</h3>
+        <p>Run at most <strong>once per interval</strong> — scroll, mousemove:</p>
+        <div class="code"><pre>function throttle(fn, intervalMs) {
+  let last = 0;
+
+  return function (...args) {
+    const now = Date.now();
+    if (now - last &gt;= intervalMs) {
+      last = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+const onScroll = throttle(() =&gt; {
+  updateScrollIndicator();
+}, 100);
+
+window.addEventListener(&quot;scroll&quot;, onScroll);</pre></div>
+        <table>
+        <thead>
+        <tr><th>Debounce</th><th>Throttle</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Wait for pause</td><td>Cap frequency</td></tr>
+        <tr><td>Search typing</td><td>Scroll / resize firehose</td></tr>
+        </tbody>
+        </table>
+        <h3>5.3. Memoization</h3>
+        <p>Cache function results by arguments (File 08):</p>
+        <div class="code"><pre>function memoize(fn) {
+  const cache = new Map();
+
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+const slowSquare = memoize((n) =&gt; {
+  // imagine expensive work
+  return n * n;
+});
+
+slowSquare(5);  // computes
+slowSquare(5);  // cached</pre></div>
+        <p>Use <strong><code class="inline">Map</code></strong> when args are objects; consider cache size limits for production.</p>
+        <h3>5.4. once</h3>
+        <p>Run function only one time:</p>
+        <div class="code"><pre>function once(fn) {
+  let called = false;
+  let result;
+
+  return function (...args) {
+    if (!called) {
+      called = true;
+      result = fn.apply(this, args);
+    }
+    return result;
+  };
+}
+
+const init = once(() =&gt; {
+  console.log(&quot;init&quot;);
+  return { ready: true };
+});
+
+init();  // logs
+init();  // silent — returns same result</pre></div>
+      </section>
+      <section id="6-performance">
+        <h2>6. Performance</h2>
+        <h3>6.1. How engines optimize (V8 basics)</h3>
+        <p>Modern engines (V8 in Chrome/Node) use:</p>
+        <ul><li><strong>Parsing</strong> → <strong>AST</strong> → <strong>bytecode</strong> (Ignition) → <strong>optimized machine code</strong> (TurboFan) for hot functions.</li><li><strong>Inline caching</strong> — speed up repeated property access shapes.</li><li><strong>Hidden classes</strong> — objects with same property order/layout optimize better.</li></ul>
+        <div class="code"><pre>// Good — consistent shape
+function Point(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+// Bad for IC — adding properties in random order on different objects
+const a = { x: 1 };
+const b = { y: 2, x: 1 };</pre></div>
+        <p>Details are engine-specific — <strong>measure</strong>, don&#x27;t guess.</p>
+        <h3>6.2. When to optimize</h3>
+        <ol><li><strong>Make it work</strong> — correct, readable code.</li><li><strong>Measure</strong> — DevTools Performance, <code class="inline">console.time</code>, benchmarks.</li><li><strong>Optimize hot paths</strong> — loops over huge arrays, render-critical UI.</li><li><strong>Avoid premature optimization.</strong></li></ol>
+        <h3>6.3. Common pitfalls</h3>
+        <table>
+        <thead>
+        <tr><th>Pitfall</th><th>Better approach</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>DOM thrashing — read/write layout in loop</td><td>Batch reads, then writes</td></tr>
+        <tr><td>Creating functions in hot loops</td><td>Define outside or reuse</td></tr>
+        <tr><td><code class="inline">+=</code> on strings in tight loop</td><td>Array + <code class="inline">join</code> for many parts</td></tr>
+        <tr><td>Deep clone everywhere</td><td>Shallow copy + targeted updates</td></tr>
+        <tr><td>Sync JSON parse of huge payload</td><td>Stream, chunk, or Web Worker</td></tr>
+        <tr><td>Blocking main thread</td><td><code class="inline">async</code>, Workers, <code class="inline">requestIdleCallback</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// String building
+let s = &quot;&quot;;
+for (let i = 0; i &lt; 10000; i++) s += i;  // slow — many allocations
+
+const parts = [];
+for (let i = 0; i &lt; 10000; i++) parts.push(i);
+const fast = parts.join(&quot;&quot;);</pre></div>
+        <h3>6.4. Micro-optimizations that rarely matter</h3>
+        <ul><li><code class="inline">for</code> vs <code class="inline">forEach</code> vs <code class="inline">for...of</code> on small arrays — readability first.</li><li>Manual loop unrolling — engine often does it.</li><li>Avoiding <code class="inline">try/catch</code> in inner loops — optimize only if profiler shows cost.</li></ul>
+        <p>Focus on <strong>algorithm choice</strong> (O(n²) → O(n)), <strong>network</strong>, and <strong>bundle size</strong> before micro-tuning.</p>
+      </section>
+      <section id="7-strict-mode">
+        <h2>7. Strict mode</h2>
+        <p><strong><code class="inline">&quot;use strict&quot;</code></strong> enables stricter parsing and runtime errors — catches silent bugs.</p>
+        <h3>7.1. How to enable</h3>
+        <div class="code"><pre>&quot;use strict&quot;;
+
+function strictFn() {
+  // whole function strict
+}
+
+// ES modules are strict by default</pre></div>
+        <h3>7.2. Behavior changes</h3>
+        <table>
+        <thead>
+        <tr><th>Sloppy</th><th>Strict</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Assign to undeclared variable → global</td><td><code class="inline">ReferenceError</code></td></tr>
+        <tr><td>Duplicate param names allowed</td><td><code class="inline">SyntaxError</code></td></tr>
+        <tr><td><code class="inline">delete</code> undeletable prop → silent false</td><td><code class="inline">TypeError</code> in some cases</td></tr>
+        <tr><td><code class="inline">this</code> in plain call → <code class="inline">window</code></td><td><code class="inline">undefined</code></td></tr>
+        <tr><td><code class="inline">with</code> statement</td><td>SyntaxError</td></tr>
+        <tr><td>Octal literals <code class="inline">012</code></td><td>SyntaxError (use <code class="inline">0o12</code>)</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>&quot;use strict&quot;;
+
+function show() {
+  console.log(this);  // undefined — not window
+}
+
+show();
+
+// mistype = 1;  // ReferenceError</pre></div>
+        <h3>7.3. Why use strict</h3>
+        <ul><li>Safer refactoring — typos throw instead of creating globals.</li><li>Required baseline for <strong>classes</strong> and <strong>modules</strong>.</li><li>Matches modern tooling defaults (bundlers, TypeScript emit).</li></ul>
+        <p>Always write new code in <strong>strict</strong> contexts (modules or <code class="inline">&quot;use strict&quot;</code>).</p>
+      </section>
+      <section id="8-common-questions">
+        <h2>8. Common questions</h2>
+        <h3>8.1. What is an execution context?</h3>
+        <p><strong>A:</strong> The environment for running a piece of JS — includes variable bindings, <code class="inline">this</code>, and the outer scope link. Created for global/module code and each function call.</p>
+        <h3>8.2. What is the difference between the call stack and the heap?</h3>
+        <p><strong>A:</strong> The <strong>call stack</strong> tracks active function contexts (LIFO). The <strong>heap</strong> stores objects and other dynamic data referenced from the stack.</p>
+        <h3>8.3. How does garbage collection work in JavaScript?</h3>
+        <p><strong>A:</strong> Engines trace <strong>reachable</strong> objects from roots and reclaim unreachable memory. You do not manually free memory.</p>
+        <h3>8.4. What causes memory leaks in JS?</h3>
+        <p><strong>A:</strong> Common causes: accidental globals, uncleared timers/listeners, closures holding large unused data, and detached DOM nodes still referenced from JS.</p>
+        <h3>8.5. What is a Proxy?</h3>
+        <p><strong>A:</strong> A wrapper that intercepts operations on an object (get, set, etc.) via <strong>traps</strong>. Used in frameworks for reactivity and validation.</p>
+        <h3>8.6. What is the difference between debounce and throttle?</h3>
+        <p><strong>A:</strong> <strong>Debounce</strong> waits for a <strong>pause</strong> in events then runs once. <strong>Throttle</strong> runs at most <strong>once per time window</strong> during continuous events.</p>
+        <h3>8.7. What is currying?</h3>
+        <p><strong>A:</strong> Transforming a multi-argument function into a chain of functions each taking one (or fewer) arguments — enables partial application.</p>
+        <h3>8.8. What does strict mode do?</h3>
+        <p><strong>A:</strong> Turns silent errors into <strong>exceptions</strong>, disables some unsafe features (<code class="inline">with</code>, implicit globals), and makes <code class="inline">this</code> <strong><code class="inline">undefined</code></strong> in plain function calls.</p>
+        <h3>8.9. When should you optimize JavaScript performance?</h3>
+        <p><strong>A:</strong> After <strong>measuring</strong> a real bottleneck — hot loops, large data, UI jank, or slow API paths. Prefer better algorithms and architecture before micro-optimizations.</p>
+        <h3>8.10. What is memoization?</h3>
+        <p><strong>A:</strong> Caching a function&#x27;s <strong>return values</strong> by input arguments to avoid recomputing expensive work. Trade memory for speed.</p>
+      </section>
+      <footer>HTML note for JavaScript File 12. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>
