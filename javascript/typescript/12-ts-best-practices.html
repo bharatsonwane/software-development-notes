@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>12. Best Practices - TypeScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> TypeScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./typescript.html">← TypeScript</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-avoiding-any">1. Avoiding `any`</a>
+        <a href="#2-prefer-interface-vs-type-in-teams">2. Prefer `interface` vs `type` in teams</a>
+        <a href="#3-eslint-and-typescript">3. ESLint and TypeScript</a>
+        <a href="#4-migration-from-javascript">4. Migration from JavaScript</a>
+        <a href="#5-common-questions">5. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./typescript.html">TypeScript</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">12. Best Practices</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>12. Best Practices</h1>
+        <p class="subtitle">File 12 — avoid any, interface vs type, ESLint, JS migration.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>Production TypeScript is less about syntax and more about <strong>team habits</strong> — consistent strictness, lint rules, and a sensible migration path from JavaScript.</p>
+      </section>
+      <section id="1-avoiding-any">
+        <h2>1. Avoiding <code class="inline">any</code></h2>
+        <p><code class="inline">any</code> disables the type checker for that value and propagates unsafety:</p>
+        <div class="code"><pre>// Bad — errors hidden until runtime
+function parse(data: any) {
+  return data.items.map((i: any) =&gt; i.name);
+}
+
+// Better — validate at boundary
+function parse(data: unknown) {
+  if (!isValidPayload(data)) {
+    throw new Error(&quot;Invalid payload&quot;);
+  }
+  return data.items.map((i) =&gt; i.name);
+}</pre></div>
+        <h3>1.1. Alternatives to <code class="inline">any</code></h3>
+        <table>
+        <thead>
+        <tr><th>Instead of</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Unknown API response</td><td><code class="inline">unknown</code> + narrowing / Zod</td></tr>
+        <tr><td>Generic key-value bag</td><td><code class="inline">Record&lt;string, unknown&gt;</code></td></tr>
+        <tr><td>Mixed array</td><td>`(string \</td></tr>
+        <tr><td>Third-party untyped lib</td><td><code class="inline">@types/*</code> or local <code class="inline">.d.ts</code></td></tr>
+        <tr><td>Temporary migration</td><td><code class="inline">// @ts-expect-error</code> with ticket + deadline</td></tr>
+        </tbody>
+        </table>
+        <h3>1.2. ESLint rules</h3>
+        <div class="code"><pre>{
+  &quot;rules&quot;: {
+    &quot;@typescript-eslint/no-explicit-any&quot;: &quot;warn&quot;,
+    &quot;@typescript-eslint/no-unsafe-assignment&quot;: &quot;error&quot;,
+    &quot;@typescript-eslint/no-unsafe-member-access&quot;: &quot;error&quot;
+  }
+}</pre></div>
+        <p>Start with <code class="inline">&quot;warn&quot;</code> on legacy codebases; tighten to <code class="inline">&quot;error&quot;</code> over time.</p>
+        <h3>1.3. <code class="inline">unknown</code> at boundaries, concrete types inside</h3>
+        <div class="code"><pre>async function fetchJson(url: string): Promise&lt;unknown&gt; {
+  const res = await fetch(url);
+  return res.json();
+}
+
+const raw = await fetchJson(&quot;/api/user&quot;);
+const user = UserSchema.parse(raw); // concrete User type after validation</pre></div>
+      </section>
+      <section id="2-prefer-interface-vs-type-in-teams">
+        <h2>2. Prefer <code class="inline">interface</code> vs <code class="inline">type</code> in teams</h2>
+        <p>There is no universal winner — <strong>consistency</strong> matters.</p>
+        <h3>2.1. Practical convention</h3>
+        <div class="code"><pre>// Object shapes / class contracts
+interface User {
+  id: string;
+  name: string;
+}
+
+// Unions, tuples, utilities
+type Result&lt;T&gt; =
+  | { ok: true; value: T }
+  | { ok: false; error: Error };
+
+type UserId = string;</pre></div>
+        <h3>2.2. When <code class="inline">interface</code> wins</h3>
+        <ul><li>Public API objects you may <strong>extend</strong> later</li><li><strong>Declaration merging</strong> (augmenting Express, Jest globals)</li><li>Class <code class="inline">implements</code> contracts</li></ul>
+        <h3>2.3. When <code class="inline">type</code> wins</h3>
+        <ul><li><strong>Unions and intersections</strong></li><li><strong>Mapped / conditional</strong> types</li><li>Aliasing primitives and computed types</li></ul>
+        <p>Document the team rule in README or ESLint — avoid bikeshedding per PR.</p>
+      </section>
+      <section id="3-eslint-and-typescript">
+        <h2>3. ESLint and TypeScript</h2>
+        <p>Use <strong><code class="inline">typescript-eslint</code></strong> for type-aware linting:</p>
+        <div class="code"><pre>npm install -D eslint @eslint/js typescript-eslint</pre></div>
+        <div class="code"><pre>// eslint.config.js (flat config)
+import eslint from &quot;@eslint/js&quot;;
+import tseslint from &quot;typescript-eslint&quot;;
+
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  }
+);</pre></div>
+        <h3>3.1. High-value rules</h3>
+        <table>
+        <thead>
+        <tr><th>Rule</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">no-floating-promises</code></td><td>Catch unhandled async</td></tr>
+        <tr><td><code class="inline">no-misused-promises</code></td><td>Don&#x27;t pass async fn where sync expected</td></tr>
+        <tr><td><code class="inline">await-thenable</code></td><td>Don&#x27;t await non-promises</td></tr>
+        <tr><td><code class="inline">consistent-type-imports</code></td><td>Use <code class="inline">import type</code> for types</td></tr>
+        <tr><td><code class="inline">no-unused-vars</code></td><td>Clean dead code</td></tr>
+        </tbody>
+        </table>
+        <h3>3.2. Formatting</h3>
+        <p>Pair ESLint with <strong>Prettier</strong> — ESLint for logic, Prettier for formatting. Avoid duplicate stylistic rules.</p>
+        <h3>3.3. CI pipeline</h3>
+        <div class="code"><pre>{
+  &quot;scripts&quot;: {
+    &quot;typecheck&quot;: &quot;tsc --noEmit&quot;,
+    &quot;lint&quot;: &quot;eslint .&quot;,
+    &quot;check&quot;: &quot;npm run typecheck &amp;&amp; npm run lint&quot;
+  }
+}</pre></div>
+        <p>Run <code class="inline">check</code> on every PR — types and lint together catch different bug classes.</p>
+      </section>
+      <section id="4-migration-from-javascript">
+        <h2>4. Migration from JavaScript</h2>
+        <h3>4.1. Rename strategy</h3>
+        <div class="code"><pre>app.js  →  app.ts
+utils.js → utils.ts (one file at a time)</pre></div>
+        <p>Enable gradual adoption:</p>
+        <div class="code"><pre>{
+  &quot;compilerOptions&quot;: {
+    &quot;allowJs&quot;: true,
+    &quot;checkJs&quot;: false,
+    &quot;strict&quot;: true
+  }
+}</pre></div>
+        <p>Turn on <code class="inline">&quot;checkJs&quot;: true</code> for <code class="inline">.js</code> files with <code class="inline">// @ts-check</code> at the top.</p>
+        <h3>4.2. Migration order</h3>
+        <ol><li>Add <code class="inline">tsconfig.json</code> + <code class="inline">typescript</code> dev dependency</li><li>Rename <strong>leaf</strong> modules first (no dependents)</li><li>Add types at <strong>boundaries</strong> (API responses, config, shared models)</li><li>Replace <code class="inline">any</code> introduced during migration</li><li>Enable stricter flags incrementally (<code class="inline">strictNullChecks</code>, <code class="inline">noImplicitAny</code>)</li></ol>
+        <h3>4.3. Typing existing JS libraries</h3>
+        <div class="code"><pre>npm install -D @types/lodash</pre></div>
+        <p>If no types exist:</p>
+        <div class="code"><pre>// types/shims.d.ts
+declare module &quot;legacy-lib&quot;;</pre></div>
+        <p>Or write accurate <code class="inline">.d.ts</code> for the subset you use.</p>
+        <h3>4.4. <code class="inline">jsdoc</code> bridge</h3>
+        <p>Before renaming, add JSDoc to <code class="inline">.js</code>:</p>
+        <div class="code"><pre>/**
+ * @param {string} name
+ * @returns {string}
+ */
+export function greet(name) {
+  return `Hello, ${name}`;
+}</pre></div>
+        <p><code class="inline">checkJs</code> uses JSDoc as types — smooth stepping stone to <code class="inline">.ts</code>.</p>
+        <h3>4.5. Do not rewrite everything at once</h3>
+        <p>Migrate <strong>by feature</strong> or <strong>by folder</strong>. Mixed <code class="inline">.js</code> and <code class="inline">.ts</code> is normal for months in large apps.</p>
+      </section>
+      <section id="5-common-questions">
+        <h2>5. Common questions</h2>
+        <h3>5.1. Is <code class="inline">any</code> ever acceptable?</h3>
+        <p><strong>A:</strong> During migration or with truly dynamic plugins — isolate it, document why, and plan removal.</p>
+        <h3>5.2. Should strict mode be non-negotiable?</h3>
+        <p><strong>A:</strong> For new projects, yes. Legacy projects enable flags incrementally.</p>
+        <h3>5.3. <code class="inline">eslint</code> vs <code class="inline">tsc</code> — which catches what?</h3>
+        <p><strong>A:</strong> <code class="inline">tsc</code> — type correctness. ESLint — patterns, async misuse, style, some type-aware rules. Use both.</p>
+        <h3>5.4. How long does JS → TS migration take?</h3>
+        <p><strong>A:</strong> Depends on size. Leaf-first + boundaries-first often gives value in weeks, full strict coverage in months.</p>
+        <h3>5.5. <code class="inline">@ts-ignore</code> vs <code class="inline">@ts-expect-error</code>?</h3>
+        <p><strong>A:</strong> Prefer <code class="inline">@ts-expect-error</code> — fails if the error is fixed, so you remove the comment. <code class="inline">@ts-ignore</code> silently stays.</p>
+        <h3>5.6. Should tests be <code class="inline">.ts</code> too?</h3>
+        <p><strong>A:</strong> Yes when the app is TS — tests get the same type safety and refactoring support.</p>
+        <h3>5.7. Monorepo: one tsconfig or many?</h3>
+        <p><strong>A:</strong> Per package with project references (File 09) — shared strict base config extended per package.</p>
+        <h3>5.8. What is the single best habit for maintainable TS?</h3>
+        <p><strong>A:</strong> Treat <strong>external data as <code class="inline">unknown</code></strong> until validated — never trust <code class="inline">JSON.parse</code>, form input, or query params as typed.</p>
+      </section>
+      <footer>HTML note for TypeScript File 12. Open from the TypeScript index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

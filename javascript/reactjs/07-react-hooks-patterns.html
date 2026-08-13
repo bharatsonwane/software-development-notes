@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>07. Hooks Patterns - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-rules-of-hooks">1. Rules of Hooks</a>
+        <a href="#2-custom-hooks">2. Custom hooks</a>
+        <a href="#3-useref">3. useRef</a>
+        <a href="#4-useid">4. useId</a>
+        <a href="#5-composing-hooks">5. Composing hooks</a>
+        <a href="#6-hook-pitfalls">6. Hook pitfalls</a>
+        <a href="#7-putting-it-together">7. Putting it together</a>
+        <a href="#8-common-questions">8. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">07. Hooks Patterns</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>07. Hooks Patterns</h1>
+        <p class="subtitle">File 07 — rules of hooks, custom hooks, useRef, useId.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p><strong>Hooks</strong> are functions that let function components use state, effects, refs, and more. This chapter covers <strong>rules</strong> you must follow, <strong>custom hooks</strong> for reusable logic, <strong><code class="inline">useRef</code></strong> for values and DOM access, and <strong><code class="inline">useId</code></strong> for stable ids.</p>
+        <p>Builds on <code class="inline">useState</code> (File 03), <code class="inline">useEffect</code> (File 05), and forms (File 06). File 08 adds <strong>Context</strong> and <strong>useReducer</strong>.</p>
+        <p><strong>Default rule today:</strong> only call hooks at the <strong>top level</strong> of React functions; prefix reusable hook logic with <strong><code class="inline">use</code></strong>; use <strong><code class="inline">useRef</code></strong> for mutable values that should not trigger re-renders; use <strong><code class="inline">useId</code></strong> for accessibility ids in SSR-safe apps.</p>
+      </section>
+      <section id="1-rules-of-hooks">
+        <h2>1. Rules of Hooks</h2>
+        <h3>1.1. Only call hooks at the top level</h3>
+        <p>Do <strong>not</strong> call hooks inside loops, conditions, or nested functions:</p>
+        <div class="code"><pre>// Wrong
+function Bad({ show }) {
+  if (show) {
+    const [x, setX] = useState(0);  // breaks rules
+  }
+}
+
+// Right
+function Good({ show }) {
+  const [x, setX] = useState(0);
+  if (!show) return null;
+  return &lt;div&gt;{x}&lt;/div&gt;;
+}</pre></div>
+        <p>React relies on <strong>call order</strong> being identical every render to match state to the right hook.</p>
+        <h3>1.2. Only call hooks from React functions</h3>
+        <p>Call hooks from:</p>
+        <ul><li><strong>Function components</strong></li><li><strong>Custom hooks</strong> (functions whose names start with <code class="inline">use</code>)</li></ul>
+        <p>Do <strong>not</strong> call hooks from regular JS functions, class components, or event handlers.</p>
+        <h3>1.3. ESLint enforcement</h3>
+        <p><strong><code class="inline">eslint-plugin-react-hooks</code></strong> with rules <strong><code class="inline">rules-of-hooks</code></strong> and <strong><code class="inline">exhaustive-deps</code></strong> catches most mistakes. Enable them in every React project.</p>
+      </section>
+      <section id="2-custom-hooks">
+        <h2>2. Custom hooks</h2>
+        <h3>2.1. What is a custom hook?</h3>
+        <p>A <strong>function</strong> that <strong>calls other hooks</strong> and returns state, handlers, or refs for components to use:</p>
+        <div class="code"><pre>function useCounter(initial = 0) {
+  const [count, setCount] = useState(initial);
+  const increment = () =&gt; setCount((c) =&gt; c + 1);
+  const decrement = () =&gt; setCount((c) =&gt; c - 1);
+  const reset = () =&gt; setCount(initial);
+  return { count, increment, decrement, reset };
+}
+
+function App() {
+  const { count, increment } = useCounter(0);
+  return &lt;button onClick={increment}&gt;{count}&lt;/button&gt;;
+}</pre></div>
+        <p>Each component calling <code class="inline">useCounter</code> gets <strong>its own</strong> independent state.</p>
+        <h3>2.2. Naming convention</h3>
+        <p>Name must start with <strong><code class="inline">use</code></strong> so React (and linters) know it may call hooks:</p>
+        <div class="code"><pre>function useLocalStorage(key, initial) { ... }
+function useMediaQuery(query) { ... }</pre></div>
+        <h3>2.3. Extract when logic repeats</h3>
+        <p>Extract a custom hook when:</p>
+        <ul><li>Same <strong>state + effect + handlers</strong> appear in multiple components</li><li>A component grows too large and one concern can be isolated</li><li>You want to <strong>test</strong> logic separately from UI</li></ul>
+        <p>Keep hooks <strong>focused</strong> — one responsibility per hook when possible.</p>
+        <h3>2.4. Custom hook wrapping useEffect</h3>
+        <p>From File 05 — online status:</p>
+        <div class="code"><pre>function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() =&gt; {
+    const on = () =&gt; setIsOnline(true);
+    const off = () =&gt; setIsOnline(false);
+    window.addEventListener(&quot;online&quot;, on);
+    window.addEventListener(&quot;offline&quot;, off);
+    return () =&gt; {
+      window.removeEventListener(&quot;online&quot;, on);
+      window.removeEventListener(&quot;offline&quot;, off);
+    };
+  }, []);
+
+  return isOnline;
+}</pre></div>
+        <h3>2.5. Returning stable APIs</h3>
+        <p>Return an <strong>object</strong> or <strong>tuple</strong> — document whether functions are stable. For callbacks passed to effects, wrap in <strong><code class="inline">useCallback</code></strong> when needed (File 12).</p>
+      </section>
+      <section id="3-useref">
+        <h2>3. useRef</h2>
+        <h3>3.1. Ref object persists across renders</h3>
+        <div class="code"><pre>const ref = useRef(initialValue);
+// ref.current — read/write without re-render</pre></div>
+        <p>Updating <strong><code class="inline">ref.current</code></strong> does <strong>not</strong> trigger a re-render (unlike <code class="inline">setState</code>).</p>
+        <h3>3.2. DOM refs</h3>
+        <p>Attach to JSX to access the underlying DOM node:</p>
+        <div class="code"><pre>function FocusInput() {
+  const inputRef = useRef(null);
+
+  function focus() {
+    inputRef.current?.focus();
+  }
+
+  return (
+    &lt;&gt;
+      &lt;input ref={inputRef} /&gt;
+      &lt;button type=&quot;button&quot; onClick={focus}&gt;Focus&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>Use for: focus, scroll, measuring size, integrating non-React libraries.</p>
+        <h3>3.3. Mutable instance values</h3>
+        <p>Store timers, previous props, or any value that should survive renders without causing them:</p>
+        <div class="code"><pre>function Timer() {
+  const intervalRef = useRef(null);
+
+  useEffect(() =&gt; {
+    intervalRef.current = setInterval(tick, 1000);
+    return () =&gt; clearInterval(intervalRef.current);
+  }, []);
+}</pre></div>
+        <h3>3.4. Storing previous value</h3>
+        <div class="code"><pre>function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() =&gt; {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}</pre></div>
+        <h3>3.5. Latest callback without re-subscribing</h3>
+        <div class="code"><pre>function Chat({ onMessage }) {
+  const onMessageRef = useRef(onMessage);
+  onMessageRef.current = onMessage;
+
+  useEffect(() =&gt; {
+    const sub = subscribe((msg) =&gt; onMessageRef.current(msg));
+    return () =&gt; sub.unsubscribe();
+  }, []);  // empty deps — always calls latest onMessage
+}</pre></div>
+        <p>Pattern: keep ref synced each render; effect reads <code class="inline">ref.current</code>.</p>
+        <h3>3.6. ref callback (advanced)</h3>
+        <div class="code"><pre>&lt;div ref={(node) =&gt; { /* node mounted or unmounted */ }} /&gt;</pre></div>
+        <p>Use when you need setup/teardown per DOM node. Less common than object ref.</p>
+      </section>
+      <section id="4-useid">
+        <h2>4. useId</h2>
+        <h3>4.1. Stable unique ids for accessibility</h3>
+        <p>Link labels, inputs, and error messages with matching <strong><code class="inline">id</code></strong> / <strong><code class="inline">htmlFor</code></strong>:</p>
+        <div class="code"><pre>function EmailField({ label, error }) {
+  const id = useId();
+  const errorId = `${id}-error`;
+
+  return (
+    &lt;div&gt;
+      &lt;label htmlFor={id}&gt;{label}&lt;/label&gt;
+      &lt;input
+        id={id}
+        aria-describedby={error ? errorId : undefined}
+        aria-invalid={!!error}
+      /&gt;
+      {error &amp;&amp; &lt;p id={errorId} role=&quot;alert&quot;&gt;{error}&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <h3>4.2. SSR and hydration</h3>
+        <p><strong><code class="inline">useId</code></strong> generates ids that are <strong>consistent</strong> between server and client render — avoid <code class="inline">Math.random()</code> or increment counters for ids in SSR apps.</p>
+        <h3>4.3. Do not use useId for list keys</h3>
+        <p><strong>Keys</strong> in lists need stable <strong>data ids</strong> (<code class="inline">item.id</code>), not <code class="inline">useId()</code> — <code class="inline">useId</code> is per component instance, not per list item logic.</p>
+      </section>
+      <section id="5-composing-hooks">
+        <h2>5. Composing hooks</h2>
+        <h3>5.1. Hooks can call hooks</h3>
+        <div class="code"><pre>function useUser(userId) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+    fetch(`/api/users/${userId}`)
+      .then((r) =&gt; r.json())
+      .then((data) =&gt; { if (!cancelled) setUser(data); })
+      .finally(() =&gt; { if (!cancelled) setLoading(false); });
+    return () =&gt; { cancelled = true; };
+  }, [userId]);
+
+  return { user, loading };
+}</pre></div>
+        <p>File 10 covers server-state libraries that replace hand-rolled fetch hooks.</p>
+        <h3>5.2. Split hooks by concern</h3>
+        <div class="code"><pre>function ProfilePage({ userId }) {
+  const { user, loading } = useUser(userId);
+  const isOnline = useOnlineStatus();
+  // render...
+}</pre></div>
+        <p>Smaller hooks compose into readable components.</p>
+      </section>
+      <section id="6-hook-pitfalls">
+        <h2>6. Hook pitfalls</h2>
+        <h3>6.1. Over-abstracting too early</h3>
+        <p>Not every <code class="inline">useState</code> needs a custom hook. Extract when <strong>reuse</strong> or <strong>clarity</strong> justifies it.</p>
+        <h3>6.2. Hidden dependencies</h3>
+        <p>Custom hooks should document required <strong>props/args</strong> and return values. Callers still need correct <strong>effect deps</strong> inside the hook.</p>
+        <h3>6.3. Ref vs state</h3>
+        <table>
+        <thead>
+        <tr><th>Need</th><th>Use</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Value shown in UI</td><td><strong>state</strong></td></tr>
+        <tr><td>DOM node, timer id, previous value, latest callback</td><td><strong>ref</strong></td></tr>
+        </tbody>
+        </table>
+      </section>
+      <section id="7-putting-it-together">
+        <h2>7. Putting it together</h2>
+        <h3>7.1. useDebouncedValue</h3>
+        <div class="code"><pre>function useDebouncedValue(value, delayMs) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() =&gt; {
+    const id = setTimeout(() =&gt; setDebounced(value), delayMs);
+    return () =&gt; clearTimeout(id);
+  }, [value, delayMs]);
+
+  return debounced;
+}
+
+function Search() {
+  const [query, setQuery] = useState(&quot;&quot;);
+  const debouncedQuery = useDebouncedValue(query, 300);
+
+  useEffect(() =&gt; {
+    if (debouncedQuery) search(debouncedQuery);
+  }, [debouncedQuery]);
+
+  return &lt;input value={query} onChange={(e) =&gt; setQuery(e.target.value)} /&gt;;
+}</pre></div>
+      </section>
+      <section id="8-common-questions">
+        <h2>8. Common questions</h2>
+        <h3>8.1. What are the Rules of Hooks?</h3>
+        <p><strong>A:</strong> Call hooks only at the <strong>top level</strong> of React functions, and only from <strong>components</strong> or <strong>custom hooks</strong> — never inside conditions, loops, or plain functions.</p>
+        <h3>8.2. What is a custom hook?</h3>
+        <p><strong>A:</strong> A reusable function named <strong><code class="inline">useSomething</code></strong> that calls hooks and returns state, effects, or handlers for components.</p>
+        <h3>8.3. Does each component share custom hook state?</h3>
+        <p><strong>A:</strong> <strong>No.</strong> Each call site gets <strong>independent</strong> state, like <code class="inline">useState</code>.</p>
+        <h3>8.4. When do I use useRef vs useState?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">useState</code></strong> when UI should update. <strong><code class="inline">useRef</code></strong> for DOM access or mutable values that should <strong>not</strong> re-render on change.</p>
+        <h3>8.5. What is useId for?</h3>
+        <p><strong>A:</strong> Generate <strong>stable unique ids</strong> for <code class="inline">label</code>/<code class="inline">input</code>/<code class="inline">aria-*</code> links, especially with <strong>SSR</strong>.</p>
+        <h3>8.6. Can I use useId as a list key?</h3>
+        <p><strong>A:</strong> <strong>No.</strong> Use stable ids from <strong>data</strong> (<code class="inline">item.id</code>).</p>
+        <h3>8.7. Why store callbacks in refs?</h3>
+        <p><strong>A:</strong> So <strong>effects</strong> with empty deps can call the <strong>latest</strong> callback without re-subscribing every render.</p>
+        <h3>8.8. Can custom hooks return JSX?</h3>
+        <p><strong>A:</strong> They <strong>can</strong>, but usually return <strong>data and functions</strong> — keep UI in components. Exception: small shared layout hooks are rare.</p>
+        <h3>8.9. How do I test custom hooks?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">@testing-library/react</code></strong> <strong><code class="inline">renderHook</code></strong> (File 13) — render hook in isolation and assert return values.</p>
+        <h3>8.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 08 (Context, useReducer), File 12 (useCallback/useMemo with hooks), File 13 (testing hooks).</p>
+      </section>
+      <footer>HTML note for React.js File 07. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

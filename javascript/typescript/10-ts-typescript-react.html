@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>10. TypeScript with React - TypeScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> TypeScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./typescript.html">← TypeScript</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-typing-components-and-props">1. Typing components and props</a>
+        <a href="#2-usestate-and-event-types">2. `useState` and event types</a>
+        <a href="#3-typing-hooks-and-context">3. Typing hooks and context</a>
+        <a href="#4-third-party-types-types">4. Third-party types (`@types/*`)</a>
+        <a href="#5-common-questions">5. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./typescript.html">TypeScript</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">10. TypeScript with React</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>10. TypeScript with React</h1>
+        <p class="subtitle">File 10 — component props, useState, events, hooks, context, @types.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>React and TypeScript work together through <strong>typed props</strong>, <strong>generic hooks</strong>, and <strong>event types</strong> from <code class="inline">@types/react</code>.</p>
+        <p><strong>Prerequisite:</strong> <a href="../reactjs/">React.js notes</a> (files 01–06) before this chapter.</p>
+      </section>
+      <section id="1-typing-components-and-props">
+        <h2>1. Typing components and props</h2>
+        <h3>1.1. Function components</h3>
+        <div class="code"><pre>type ButtonProps = {
+  label: string;
+  onClick: () =&gt; void;
+  disabled?: boolean;
+};
+
+function Button({ label, onClick, disabled = false }: ButtonProps) {
+  return (
+    &lt;button type=&quot;button&quot; onClick={onClick} disabled={disabled}&gt;
+      {label}
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <p>Or with <code class="inline">interface</code>:</p>
+        <div class="code"><pre>interface CardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function Card({ title, children }: CardProps) {
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      {children}
+    &lt;/section&gt;
+  );
+}</pre></div>
+        <h3>1.2. <code class="inline">React.FC</code> / <code class="inline">React.FunctionComponent</code></h3>
+        <p>Older style — optional <code class="inline">children</code> was implicit. Modern codebases prefer <strong>explicit props</strong>:</p>
+        <div class="code"><pre>// Avoid unless team standard
+const OldButton: React.FC&lt;ButtonProps&gt; = ({ label, onClick }) =&gt; (
+  &lt;button onClick={onClick}&gt;{label}&lt;/button&gt;
+);</pre></div>
+        <h3>1.3. Extending HTML element props</h3>
+        <div class="code"><pre>type InputProps = React.InputHTMLAttributes&lt;HTMLInputElement&gt; &amp; {
+  label: string;
+};
+
+function LabeledInput({ label, ...rest }: InputProps) {
+  return (
+    &lt;label&gt;
+      {label}
+      &lt;input {...rest} /&gt;
+    &lt;/label&gt;
+  );
+}</pre></div>
+        <p>Use <code class="inline">ComponentPropsWithoutRef&lt;&quot;button&quot;&gt;</code> or <code class="inline">ComponentProps&lt;typeof SomeComponent&gt;</code> to inherit props.</p>
+        <h3>1.4. Typing <code class="inline">children</code></h3>
+        <div class="code"><pre>type Props = {
+  children: React.ReactNode; // string, number, element, fragment, null, array, etc.
+};</pre></div>
+        <p>Stricter alternatives: <code class="inline">React.ReactElement</code> (single element), <code class="inline">React.ReactNode</code> (most common).</p>
+      </section>
+      <section id="2-usestate-and-event-types">
+        <h2>2. <code class="inline">useState</code> and event types</h2>
+        <h3>2.1. <code class="inline">useState</code> inference and explicit types</h3>
+        <div class="code"><pre>const [count, setCount] = useState(0); // number
+
+const [user, setUser] = useState&lt;User | null&gt;(null);
+
+const [ids, setIds] = useState&lt;string[]&gt;([]);
+// Prefer useState&lt;string[]&gt;([]) when initial value is []</pre></div>
+        <h3>2.2. Event handlers</h3>
+        <p>React events are <strong>synthetic</strong> — use types from <code class="inline">@types/react</code>:</p>
+        <div class="code"><pre>function SearchForm() {
+  const [query, setQuery] = useState(&quot;&quot;);
+
+  const handleChange = (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+    setQuery(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent&lt;HTMLFormElement&gt;) =&gt; {
+    e.preventDefault();
+    console.log(query);
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input value={query} onChange={handleChange} /&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
+        <p>Common event types:</p>
+        <table>
+        <thead>
+        <tr><th>Event</th><th>Type</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Input change</td><td><code class="inline">React.ChangeEvent&lt;HTMLInputElement&gt;</code></td></tr>
+        <tr><td>Button click</td><td><code class="inline">React.MouseEvent&lt;HTMLButtonElement&gt;</code></td></tr>
+        <tr><td>Form submit</td><td><code class="inline">React.FormEvent&lt;HTMLFormElement&gt;</code></td></tr>
+        <tr><td>Keyboard</td><td><code class="inline">React.KeyboardEvent&lt;HTMLElement&gt;</code></td></tr>
+        </tbody>
+        </table>
+        <h3>2.3. Callback props</h3>
+        <div class="code"><pre>type ListProps = {
+  items: string[];
+  onSelect: (item: string, index: number) =&gt; void;
+};</pre></div>
+      </section>
+      <section id="3-typing-hooks-and-context">
+        <h2>3. Typing hooks and context</h2>
+        <h3>3.1. Custom hooks</h3>
+        <p>Return type is often inferred; annotate for public hooks:</p>
+        <div class="code"><pre>function useCounter(initial = 0) {
+  const [count, setCount] = useState(initial);
+  const increment = () =&gt; setCount((c) =&gt; c + 1);
+  return { count, increment, setCount };
+}
+
+type UseCounterReturn = ReturnType&lt;typeof useCounter&gt;;</pre></div>
+        <p>Generic custom hook:</p>
+        <div class="code"><pre>function useLocalStorage&lt;T&gt;(key: string, initial: T) {
+  const [value, setValue] = useState&lt;T&gt;(() =&gt; {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : initial;
+  });
+
+  useEffect(() =&gt; {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}</pre></div>
+        <h3>3.2. <code class="inline">useReducer</code></h3>
+        <div class="code"><pre>type State = { count: number };
+type Action =
+  | { type: &quot;increment&quot; }
+  | { type: &quot;decrement&quot; }
+  | { type: &quot;reset&quot; };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case &quot;increment&quot;:
+      return { count: state.count + 1 };
+    case &quot;decrement&quot;:
+      return { count: state.count - 1 };
+    case &quot;reset&quot;:
+      return { count: 0 };
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+  // ...
+}</pre></div>
+        <h3>3.3. Context</h3>
+        <div class="code"><pre>type Theme = &quot;light&quot; | &quot;dark&quot;;
+
+type ThemeContextValue = {
+  theme: Theme;
+  toggle: () =&gt; void;
+};
+
+const ThemeContext = createContext&lt;ThemeContextValue | null&gt;(null);
+
+function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) {
+    throw new Error(&quot;useTheme must be used within ThemeProvider&quot;);
+  }
+  return ctx;
+}
+
+function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState&lt;Theme&gt;(&quot;light&quot;);
+  const toggle = () =&gt; setTheme((t) =&gt; (t === &quot;light&quot; ? &quot;dark&quot; : &quot;light&quot;));
+
+  return (
+    &lt;ThemeContext.Provider value={{ theme, toggle }}&gt;
+      {children}
+    &lt;/ThemeContext.Provider&gt;
+  );
+}</pre></div>
+      </section>
+      <section id="4-third-party-types-types">
+        <h2>4. Third-party types (<code class="inline">@types/*</code>)</h2>
+        <p>Many JS libraries ship types. Others need <strong>DefinitelyTyped</strong> packages:</p>
+        <div class="code"><pre>npm install --save-dev @types/react @types/react-dom
+npm install --save-dev @types/node
+npm install --save-dev @types/lodash</pre></div>
+        <h3>4.1. Library includes its own types</h3>
+        <p>Modern packages embed <code class="inline">.d.ts</code>:</p>
+        <div class="code"><pre>// package.json of a typed library
+{
+  &quot;name&quot;: &quot;some-lib&quot;,
+  &quot;types&quot;: &quot;dist/index.d.ts&quot;
+}</pre></div>
+        <p>No <code class="inline">@types/some-lib</code> needed.</p>
+        <h3>4.2. No types available</h3>
+        <p>Create a declaration file:</p>
+        <div class="code"><pre>// types/untyped-lib.d.ts
+declare module &quot;untyped-lib&quot; {
+  export function doSomething(input: string): number;
+}</pre></div>
+        <p>Or use <code class="inline">// @ts-expect-error</code> temporarily — fix with proper types or wrapper.</p>
+        <h3>4.3. <code class="inline">ref</code> typing</h3>
+        <div class="code"><pre>const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+useEffect(() =&gt; {
+  inputRef.current?.focus();
+}, []);
+
+return &lt;input ref={inputRef} /&gt;;</pre></div>
+      </section>
+      <section id="5-common-questions">
+        <h2>5. Common questions</h2>
+        <h3>5.1. Should I use <code class="inline">interface</code> or <code class="inline">type</code> for props?</h3>
+        <p><strong>A:</strong> Either. <code class="inline">type</code> needed for unions (<code class="inline">Props | DisabledProps</code>). Teams often pick one and stay consistent.</p>
+        <h3>5.2. Why <code class="inline">useState&lt;string[]&gt;([])</code> instead of <code class="inline">useState([])</code>?</h3>
+        <p><strong>A:</strong> Empty array infers <code class="inline">never[]</code> — explicit generic sets element type.</p>
+        <h3>5.3. What is <code class="inline">React.ReactNode</code> vs <code class="inline">React.ReactElement</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">ReactNode</code> is anything renderable. <code class="inline">ReactElement</code> is a single JSX element — stricter.</p>
+        <h3>5.4. How do I type <code class="inline">forwardRef</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">const Input = forwardRef&lt;HTMLInputElement, InputProps&gt;((props, ref) =&gt; ...)</code>.</p>
+        <h3>5.5. Do I need <code class="inline">@types/react</code> with React 18+?</h3>
+        <p><strong>A:</strong> Types are still published via <code class="inline">@types/react</code> — install as dev dependency.</p>
+        <h3>5.6. How to type generic table/list components?</h3>
+        <p><strong>A:</strong> <code class="inline">function List&lt;T&gt;({ items, render }: { items: T[]; render: (item: T) =&gt; React.ReactNode })</code>.</p>
+        <h3>5.7. What about <code class="inline">propTypes</code>?</h3>
+        <p><strong>A:</strong> TypeScript replaces PropTypes for TS projects. PropTypes optional for JS interop.</p>
+        <h3>5.8. Strict null and optional props?</h3>
+        <p><strong>A:</strong> <code class="inline">disabled?: boolean</code> allows <code class="inline">undefined</code>. With <code class="inline">exactOptionalPropertyTypes</code>, omitting vs passing <code class="inline">undefined</code> differs.</p>
+      </section>
+      <footer>HTML note for TypeScript File 10. Open from the TypeScript index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

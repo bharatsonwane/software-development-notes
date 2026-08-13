@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>09. Routing - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-why-client-side-routing">1. Why client-side routing</a>
+        <a href="#2-basic-setup">2. Basic setup</a>
+        <a href="#3-navigation">3. Navigation</a>
+        <a href="#4-dynamic-routes-and-params">4. Dynamic routes and params</a>
+        <a href="#5-nested-routes-and-layouts">5. Nested routes and layouts</a>
+        <a href="#6-loaders-and-actions-data-router">6. Loaders and actions (data router)</a>
+        <a href="#7-protected-routes">7. Protected routes</a>
+        <a href="#8-code-splitting-routes-preview">8. Code splitting routes (preview)</a>
+        <a href="#9-putting-it-together">9. Putting it together</a>
+        <a href="#10-common-questions">10. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">09. Routing</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>09. Routing</h1>
+        <p class="subtitle">File 09 — React Router, nested routes, URL params, loaders.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>Single-page apps (SPAs) still need <strong>multiple screens</strong>. <strong>React Router</strong> maps <strong>URLs</strong> to <strong>components</strong>, supports <strong>nested layouts</strong>, <strong>dynamic segments</strong>, and (in v6.4+) <strong>loaders</strong> for data before render.</p>
+        <p>Builds on components and composition (File 02). File 10 covers fetching inside routes; File 14 covers app structure around routes.</p>
+        <p><strong>Default rule today:</strong> use <strong>React Router v6+</strong> with <strong><code class="inline">createBrowserRouter</code></strong> / <strong><code class="inline">&lt;RouterProvider&gt;</code></strong> or <strong><code class="inline">&lt;Routes&gt;</code> + <code class="inline">&lt;Route&gt;</code></strong>; prefer <strong>route-level data loading</strong> (loaders) over fetch-on-mount in every page when using the data APIs.</p>
+      </section>
+      <section id="1-why-client-side-routing">
+        <h2>1. Why client-side routing</h2>
+        <h3>1.1. URL as UI state</h3>
+        <p>The <strong>address bar</strong> should reflect where the user is:</p>
+        <table>
+        <thead>
+        <tr><th>URL</th><th>Screen</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">/</code></td><td>Home</td></tr>
+        <tr><td><code class="inline">/products</code></td><td>Product list</td></tr>
+        <tr><td><code class="inline">/products/42</code></td><td>Product detail</td></tr>
+        <tr><td><code class="inline">/settings</code></td><td>Settings</td></tr>
+        </tbody>
+        </table>
+        <p>Users can bookmark, share links, and use back/forward. React Router syncs URL ↔ rendered components <strong>without</strong> full page reload.</p>
+        <h3>1.2. React Router role</h3>
+        <ul><li><strong>Match</strong> path to a route definition</li><li><strong>Render</strong> the matching component(s)</li><li>Provide <strong>navigation</strong> (<code class="inline">Link</code>, <code class="inline">useNavigate</code>)</li><li>Expose <strong>URL params</strong> and <strong>query strings</strong></li></ul>
+        <p>Install: <code class="inline">npm install react-router-dom</code></p>
+      </section>
+      <section id="2-basic-setup">
+        <h2>2. Basic setup</h2>
+        <h3>2.1. Browser router with Routes</h3>
+        <div class="code"><pre>import { BrowserRouter, Routes, Route, Link } from &quot;react-router-dom&quot;;
+
+function App() {
+  return (
+    &lt;BrowserRouter&gt;
+      &lt;nav&gt;
+        &lt;Link to=&quot;/&quot;&gt;Home&lt;/Link&gt;
+        &lt;Link to=&quot;/about&quot;&gt;About&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;Routes&gt;
+        &lt;Route path=&quot;/&quot; element={&lt;Home /&gt;} /&gt;
+        &lt;Route path=&quot;/about&quot; element={&lt;About /&gt;} /&gt;
+        &lt;Route path=&quot;*&quot; element={&lt;NotFound /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}</pre></div>
+        <p><strong><code class="inline">&lt;Link to=&quot;...&quot;&gt;</code></strong> — client navigation (no full reload). <strong><code class="inline">path=&quot;*&quot;</code></strong> — catch-all for 404.</p>
+        <h3>2.2. createBrowserRouter (recommended for data APIs)</h3>
+        <div class="code"><pre>import { createBrowserRouter, RouterProvider } from &quot;react-router-dom&quot;;
+
+const router = createBrowserRouter([
+  { path: &quot;/&quot;, element: &lt;Home /&gt; },
+  { path: &quot;/about&quot;, element: &lt;About /&gt; },
+]);
+
+function App() {
+  return &lt;RouterProvider router={router} /&gt;;
+}</pre></div>
+        <p>Data loaders and actions integrate cleanly with this style (9.5).</p>
+      </section>
+      <section id="3-navigation">
+        <h2>3. Navigation</h2>
+        <h3>3.1. Link and NavLink</h3>
+        <div class="code"><pre>&lt;Link to=&quot;/products&quot;&gt;Products&lt;/Link&gt;
+
+&lt;NavLink
+  to=&quot;/products&quot;
+  className={({ isActive }) =&gt; (isActive ? &quot;active&quot; : &quot;&quot;)}
+&gt;
+  Products
+&lt;/NavLink&gt;</pre></div>
+        <p><strong><code class="inline">NavLink</code></strong> knows if its route is <strong>active</strong> — ideal for nav bars.</p>
+        <h3>3.2. useNavigate (programmatic)</h3>
+        <div class="code"><pre>import { useNavigate } from &quot;react-router-dom&quot;;
+
+function LoginForm() {
+  const navigate = useNavigate();
+
+  async function onSubmit(data) {
+    await login(data);
+    navigate(&quot;/dashboard&quot;, { replace: true });
+  }
+}</pre></div>
+        <p><strong><code class="inline">replace: true</code></strong> — no extra history entry (like redirect after login).</p>
+        <h3>3.3. Relative links</h3>
+        <p>Inside nested routes, <strong><code class="inline">to=&quot;details&quot;</code></strong> resolves relative to the current route path.</p>
+      </section>
+      <section id="4-dynamic-routes-and-params">
+        <h2>4. Dynamic routes and params</h2>
+        <h3>4.1. URL parameters</h3>
+        <div class="code"><pre>&lt;Route path=&quot;/products/:productId&quot; element={&lt;ProductDetail /&gt;} /&gt;
+
+function ProductDetail() {
+  const { productId } = useParams();
+  return &lt;p&gt;Product {productId}&lt;/p&gt;;
+}</pre></div>
+        <p><strong><code class="inline">:productId</code></strong> is a <strong>dynamic segment</strong>. <code class="inline">useParams()</code> returns <code class="inline">{ productId: &quot;42&quot; }</code> for <code class="inline">/products/42</code>.</p>
+        <h3>4.2. Optional and splat segments</h3>
+        <div class="code"><pre>&lt;Route path=&quot;/files/*&quot; element={&lt;Files /&gt;} /&gt;
+// useParams().[&quot;*&quot;] captures rest of path</pre></div>
+        <p>Consult React Router docs for optional params (<code class="inline">:id?</code>) in your version.</p>
+        <h3>4.3. Search params (query string)</h3>
+        <div class="code"><pre>import { useSearchParams } from &quot;react-router-dom&quot;;
+
+function ProductList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const q = searchParams.get(&quot;q&quot;) ?? &quot;&quot;;
+
+  return (
+    &lt;input
+      value={q}
+      onChange={(e) =&gt; setSearchParams({ q: e.target.value })}
+    /&gt;
+  );
+}</pre></div>
+        <p><code class="inline">/products?q=shirt</code> — <strong><code class="inline">useSearchParams</code></strong> reads and updates <strong><code class="inline">?q=</code></strong> without losing other params if you merge carefully.</p>
+      </section>
+      <section id="5-nested-routes-and-layouts">
+        <h2>5. Nested routes and layouts</h2>
+        <h3>5.1. Layout route with Outlet</h3>
+        <div class="code"><pre>&lt;Route path=&quot;/dashboard&quot; element={&lt;DashboardLayout /&gt;}&gt;
+  &lt;Route index element={&lt;DashboardHome /&gt;} /&gt;
+  &lt;Route path=&quot;settings&quot; element={&lt;Settings /&gt;} /&gt;
+  &lt;Route path=&quot;profile&quot; element={&lt;Profile /&gt;} /&gt;
+&lt;/Route&gt;</pre></div>
+        <div class="code"><pre>import { Outlet } from &quot;react-router-dom&quot;;
+
+function DashboardLayout() {
+  return (
+    &lt;div className=&quot;dashboard&quot;&gt;
+      &lt;Sidebar /&gt;
+      &lt;main&gt;
+        &lt;Outlet /&gt;  {/* child route renders here */}
+      &lt;/main&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <p>URLs:</p>
+        <table>
+        <thead>
+        <tr><th>Path</th><th>Renders</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">/dashboard</code></td><td>Layout + DashboardHome</td></tr>
+        <tr><td><code class="inline">/dashboard/settings</code></td><td>Layout + Settings</td></tr>
+        </tbody>
+        </table>
+        <p><strong><code class="inline">index</code></strong> — default child when path matches parent exactly.</p>
+        <h3>5.2. Shared chrome, independent pages</h3>
+        <p>Nested routes avoid duplicating sidebar/header in every page component (File 02 — composition).</p>
+      </section>
+      <section id="6-loaders-and-actions-data-router">
+        <h2>6. Loaders and actions (data router)</h2>
+        <h3>6.1. Loader — fetch before render</h3>
+        <div class="code"><pre>const router = createBrowserRouter([
+  {
+    path: &quot;/products/:productId&quot;,
+    element: &lt;ProductDetail /&gt;,
+    loader: async ({ params }) =&gt; {
+      const res = await fetch(`/api/products/${params.productId}`);
+      if (!res.ok) throw new Response(&quot;Not Found&quot;, { status: 404 });
+      return res.json();
+    },
+  },
+]);</pre></div>
+        <div class="code"><pre>import { useLoaderData } from &quot;react-router-dom&quot;;
+
+function ProductDetail() {
+  const product = useLoaderData();
+  return &lt;h1&gt;{product.name}&lt;/h1&gt;;
+}</pre></div>
+        <p>Data is available on first render of the route — reduces loading flash vs <code class="inline">useEffect</code> fetch (File 05, File 10).</p>
+        <h3>6.2. Error boundaries on routes</h3>
+        <div class="code"><pre>{
+  path: &quot;/products/:productId&quot;,
+  element: &lt;ProductDetail /&gt;,
+  loader: productLoader,
+  errorElement: &lt;ProductError /&gt;,
+}</pre></div>
+        <p>Loader throws → <strong><code class="inline">errorElement</code></strong> renders (File 14 — error boundaries).</p>
+        <h3>6.3. Actions — form mutations</h3>
+        <div class="code"><pre>{
+  path: &quot;/products/new&quot;,
+  element: &lt;NewProduct /&gt;,
+  action: async ({ request }) =&gt; {
+    const formData = await request.formData();
+    await createProduct(Object.fromEntries(formData));
+    return redirect(&quot;/products&quot;);
+  },
+}</pre></div>
+        <p>Use <strong><code class="inline">&lt;Form&gt;</code></strong> from React Router to POST to the route <strong>action</strong> (File 06 — forms).</p>
+      </section>
+      <section id="7-protected-routes">
+        <h2>7. Protected routes</h2>
+        <h3>7.1. Wrapper component</h3>
+        <div class="code"><pre>function ProtectedRoute({ children }) {
+  const { user } = useAuth(); // from Context — File 08
+  const location = useLocation();
+
+  if (!user) {
+    return &lt;Navigate to=&quot;/login&quot; state={{ from: location }} replace /&gt;;
+  }
+
+  return children;
+}
+
+&lt;Route
+  path=&quot;/dashboard/*&quot;
+  element={
+    &lt;ProtectedRoute&gt;
+      &lt;DashboardLayout /&gt;
+    &lt;/ProtectedRoute&gt;
+  }
+/&gt;</pre></div>
+        <p>After login, <strong><code class="inline">navigate(location.state?.from ?? &quot;/&quot;)</code></strong> sends user back.</p>
+        <h3>7.2. Loader auth check</h3>
+        <p>In data routers, throw <strong><code class="inline">redirect(&quot;/login&quot;)</code></strong> from loader if session missing — centralizes gate before render.</p>
+      </section>
+      <section id="8-code-splitting-routes-preview">
+        <h2>8. Code splitting routes (preview)</h2>
+        <div class="code"><pre>import { lazy, Suspense } from &quot;react&quot;;
+
+const Settings = lazy(() =&gt; import(&quot;./Settings&quot;));
+
+&lt;Route
+  path=&quot;/settings&quot;
+  element={
+    &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+      &lt;Settings /&gt;
+    &lt;/Suspense&gt;
+  }
+/&gt;</pre></div>
+        <p>File 12 expands <strong>lazy</strong> and <strong>Suspense</strong>.</p>
+      </section>
+      <section id="9-putting-it-together">
+        <h2>9. Putting it together</h2>
+        <h3>9.1. Small app route table</h3>
+        <div class="code"><pre>const router = createBrowserRouter([
+  {
+    element: &lt;RootLayout /&gt;,
+    children: [
+      { index: true, element: &lt;Home /&gt; },
+      { path: &quot;products&quot;, element: &lt;ProductList /&gt; },
+      {
+        path: &quot;products/:id&quot;,
+        element: &lt;ProductDetail /&gt;,
+        loader: productLoader,
+        errorElement: &lt;RouteError /&gt;,
+      },
+      {
+        path: &quot;account&quot;,
+        element: &lt;ProtectedRoute&gt;&lt;Account /&gt;&lt;/ProtectedRoute&gt;,
+      },
+    ],
+  },
+  { path: &quot;login&quot;, element: &lt;Login /&gt; },
+  { path: &quot;*&quot;, element: &lt;NotFound /&gt; },
+]);</pre></div>
+      </section>
+      <section id="10-common-questions">
+        <h2>10. Common questions</h2>
+        <h3>10.1. Link vs anchor <code class="inline">&lt;a href&gt;</code>?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">&lt;Link&gt;</code></strong> navigates inside the SPA without reload. Use <strong><code class="inline">&lt;a href&gt;</code></strong> for external URLs or downloads.</p>
+        <h3>10.2. How do I read URL params?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">useParams()</code></strong> for path segments (<code class="inline">:id</code>). <strong><code class="inline">useSearchParams()</code></strong> for query string.</p>
+        <h3>10.3. What is Outlet?</h3>
+        <p><strong>A:</strong> Placeholder in a <strong>layout route</strong> where <strong>child routes</strong> render.</p>
+        <h3>10.4. Loader vs useEffect fetch?</h3>
+        <p><strong>A:</strong> <strong>Loader</strong> runs as part of routing — data ready before route component paints. <strong>useEffect</strong> is fine for client-only or non-router apps (File 10).</p>
+        <h3>10.5. How do nested routes build full paths?</h3>
+        <p><strong>A:</strong> Child paths <strong>append</strong> to parent unless they start with <code class="inline">/</code> (absolute).</p>
+        <h3>10.6. How do I redirect?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">&lt;Navigate to=&quot;...&quot; /&gt;</code></strong>, <strong><code class="inline">navigate()</code></strong>, or <strong><code class="inline">redirect()</code></strong> in loader/action.</p>
+        <h3>10.7. Where does BrowserRouter go?</h3>
+        <p><strong>A:</strong> Near app root (or use <strong><code class="inline">RouterProvider</code></strong> with <strong><code class="inline">createBrowserRouter</code></strong>). Only one router per app.</p>
+        <h3>10.8. How do I pass state between routes?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">navigate(&quot;/path&quot;, { state: { ... } })</code></strong> and <strong><code class="inline">useLocation().state</code></strong> — not in URL; lost on refresh.</p>
+        <h3>10.9. React Router vs Next.js routing?</h3>
+        <p><strong>A:</strong> <strong>React Router</strong> — client SPA in Vite/CRA. <strong>Next.js</strong> — file-based routing with server components. Concepts overlap; APIs differ.</p>
+        <h3>10.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 10 (data fetching, TanStack Query), File 12 (lazy routes), File 14 (app folder structure).</p>
+      </section>
+      <footer>HTML note for React.js File 09. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

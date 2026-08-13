@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>11. State Management - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-state-placement-decision-tree">1. State placement decision tree</a>
+        <a href="#2-context-limits-recap">2. Context limits (recap)</a>
+        <a href="#3-zustand">3. Zustand</a>
+        <a href="#4-redux-toolkit">4. Redux Toolkit</a>
+        <a href="#5-zustand-vs-redux-toolkit">5. Zustand vs Redux Toolkit</a>
+        <a href="#6-patterns-across-libraries">6. Patterns across libraries</a>
+        <a href="#7-putting-it-together">7. Putting it together</a>
+        <a href="#8-common-questions">8. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">11. State Management</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>11. State Management</h1>
+        <p class="subtitle">File 11 — local vs global state, Zustand / Redux Toolkit basics.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>React apps juggle <strong>local UI state</strong>, <strong>shared client state</strong>, and <strong>server state</strong> (File 10). This chapter clarifies <strong>what goes where</strong>, when <strong>Context + useReducer</strong> (File 08) is enough, and when to adopt <strong>Zustand</strong> or <strong>Redux Toolkit</strong> for global client state.</p>
+        <p><strong>Default rule today:</strong> keep state <strong>local</strong> until sharing hurts; use <strong>TanStack Query</strong> for server data; use <strong>Zustand</strong> for moderate global client state or <strong>Redux Toolkit</strong> when you need strict patterns, middleware, and large-team tooling.</p>
+      </section>
+      <section id="1-state-placement-decision-tree">
+        <h2>1. State placement decision tree</h2>
+        <h3>1.1. Where should this state live?</h3>
+        <div class="code"><pre>Is it from the API?
+  → Yes → TanStack Query / RTK Query (File 10)
+
+Do only one component and its children need it?
+  → Yes → useState / useReducer locally (File 03)
+
+Do siblings need it?
+  → Lift to common parent (File 03)
+
+Do many distant components need it?
+  → Context (File 08) OR global store (this chapter)
+
+Does it change very often across a huge tree?
+  → Prefer Zustand/Redux with selectors, not one big Context</pre></div>
+        <h3>1.2. Avoid duplicating server data in global store</h3>
+        <div class="code"><pre>// Avoid — user also lives in React Query cache
+dispatch(setUser(fetchedUser));
+
+// Prefer — single source for server copy
+const { data: user } = useQuery({ queryKey: [&quot;me&quot;], queryFn: fetchMe });</pre></div>
+        <p>Store <strong>UI preferences</strong>, <strong>draft wizard state</strong>, <strong>cart</strong> (if not server-owned) globally — not every GET response.</p>
+      </section>
+      <section id="2-context-limits-recap">
+        <h2>2. Context limits (recap)</h2>
+        <p>File 08 — Context works for theme, auth snapshot, locale. Pain points at scale:</p>
+        <ul><li>One <strong>Provider value</strong> change re-renders many consumers</li><li>No built-in <strong>middleware</strong>, <strong>devtools</strong>, or <strong>time-travel</strong></li><li>Easy to create a <strong>god context</strong> that everything subscribes to</li></ul>
+        <p>Graduate to a store when profiling shows Context churn or logic sprawls across files.</p>
+      </section>
+      <section id="3-zustand">
+        <h2>3. Zustand</h2>
+        <h3>3.1. Minimal global store</h3>
+        <div class="code"><pre>npm install zustand</pre></div>
+        <div class="code"><pre>import { create } from &quot;zustand&quot;;
+
+const useCartStore = create((set) =&gt; ({
+  items: [],
+  addItem: (item) =&gt;
+    set((state) =&gt; ({ items: [...state.items, item] })),
+  removeItem: (id) =&gt;
+    set((state) =&gt; ({
+      items: state.items.filter((i) =&gt; i.id !== id),
+    })),
+  clear: () =&gt; set({ items: [] }),
+}));
+
+function CartBadge() {
+  const count = useCartStore((s) =&gt; s.items.length);
+  return &lt;span&gt;{count}&lt;/span&gt;;
+}
+
+function AddButton({ product }) {
+  const addItem = useCartStore((s) =&gt; s.addItem);
+  return &lt;button onClick={() =&gt; addItem(product)}&gt;Add&lt;/button&gt;;
+}</pre></div>
+        <h3>3.2. Selectors prevent extra re-renders</h3>
+        <p>Subscribe to <strong>slices</strong> of state:</p>
+        <div class="code"><pre>const items = useCartStore((s) =&gt; s.items);        // re-render when items change
+const addItem = useCartStore((s) =&gt; s.addItem);    // stable function reference</pre></div>
+        <p>Only re-renders when <strong>selected value</strong> changes (shallow compare by default).</p>
+        <h3>3.3. When Zustand fits</h3>
+        <ul><li>Medium global state without boilerplate</li><li>Quick prototypes and production apps alike</li><li>Optional <strong>persist</strong> middleware (localStorage)</li><li>Works outside React — <code class="inline">useCartStore.getState()</code></li></ul>
+        <h3>3.4. immer middleware (optional)</h3>
+        <div class="code"><pre>import { immer } from &quot;zustand/middleware/immer&quot;;
+
+const useStore = create(
+  immer((set) =&gt; ({
+    todos: [],
+    toggle: (id) =&gt;
+      set((state) =&gt; {
+        const todo = state.todos.find((t) =&gt; t.id === id);
+        if (todo) todo.done = !todo.done;
+      }),
+  }))
+);</pre></div>
+      </section>
+      <section id="4-redux-toolkit">
+        <h2>4. Redux Toolkit</h2>
+        <h3>4.1. Core ideas</h3>
+        <table>
+        <thead>
+        <tr><th>Term</th><th>Meaning</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Store</strong></td><td>Single app state tree</td></tr>
+        <tr><td><strong>Slice</strong></td><td>One feature&#x27;s reducer + actions</td></tr>
+        <tr><td><strong>Dispatch</strong></td><td>Send action to update state</td></tr>
+        <tr><td><strong>Selector</strong></td><td>Read derived data from state</td></tr>
+        </tbody>
+        </table>
+        <p>Redux enforces <strong>one direction</strong>: UI → dispatch(action) → reducer → new state → UI.</p>
+        <h3>4.2. createSlice</h3>
+        <div class="code"><pre>import { configureStore, createSlice } from &quot;@reduxjs/toolkit&quot;;
+
+const cartSlice = createSlice({
+  name: &quot;cart&quot;,
+  initialState: { items: [] },
+  reducers: {
+    addItem(state, action) {
+      state.items.push(action.payload); // Immer inside RTK
+    },
+    removeItem(state, action) {
+      state.items = state.items.filter((i) =&gt; i.id !== action.payload);
+    },
+  },
+});
+
+export const { addItem, removeItem } = cartSlice.actions;
+
+const store = configureStore({
+  reducer: { cart: cartSlice.reducer },
+});</pre></div>
+        <h3>4.3. React bindings</h3>
+        <div class="code"><pre>import { Provider, useSelector, useDispatch } from &quot;react-redux&quot;;
+
+function App() {
+  return (
+    &lt;Provider store={store}&gt;
+      &lt;CartPage /&gt;
+    &lt;/Provider&gt;
+  );
+}
+
+function CartPage() {
+  const items = useSelector((state) =&gt; state.cart.items);
+  const dispatch = useDispatch();
+  return (
+    &lt;button onClick={() =&gt; dispatch(addItem({ id: 1, name: &quot;Hat&quot; }))}&gt;
+      Add ({items.length})
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <h3>4.4. RTK Query (server state)</h3>
+        <p>Redux Toolkit includes <strong>RTK Query</strong> — define API slices with generated hooks (parallel to TanStack Query). Pick <strong>one</strong> primary server cache per app.</p>
+        <h3>4.5. When Redux Toolkit fits</h3>
+        <ul><li>Large teams wanting <strong>strict conventions</strong></li><li>Complex async middleware (logging, analytics)</li><li><strong>Redux DevTools</strong> time-travel debugging</li><li>Existing Redux ecosystem investment</li></ul>
+      </section>
+      <section id="5-zustand-vs-redux-toolkit">
+        <h2>5. Zustand vs Redux Toolkit</h2>
+        <table>
+        <thead>
+        <tr><th></th><th>Zustand</th><th>Redux Toolkit</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Boilerplate</td><td>Low</td><td>Medium</td></tr>
+        <tr><td>Learning curve</td><td>Gentle</td><td>Steeper</td></tr>
+        <tr><td>DevTools</td><td>Optional plugin</td><td>First-class</td></tr>
+        <tr><td>Selectors</td><td>Per-hook selector</td><td><code class="inline">useSelector</code> + memoized selectors</td></tr>
+        <tr><td>Middleware</td><td>Minimal</td><td>Rich (thunks, listeners)</td></tr>
+        <tr><td>Best for</td><td>Most apps&#x27; client global state</td><td>Large apps, strict architecture</td></tr>
+        </tbody>
+        </table>
+        <p>Neither replaces <strong>TanStack Query</strong> for normalized server cache unless you standardize on RTK Query.</p>
+      </section>
+      <section id="6-patterns-across-libraries">
+        <h2>6. Patterns across libraries</h2>
+        <h3>6.1. Colocate feature state</h3>
+        <p>Keep cart logic in <code class="inline">cartSlice</code> or <code class="inline">useCartStore</code> — not scattered <code class="inline">useState</code> in ten files.</p>
+        <h3>6.2. Derived state</h3>
+        <p>Compute totals in <strong>selectors</strong> or <code class="inline">useMemo</code>, do not duplicate in store unless needed for perf:</p>
+        <div class="code"><pre>const total = useCartStore((s) =&gt;
+  s.items.reduce((sum, i) =&gt; sum + i.price, 0)
+);</pre></div>
+        <h3>6.3. URL as state</h3>
+        <p>Filters, pagination, selected tab — prefer <strong>URL search params</strong> (File 09) over global store when users should share/bookmark state.</p>
+      </section>
+      <section id="7-putting-it-together">
+        <h2>7. Putting it together</h2>
+        <h3>7.1. Small app stack</h3>
+        <table>
+        <thead>
+        <tr><th>Concern</th><th>Tool</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Form inputs</td><td><code class="inline">useState</code> (File 06)</td></tr>
+        <tr><td>Theme / auth user</td><td>Context (File 08)</td></tr>
+        <tr><td>API lists and details</td><td>TanStack Query (File 10)</td></tr>
+        <tr><td>Shopping cart UI</td><td>Zustand store</td></tr>
+        <tr><td>Routes</td><td>React Router (File 09)</td></tr>
+        </tbody>
+        </table>
+        <p>Avoid Redux until complexity or team standards require it.</p>
+      </section>
+      <section id="8-common-questions">
+        <h2>8. Common questions</h2>
+        <h3>8.1. Do I need Redux for every React app?</h3>
+        <p><strong>A:</strong> <strong>No.</strong> Most apps get by with <strong>local state</strong>, <strong>Context</strong>, <strong>TanStack Query</strong>, and optionally <strong>Zustand</strong>.</p>
+        <h3>8.2. Zustand vs Context?</h3>
+        <p><strong>A:</strong> <strong>Context</strong> for low-frequency shared values. <strong>Zustand</strong> when many components need <strong>selective</strong> subscriptions without prop drilling or giant re-renders.</p>
+        <h3>8.3. Should API data live in Redux?</h3>
+        <p><strong>A:</strong> Prefer <strong>TanStack Query</strong> or <strong>RTK Query</strong>. Duplicating server cache in manual Redux slices adds sync bugs.</p>
+        <h3>8.4. What is a selector?</h3>
+        <p><strong>A:</strong> Function that <strong>reads</strong> a slice of store state — enables fine-grained subscriptions.</p>
+        <h3>8.5. Can I use multiple Zustand stores?</h3>
+        <p><strong>A:</strong> <strong>Yes</strong> — one store per feature domain is common (<code class="inline">useCartStore</code>, <code class="inline">useUIStore</code>).</p>
+        <h3>8.6. Is dispatch stable in Redux?</h3>
+        <p><strong>A:</strong> <strong>Yes</strong> — like <code class="inline">useReducer</code> dispatch (File 08).</p>
+        <h3>8.7. How do I persist cart to localStorage?</h3>
+        <p><strong>A:</strong> Zustand <strong><code class="inline">persist</code></strong> middleware, or save in effect (File 05) — handle SSR carefully.</p>
+        <h3>8.8. When is Redux Toolkit worth the overhead?</h3>
+        <p><strong>A:</strong> Large codebases, many async workflows, team already on Redux, need <strong>standardized</strong> patterns and DevTools.</p>
+        <h3>8.9. Can Zustand and Redux coexist?</h3>
+        <p><strong>A:</strong> Technically yes, but <strong>avoid</strong> — pick one global client state approach.</p>
+        <h3>8.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 12 (performance — selectors vs re-renders), File 10 (server cache), File 14 (feature folders).</p>
+      </section>
+      <footer>HTML note for React.js File 11. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

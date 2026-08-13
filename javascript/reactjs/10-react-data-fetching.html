@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>10. Data Fetching - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-server-state-vs-client-state">1. Server state vs client state</a>
+        <a href="#2-fetch-with-usestate-and-useeffect">2. Fetch with useState and useEffect</a>
+        <a href="#3-post-put-delete-mutations">3. POST, PUT, DELETE (mutations)</a>
+        <a href="#4-tanstack-query-basics">4. TanStack Query basics</a>
+        <a href="#5-query-keys-and-cache-rules">5. Query keys and cache rules</a>
+        <a href="#6-react-router-loaders-query">6. React Router loaders + Query</a>
+        <a href="#7-error-and-loading-ux">7. Error and loading UX</a>
+        <a href="#8-alternatives-and-related-tools">8. Alternatives and related tools</a>
+        <a href="#9-putting-it-together">9. Putting it together</a>
+        <a href="#10-common-questions">10. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">10. Data Fetching</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>10. Data Fetching</h1>
+        <p class="subtitle">File 10 — fetch, loading/error states, TanStack Query patterns.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>Most apps load <strong>remote data</strong>. You need predictable <strong>loading</strong>, <strong>error</strong>, and <strong>success</strong> UI, plus rules for <strong>when</strong> to fetch, <strong>caching</strong>, and <strong>refetching</strong>. This chapter covers hand-rolled <strong><code class="inline">fetch</code></strong> with React state, then <strong>TanStack Query</strong> (React Query) as the modern default for <strong>server state</strong>.</p>
+        <p>Builds on <code class="inline">useEffect</code> (File 05), lists and conditionals (File 04), and routing loaders (File 09).</p>
+        <p><strong>Default rule today:</strong> treat <strong>server state</strong> separately from <strong>UI state</strong>; use <strong>TanStack Query</strong> (or similar) for API data in production apps; hand-roll <code class="inline">fetch</code> + <code class="inline">useState</code> only for small cases or learning.</p>
+      </section>
+      <section id="1-server-state-vs-client-state">
+        <h2>1. Server state vs client state</h2>
+        <h3>1.1. Two kinds of state</h3>
+        <table>
+        <thead>
+        <tr><th>Client (UI) state</th><th>Server state</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Form inputs, modals open, tab index</td><td>Users, products, comments from API</td></tr>
+        <tr><td>Owned by the browser session</td><td>Owned by the server; <strong>cached copy</strong> on client</td></tr>
+        <tr><td><code class="inline">useState</code>, <code class="inline">useReducer</code></td><td>fetch, TanStack Query, SWR</td></tr>
+        </tbody>
+        </table>
+        <p>Do not mirror entire API responses into global Redux unless you need to — <strong>server cache libraries</strong> handle sync, deduping, and staleness.</p>
+        <h3>1.2. Async UI states</h3>
+        <p>Every fetch UI should handle:</p>
+        <div class="code"><pre>if (loading) return &lt;Spinner /&gt;;
+if (error) return &lt;ErrorMessage error={error} /&gt;;
+if (!data) return null;
+return &lt;DataView data={data} /&gt;;</pre></div>
+        <p>File 04 — early return pattern.</p>
+      </section>
+      <section id="2-fetch-with-usestate-and-useeffect">
+        <h2>2. Fetch with useState and useEffect</h2>
+        <h3>2.1. Basic pattern</h3>
+        <div class="code"><pre>function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/users/${userId}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) setUser(data);
+      } catch (e) {
+        if (!cancelled) setError(e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () =&gt; { cancelled = true; };
+  }, [userId]);
+
+  if (loading) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Error: {error.message}&lt;/p&gt;;
+  return &lt;div&gt;{user.name}&lt;/div&gt;;
+}</pre></div>
+        <h3>2.2. Race conditions</h3>
+        <p>When <strong><code class="inline">userId</code></strong> changes quickly, an older request may finish last. Fixes:</p>
+        <ul><li><strong><code class="inline">AbortController</code></strong> abort on cleanup (File 05)</li><li><strong><code class="inline">cancelled</code> flag</strong> (above)</li><li>Query library handles this automatically</li></ul>
+        <h3>2.3. Extract to custom hook</h3>
+        <div class="code"><pre>function useUser(userId) {
+  const [state, setState] = useState({ data: null, loading: true, error: null });
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+    (async () =&gt; {
+      try {
+        const res = await fetch(`/api/users/${userId}`);
+        if (!res.ok) throw new Error(&quot;Failed&quot;);
+        const data = await res.json();
+        if (!cancelled) setState({ data, loading: false, error: null });
+      } catch (error) {
+        if (!cancelled) setState({ data: null, loading: false, error });
+      }
+    })();
+    return () =&gt; { cancelled = true; };
+  }, [userId]);
+
+  return state;
+}</pre></div>
+        <p>Good for learning; production apps benefit from a query library.</p>
+      </section>
+      <section id="3-post-put-delete-mutations">
+        <h2>3. POST, PUT, DELETE (mutations)</h2>
+        <h3>3.1. Imperative fetch in event handler</h3>
+        <div class="code"><pre>async function handleSubmit(e) {
+  e.preventDefault();
+  setSaving(true);
+  try {
+    const res = await fetch(&quot;/api/posts&quot;, {
+      method: &quot;POST&quot;,
+      headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+      body: JSON.stringify(form),
+    });
+    if (!res.ok) throw new Error(&quot;Save failed&quot;);
+    const post = await res.json();
+    navigate(`/posts/${post.id}`);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setSaving(false);
+  }
+}</pre></div>
+        <p>Mutations often live in <strong>handlers</strong> (File 06), not <code class="inline">useEffect</code>.</p>
+        <h3>3.2. Optimistic updates</h3>
+        <p>Update UI <strong>before</strong> server confirms; roll back on error — TanStack Query <strong><code class="inline">onMutate</code></strong> / <strong><code class="inline">useOptimistic</code></strong> (React 19) simplify this.</p>
+      </section>
+      <section id="4-tanstack-query-basics">
+        <h2>4. TanStack Query basics</h2>
+        <h3>4.1. Setup</h3>
+        <div class="code"><pre>npm install @tanstack/react-query</pre></div>
+        <div class="code"><pre>import { QueryClient, QueryClientProvider } from &quot;@tanstack/react-query&quot;;
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    &lt;QueryClientProvider client={queryClient}&gt;
+      &lt;Routes /&gt;
+    &lt;/QueryClientProvider&gt;
+  );
+}</pre></div>
+        <h3>4.2. useQuery</h3>
+        <div class="code"><pre>import { useQuery } from &quot;@tanstack/react-query&quot;;
+
+function UserProfile({ userId }) {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: [&quot;user&quot;, userId],
+    queryFn: () =&gt;
+      fetch(`/api/users/${userId}`).then((r) =&gt; {
+        if (!r.ok) throw new Error(&quot;Failed&quot;);
+        return r.json();
+      }),
+  });
+
+  if (isLoading) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (isError) return &lt;p&gt;Error: {error.message}&lt;/p&gt;;
+  return &lt;div&gt;{data.name}&lt;/div&gt;;
+}</pre></div>
+        <p><strong><code class="inline">queryKey</code></strong> — unique cache identity. <strong><code class="inline">queryFn</code></strong> — returns a Promise of data.</p>
+        <h3>4.3. What TanStack Query gives you</h3>
+        <table>
+        <thead>
+        <tr><th>Feature</th><th>Benefit</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Caching</strong></td><td>Same key → no redundant network</td></tr>
+        <tr><td><strong>Deduping</strong></td><td>Parallel mounts share one request</td></tr>
+        <tr><td><strong>Background refetch</strong></td><td>Stale data refreshes quietly</td></tr>
+        <tr><td><strong>Retry</strong></td><td>Configurable on failure</td></tr>
+        <tr><td><strong>DevTools</strong></td><td>Inspect cache and queries</td></tr>
+        </tbody>
+        </table>
+        <h3>4.4. useMutation</h3>
+        <div class="code"><pre>import { useMutation, useQueryClient } from &quot;@tanstack/react-query&quot;;
+
+function CreatePostForm() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (newPost) =&gt;
+      fetch(&quot;/api/posts&quot;, {
+        method: &quot;POST&quot;,
+        headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify(newPost),
+      }).then((r) =&gt; r.json()),
+    onSuccess: () =&gt; {
+      queryClient.invalidateQueries({ queryKey: [&quot;posts&quot;] });
+    },
+  });
+
+  return (
+    &lt;button
+      onClick={() =&gt; mutation.mutate({ title: &quot;Hello&quot; })}
+      disabled={mutation.isPending}
+    &gt;
+      {mutation.isPending ? &quot;Saving...&quot; : &quot;Create&quot;}
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <p><strong><code class="inline">invalidateQueries</code></strong> — refetch lists after create/update.</p>
+      </section>
+      <section id="5-query-keys-and-cache-rules">
+        <h2>5. Query keys and cache rules</h2>
+        <h3>5.1. Key structure</h3>
+        <div class="code"><pre>[&quot;users&quot;]                    // all users list
+[&quot;users&quot;, userId]            // one user
+[&quot;users&quot;, userId, &quot;posts&quot;]   // nested resource</pre></div>
+        <p>Keys should include <strong>every variable</strong> the queryFn uses.</p>
+        <h3>5.2. enabled option</h3>
+        <p>Skip fetch until ready:</p>
+        <div class="code"><pre>useQuery({
+  queryKey: [&quot;user&quot;, userId],
+  queryFn: () =&gt; fetchUser(userId),
+  enabled: !!userId,
+});</pre></div>
+        <h3>5.3. staleTime and gcTime</h3>
+        <ul><li><strong><code class="inline">staleTime</code></strong> — how long data is &quot;fresh&quot; before background refetch</li><li><strong><code class="inline">gcTime</code></strong> (formerly cacheTime) — how long unused cache stays in memory</li></ul>
+        <p>Tune per resource — static config vs live dashboard differ.</p>
+      </section>
+      <section id="6-react-router-loaders-query">
+        <h2>6. React Router loaders + Query</h2>
+        <h3>6.1. Prefetch in loader</h3>
+        <div class="code"><pre>// In route loader — prefetch into query cache before render
+loader: async ({ params }) =&gt; {
+  await queryClient.ensureQueryData({
+    queryKey: [&quot;product&quot;, params.id],
+    queryFn: () =&gt; fetchProduct(params.id),
+  });
+  return null;
+};</pre></div>
+        <p>Component uses same <strong><code class="inline">queryKey</code></strong> — instant cache hit (File 09).</p>
+        <h3>6.2. When to use loader vs useQuery alone</h3>
+        <table>
+        <thead>
+        <tr><th>Loader prefetch</th><th>useQuery only</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Critical path data for route</td><td>Client-only apps, secondary data</td></tr>
+        <tr><td>Avoid loading spinner on navigation</td><td>Simpler setup</td></tr>
+        </tbody>
+        </table>
+        <p>Both are valid; combine for best UX on important routes.</p>
+      </section>
+      <section id="7-error-and-loading-ux">
+        <h2>7. Error and loading UX</h2>
+        <h3>7.1. Granular loading</h3>
+        <ul><li><strong>Initial load</strong> — full-page or skeleton</li><li><strong>Background refetch</strong> — subtle indicator, keep showing stale data</li><li><strong><code class="inline">isFetching</code> vs <code class="inline">isLoading</code></strong> in TanStack Query — know the difference</li></ul>
+        <h3>7.2. Error boundaries vs query error</h3>
+        <p><strong>Query <code class="inline">isError</code></strong> — expected API failures, retry buttons. <strong>Error boundary</strong> — unexpected render throws (File 14).</p>
+        <h3>7.3. Empty states</h3>
+        <p>Distinguish <strong>loaded empty array</strong> from <strong>still loading</strong>:</p>
+        <div class="code"><pre>if (isLoading) return &lt;Spinner /&gt;;
+if (data.length === 0) return &lt;p&gt;No results.&lt;/p&gt;;</pre></div>
+      </section>
+      <section id="8-alternatives-and-related-tools">
+        <h2>8. Alternatives and related tools</h2>
+        <table>
+        <thead>
+        <tr><th>Tool</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>SWR</strong></td><td>Similar hooks API from Vercel</td></tr>
+        <tr><td><strong>RTK Query</strong></td><td>Redux Toolkit integrated queries (File 11)</td></tr>
+        <tr><td><strong>Apollo Client</strong></td><td>GraphQL-focused</td></tr>
+        <tr><td><strong>fetch in Server Components</strong></td><td>Next.js — data on server, not client effect</td></tr>
+        </tbody>
+        </table>
+        <p>Pick one <strong>server cache</strong> strategy per app; avoid mixing many overlapping libraries.</p>
+      </section>
+      <section id="9-putting-it-together">
+        <h2>9. Putting it together</h2>
+        <h3>9.1. Products list + detail</h3>
+        <div class="code"><pre>function ProductList() {
+  const { data: products, isLoading, error } = useQuery({
+    queryKey: [&quot;products&quot;],
+    queryFn: fetchProducts,
+  });
+
+  if (isLoading) return &lt;p&gt;Loading products...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Failed to load products.&lt;/p&gt;;
+
+  return (
+    &lt;ul&gt;
+      {products.map((p) =&gt; (
+        &lt;li key={p.id}&gt;
+          &lt;Link to={`/products/${p.id}`}&gt;{p.name}&lt;/Link&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+function ProductDetail({ id }) {
+  const { data: product, isLoading, error } = useQuery({
+    queryKey: [&quot;products&quot;, id],
+    queryFn: () =&gt; fetchProduct(id),
+  });
+
+  if (isLoading) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Not found.&lt;/p&gt;;
+  return &lt;h1&gt;{product.name}&lt;/h1&gt;;
+}</pre></div>
+      </section>
+      <section id="10-common-questions">
+        <h2>10. Common questions</h2>
+        <h3>10.1. Where should I fetch — useEffect or event handler?</h3>
+        <p><strong>A:</strong> <strong>Load data</strong> — <code class="inline">useEffect</code>, route <strong>loader</strong>, or <strong><code class="inline">useQuery</code></strong>. <strong>Mutations</strong> — <strong>event handlers</strong> / <strong><code class="inline">useMutation</code></strong>, not effect on mount.</p>
+        <h3>10.2. What is server state?</h3>
+        <p><strong>A:</strong> Data that <strong>lives on the server</strong> and you <strong>cache</strong> on the client — users, lists, permissions. Different from UI toggles and form drafts.</p>
+        <h3>10.3. Why TanStack Query over raw fetch?</h3>
+        <p><strong>A:</strong> <strong>Caching</strong>, deduping, retries, background refresh, and less boilerplate for loading/error.</p>
+        <h3>10.4. What is a query key?</h3>
+        <p><strong>A:</strong> A <strong>serializable array</strong> identifying a query in the cache — must include all variables (<code class="inline">userId</code>, filters).</p>
+        <h3>10.5. How do I refetch after a mutation?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">queryClient.invalidateQueries({ queryKey: [...] })</code></strong> or update cache directly with <strong><code class="inline">setQueryData</code></strong>.</p>
+        <h3>10.6. How do I avoid fetch races?</h3>
+        <p><strong>A:</strong> <strong>AbortController</strong>, cancelled flag, or use a library that cancels outdated queries by key.</p>
+        <h3>10.7. isLoading vs isFetching?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">isLoading</code></strong> — no cached data yet and fetching. <strong><code class="inline">isFetching</code></strong> — any in-flight request (including background).</p>
+        <h3>10.8. Should I store API data in useContext?</h3>
+        <p><strong>A:</strong> Usually <strong>no</strong> — use TanStack Query. Context fits <strong>auth session</strong>, theme, not full API cache.</p>
+        <h3>10.9. Loader vs useQuery?</h3>
+        <p><strong>A:</strong> <strong>Loader</strong> prefetches before route render. <strong>useQuery</strong> fetches when component mounts. Combine with shared <strong><code class="inline">queryKey</code></strong>.</p>
+        <h3>10.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 11 (global client state), File 12 (Suspense + queries), File 09 (loaders).</p>
+      </section>
+      <footer>HTML note for React.js File 10. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>05. useEffect &amp; Side Effects - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-side-effects-vs-render">1. Side effects vs render</a>
+        <a href="#2-basic-useeffect-syntax">2. Basic useEffect syntax</a>
+        <a href="#3-dependency-array-in-depth">3. Dependency array in depth</a>
+        <a href="#4-cleanup">4. Cleanup</a>
+        <a href="#5-common-effect-patterns">5. Common effect patterns</a>
+        <a href="#6-when-not-to-use-useeffect">6. When not to use useEffect</a>
+        <a href="#7-strict-mode-and-development-behavior">7. Strict Mode and development behavior</a>
+        <a href="#8-multiple-effects">8. Multiple effects</a>
+        <a href="#9-putting-it-together">9. Putting it together</a>
+        <a href="#10-common-questions">10. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">05. useEffect &amp; Side Effects</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>05. useEffect &amp; Side Effects</h1>
+        <p class="subtitle">File 05 — useEffect, deps, cleanup, sync with external systems.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>React components should be <strong>pure during render</strong>: given the same props and state, they return the same UI. Anything that <strong>touches the outside world</strong> — fetching data, subscribing to events, updating <code class="inline">document.title</code>, starting timers — is a <strong>side effect</strong>. <strong><code class="inline">useEffect</code></strong> runs that work <strong>after</strong> React paints the screen, and lets you <strong>sync</strong> component state with external systems.</p>
+        <p>Builds on state and events (File 03) and rendering patterns (File 04). File 10 goes deeper on <strong>data fetching</strong>; File 07 covers <strong>custom hooks</strong> that wrap effects.</p>
+        <p><strong>Default rule today:</strong> put side effects in <strong><code class="inline">useEffect</code></strong>, not in the render body; list every value from the component that the effect <strong>reads</strong> in the <strong>dependency array</strong>; return a <strong>cleanup</strong> function when you subscribe, listen, or create resources that must be torn down.</p>
+      </section>
+      <section id="1-side-effects-vs-render">
+        <h2>1. Side effects vs render</h2>
+        <h3>1.1. What belongs outside render</h3>
+        <p><strong>Render</strong> should compute UI from props and state only:</p>
+        <div class="code"><pre>function Greeting({ name }) {
+  // Good — pure calculation during render
+  const label = name.trim() || &quot;Guest&quot;;
+  return &lt;h1&gt;Hello, {label}&lt;/h1&gt;;
+}</pre></div>
+        <p><strong>Side effects</strong> change something outside this render pass:</p>
+        <table>
+        <thead>
+        <tr><th>Side effect</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Network</td><td><code class="inline">fetch(&quot;/api/user&quot;)</code></td></tr>
+        <tr><td>DOM API</td><td><code class="inline">document.title = &quot;Home&quot;</code></td></tr>
+        <tr><td>Subscriptions</td><td><code class="inline">socket.on(&quot;message&quot;, handler)</code></td></tr>
+        <tr><td>Timers</td><td><code class="inline">setInterval(tick, 1000)</code></td></tr>
+        <tr><td>Third-party widgets</td><td><code class="inline">new Chart(canvas, options)</code></td></tr>
+        <tr><td>Local storage</td><td><code class="inline">localStorage.setItem(&quot;theme&quot;, theme)</code></td></tr>
+        </tbody>
+        </table>
+        <p>Running these <strong>during render</strong> causes bugs: they may run on every render, race with each other, and break React&#x27;s predictable model (File 01 — pure components).</p>
+        <h3>1.2. Where useEffect runs</h3>
+        <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
+
+function Page({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() =&gt; {
+    // Runs AFTER React commits UI to the screen
+    document.title = user ? `${user.name} — App` : &quot;App&quot;;
+  }, [user]);
+
+  return user ? &lt;Profile user={user} /&gt; : &lt;p&gt;Loading...&lt;/p&gt;;
+}</pre></div>
+        <p><strong>Order on mount/update:</strong></p>
+        <ol><li>Component function runs (render).</li><li>React updates the DOM.</li><li>Browser paints.</li><li><strong><code class="inline">useEffect</code></strong> callbacks run.</li></ol>
+        <p>Effects do <strong>not</strong> block painting — good for responsiveness. For urgent DOM work before paint, React offers <strong><code class="inline">useLayoutEffect</code></strong> (File 12 — rare, mostly measurements).</p>
+      </section>
+      <section id="2-basic-useeffect-syntax">
+        <h2>2. Basic useEffect syntax</h2>
+        <h3>2.1. Effect function</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  // effect body — side effect code here
+});</pre></div>
+        <p>The function you pass to <code class="inline">useEffect</code> is the <strong>effect</strong>. React calls it after render.</p>
+        <h3>2.2. Optional cleanup return</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  const id = setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
+
+  return () =&gt; {
+    clearInterval(id);  // cleanup — runs before next effect and on unmount
+  };
+}, []);</pre></div>
+        <p>Return a <strong>cleanup function</strong> when you need to undo what the effect set up.</p>
+        <h3>2.3. Dependency array (third argument)</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  // ...
+}, [dep1, dep2]);  // re-run when dep1 or dep2 change</pre></div>
+        <table>
+        <thead>
+        <tr><th>Dependency array</th><th>When effect runs</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Omitted</strong></td><td>After <strong>every</strong> render (almost never what you want)</td></tr>
+        <tr><td><strong><code class="inline">[]</code></strong></td><td>Once after <strong>mount</strong> (plus Strict Mode extra run in dev — see 5.7)</td></tr>
+        <tr><td><strong><code class="inline">[a, b]</code></strong></td><td>After mount and whenever <strong><code class="inline">a</code> or <code class="inline">b</code></strong> changes</td></tr>
+        </tbody>
+        </table>
+      </section>
+      <section id="3-dependency-array-in-depth">
+        <h2>3. Dependency array in depth</h2>
+        <h3>3.1. Include what you read</h3>
+        <p>If the effect <strong>uses</strong> a value from the component, include it in deps:</p>
+        <div class="code"><pre>function ChatRoom({ roomId }) {
+  useEffect(() =&gt; {
+    const connection = createConnection(roomId);
+    connection.connect();
+    return () =&gt; connection.disconnect();
+  }, [roomId]);  // roomId is read inside — must be listed
+}</pre></div>
+        <p>When <code class="inline">roomId</code> changes, React runs <strong>cleanup</strong> for the old room, then runs the effect for the new room.</p>
+        <h3>3.2. Stale closures</h3>
+        <p>Missing deps causes <strong>stale</strong> values inside the effect:</p>
+        <div class="code"><pre>function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() =&gt; {
+    const id = setInterval(() =&gt; {
+      console.log(count);  // always logs initial count if [count] missing
+    }, 1000);
+    return () =&gt; clearInterval(id);
+  }, []);  // Bug — count is stale
+
+  return &lt;button onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;{count}&lt;/button&gt;;
+}</pre></div>
+        <p><strong>Fix options:</strong></p>
+        <div class="code"><pre>// Option A — add count to deps (effect re-subscribes when count changes)
+useEffect(() =&gt; {
+  const id = setInterval(() =&gt; console.log(count), 1000);
+  return () =&gt; clearInterval(id);
+}, [count]);
+
+// Option B — functional update in event handler, not in interval (often better design)
+// Option C — useRef for latest value without re-running effect (File 07)</pre></div>
+        <h3>3.3. Stable functions and deps</h3>
+        <p>Functions defined in the component are <strong>new references</strong> every render:</p>
+        <div class="code"><pre>function Search({ query }) {
+  function fetchResults() {
+    return fetch(`/api?q=${query}`);
+  }
+
+  useEffect(() =&gt; {
+    fetchResults();
+  }, [fetchResults]);  // runs every render — fetchResults identity changes
+}</pre></div>
+        <p><strong>Fixes:</strong></p>
+        <div class="code"><pre>// Move fetch inline in effect — only list query
+useEffect(() =&gt; {
+  fetch(`/api?q=${query}`);
+}, [query]);
+
+// Or wrap fetchResults in useCallback when shared (File 12)</pre></div>
+        <p><strong>Setters from <code class="inline">useState</code></strong> and <strong><code class="inline">dispatch</code> from <code class="inline">useReducer</code></strong> are stable — safe to omit from deps (React guarantees identity).</p>
+        <h3>3.4. Objects and arrays as deps</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  saveSettings(settings);
+}, [settings]);  // new object reference every render → effect runs every time</pre></div>
+        <p>If <code class="inline">settings</code> is recreated each render, the effect fires too often. <strong>Derive</strong> stable deps (primitives) or <strong>memoize</strong> the object (File 12).</p>
+        <h3>3.5. ESLint <code class="inline">react-hooks/exhaustive-deps</code></h3>
+        <p>The <strong><code class="inline">eslint-plugin-react-hooks</code></strong> rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.</p>
+      </section>
+      <section id="4-cleanup">
+        <h2>4. Cleanup</h2>
+        <h3>4.1. When cleanup runs</h3>
+        <p>Cleanup runs:</p>
+        <ol><li><strong>Before</strong> the effect runs again (when deps change).</li><li>When the component <strong>unmounts</strong>.</li></ol>
+        <div class="code"><pre>useEffect(() =&gt; {
+  console.log(&quot;subscribe&quot;, roomId);
+  return () =&gt; console.log(&quot;unsubscribe&quot;, roomId);
+}, [roomId]);
+
+// Mount room A:  subscribe A
+// Change to B:   unsubscribe A → subscribe B
+// Unmount:       unsubscribe B</pre></div>
+        <h3>4.2. Subscriptions and listeners</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  function onResize() {
+    setWidth(window.innerWidth);
+  }
+
+  window.addEventListener(&quot;resize&quot;, onResize);
+  return () =&gt; window.removeEventListener(&quot;resize&quot;, onResize);
+}, []);</pre></div>
+        <p>Always remove listeners, close connections, and abort fetches in cleanup.</p>
+        <h3>4.3. Aborting fetch</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  const controller = new AbortController();
+
+  async function load() {
+    try {
+      const res = await fetch(`/api/users/${id}`, {
+        signal: controller.signal,
+      });
+      const data = await res.json();
+      setUser(data);
+    } catch (err) {
+      if (err.name !== &quot;AbortError&quot;) setError(err);
+    }
+  }
+
+  load();
+  return () =&gt; controller.abort();
+}, [id]);</pre></div>
+        <p>Without abort, a slow response for <strong>old</strong> <code class="inline">id</code> can overwrite state after <strong>new</strong> <code class="inline">id</code> loaded (<strong>race condition</strong>). File 10 expands on loading/error UI.</p>
+        <h3>4.4. Timers</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  const id = setTimeout(() =&gt; setVisible(true), 300);
+  return () =&gt; clearTimeout(id);
+}, []);</pre></div>
+      </section>
+      <section id="5-common-effect-patterns">
+        <h2>5. Common effect patterns</h2>
+        <h3>5.1. Syncing document title</h3>
+        <div class="code"><pre>function ProductPage({ product }) {
+  useEffect(() =&gt; {
+    document.title = product ? product.name : &quot;Shop&quot;;
+  }, [product]);
+
+  return &lt;ProductDetails product={product} /&gt;;
+}</pre></div>
+        <p>Small, self-contained — good first useEffect.</p>
+        <h3>5.2. Fetch on mount / when id changes</h3>
+        <div class="code"><pre>function UserProfile({ userId }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/users/${userId}`);
+        if (!res.ok) throw new Error(&quot;Failed to load&quot;);
+        const data = await res.json();
+        if (!cancelled) setUser(data);
+      } catch (e) {
+        if (!cancelled) setError(e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () =&gt; { cancelled = true; };
+  }, [userId]);
+
+  if (loading) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Error: {error.message}&lt;/p&gt;;
+  if (!user) return null;
+
+  return &lt;Profile user={user} /&gt;;
+}</pre></div>
+        <p>For production apps, prefer <strong>TanStack Query</strong> or similar (File 10) instead of hand-rolled fetch effects.</p>
+        <h3>5.3. Syncing to localStorage</h3>
+        <div class="code"><pre>function usePersistedState(key, initial) {
+  const [value, setValue] = useState(() =&gt; {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : initial;
+  });
+
+  useEffect(() =&gt; {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+}</pre></div>
+        <p><strong>Note:</strong> reading <code class="inline">localStorage</code> in lazy <code class="inline">useState</code> initializer is fine; <strong>writing</strong> on every <code class="inline">value</code> change belongs in an effect (or event handler if you only save on explicit save).</p>
+        <h3>5.4. External non-React library</h3>
+        <div class="code"><pre>useEffect(() =&gt; {
+  const chart = new Chart(canvasRef.current, { /* options */ });
+  return () =&gt; chart.destroy();
+}, [data]);</pre></div>
+        <p>Create / destroy imperatively in effect + cleanup when the library is not React-aware.</p>
+      </section>
+      <section id="6-when-not-to-use-useeffect">
+        <h2>6. When not to use useEffect</h2>
+        <h3>6.1. Deriving state during render</h3>
+        <p>Don&#x27;t sync state with props via effect when you can <strong>compute during render</strong>:</p>
+        <div class="code"><pre>// Avoid
+function FullName({ first, last }) {
+  const [full, setFull] = useState(&quot;&quot;);
+  useEffect(() =&gt; {
+    setFull(`${first} ${last}`);
+  }, [first, last]);
+}
+
+// Prefer
+function FullName({ first, last }) {
+  const full = `${first} ${last}`;
+  return &lt;span&gt;{full}&lt;/span&gt;;
+}</pre></div>
+        <p>Use <strong><code class="inline">useMemo</code></strong> only when the computation is expensive (File 12).</p>
+        <h3>6.2. User events belong in handlers</h3>
+        <div class="code"><pre>// Avoid — effect on every query change to POST analytics
+useEffect(() =&gt; {
+  trackSearch(query);
+}, [query]);
+
+// Prefer — track when user submits
+function onSubmit(e) {
+  e.preventDefault();
+  trackSearch(query);
+  runSearch(query);
+}</pre></div>
+        <p>Effects are for <strong>syncing with external systems</strong>, not for chaining <strong>event → state → event</strong>.</p>
+        <h3>6.3. Initial data that could be server-provided</h3>
+        <p>In frameworks with <strong>server components</strong> or <strong>loaders</strong> (File 09), fetch on the server or in the route loader instead of <code class="inline">useEffect</code> on mount when possible.</p>
+        <h3>6.4. Resetting state when a prop changes</h3>
+        <div class="code"><pre>// Avoid extra effect + flash
+useEffect(() =&gt; {
+  setSelectedItem(null);
+}, [userId]);
+
+// Prefer — key on child resets state when userId changes
+&lt;UserItems key={userId} userId={userId} /&gt;</pre></div>
+        <p>Or pass <code class="inline">userId</code> and derive selection during render.</p>
+      </section>
+      <section id="7-strict-mode-and-development-behavior">
+        <h2>7. Strict Mode and development behavior</h2>
+        <p>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts → unmounts → remounts</strong> components to surface missing cleanup:</p>
+        <div class="code"><pre>useEffect(() =&gt; {
+  console.log(&quot;effect&quot;);
+  return () =&gt; console.log(&quot;cleanup&quot;);
+}, []);
+// Dev logs: effect, cleanup, effect
+// Prod logs: effect</pre></div>
+        <p><strong>Implications:</strong></p>
+        <ul><li>Effects must be <strong>idempotent</strong> — safe to run twice in dev.</li><li>Cleanup must fully undo the effect — subscriptions must not leak.</li><li>Do not rely on &quot;run once ever&quot; in dev without understanding Strict Mode.</li></ul>
+      </section>
+      <section id="8-multiple-effects">
+        <h2>8. Multiple effects</h2>
+        <p>Split unrelated side effects into <strong>separate</strong> <code class="inline">useEffect</code> calls:</p>
+        <div class="code"><pre>function Dashboard({ userId }) {
+  useEffect(() =&gt; {
+    document.title = &quot;Dashboard&quot;;
+  }, []);
+
+  useEffect(() =&gt; {
+    const conn = connectAnalytics(userId);
+    return () =&gt; conn.disconnect();
+  }, [userId]);
+
+  useEffect(() =&gt; {
+    // fetch widgets...
+  }, [userId]);
+
+  return &lt;div&gt;...&lt;/div&gt;;
+}</pre></div>
+        <p>Each effect has its own <strong>deps</strong> and <strong>cleanup</strong> — easier to reason about than one large effect.</p>
+      </section>
+      <section id="9-putting-it-together">
+        <h2>9. Putting it together</h2>
+        <h3>9.1. Online status hook (preview of File 07)</h3>
+        <div class="code"><pre>function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== &quot;undefined&quot; ? navigator.onLine : true
+  );
+
+  useEffect(() =&gt; {
+    function goOnline() { setIsOnline(true); }
+    function goOffline() { setIsOnline(false); }
+
+    window.addEventListener(&quot;online&quot;, goOnline);
+    window.addEventListener(&quot;offline&quot;, goOffline);
+
+    return () =&gt; {
+      window.removeEventListener(&quot;online&quot;, goOnline);
+      window.removeEventListener(&quot;offline&quot;, goOffline);
+    };
+  }, []);
+
+  return isOnline;
+}
+
+function StatusBar() {
+  const online = useOnlineStatus();
+  return &lt;span&gt;{online ? &quot;Online&quot; : &quot;Offline&quot;}&lt;/span&gt;;
+}</pre></div>
+        <p>Custom hooks are just functions that call <code class="inline">useEffect</code> — File 07 formalizes the pattern.</p>
+        <h3>9.2. Debounced search (effect + cleanup)</h3>
+        <div class="code"><pre>function SearchUsers({ onResults }) {
+  const [query, setQuery] = useState(&quot;&quot;);
+
+  useEffect(() =&gt; {
+    if (!query.trim()) {
+      onResults([]);
+      return;
+    }
+
+    const id = setTimeout(async () =&gt; {
+      const res = await fetch(`/api/users?q=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      onResults(data);
+    }, 300);
+
+    return () =&gt; clearTimeout(id);
+  }, [query, onResults]);
+
+  return (
+    &lt;input
+      value={query}
+      onChange={(e) =&gt; setQuery(e.target.value)}
+      placeholder=&quot;Search users&quot;
+    /&gt;
+  );
+}</pre></div>
+        <p>Debounce cleanup cancels the pending fetch when <code class="inline">query</code> changes before 300ms.</p>
+      </section>
+      <section id="10-common-questions">
+        <h2>10. Common questions</h2>
+        <h3>10.1. What is a side effect in React?</h3>
+        <p><strong>A:</strong> Anything that touches <strong>outside</strong> the render result — network, DOM APIs, timers, subscriptions, storage. Run these in <strong><code class="inline">useEffect</code></strong>, not during render.</p>
+        <h3>10.2. When does useEffect run?</h3>
+        <p><strong>A:</strong> <strong>After</strong> React commits the update to the DOM and the browser paints. On mount and after re-renders where <strong>dependencies</strong> changed (if you pass a dependency array).</p>
+        <h3>10.3. What does an empty dependency array <code class="inline">[]</code> mean?</h3>
+        <p><strong>A:</strong> Run the effect <strong>once after mount</strong> (and run cleanup on unmount). In Strict Mode dev, mount/cleanup/mount runs once extra to test cleanup.</p>
+        <h3>10.4. What happens if I omit the dependency array?</h3>
+        <p><strong>A:</strong> The effect runs after <strong>every</strong> render. Rarely correct — almost always specify <code class="inline">[]</code> or <code class="inline">[deps]</code>.</p>
+        <h3>10.5. Why do I need a cleanup function?</h3>
+        <p><strong>A:</strong> To <strong>undo</strong> subscriptions, listeners, timers, and in-flight requests when deps change or the component unmounts. Prevents leaks and stale updates.</p>
+        <h3>10.6. How do I fix stale closure bugs in effects?</h3>
+        <p><strong>A:</strong> Add missing values to the <strong>dependency array</strong>, use <strong>functional state updates</strong>, or store latest values in <strong><code class="inline">useRef</code></strong> (File 07). Follow <strong><code class="inline">exhaustive-deps</code></strong> lint warnings.</p>
+        <h3>10.7. Can I fetch data in useEffect?</h3>
+        <p><strong>A:</strong> <strong>Yes</strong> for client-only loading. Use <strong>abort/cancel</strong> on cleanup to avoid races. For real apps, prefer <strong>TanStack Query</strong> or route <strong>loaders</strong> (Files 09–10).</p>
+        <h3>10.8. Should I use useEffect to update state when props change?</h3>
+        <p><strong>A:</strong> Usually <strong>no</strong> — compute derived values during <strong>render</strong>, reset with <strong><code class="inline">key</code></strong>, or adjust design. Effects that only mirror props into state often cause extra renders.</p>
+        <h3>10.9. Why does my effect run twice in development?</h3>
+        <p><strong>A:</strong> <strong>Strict Mode</strong> intentionally double-invokes effects in dev to verify cleanup. Production runs once per dependency change.</p>
+        <h3>10.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).</p>
+      </section>
+      <footer>HTML note for React.js File 05. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>07. Type Narrowing &amp; Guards - TypeScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> TypeScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./typescript.html">← TypeScript</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-typeof-and-instanceof-narrowing">1. `typeof` and `instanceof` narrowing</a>
+        <a href="#2-truthiness-narrowing">2. Truthiness narrowing</a>
+        <a href="#3-type-predicates-is">3. Type predicates (`is`)</a>
+        <a href="#4-in-operator-narrowing">4. `in` operator narrowing</a>
+        <a href="#5-common-questions">5. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./typescript.html">TypeScript</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">07. Type Narrowing &amp; Guards</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>07. Type Narrowing &amp; Guards</h1>
+        <p class="subtitle">File 07 — typeof, instanceof, truthiness, type predicates, <code class="inline">in</code>.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p><strong>Narrowing</strong> refines a broad type to a specific one inside a branch so TypeScript allows safe operations.</p>
+        <div class="code"><pre>function print(value: string | number) {
+  if (typeof value === &quot;string&quot;) {
+    console.log(value.toUpperCase()); // string
+  } else {
+    console.log(value.toFixed(2));    // number
+  }
+}</pre></div>
+      </section>
+      <section id="1-typeof-and-instanceof-narrowing">
+        <h2>1. <code class="inline">typeof</code> and <code class="inline">instanceof</code> narrowing</h2>
+        <h3>1.1. <code class="inline">typeof</code> (primitives)</h3>
+        <p>Works well for: <code class="inline">string</code>, <code class="inline">number</code>, <code class="inline">boolean</code>, <code class="inline">bigint</code>, <code class="inline">symbol</code>, <code class="inline">undefined</code>, <code class="inline">function</code>.</p>
+        <div class="code"><pre>function assertString(x: unknown) {
+  if (typeof x === &quot;string&quot;) {
+    x.length; // OK
+  }
+}</pre></div>
+        <p><strong>Caveat:</strong> <code class="inline">typeof null === &quot;object&quot;</code> in JavaScript — combine with null check:</p>
+        <div class="code"><pre>if (typeof value === &quot;object&quot; &amp;&amp; value !== null) {
+  // object (not null)
+}</pre></div>
+        <h3>1.2. <code class="inline">instanceof</code> (objects / classes)</h3>
+        <div class="code"><pre>class ApiError extends Error {
+  statusCode: number;
+  constructor(message: string, statusCode: number) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
+
+function handle(err: unknown) {
+  if (err instanceof ApiError) {
+    console.log(err.statusCode);
+  } else if (err instanceof Error) {
+    console.log(err.message);
+  }
+}</pre></div>
+        <p><code class="inline">instanceof</code> checks the prototype chain — useful for class instances, not plain object shapes.</p>
+      </section>
+      <section id="2-truthiness-narrowing">
+        <h2>2. Truthiness narrowing</h2>
+        <p>Falsy values in JS: <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>.</p>
+        <div class="code"><pre>function printName(name: string | null | undefined) {
+  if (name) {
+    console.log(name.toUpperCase());
+  }
+}</pre></div>
+        <h3>2.1. Equality narrowing</h3>
+        <div class="code"><pre>function example(x: string | number, y: string | boolean) {
+  if (x === y) {
+    // x and y are both string here
+  }
+}</pre></div>
+        <h3>2.2. <code class="inline">== null</code> / <code class="inline">!= null</code></h3>
+        <p>Checks both <code class="inline">null</code> and <code class="inline">undefined</code>:</p>
+        <div class="code"><pre>if (value != null) {
+  // value is neither null nor undefined
+}</pre></div>
+      </section>
+      <section id="3-type-predicates-is">
+        <h2>3. Type predicates (<code class="inline">is</code>)</h2>
+        <p>A <strong>type predicate</strong> tells TypeScript a boolean function narrows the type:</p>
+        <div class="code"><pre>interface Fish {
+  swim: () =&gt; void;
+}
+
+interface Bird {
+  fly: () =&gt; void;
+}
+
+function isFish(pet: Fish | Bird): pet is Fish {
+  return (pet as Fish).swim !== undefined;
+}
+
+function move(pet: Fish | Bird) {
+  if (isFish(pet)) {
+    pet.swim();
+  } else {
+    pet.fly();
+  }
+}</pre></div>
+        <p>Custom guards are essential for <strong>discriminated unions</strong> without a single tag field:</p>
+        <div class="code"><pre>function isSuccess&lt;T&gt;(
+  result: { ok: true; data: T } | { ok: false; error: string }
+): result is { ok: true; data: T } {
+  return result.ok === true;
+}</pre></div>
+      </section>
+      <section id="4-in-operator-narrowing">
+        <h2>4. <code class="inline">in</code> operator narrowing</h2>
+        <p>Check if a property exists on an object:</p>
+        <div class="code"><pre>type Cat = { meow: () =&gt; void };
+type Dog = { bark: () =&gt; void };
+
+function speak(pet: Cat | Dog) {
+  if (&quot;meow&quot; in pet) {
+    pet.meow();
+  } else {
+    pet.bark();
+  }
+}</pre></div>
+        <p>Works with discriminated unions:</p>
+        <div class="code"><pre>type Action =
+  | { type: &quot;increment&quot;; amount: number }
+  | { type: &quot;reset&quot; };
+
+function reducer(state: number, action: Action): number {
+  switch (action.type) {
+    case &quot;increment&quot;:
+      return state + action.amount;
+    case &quot;reset&quot;:
+      return 0;
+  }
+}</pre></div>
+        <h3>4.1. Assignment narrowing</h3>
+        <div class="code"><pre>let x: string | number = &quot;hello&quot;;
+x = 42; // now narrowed to number in following code</pre></div>
+        <h3>4.2. Control flow analysis</h3>
+        <p>TypeScript tracks narrowing across <code class="inline">if</code>, <code class="inline">else</code>, <code class="inline">switch</code>, early <code class="inline">return</code>, and <code class="inline">throw</code>:</p>
+        <div class="code"><pre>function process(value: string | null) {
+  if (!value) {
+    return;
+  }
+  // value is string here
+  console.log(value.length);
+}</pre></div>
+      </section>
+      <section id="5-common-questions">
+        <h2>5. Common questions</h2>
+        <h3>5.1. What is narrowing?</h3>
+        <p><strong>A:</strong> Refining a union or <code class="inline">unknown</code> to a specific type inside a conditional branch.</p>
+        <h3>5.2. <code class="inline">typeof</code> vs <code class="inline">instanceof</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">typeof</code> for primitives (and functions). <code class="inline">instanceof</code> for class instances.</p>
+        <h3>5.3. What is a type predicate?</h3>
+        <p><strong>A:</strong> Return type <code class="inline">arg is Type</code> on a boolean function — custom narrowing for TS.</p>
+        <h3>5.4. Why doesn&#x27;t <code class="inline">typeof</code> narrow <code class="inline">null</code> correctly?</h3>
+        <p><strong>A:</strong> JS quirk — <code class="inline">typeof null === &quot;object&quot;</code>. Always add <code class="inline">value !== null</code>.</p>
+        <h3>5.5. Does narrowing work across function boundaries?</h3>
+        <p><strong>A:</strong> Generally <strong>no</strong> — TS does not track mutations on outer variables inside nested functions (unless const or proven immutable).</p>
+        <h3>5.6. How do I narrow <code class="inline">unknown</code> from <code class="inline">JSON.parse</code>?</h3>
+        <p><strong>A:</strong> Validate with <code class="inline">typeof</code>, <code class="inline">Array.isArray</code>, custom type guards, or libraries like Zod/io-ts.</p>
+        <h3>5.7. What is discriminant narrowing?</h3>
+        <p><strong>A:</strong> Switching on a shared field (<code class="inline">kind</code>, <code class="inline">type</code>, <code class="inline">status</code>) to narrow tagged unions (File 05).</p>
+        <h3>5.8. Can I assert a type without narrowing?</h3>
+        <p><strong>A:</strong> Type assertions (<code class="inline">as Type</code>) force TS to trust you — no runtime check. Prefer guards when data is external.</p>
+      </section>
+      <footer>HTML note for TypeScript File 07. Open from the TypeScript index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

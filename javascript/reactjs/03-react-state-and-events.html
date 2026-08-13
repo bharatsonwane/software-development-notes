@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>03. State &amp; Events - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-usestate-in-depth">1. useState in depth</a>
+        <a href="#2-events-in-react">2. Events in React</a>
+        <a href="#3-one-way-data-flow">3. One-way data flow</a>
+        <a href="#4-lifting-state-up">4. Lifting state up</a>
+        <a href="#5-state-design-basics">5. State design basics</a>
+        <a href="#6-common-questions">6. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">03. State &amp; Events</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>03. State &amp; Events</h1>
+        <p class="subtitle">File 03 — useState, events, lifting state up, one-way data flow.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p><strong>State</strong> lets components remember and update data over time. <strong>Events</strong> let users interact with the UI. React combines them with <strong>one-way data flow</strong>: data moves <strong>down</strong> via props; changes move <strong>up</strong> via <strong>callback</strong> props.</p>
+        <p>File 01 introduced <code class="inline">useState</code> briefly. This chapter goes deeper on <strong>updating state correctly</strong>, <strong>handling events</strong>, and <strong>lifting state</strong> to a common parent.</p>
+        <p><strong>Default rule today:</strong> treat state as <strong>immutable</strong> (copy, don&#x27;t mutate); use <strong>functional updates</strong> when the next value depends on the previous; lift state to the <strong>lowest common ancestor</strong> of components that need it.</p>
+      </section>
+      <section id="1-usestate-in-depth">
+        <h2>1. useState in depth</h2>
+        <h3>1.1. State and re-renders</h3>
+        <p>When you call a state <strong>setter</strong>, React:</p>
+        <ol><li>Schedules a <strong>re-render</strong> of that component.</li><li>Runs the component function again with the <strong>new</strong> state.</li><li>Updates the DOM where output changed (reconciliation).</li></ol>
+        <div class="code"><pre>import { useState } from &quot;react&quot;;
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  console.log(&quot;render&quot;, count);
+
+  return (
+    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <p>Each click logs a new render with an incremented count.</p>
+        <h3>1.2. Initial state and lazy initialization</h3>
+        <div class="code"><pre>const [count, setCount] = useState(0);
+const [user, setUser] = useState({ name: &quot;&quot;, age: 0 });</pre></div>
+        <p><strong>Expensive initial value</strong> — pass a <strong>function</strong> so it runs only once:</p>
+        <div class="code"><pre>function ExpensiveInit() {
+  const [data, setData] = useState(() =&gt; {
+    return computeHeavyInitialValue();
+  });
+}</pre></div>
+        <p>Without the function, <code class="inline">computeHeavyInitialValue()</code> would run on <strong>every</strong> render.</p>
+        <h3>1.3. Functional updates</h3>
+        <p>When the next state depends on the <strong>previous</strong> state, use the updater form:</p>
+        <div class="code"><pre>setCount((prev) =&gt; prev + 1);
+setCount((prev) =&gt; prev + 1);  // safe when batched — both see correct prev</pre></div>
+        <p>Avoid stale closures in async handlers:</p>
+        <div class="code"><pre>// Risky if multiple updates batch
+setCount(count + 1);
+
+// Safer
+setCount((prev) =&gt; prev + 1);</pre></div>
+        <h3>1.4. Object and array state (immutability)</h3>
+        <p><strong>Do not mutate</strong> state objects or arrays — replace with a <strong>new</strong> copy:</p>
+        <div class="code"><pre>const [user, setUser] = useState({ name: &quot;Bharat&quot;, age: 30 });
+
+// Bad — mutates same object
+// user.age = 31;
+// setUser(user);
+
+// Good — new object
+setUser({ ...user, age: 31 });</pre></div>
+        <p>Arrays:</p>
+        <div class="code"><pre>const [items, setItems] = useState([&quot;a&quot;, &quot;b&quot;]);
+
+setItems([...items, &quot;c&quot;]);           // add
+setItems(items.filter((x) =&gt; x !== &quot;a&quot;));  // remove
+setItems(items.map((x) =&gt; x === &quot;b&quot; ? &quot;B&quot; : x));  // update one</pre></div>
+        <p>Same idea as JavaScript immutability (File 12) — React compares by reference for change detection.</p>
+        <h3>1.5. Multiple state variables</h3>
+        <p>Split unrelated state — easier to reason about:</p>
+        <div class="code"><pre>function Form() {
+  const [name, setName] = useState(&quot;&quot;);
+  const [email, setEmail] = useState(&quot;&quot;);
+  const [agreed, setAgreed] = useState(false);
+}</pre></div>
+        <p>Combine into one object when fields always update together (File 06 — forms):</p>
+        <div class="code"><pre>const [form, setForm] = useState({ name: &quot;&quot;, email: &quot;&quot; });
+
+setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
+        <h3>1.6. Batching (brief)</h3>
+        <p>React <strong>batches</strong> multiple setters in the same event handler into <strong>one re-render</strong>:</p>
+        <div class="code"><pre>function handleClick() {
+  setCount((c) =&gt; c + 1);
+  setFlag((f) =&gt; !f);
+  // one re-render, not two
+}</pre></div>
+        <p>React 18+ batches more cases (including promises/timeouts in many setups). File 05 for async interaction.</p>
+      </section>
+      <section id="2-events-in-react">
+        <h2>2. Events in React</h2>
+        <h3>2.1. Synthetic events</h3>
+        <p>React wraps native DOM events in <strong>SyntheticEvent</strong> — same interface across browsers, pooled for performance (details rarely matter in app code):</p>
+        <div class="code"><pre>function Button() {
+  function handleClick(event) {
+    console.log(event.type);   // &quot;click&quot;
+    console.log(event.target); // DOM element
+  }
+
+  return &lt;button onClick={handleClick}&gt;Click&lt;/button&gt;;
+}</pre></div>
+        <p>Use <strong>camelCase</strong> event names: <code class="inline">onClick</code>, <code class="inline">onChange</code>, <code class="inline">onSubmit</code>, <code class="inline">onKeyDown</code>.</p>
+        <h3>2.2. Common handlers</h3>
+        <p><strong>Click:</strong></p>
+        <div class="code"><pre>&lt;button onClick={() =&gt; console.log(&quot;clicked&quot;)}&gt;Go&lt;/button&gt;</pre></div>
+        <p><strong>Input change:</strong></p>
+        <div class="code"><pre>function SearchBox() {
+  const [query, setQuery] = useState(&quot;&quot;);
+
+  return (
+    &lt;input
+      value={query}
+      onChange={(e) =&gt; setQuery(e.target.value)}
+      placeholder=&quot;Search...&quot;
+    /&gt;
+  );
+}</pre></div>
+        <p><strong>Form submit:</strong></p>
+        <div class="code"><pre>function LoginForm() {
+  function handleSubmit(e) {
+    e.preventDefault();  // don&#x27;t full-page reload
+    console.log(&quot;submit&quot;);
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;button type=&quot;submit&quot;&gt;Log in&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
+        <p>Full forms in File 06.</p>
+        <h3>2.3. Passing arguments to handlers</h3>
+        <div class="code"><pre>function ItemList({ items }) {
+  function handleDelete(id) {
+    console.log(&quot;delete&quot;, id);
+  }
+
+  return items.map((item) =&gt; (
+    &lt;button key={item.id} onClick={() =&gt; handleDelete(item.id)}&gt;
+      Delete {item.name}
+    &lt;/button&gt;
+  ));
+}</pre></div>
+        <p>Wrap in arrow function — <code class="inline">onClick={handleDelete(item.id)}</code> would <strong>call immediately</strong> on render.</p>
+        <h3>2.4. preventDefault and stopPropagation</h3>
+        <div class="code"><pre>function Link({ href, onNavigate }) {
+  function handleClick(e) {
+    e.preventDefault();        // cancel default anchor navigation
+    onNavigate(href);
+  }
+
+  return &lt;a href={href} onClick={handleClick}&gt;Go&lt;/a&gt;;
+}</pre></div>
+        <div class="code"><pre>function handleInnerClick(e) {
+  e.stopPropagation();  // don&#x27;t bubble to parent handlers
+}</pre></div>
+      </section>
+      <section id="3-one-way-data-flow">
+        <h2>3. One-way data flow</h2>
+        <h3>3.1. Data down, events up</h3>
+        <p>Parent owns <strong>state</strong>; child receives <strong>props</strong> and <strong>callbacks</strong>:</p>
+        <div class="code"><pre>function Parent() {
+  const [text, setText] = useState(&quot;&quot;);
+
+  return (
+    &lt;Child
+      value={text}
+      onChange={setText}
+    /&gt;
+  );
+}
+
+function Child({ value, onChange }) {
+  return (
+    &lt;input
+      value={value}
+      onChange={(e) =&gt; onChange(e.target.value)}
+    /&gt;
+  );
+}</pre></div>
+        <ul><li><strong>Down:</strong> <code class="inline">value={text}</code></li><li><strong>Up:</strong> <code class="inline">onChange</code> calls parent&#x27;s <code class="inline">setText</code></li></ul>
+        <p>Child does not own the text state — parent does (<strong>controlled</strong> pattern, File 06).</p>
+        <h3>3.2. Unidirectional flow benefits</h3>
+        <ul><li>Easier to trace bugs — state lives in one place.</li><li>Predictable UI — render is a function of state.</li><li>Siblings stay in sync when they share parent state.</li></ul>
+        <h3>3.3. Controlled vs uncontrolled (preview)</h3>
+        <table>
+        <thead>
+        <tr><th></th><th>Controlled</th><th>Uncontrolled</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Value source</td><td>React state</td><td>DOM</td></tr>
+        <tr><td>Read value</td><td>From state</td><td>Ref to DOM (File 07)</td></tr>
+        <tr><td>Typical</td><td>Forms, inputs</td><td>Simple file inputs, legacy</td></tr>
+        </tbody>
+        </table>
+        <p>Prefer <strong>controlled</strong> for most React forms.</p>
+      </section>
+      <section id="4-lifting-state-up">
+        <h2>4. Lifting state up</h2>
+        <p>When <strong>two or more components</strong> need the same state, move it to their <strong>closest common parent</strong>.</p>
+        <h3>4.1. Problem: siblings need shared data</h3>
+        <div class="code"><pre>// Won&#x27;t stay in sync — separate state each
+function BrokenApp() {
+  return (
+    &lt;&gt;
+      &lt;TemperatureInput scale=&quot;c&quot; /&gt;
+      &lt;TemperatureInput scale=&quot;f&quot; /&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>Each <code class="inline">TemperatureInput</code> would keep its own temperature.</p>
+        <h3>4.2. Solution: lift to parent</h3>
+        <div class="code"><pre>function App() {
+  const [temperature, setTemperature] = useState(&quot;&quot;);
+  const [scale, setScale] = useState(&quot;c&quot;);
+
+  return (
+    &lt;&gt;
+      &lt;TemperatureInput
+        scale=&quot;c&quot;
+        temperature={scale === &quot;c&quot; ? temperature : toCelsius(temperature, scale)}
+        onTemperatureChange={setTemperature}
+      /&gt;
+      &lt;TemperatureInput
+        scale=&quot;f&quot;
+        temperature={scale === &quot;f&quot; ? temperature : toFahrenheit(temperature, scale)}
+        onTemperatureChange={setTemperature}
+      /&gt;
+      &lt;BoilingVerdict celsius={parseFloat(temperature)} /&gt;
+    &lt;/&gt;
+  );
+}
+
+function TemperatureInput({ scale, temperature, onTemperatureChange }) {
+  return (
+    &lt;fieldset&gt;
+      &lt;legend&gt;Enter temperature in {scale.toUpperCase()}:&lt;/legend&gt;
+      &lt;input
+        value={temperature}
+        onChange={(e) =&gt; onTemperatureChange(e.target.value)}
+      /&gt;
+    &lt;/fieldset&gt;
+  );
+}
+
+function BoilingVerdict({ celsius }) {
+  if (celsius &gt;= 100) return &lt;p&gt;Water boils.&lt;/p&gt;;
+  return &lt;p&gt;Water does not boil.&lt;/p&gt;;
+}</pre></div>
+        <p>Parent holds <strong>single source of truth</strong>; children are controlled.</p>
+        <h3>4.3. Lifting callback-only state</h3>
+        <p>Child triggers action; parent updates list:</p>
+        <div class="code"><pre>function TodoApp() {
+  const [todos, setTodos] = useState([]);
+
+  function addTodo(text) {
+    setTodos((prev) =&gt; [...prev, { id: Date.now(), text, done: false }]);
+  }
+
+  function toggleTodo(id) {
+    setTodos((prev) =&gt;
+      prev.map((t) =&gt; (t.id === id ? { ...t, done: !t.done } : t))
+    );
+  }
+
+  return (
+    &lt;&gt;
+      &lt;TodoInput onAdd={addTodo} /&gt;
+      &lt;TodoList todos={todos} onToggle={toggleTodo} /&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>List rendering details in File 04.</p>
+        <h3>4.4. How far to lift</h3>
+        <p>Lift to the <strong>lowest</strong> ancestor that:</p>
+        <ul><li>Needs the state for its own render, or</li><li>Has both children that need read/write access.</li></ul>
+        <p>Lift too high → prop drilling (File 02, File 08). Keep state local when only one component cares.</p>
+      </section>
+      <section id="5-state-design-basics">
+        <h2>5. State design basics</h2>
+        <h3>5.1. Single source of truth</h3>
+        <p>Avoid duplicating the same fact in two state variables:</p>
+        <div class="code"><pre>// Bad — name and fullName can drift
+const [first, setFirst] = useState(&quot;&quot;);
+const [last, setLast] = useState(&quot;&quot;);
+const [fullName, setFullName] = useState(&quot;&quot;);
+
+// Good — derive during render
+const fullName = `${first} ${last}`.trim();</pre></div>
+        <p><strong>Derived values</strong> — compute from state/props in render; don&#x27;t store unless expensive (File 12 — <code class="inline">useMemo</code>).</p>
+        <h3>5.2. Minimal state</h3>
+        <p>Ask: &quot;What is the minimum state needed?&quot; Remove anything computable:</p>
+        <div class="code"><pre>const [items, setItems] = useState([]);
+const [filter, setFilter] = useState(&quot;&quot;);
+
+const visibleItems = items.filter((item) =&gt;
+  item.name.toLowerCase().includes(filter.toLowerCase())
+);
+// visibleItems is derived — not separate useState</pre></div>
+        <h3>5.3. State structure</h3>
+        <table>
+        <thead>
+        <tr><th>Prefer</th><th>Avoid</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Flat, normalized lists (<code class="inline">id</code> keys)</td><td>Deeply nested duplicate objects</td></tr>
+        <tr><td>Separate booleans for independent flags</td><td>One big `status: &quot;loading&quot; \</td></tr>
+        <tr><td>Lift shared state</td><td>Copy same data into sibling state</td></tr>
+        </tbody>
+        </table>
+        <p>Complex global state → File 08, File 11.</p>
+      </section>
+      <section id="6-common-questions">
+        <h2>6. Common questions</h2>
+        <h3>6.1. Why doesn&#x27;t updating a variable re-render the component?</h3>
+        <p><strong>A:</strong> React only re-renders when <strong>state</strong> (via setter) or <strong>parent</strong> re-renders with new props. Plain <code class="inline">let</code> variables are not tracked.</p>
+        <h3>6.2. Can I mutate state directly?</h3>
+        <p><strong>A:</strong> <strong>No.</strong> Mutating objects/arrays in place may skip re-renders and breaks predictability. Always pass a <strong>new</strong> reference to the setter.</p>
+        <h3>6.3. When should I use the functional form of setState?</h3>
+        <p><strong>A:</strong> When the new state <strong>depends on the previous</strong> state, especially with batched updates or inside timeouts (<code class="inline">setCount(prev =&gt; prev + 1)</code>).</p>
+        <h3>6.4. What is lifting state up?</h3>
+        <p><strong>A:</strong> Moving shared state from child components to their <strong>common parent</strong>, then passing it down as props and updating via callbacks.</p>
+        <h3>6.5. What is one-way data flow?</h3>
+        <p><strong>A:</strong> Data flows <strong>down</strong> (props); events/callbacks flow <strong>up</strong>. Parents own state; children request changes through handlers.</p>
+        <h3>6.6. What is a SyntheticEvent?</h3>
+        <p><strong>A:</strong> React&#x27;s cross-browser wrapper around native DOM events, used by <code class="inline">onClick</code>, <code class="inline">onChange</code>, etc.</p>
+        <h3>6.7. Why use <code class="inline">e.preventDefault()</code> on forms?</h3>
+        <p><strong>A:</strong> To stop the browser&#x27;s default <strong>full page reload</strong> on submit and handle submission in JavaScript instead.</p>
+        <h3>6.8. What is the difference between controlled and uncontrolled components?</h3>
+        <p><strong>A:</strong> <strong>Controlled</strong> — React state is the source of truth for input value. <strong>Uncontrolled</strong> — DOM holds value; read via ref (File 07).</p>
+        <h3>6.9. Should every input have its own useState?</h3>
+        <p><strong>A:</strong> Often <strong>yes</strong> for simple forms, or <strong>one object</strong> for many related fields. Lift to parent when siblings or submit handler need the data.</p>
+        <h3>6.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 04 (lists, keys, conditional UI), File 06 (forms), File 05 (useEffect for side effects).</p>
+      </section>
+      <footer>HTML note for React.js File 03. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

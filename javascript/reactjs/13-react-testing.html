@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>13. Testing - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-testing-philosophy">1. Testing philosophy</a>
+        <a href="#2-setup">2. Setup</a>
+        <a href="#3-queries-priority-order">3. Queries (priority order)</a>
+        <a href="#4-user-events">4. User events</a>
+        <a href="#5-testing-async-and-data">5. Testing async and data</a>
+        <a href="#6-providers-and-routing">6. Providers and routing</a>
+        <a href="#7-testing-hooks">7. Testing hooks</a>
+        <a href="#8-mocking-modules">8. Mocking modules</a>
+        <a href="#9-accessibility-checks">9. Accessibility checks</a>
+        <a href="#10-what-to-test-per-feature">10. What to test per feature</a>
+        <a href="#11-putting-it-together">11. Putting it together</a>
+        <a href="#12-common-questions">12. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">13. Testing</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>13. Testing</h1>
+        <p class="subtitle">File 13 — React Testing Library, user events, mocking.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>Tests give confidence that components <strong>behave correctly for users</strong> — not that implementation details match snapshots. <strong>React Testing Library (RTL)</strong> queries the DOM like a user and fires <strong>real events</strong>. Pair with <strong>Vitest</strong> or <strong>Jest</strong> as the test runner.</p>
+        <p>Builds on components, state, forms, and hooks (Files 02–07). File 14 covers error boundaries tested similarly.</p>
+        <p><strong>Default rule today:</strong> test <strong>behavior and accessibility</strong>, not internal state; query by <strong>role/label/text</strong>; use <strong><code class="inline">userEvent</code></strong> over raw <code class="inline">fireEvent</code> when simulating typing and clicks; mock <strong>network</strong>, not child components, unless isolating a unit.</p>
+      </section>
+      <section id="1-testing-philosophy">
+        <h2>1. Testing philosophy</h2>
+        <h3>1.1. Test user-visible behavior</h3>
+        <div class="code"><pre>// Good — what the user sees and does
+expect(screen.getByRole(&quot;button&quot;, { name: /submit/i })).toBeEnabled();
+await user.click(screen.getByRole(&quot;button&quot;, { name: /submit/i }));
+expect(await screen.findByText(/success/i)).toBeInTheDocument();
+
+// Avoid — testing implementation
+expect(component.state.count).toBe(1);</pre></div>
+        <p>Users do not see <code class="inline">state</code> or hook names — tests should not depend on them.</p>
+        <h3>1.2. Testing Library guiding principle</h3>
+        <div class="callout">The more your tests resemble the way your software is used, the more confidence they can give you.</div>
+      </section>
+      <section id="2-setup">
+        <h2>2. Setup</h2>
+        <h3>2.1. Typical stack (Vite + Vitest)</h3>
+        <div class="code"><pre>npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom</pre></div>
+        <div class="code"><pre>// vitest.config.js
+import { defineConfig } from &quot;vitest/config&quot;;
+
+export default defineConfig({
+  test: {
+    environment: &quot;jsdom&quot;,
+    setupFiles: [&quot;./src/test/setup.js&quot;],
+  },
+});</pre></div>
+        <div class="code"><pre>// src/test/setup.js
+import &quot;@testing-library/jest-dom/vitest&quot;;</pre></div>
+        <p>CRA/Jest projects use similar packages with <code class="inline">setupTests.js</code>.</p>
+        <h3>2.2. Basic test</h3>
+        <div class="code"><pre>import { render, screen } from &quot;@testing-library/react&quot;;
+import { describe, it, expect } from &quot;vitest&quot;;
+import Greeting from &quot;./Greeting&quot;;
+
+describe(&quot;Greeting&quot;, () =&gt; {
+  it(&quot;shows the name&quot;, () =&gt; {
+    render(&lt;Greeting name=&quot;Ada&quot; /&gt;);
+    expect(screen.getByText(&quot;Hello, Ada&quot;)).toBeInTheDocument();
+  });
+});</pre></div>
+      </section>
+      <section id="3-queries-priority-order">
+        <h2>3. Queries (priority order)</h2>
+        <h3>3.1. Preferred queries</h3>
+        <table>
+        <thead>
+        <tr><th>Priority</th><th>Query</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>1</td><td><strong>getByRole</strong></td><td><code class="inline">getByRole(&quot;button&quot;, { name: /save/i })</code></td></tr>
+        <tr><td>2</td><td><strong>getByLabelText</strong></td><td><code class="inline">getByLabelText(/email/i)</code></td></tr>
+        <tr><td>3</td><td><strong>getByPlaceholderText</strong></td><td><code class="inline">getByPlaceholderText(/search/i)</code></td></tr>
+        <tr><td>4</td><td><strong>getByText</strong></td><td><code class="inline">getByText(/welcome/i)</code></td></tr>
+        <tr><td>5</td><td><strong>getByDisplayValue</strong></td><td><code class="inline">getByDisplayValue(&quot;Ada&quot;)</code></td></tr>
+        <tr><td>Last resort</td><td><strong>getByTestId</strong></td><td><code class="inline">getByTestId(&quot;custom-widget&quot;)</code></td></tr>
+        </tbody>
+        </table>
+        <p><strong>Role + accessible name</strong> encourages accessible markup (File 06 — labels).</p>
+        <h3>3.2. getBy vs queryBy vs findBy</h3>
+        <table>
+        <thead>
+        <tr><th>Variant</th><th>Async</th><th>Empty result</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>getBy</strong></td><td>No</td><td><strong>Throws</strong></td></tr>
+        <tr><td><strong>queryBy</strong></td><td>No</td><td>Returns <code class="inline">null</code></td></tr>
+        <tr><td><strong>findBy</strong></td><td>Yes (waits)</td><td>Throws after timeout</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+
+await screen.findByText(/loaded/i); // waits for async UI</pre></div>
+        <h3>3.3. within — scope queries</h3>
+        <div class="code"><pre>const row = screen.getByRole(&quot;row&quot;, { name: /ada/i });
+within(row).getByRole(&quot;button&quot;, { name: /edit/i });</pre></div>
+      </section>
+      <section id="4-user-events">
+        <h2>4. User events</h2>
+        <h3>4.1. userEvent.setup()</h3>
+        <div class="code"><pre>import userEvent from &quot;@testing-library/user-event&quot;;
+
+it(&quot;updates input&quot;, async () =&gt; {
+  const user = userEvent.setup();
+  render(&lt;SearchBox /&gt;);
+
+  const input = screen.getByRole(&quot;textbox&quot;, { name: /search/i });
+  await user.type(input, &quot;react&quot;);
+  expect(input).toHaveValue(&quot;react&quot;);
+});</pre></div>
+        <p><strong><code class="inline">userEvent</code></strong> simulates realistic keyboard/mouse sequences — preferred over <strong><code class="inline">fireEvent.click</code></strong> for interactions.</p>
+        <h3>4.2. Form submit</h3>
+        <div class="code"><pre>await user.type(screen.getByLabelText(/email/i), &quot;a@b.com&quot;);
+await user.type(screen.getByLabelText(/password/i), &quot;secret123&quot;);
+await user.click(screen.getByRole(&quot;button&quot;, { name: /log in/i }));
+
+expect(await screen.findByText(/welcome/i)).toBeInTheDocument();</pre></div>
+        <p>Matches File 06 form patterns.</p>
+        <h3>4.3. Keyboard</h3>
+        <div class="code"><pre>await user.keyboard(&quot;{Enter}&quot;);
+await user.tab();</pre></div>
+      </section>
+      <section id="5-testing-async-and-data">
+        <h2>5. Testing async and data</h2>
+        <h3>5.1. waitFor</h3>
+        <div class="code"><pre>import { waitFor } from &quot;@testing-library/react&quot;;
+
+await waitFor(() =&gt; {
+  expect(screen.getByText(&quot;Ada Lovelace&quot;)).toBeInTheDocument();
+});</pre></div>
+        <p>Prefer <strong><code class="inline">findBy*</code></strong> when waiting for one element.</p>
+        <h3>5.2. Mocking fetch</h3>
+        <div class="code"><pre>import { vi } from &quot;vitest&quot;;
+
+beforeEach(() =&gt; {
+  vi.stubGlobal(
+    &quot;fetch&quot;,
+    vi.fn(() =&gt;
+      Promise.resolve({
+        ok: true,
+        json: () =&gt; Promise.resolve({ name: &quot;Ada&quot; }),
+      })
+    )
+  );
+});
+
+afterEach(() =&gt; {
+  vi.unstubAllGlobals();
+});</pre></div>
+        <p>Or use <strong>MSW (Mock Service Worker)</strong> for realistic HTTP mocking across tests.</p>
+        <h3>5.3. QueryClient wrapper</h3>
+        <p>For TanStack Query components (File 10):</p>
+        <div class="code"><pre>function renderWithQuery(ui) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+  return render(
+    &lt;QueryClientProvider client={client}&gt;{ui}&lt;/QueryClientProvider&gt;
+  );
+}</pre></div>
+        <p>Disable retries in tests for faster failures.</p>
+      </section>
+      <section id="6-providers-and-routing">
+        <h2>6. Providers and routing</h2>
+        <h3>6.1. Custom render helper</h3>
+        <div class="code"><pre>function renderWithProviders(ui, { route = &quot;/&quot; } = {}) {
+  window.history.pushState({}, &quot;&quot;, route);
+  return render(
+    &lt;QueryClientProvider client={testQueryClient}&gt;
+      &lt;ThemeProvider&gt;
+        &lt;MemoryRouter initialEntries={[route]}&gt;
+          {ui}
+        &lt;/MemoryRouter&gt;
+      &lt;/ThemeProvider&gt;
+    &lt;/QueryClientProvider&gt;
+  );
+}</pre></div>
+        <p>Wrap <strong>Context</strong>, <strong>Router</strong>, and <strong>Query</strong> once — reuse in tests (File 08, File 09).</p>
+        <h3>6.2. MemoryRouter</h3>
+        <div class="code"><pre>import { MemoryRouter } from &quot;react-router-dom&quot;;
+
+render(
+  &lt;MemoryRouter initialEntries={[&quot;/products/42&quot;]}&gt;
+    &lt;ProductDetail /&gt;
+  &lt;/MemoryRouter&gt;
+);</pre></div>
+      </section>
+      <section id="7-testing-hooks">
+        <h2>7. Testing hooks</h2>
+        <h3>7.1. renderHook</h3>
+        <div class="code"><pre>import { renderHook, act } from &quot;@testing-library/react&quot;;
+import { useCounter } from &quot;./useCounter&quot;;
+
+it(&quot;increments&quot;, () =&gt; {
+  const { result } = renderHook(() =&gt; useCounter(0));
+
+  act(() =&gt; {
+    result.current.increment();
+  });
+
+  expect(result.current.count).toBe(1);
+});</pre></div>
+        <p>File 07 — custom hooks tested in isolation.</p>
+        <h3>7.2. Wrapper for hook context</h3>
+        <div class="code"><pre>renderHook(() =&gt; useTheme(), {
+  wrapper: ThemeProvider,
+});</pre></div>
+      </section>
+      <section id="8-mocking-modules">
+        <h2>8. Mocking modules</h2>
+        <h3>8.1. vi.mock</h3>
+        <div class="code"><pre>vi.mock(&quot;./api&quot;, () =&gt; ({
+  fetchUser: vi.fn(() =&gt; Promise.resolve({ id: 1, name: &quot;Ada&quot; })),
+}));</pre></div>
+        <p>Mock <strong>boundaries</strong> (API module), not every child component.</p>
+        <h3>8.2. Avoid mocking React itself</h3>
+        <p>Do not mock <code class="inline">useState</code> — test through UI. Exception: error boundary tests with forced throws.</p>
+      </section>
+      <section id="9-accessibility-checks">
+        <h2>9. Accessibility checks</h2>
+        <h3>9.1. jest-axe (optional)</h3>
+        <div class="code"><pre>import { axe, toHaveNoViolations } from &quot;jest-axe&quot;;
+expect.extend(toHaveNoViolations);
+
+it(&quot;has no a11y violations&quot;, async () =&gt; {
+  const { container } = render(&lt;LoginForm /&gt;);
+  expect(await axe(container)).toHaveNoViolations();
+});</pre></div>
+        <p>RTL queries by role already push accessible markup.</p>
+      </section>
+      <section id="10-what-to-test-per-feature">
+        <h2>10. What to test per feature</h2>
+        <table>
+        <thead>
+        <tr><th>Feature</th><th>Test ideas</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Form (File 06)</td><td>Validation messages, submit disabled, success path</td></tr>
+        <tr><td>List (File 04)</td><td>Renders items, empty state, click row action</td></tr>
+        <tr><td>Modal</td><td>Opens/closes, focus trap optional</td></tr>
+        <tr><td>Auth route (File 09)</td><td>Redirect when logged out</td></tr>
+        <tr><td>Error UI</td><td>Error message when fetch fails</td></tr>
+        </tbody>
+        </table>
+        <p>Skip snapshot-only tests of large trees — brittle and low signal.</p>
+      </section>
+      <section id="11-putting-it-together">
+        <h2>11. Putting it together</h2>
+        <h3>11.1. Login form test</h3>
+        <div class="code"><pre>describe(&quot;LoginForm&quot;, () =&gt; {
+  it(&quot;shows error on invalid email&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    const onLogin = vi.fn();
+    render(&lt;LoginForm onLogin={onLogin} /&gt;);
+
+    await user.type(screen.getByLabelText(/email/i), &quot;bad&quot;);
+    await user.click(screen.getByRole(&quot;button&quot;, { name: /log in/i }));
+
+    expect(screen.getByRole(&quot;alert&quot;)).toHaveTextContent(/valid email/i);
+    expect(onLogin).not.toHaveBeenCalled();
+  });
+
+  it(&quot;calls onLogin with credentials&quot;, async () =&gt; {
+    const user = userEvent.setup();
+    const onLogin = vi.fn();
+    render(&lt;LoginForm onLogin={onLogin} /&gt;);
+
+    await user.type(screen.getByLabelText(/email/i), &quot;a@b.com&quot;);
+    await user.type(screen.getByLabelText(/password/i), &quot;password1&quot;);
+    await user.click(screen.getByRole(&quot;button&quot;, { name: /log in/i }));
+
+    expect(onLogin).toHaveBeenCalledWith({
+      email: &quot;a@b.com&quot;,
+      password: &quot;password1&quot;,
+    });
+  });
+});</pre></div>
+      </section>
+      <section id="12-common-questions">
+        <h2>12. Common questions</h2>
+        <h3>12.1. RTL vs Enzyme?</h3>
+        <p><strong>A:</strong> <strong>RTL</strong> is the modern default — user-centric. Enzyme shallow-renders implementation details; avoid for new projects.</p>
+        <h3>12.2. getByRole vs getByTestId?</h3>
+        <p><strong>A:</strong> Prefer <strong>role</strong> — forces accessible UI. <strong>testId</strong> only when no semantic query works.</p>
+        <h3>12.3. fireEvent vs userEvent?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">userEvent</code></strong> simulates full interaction (focus, keydown, input). <strong><code class="inline">fireEvent</code></strong> is lower level — use for edge cases.</p>
+        <h3>12.4. How do I test async fetch?</h3>
+        <p><strong>A:</strong> Mock <strong><code class="inline">fetch</code></strong> or <strong>MSW</strong>; use <strong><code class="inline">findBy*</code></strong> or <strong><code class="inline">waitFor</code></strong>. Disable query retries in tests.</p>
+        <h3>12.5. Should I test implementation details?</h3>
+        <p><strong>A:</strong> <strong>No</strong> — avoid asserting private state, hook call order, or child component props unless unit-testing a hook directly.</p>
+        <h3>12.6. How do I test React Router?</h3>
+        <p><strong>A:</strong> Wrap in <strong><code class="inline">MemoryRouter</code></strong> with <strong><code class="inline">initialEntries</code></strong>, assert navigation with <strong><code class="inline">screen</code></strong> or <strong><code class="inline">useNavigate</code> mock</strong>.</p>
+        <h3>12.7. How do I test custom hooks?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">renderHook</code></strong> + <strong><code class="inline">act</code></strong> for updates. Provide <strong>wrapper</strong> with required providers.</p>
+        <h3>12.8. Snapshot tests — yes or no?</h3>
+        <p><strong>A:</strong> Sparingly for <strong>stable</strong> small output. Prefer behavior assertions.</p>
+        <h3>12.9. Where do test files live?</h3>
+        <p><strong>A:</strong> Colocated <strong><code class="inline">Component.test.jsx</code></strong> next to source, or <strong><code class="inline">__tests__/</code></strong> folder — team convention.</p>
+        <h3>12.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 14 (error boundaries, architecture), File 06/09 for features to test, MSW docs for API mocking.</p>
+      </section>
+      <footer>HTML note for React.js File 13. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

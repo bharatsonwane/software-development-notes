@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>01. React Fundamentals - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-what-is-react-setup">1. What is React &amp; setup</a>
+        <a href="#2-jsx">2. JSX</a>
+        <a href="#3-components">3. Components</a>
+        <a href="#4-props">4. Props</a>
+        <a href="#5-state-intro">5. State intro</a>
+        <a href="#6-common-questions">6. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">01. React Fundamentals</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>01. React Fundamentals</h1>
+        <p class="subtitle">File 01 — setup, JSX, first components, props, state intro.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p><strong>React</strong> is a JavaScript library for building user interfaces. You describe <strong>what the UI should look like</strong> for a given state; React updates the DOM when state changes.</p>
+        <p>React apps are built from <strong>components</strong> — reusable pieces of UI. Modern React uses <strong>function components</strong> and <strong>hooks</strong> (Files 03, 05, 07 go deeper).</p>
+        <p><strong>Default rule today:</strong> use <strong>function components</strong>, create projects with <strong>Vite</strong>, keep components <strong>small and focused</strong>, and pass data down with <strong>props</strong> (one-way data flow).</p>
+      </section>
+      <section id="1-what-is-react-setup">
+        <h2>1. What is React &amp; setup</h2>
+        <h3>1.1. What React does</h3>
+        <p>React handles:</p>
+        <ul><li><strong>UI as a function of state</strong> — when data changes, UI re-renders.</li><li><strong>Efficient DOM updates</strong> — compares virtual tree and patches only what changed (reconciliation).</li><li><strong>Component composition</strong> — nest small components into larger screens.</li></ul>
+        <p>React is <strong>only the view layer</strong> — routing, global state, and API calls are added with libraries (Files 09–11).</p>
+        <h3>1.2. Create a project (Vite)</h3>
+        <p>Recommended starter for new apps:</p>
+        <div class="code"><pre>npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run dev</pre></div>
+        <p>Project layout (typical):</p>
+        <div class="code"><pre>my-app/
+  src/
+    main.jsx      # entry — mounts root component
+    App.jsx       # root UI component
+    index.css
+  index.html
+  package.json</pre></div>
+        <p>Entry point:</p>
+        <div class="code"><pre>// main.jsx
+import { StrictMode } from &quot;react&quot;;
+import { createRoot } from &quot;react-dom/client&quot;;
+import App from &quot;./App.jsx&quot;;
+
+createRoot(document.getElementById(&quot;root&quot;)).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;
+);</pre></div>
+        <p><strong><code class="inline">StrictMode</code></strong> runs extra checks in development (double-invokes some effects — File 05).</p>
+        <h3>1.3. First component</h3>
+        <p>A component is a <strong>function that returns JSX</strong>:</p>
+        <div class="code"><pre>function Welcome() {
+  return &lt;h1&gt;Hello, React!&lt;/h1&gt;;
+}
+
+export default Welcome;</pre></div>
+        <p>Use it like a custom HTML tag:</p>
+        <div class="code"><pre>function App() {
+  return (
+    &lt;div&gt;
+      &lt;Welcome /&gt;
+      &lt;Welcome /&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <p>Rules:</p>
+        <ul><li>Component names <strong>PascalCase</strong> (<code class="inline">Welcome</code>, not <code class="inline">welcome</code>).</li><li>Return <strong>one root element</strong> (or use a <strong>Fragment</strong> — File 04).</li></ul>
+      </section>
+      <section id="2-jsx">
+        <h2>2. JSX</h2>
+        <h3>2.1. What is JSX</h3>
+        <p><strong>JSX</strong> looks like HTML inside JavaScript. It compiles to <code class="inline">React.createElement(...)</code> calls:</p>
+        <div class="code"><pre>const element = &lt;h1 className=&quot;title&quot;&gt;Hello&lt;/h1&gt;;
+
+// roughly compiles to:
+// React.createElement(&quot;h1&quot;, { className: &quot;title&quot; }, &quot;Hello&quot;);</pre></div>
+        <p>JSX is <strong>expressions</strong> — wrap in <code class="inline">{}</code> for JavaScript:</p>
+        <div class="code"><pre>const name = &quot;Bharat&quot;;
+const element = &lt;p&gt;Hello, {name}!&lt;/p&gt;;
+
+const sum = &lt;p&gt;{1 + 2}&lt;/p&gt;;  // 3</pre></div>
+        <h3>2.2. JSX rules</h3>
+        <table>
+        <thead>
+        <tr><th>HTML / habit</th><th>JSX</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">class</code></td><td><code class="inline">className</code></td></tr>
+        <tr><td><code class="inline">for</code></td><td><code class="inline">htmlFor</code></td></tr>
+        <tr><td><code class="inline">onclick</code></td><td><code class="inline">onClick</code> (camelCase events)</td></tr>
+        <tr><td>Self-closing optional</td><td><strong>Must</strong> close: <code class="inline">&lt;img /&gt;</code>, <code class="inline">&lt;br /&gt;</code></td></tr>
+        <tr><td>One root</td><td>One parent or <code class="inline">&lt;&gt;...&lt;/&gt;</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// Invalid — two roots
+// return (
+//   &lt;h1&gt;Title&lt;/h1&gt;
+//   &lt;p&gt;Text&lt;/p&gt;
+// );
+
+return (
+  &lt;div&gt;
+    &lt;h1&gt;Title&lt;/h1&gt;
+    &lt;p&gt;Text&lt;/p&gt;
+  &lt;/div&gt;
+);</pre></div>
+        <h3>2.3. JavaScript in JSX</h3>
+        <p><strong>Conditionals</strong> (full detail in File 04):</p>
+        <div class="code"><pre>function Greeting({ isLoggedIn }) {
+  return (
+    &lt;div&gt;
+      {isLoggedIn ? &lt;p&gt;Welcome back&lt;/p&gt; : &lt;p&gt;Please sign in&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <p><strong>Attributes</strong> — use <code class="inline">{}</code> for dynamic values:</p>
+        <div class="code"><pre>&lt;img src={user.avatarUrl} alt={user.name} /&gt;
+&lt;button disabled={!isValid}&gt;Submit&lt;/button&gt;</pre></div>
+        <p><strong>Style</strong> — object, camelCase properties:</p>
+        <div class="code"><pre>&lt;div style={{ color: &quot;navy&quot;, fontSize: &quot;1.2rem&quot; }}&gt;Styled&lt;/div&gt;</pre></div>
+      </section>
+      <section id="3-components">
+        <h2>3. Components</h2>
+        <h3>3.1. Function components</h3>
+        <p>Standard way to define UI (class components are legacy):</p>
+        <div class="code"><pre>function UserCard({ name, role }) {
+  return (
+    &lt;article&gt;
+      &lt;h2&gt;{name}&lt;/h2&gt;
+      &lt;p&gt;{role}&lt;/p&gt;
+    &lt;/article&gt;
+  );
+}</pre></div>
+        <p>Export for use in other files:</p>
+        <div class="code"><pre>// UserCard.jsx
+export function UserCard({ name, role }) { /* ... */ }
+
+// App.jsx
+import { UserCard } from &quot;./UserCard.jsx&quot;;</pre></div>
+        <p>Default export (one main component per file is common):</p>
+        <div class="code"><pre>export default function App() {
+  return &lt;UserCard name=&quot;Bharat&quot; role=&quot;Developer&quot; /&gt;;
+}</pre></div>
+        <h3>3.2. Component tree</h3>
+        <p>React apps form a <strong>tree</strong> — parent components render children:</p>
+        <div class="code"><pre>function App() {
+  return (
+    &lt;Layout&gt;
+      &lt;Header title=&quot;My App&quot; /&gt;
+      &lt;Main&gt;
+        &lt;UserCard name=&quot;Bharat&quot; role=&quot;Dev&quot; /&gt;
+      &lt;/Main&gt;
+      &lt;Footer /&gt;
+    &lt;/Layout&gt;
+  );
+}</pre></div>
+        <p>Each component <strong>encapsulates</strong> its own markup and logic. Split when a section is reused or gets too large (File 02 — composition).</p>
+        <h3>3.3. Pure components (concept)</h3>
+        <p>Given the same <strong>props</strong>, a component should return the same UI. Avoid side effects in the render body (File 12 — <code class="inline">memo</code>):</p>
+        <div class="code"><pre>// Good — render is a pure function of props
+function Badge({ label, color }) {
+  return &lt;span style={{ background: color }}&gt;{label}&lt;/span&gt;;
+}
+
+// Avoid during render — use useEffect (File 05)
+// fetch(&quot;/api/user&quot;);  // side effect in render</pre></div>
+      </section>
+      <section id="4-props">
+        <h2>4. Props</h2>
+        <p><strong>Props</strong> (properties) pass data <strong>from parent to child</strong>. Props are <strong>read-only</strong> — children must not mutate them.</p>
+        <h3>4.1. Passing and reading props</h3>
+        <div class="code"><pre>function UserCard({ name, age, isActive }) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{name}&lt;/h2&gt;
+      &lt;p&gt;Age: {age}&lt;/p&gt;
+      {isActive &amp;&amp; &lt;span&gt;Active&lt;/span&gt;}
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;UserCard name=&quot;Bharat&quot; age={30} isActive={true} /&gt;
+  );
+}</pre></div>
+        <p>Props destructuring in the parameter list is idiomatic. Alternative:</p>
+        <div class="code"><pre>function UserCard(props) {
+  return &lt;h2&gt;{props.name}&lt;/h2&gt;;
+}</pre></div>
+        <h3>4.2. Default props</h3>
+        <div class="code"><pre>function Button({ label = &quot;Click me&quot;, variant = &quot;primary&quot; }) {
+  return &lt;button className={variant}&gt;{label}&lt;/button&gt;;
+}
+
+&lt;Button /&gt;                    // &quot;Click me&quot;
+&lt;Button label=&quot;Save&quot; /&gt;       // &quot;Save&quot;</pre></div>
+        <h3>4.3. Children prop</h3>
+        <p>Content between opening and closing tags becomes <strong><code class="inline">props.children</code></strong>:</p>
+        <div class="code"><pre>function Card({ title, children }) {
+  return (
+    &lt;section&gt;
+      &lt;h3&gt;{title}&lt;/h3&gt;
+      &lt;div&gt;{children}&lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;Card title=&quot;Notes&quot;&gt;
+      &lt;p&gt;First paragraph&lt;/p&gt;
+      &lt;p&gt;Second paragraph&lt;/p&gt;
+    &lt;/Card&gt;
+  );
+}</pre></div>
+        <p><code class="inline">children</code> can be text, elements, or multiple nodes (File 02 — composition patterns).</p>
+        <h3>4.4. One-way data flow</h3>
+        <p>Data flows <strong>down</strong> the tree via props. Siblings do not share props directly — lift shared state to a <strong>common parent</strong> (File 03).</p>
+        <div class="code"><pre>function Parent() {
+  const name = &quot;Bharat&quot;;
+  return (
+    &lt;&gt;
+      &lt;ChildA name={name} /&gt;
+      &lt;ChildB name={name} /&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+      </section>
+      <section id="5-state-intro">
+        <h2>5. State intro</h2>
+        <p><strong>State</strong> is data that <strong>changes over time</strong> and affects what the UI shows. When state updates, React <strong>re-renders</strong> the component.</p>
+        <h3>5.1. Why not plain variables?</h3>
+        <div class="code"><pre>// This does NOT work — changing message does not re-render
+function Broken() {
+  let message = &quot;Hello&quot;;
+  return (
+    &lt;button onClick={() =&gt; { message = &quot;Hi&quot;; }}&gt;
+      {message}
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <p>React needs <strong><code class="inline">useState</code></strong> (or similar) to schedule a re-render (File 03).</p>
+        <h3>5.2. useState basics</h3>
+        <div class="code"><pre>import { useState } from &quot;react&quot;;
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;+1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <ul><li><strong><code class="inline">useState(initial)</code></strong> returns <code class="inline">[value, setter]</code>.</li><li>Call <strong><code class="inline">setCount(newValue)</code></strong> to update — React re-renders.</li><li>State is <strong>local</strong> to the component instance — two <code class="inline">&lt;Counter /&gt;</code> on screen have independent state.</li></ul>
+        <p>Functional update when next state depends on previous:</p>
+        <div class="code"><pre>setCount((prev) =&gt; prev + 1);</pre></div>
+        <h3>5.3. State vs props</h3>
+        <table>
+        <thead>
+        <tr><th></th><th>Props</th><th>State</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Source</td><td>Parent</td><td>Inside component</td></tr>
+        <tr><td>Mutable by child?</td><td>No</td><td>Yes (via setter)</td></tr>
+        <tr><td>Changes trigger re-render?</td><td>When parent re-renders</td><td>When setter called</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>function UserPanel({ userId }) {        // prop — from parent
+  const [name, setName] = useState(&quot;&quot;); // state — local
+
+  return &lt;p&gt;{userId}: {name}&lt;/p&gt;;
+}</pre></div>
+        <p>Deep dive: File 03 (state &amp; events), File 05 (effects), File 07 (hooks patterns).</p>
+        <h3>5.4. Minimal interactive example</h3>
+        <div class="code"><pre>import { useState } from &quot;react&quot;;
+
+function LikeButton() {
+  const [liked, setLiked] = useState(false);
+
+  return (
+    &lt;button onClick={() =&gt; setLiked(!liked)}&gt;
+      {liked ? &quot;❤️ Liked&quot; : &quot;🤍 Like&quot;}
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <p>Event handlers use <strong>camelCase</strong> (<code class="inline">onClick</code>, <code class="inline">onChange</code>). Details in File 03.</p>
+      </section>
+      <section id="6-common-questions">
+        <h2>6. Common questions</h2>
+        <h3>6.1. What is React?</h3>
+        <p><strong>A:</strong> A JavaScript <strong>UI library</strong> for building interfaces with <strong>components</strong>. It updates the DOM efficiently when application state changes.</p>
+        <h3>6.2. What is JSX?</h3>
+        <p><strong>A:</strong> Syntax extension that lets you write <strong>HTML-like markup</strong> in JavaScript. It compiles to <code class="inline">React.createElement</code> and must follow JSX rules (<code class="inline">className</code>, one root, closed tags).</p>
+        <h3>6.3. What is the difference between a component and an element?</h3>
+        <p><strong>A:</strong> An <strong>element</strong> is a plain object describing UI (e.g. <code class="inline">&lt;div /&gt;</code>). A <strong>component</strong> is a function or class that <strong>returns</strong> elements (or other components).</p>
+        <h3>6.4. What are props?</h3>
+        <p><strong>A:</strong> <strong>Inputs</strong> passed from parent to child. They are <strong>read-only</strong> and enable one-way data flow down the tree.</p>
+        <h3>6.5. What is state?</h3>
+        <p><strong>A:</strong> <strong>Internal data</strong> owned by a component that can change over time. Updating state triggers a <strong>re-render</strong>. Use <code class="inline">useState</code> in function components.</p>
+        <h3>6.6. What is the difference between props and state?</h3>
+        <p><strong>A:</strong> <strong>Props</strong> come from outside and are immutable in the child. <strong>State</strong> is managed inside the component and updated with a setter function.</p>
+        <h3>6.7. Why must component names be capitalized?</h3>
+        <p><strong>A:</strong> React treats <strong>lowercase</strong> tags as built-in HTML (<code class="inline">&lt;div&gt;</code>) and <strong>PascalCase</strong> as custom components (<code class="inline">&lt;UserCard&gt;</code>).</p>
+        <h3>6.8. Do I need to learn class components?</h3>
+        <p><strong>A:</strong> For new code, <strong>no</strong> — use function components and hooks. You may see classes in older codebases.</p>
+        <h3>6.9. What is <code class="inline">children</code> in props?</h3>
+        <p><strong>A:</strong> Special prop for <strong>nested content</strong> between a component&#x27;s JSX tags. Used for wrappers, layouts, and composition.</p>
+        <h3>6.10. What should I learn next after this file?</h3>
+        <p><strong>A:</strong> File 02 (components &amp; props depth), File 03 (state &amp; events), then File 04 (lists &amp; conditional rendering).</p>
+      </section>
+      <footer>HTML note for React.js File 01. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

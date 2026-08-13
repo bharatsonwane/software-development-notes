@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>08. Utility &amp; Mapped Types - TypeScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> TypeScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./typescript.html">← TypeScript</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-partial-required-pick-omit">1. `Partial`, `Required`, `Pick`, `Omit`</a>
+        <a href="#2-record-and-returntype">2. `Record` and `ReturnType`</a>
+        <a href="#3-mapped-types">3. Mapped types</a>
+        <a href="#4-conditional-types-intro">4. Conditional types (intro)</a>
+        <a href="#5-common-questions">5. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./typescript.html">TypeScript</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">08. Utility &amp; Mapped Types</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>08. Utility &amp; Mapped Types</h1>
+        <p class="subtitle">File 08 — Partial, Pick, Omit, Record, ReturnType, mapped types, conditional intro.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>TypeScript ships <strong>built-in utility types</strong> and lets you build your own with <strong>mapped</strong> and <strong>conditional</strong> types.</p>
+      </section>
+      <section id="1-partial-required-pick-omit">
+        <h2>1. <code class="inline">Partial</code>, <code class="inline">Required</code>, <code class="inline">Pick</code>, <code class="inline">Omit</code></h2>
+        <h3>1.1. <code class="inline">Partial&lt;T&gt;</code></h3>
+        <p>Makes all properties optional — useful for update payloads:</p>
+        <div class="code"><pre>interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+function updateUser(id: number, changes: Partial&lt;User&gt;) {
+  // apply changes
+}
+
+updateUser(1, { name: &quot;Alex&quot; }); // OK — only name required</pre></div>
+        <h3>1.2. <code class="inline">Required&lt;T&gt;</code></h3>
+        <p>Opposite of <code class="inline">Partial</code> — all properties required:</p>
+        <div class="code"><pre>type RequiredUser = Required&lt;Partial&lt;User&gt;&gt;; // same as User if all keys were optional first</pre></div>
+        <h3>1.3. <code class="inline">Pick&lt;T, K&gt;</code> and <code class="inline">Omit&lt;T, K&gt;</code></h3>
+        <p>Select or remove properties:</p>
+        <div class="code"><pre>type UserPreview = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;
+// { id: number; name: string }
+
+type UserWithoutEmail = Omit&lt;User, &quot;email&quot;&gt;;
+// { id: number; name: string }</pre></div>
+        <p>Common for DTOs and form state:</p>
+        <div class="code"><pre>type CreateUserInput = Omit&lt;User, &quot;id&quot;&gt;;
+type UserListItem = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;</pre></div>
+      </section>
+      <section id="2-record-and-returntype">
+        <h2>2. <code class="inline">Record</code> and <code class="inline">ReturnType</code></h2>
+        <h3>2.1. <code class="inline">Record&lt;K, V&gt;</code></h3>
+        <p>Object type with keys <code class="inline">K</code> and values <code class="inline">V</code>:</p>
+        <div class="code"><pre>type Role = &quot;admin&quot; | &quot;member&quot; | &quot;guest&quot;;
+type Permissions = Record&lt;Role, string[]&gt;;
+
+const perms: Permissions = {
+  admin: [&quot;read&quot;, &quot;write&quot;, &quot;delete&quot;],
+  member: [&quot;read&quot;, &quot;write&quot;],
+  guest: [&quot;read&quot;],
+};</pre></div>
+        <p>String-keyed dictionaries:</p>
+        <div class="code"><pre>type StringMap = Record&lt;string, number&gt;;</pre></div>
+        <h3>2.2. <code class="inline">ReturnType&lt;T&gt;</code></h3>
+        <p>Extract function return type:</p>
+        <div class="code"><pre>function createUser() {
+  return { id: 1, name: &quot;Bharat&quot; };
+}
+
+type User = ReturnType&lt;typeof createUser&gt;;
+// { id: number; name: string }</pre></div>
+        <p>Related utilities:</p>
+        <div class="code"><pre>type Params = Parameters&lt;typeof createUser&gt;; // tuple of arg types
+type Constructor = ConstructorParameters&lt;typeof Date&gt;;</pre></div>
+      </section>
+      <section id="3-mapped-types">
+        <h2>3. Mapped types</h2>
+        <p>A <strong>mapped type</strong> transforms each property of an existing type:</p>
+        <div class="code"><pre>type Readonly&lt;T&gt; = {
+  readonly [K in keyof T]: T[K];
+};
+
+type Optional&lt;T&gt; = {
+  [K in keyof T]?: T[K];
+};</pre></div>
+        <h3>3.1. Key remapping (<code class="inline">as</code>)</h3>
+        <div class="code"><pre>type Getters&lt;T&gt; = {
+  [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () =&gt; T[K];
+};
+
+type UserGetters = Getters&lt;{ name: string; age: number }&gt;;
+// { getName: () =&gt; string; getAge: () =&gt; number }</pre></div>
+        <h3>3.2. Filtering keys</h3>
+        <div class="code"><pre>type RemoveId&lt;T&gt; = {
+  [K in keyof T as K extends &quot;id&quot; ? never : K]: T[K];
+};</pre></div>
+        <h3>3.3. <code class="inline">as const</code> and keyof patterns</h3>
+        <div class="code"><pre>const CONFIG = {
+  apiUrl: &quot;https://api.example.com&quot;,
+  timeout: 5000,
+} as const;
+
+type ConfigKey = keyof typeof CONFIG; // &quot;apiUrl&quot; | &quot;timeout&quot;
+type ConfigValues = typeof CONFIG[ConfigKey];</pre></div>
+      </section>
+      <section id="4-conditional-types-intro">
+        <h2>4. Conditional types (intro)</h2>
+        <p><strong>Conditional types</strong> pick types based on a condition: <code class="inline">T extends U ? X : Y</code>.</p>
+        <div class="code"><pre>type IsString&lt;T&gt; = T extends string ? true : false;
+
+type A = IsString&lt;string&gt;;  // true
+type B = IsString&lt;number&gt;;  // false</pre></div>
+        <h3>4.1. Distributive conditionals</h3>
+        <p>When <code class="inline">T</code> is a union, conditionals distribute:</p>
+        <div class="code"><pre>type ToArray&lt;T&gt; = T extends unknown ? T[] : never;
+
+type R = ToArray&lt;string | number&gt;;
+// string[] | number[]</pre></div>
+        <h3>4.2. Practical example — nullable unwrap</h3>
+        <div class="code"><pre>type NonNullable&lt;T&gt; = T extends null | undefined ? never : T;
+
+type Safe = NonNullable&lt;string | null&gt;; // string</pre></div>
+        <h3>4.3. <code class="inline">infer</code> preview (File 11)</h3>
+        <p>Extract types inside conditionals:</p>
+        <div class="code"><pre>type ElementType&lt;T&gt; = T extends (infer U)[] ? U : T;
+
+type Item = ElementType&lt;string[]&gt;; // string</pre></div>
+        <p>Conditional + mapped types power most advanced TS libraries (File 11).</p>
+      </section>
+      <section id="5-common-questions">
+        <h2>5. Common questions</h2>
+        <h3>5.1. When use <code class="inline">Pick</code> vs <code class="inline">Omit</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">Pick</code> when you need few fields; <code class="inline">Omit</code> when you need almost everything except a few.</p>
+        <h3>5.2. What does <code class="inline">keyof T</code> return?</h3>
+        <p><strong>A:</strong> Union of property names of <code class="inline">T</code> — <code class="inline">&quot;id&quot; | &quot;name&quot; | &quot;email&quot;</code> for <code class="inline">User</code>.</p>
+        <h3>5.3. Are utility types built into the compiler?</h3>
+        <p><strong>A:</strong> Yes — defined in <code class="inline">lib.es5.d.ts</code> and friends; no import needed.</p>
+        <h3>5.4. Can I combine utilities?</h3>
+        <p><strong>A:</strong> Yes — <code class="inline">Partial&lt;Pick&lt;User, &quot;name&quot; | &quot;email&quot;&gt;&gt;</code> is common.</p>
+        <h3>5.5. What is the difference between mapped types and interfaces?</h3>
+        <p><strong>A:</strong> Mapped types <strong>transform</strong> existing types programmatically; interfaces declare shapes directly.</p>
+        <h3>5.6. What does <code class="inline">readonly [K in keyof T]</code> do?</h3>
+        <p><strong>A:</strong> Same keys as <code class="inline">T</code>, all marked readonly — like the built-in <code class="inline">Readonly&lt;T&gt;</code>.</p>
+        <h3>5.7. When do conditional types run?</h3>
+        <p><strong>A:</strong> At <strong>compile time only</strong> — they emit no JavaScript.</p>
+        <h3>5.8. How does <code class="inline">ReturnType</code> help with refactoring?</h3>
+        <p><strong>A:</strong> Derive types from implementation — change the function, derived types update automatically.</p>
+      </section>
+      <footer>HTML note for TypeScript File 08. Open from the TypeScript index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

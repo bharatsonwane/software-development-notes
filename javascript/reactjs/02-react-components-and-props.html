@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>02. Components &amp; Props - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-function-components-in-depth">1. Function components in depth</a>
+        <a href="#2-props-patterns">2. Props patterns</a>
+        <a href="#3-the-children-prop">3. The `children` prop</a>
+        <a href="#4-composition-vs-inheritance">4. Composition vs inheritance</a>
+        <a href="#5-component-composition-patterns">5. Component composition patterns</a>
+        <a href="#6-common-questions">6. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">02. Components &amp; Props</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>02. Components &amp; Props</h1>
+        <p class="subtitle">File 02 — function components, props patterns, children, composition.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>File 01 introduced components and basic props. This chapter goes deeper: how to <strong>structure components</strong>, pass props <strong>flexibly</strong>, use <strong><code class="inline">children</code></strong> for layouts, and <strong>compose</strong> UI without inheritance.</p>
+        <p>Props stay <strong>read-only</strong> — if a child needs to change data, the parent updates <strong>state</strong> and passes new props (File 03).</p>
+        <p><strong>Default rule today:</strong> prefer <strong>composition</strong> over inheritance; keep <strong>one main export</strong> per file when possible; use <strong>destructuring</strong> and <strong>spread</strong> for props; lift shared UI into <strong>layout/wrapper</strong> components.</p>
+      </section>
+      <section id="1-function-components-in-depth">
+        <h2>1. Function components in depth</h2>
+        <h3>1.1. Anatomy of a component file</h3>
+        <p>Typical file layout:</p>
+        <div class="code"><pre>// UserCard.jsx
+import { Avatar } from &quot;./Avatar.jsx&quot;;
+import styles from &quot;./UserCard.module.css&quot;;
+
+export function UserCard({ name, role, avatarUrl }) {
+  return (
+    &lt;article className={styles.card}&gt;
+      &lt;Avatar src={avatarUrl} alt={name} /&gt;
+      &lt;h2&gt;{name}&lt;/h2&gt;
+      &lt;p&gt;{role}&lt;/p&gt;
+    &lt;/article&gt;
+  );
+}</pre></div>
+        <p>Conventions:</p>
+        <ul><li><strong>PascalCase</strong> filename matching component (<code class="inline">UserCard.jsx</code>).</li><li><strong>Named export</strong> for reusable components; <strong>default export</strong> for page/route root (team choice — stay consistent).</li><li>Keep <strong>markup + minimal logic</strong> in the component; extract helpers to separate files if they grow.</li></ul>
+        <h3>1.2. Named vs default export</h3>
+        <div class="code"><pre>// Named — explicit imports, good for multiple exports
+export function Button() { /* ... */ }
+export function IconButton() { /* ... */ }
+
+import { Button, IconButton } from &quot;./Button.jsx&quot;;</pre></div>
+        <div class="code"><pre>// Default — one primary component per file
+export default function Dashboard() { /* ... */ }
+
+import Dashboard from &quot;./Dashboard.jsx&quot;;</pre></div>
+        <p>Avoid mixing many default exports in one file.</p>
+        <h3>1.3. Components must return valid UI</h3>
+        <p>Return JSX, <code class="inline">null</code>, or a <strong>Fragment</strong>. Do not return plain objects or undefined accidentally:</p>
+        <div class="code"><pre>function MaybeShow({ show, content }) {
+  if (!show) return null;   // render nothing
+  return &lt;p&gt;{content}&lt;/p&gt;;
+}</pre></div>
+        <p>Early returns keep JSX readable (File 04 — conditional rendering).</p>
+        <h3>1.4. Single responsibility</h3>
+        <p>Split when a component:</p>
+        <ul><li>Exceeds ~100–150 lines (guideline, not a rule).</li><li>Handles unrelated concerns (fetch + form + table).</li><li>Is reused with small variations → extract props or <code class="inline">children</code>.</li></ul>
+        <div class="code"><pre>// Before — one big component
+function UserPage() {
+  /* header + profile + posts + footer */
+}
+
+// After — composed
+function UserPage() {
+  return (
+    &lt;PageLayout&gt;
+      &lt;UserHeader /&gt;
+      &lt;UserProfile /&gt;
+      &lt;UserPosts /&gt;
+    &lt;/PageLayout&gt;
+  );
+}</pre></div>
+      </section>
+      <section id="2-props-patterns">
+        <h2>2. Props patterns</h2>
+        <h3>2.1. Destructuring and renaming</h3>
+        <div class="code"><pre>function UserCard({ name: displayName, age, isActive = false }) {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{displayName}&lt;/h2&gt;
+      &lt;p&gt;{age}&lt;/p&gt;
+      {isActive &amp;&amp; &lt;span&gt;Online&lt;/span&gt;}
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <p>Rest props — forward unknown props to a DOM element:</p>
+        <div class="code"><pre>function PrimaryButton({ label, ...rest }) {
+  return (
+    &lt;button type=&quot;button&quot; className=&quot;btn-primary&quot; {...rest}&gt;
+      {label}
+    &lt;/button&gt;
+  );
+}
+
+&lt;PrimaryButton label=&quot;Save&quot; onClick={handleSave} disabled={loading} /&gt;</pre></div>
+        <p>Useful for native attributes (<code class="inline">aria-*</code>, <code class="inline">data-*</code>, <code class="inline">className</code>).</p>
+        <h3>2.2. Passing objects and spreading</h3>
+        <p>Parent bundles related props:</p>
+        <div class="code"><pre>const user = { name: &quot;Bharat&quot;, age: 30, role: &quot;Dev&quot; };
+
+&lt;UserCard {...user} /&gt;
+// same as &lt;UserCard name={user.name} age={user.age} role={user.role} /&gt;</pre></div>
+        <p>Child picks what it needs — extra keys on DOM spread can warn in React; only spread onto DOM what belongs there.</p>
+        <p>Explicit is often clearer for public APIs:</p>
+        <div class="code"><pre>&lt;UserCard name={user.name} role={user.role} /&gt;</pre></div>
+        <h3>2.3. Boolean and optional props</h3>
+        <p><strong>Boolean props</strong> — shorthand when <code class="inline">true</code>:</p>
+        <div class="code"><pre>function Modal({ open, dismissible }) {
+  if (!open) return null;
+  return (
+    &lt;div className=&quot;modal&quot;&gt;
+      {dismissible &amp;&amp; &lt;button&gt;Close&lt;/button&gt;}
+    &lt;/div&gt;
+  );
+}
+
+&lt;Modal open dismissible /&gt;   // open={true} dismissible={true}
+&lt;Modal open={false} /&gt;</pre></div>
+        <p><strong>Optional props</strong> — defaults or conditional render:</p>
+        <div class="code"><pre>function Alert({ title, message, variant = &quot;info&quot; }) {
+  return (
+    &lt;div className={`alert alert-${variant}`}&gt;
+      {title &amp;&amp; &lt;strong&gt;{title}&lt;/strong&gt;}
+      &lt;p&gt;{message}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <h3>2.4. Props are a snapshot</h3>
+        <p>Props do not update inside the child by themselves — parent re-render passes <strong>new</strong> props:</p>
+        <div class="code"><pre>function Child({ count }) {
+  // count is whatever parent passed for this render
+  return &lt;p&gt;{count}&lt;/p&gt;;
+}
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;&gt;
+      &lt;Child count={count} /&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;+&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>Never mutate props:</p>
+        <div class="code"><pre>// Bad
+function Bad({ user }) {
+  user.name = &quot;Changed&quot;;  // mutates parent&#x27;s object
+}</pre></div>
+        <h3>2.5. Typing props (PropTypes / TypeScript)</h3>
+        <p>JavaScript — optional <strong>PropTypes</strong> (runtime, dev only):</p>
+        <div class="code"><pre>import PropTypes from &quot;prop-types&quot;;
+
+function UserCard({ name, age }) {
+  return &lt;p&gt;{name}, {age}&lt;/p&gt;;
+}
+
+UserCard.propTypes = {
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number,
+};</pre></div>
+        <p><strong>TypeScript</strong> — preferred in many codebases:</p>
+        <div class="code"><pre>type UserCardProps = {
+  name: string;
+  age?: number;
+};
+
+function UserCard({ name, age }: UserCardProps) {
+  return &lt;p&gt;{name}, {age ?? &quot;N/A&quot;}&lt;/p&gt;;
+}</pre></div>
+        <p>Types document the public contract of a component.</p>
+        <h3>2.6. Callback props</h3>
+        <p>Parent passes <strong>functions</strong> so child can notify parent (events up, data down):</p>
+        <div class="code"><pre>function SearchInput({ value, onChange }) {
+  return (
+    &lt;input
+      value={value}
+      onChange={(e) =&gt; onChange(e.target.value)}
+    /&gt;
+  );
+}
+
+function Parent() {
+  const [query, setQuery] = useState(&quot;&quot;);
+  return &lt;SearchInput value={query} onChange={setQuery} /&gt;;
+}</pre></div>
+        <p>Naming: <code class="inline">on</code> + event for handlers (<code class="inline">onClick</code>, <code class="inline">onSubmit</code>, <code class="inline">onSelectUser</code>). Full event flow in File 03.</p>
+      </section>
+      <section id="3-the-children-prop">
+        <h2>3. The <code class="inline">children</code> prop</h2>
+        <h3>3.1. Basic children</h3>
+        <div class="code"><pre>function Panel({ title, children }) {
+  return (
+    &lt;section&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      &lt;div className=&quot;panel-body&quot;&gt;{children}&lt;/div&gt;
+    &lt;/section&gt;
+  );
+}
+
+&lt;Panel title=&quot;Settings&quot;&gt;
+  &lt;p&gt;Content here&lt;/p&gt;
+  &lt;button&gt;Save&lt;/button&gt;
+&lt;/Panel&gt;</pre></div>
+        <p><code class="inline">children</code> can be:</p>
+        <ul><li>Text: <code class="inline">&lt;Button&gt;Click&lt;/Button&gt;</code></li><li>Element(s): nested JSX</li><li>Expression: <code class="inline">{items.map(...)}</code> (File 04)</li></ul>
+        <h3>3.2. Multiple slots (explicit props)</h3>
+        <p>When you need <strong>named regions</strong>, use extra props instead of only <code class="inline">children</code>:</p>
+        <div class="code"><pre>function Card({ header, footer, children }) {
+  return (
+    &lt;article&gt;
+      &lt;header&gt;{header}&lt;/header&gt;
+      &lt;main&gt;{children}&lt;/main&gt;
+      &lt;footer&gt;{footer}&lt;/footer&gt;
+    &lt;/article&gt;
+  );
+}
+
+&lt;Card
+  header={&lt;h1&gt;Title&lt;/h1&gt;}
+  footer={&lt;button&gt;OK&lt;/button&gt;}
+&gt;
+  &lt;p&gt;Body content&lt;/p&gt;
+&lt;/Card&gt;</pre></div>
+        <p>Alternative names: <code class="inline">sidebar</code>, <code class="inline">actions</code>, <code class="inline">leading</code>, <code class="inline">trailing</code>.</p>
+        <h3>3.3. Layout components</h3>
+        <p><strong>Layout</strong> components wrap pages with shared chrome:</p>
+        <div class="code"><pre>function AppLayout({ children }) {
+  return (
+    &lt;div className=&quot;app&quot;&gt;
+      &lt;Navbar /&gt;
+      &lt;main className=&quot;content&quot;&gt;{children}&lt;/main&gt;
+      &lt;Footer /&gt;
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;AppLayout&gt;
+      &lt;Dashboard /&gt;
+    &lt;/AppLayout&gt;
+  );
+}</pre></div>
+        <p>Same pattern for <code class="inline">Modal</code>, <code class="inline">Card</code>, <code class="inline">Sidebar</code>, <code class="inline">Stack</code>, <code class="inline">Grid</code> wrappers.</p>
+        <h3>3.4. Children as function (render prop intro)</h3>
+        <p>Pass a <strong>function</strong> as child to share data from parent wrapper:</p>
+        <div class="code"><pre>function MouseTracker({ children }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+
+  return (
+    &lt;div
+      onMouseMove={(e) =&gt; setPos({ x: e.clientX, y: e.clientY })}
+    &gt;
+      {children(pos)}
+    &lt;/div&gt;
+  );
+}
+
+&lt;MouseTracker&gt;
+  {({ x, y }) =&gt; &lt;p&gt;Mouse: {x}, {y}&lt;/p&gt;}
+&lt;/MouseTracker&gt;</pre></div>
+        <p>Also called <strong>render props</strong>. Custom hooks often replace this pattern today (File 07).</p>
+      </section>
+      <section id="4-composition-vs-inheritance">
+        <h2>4. Composition vs inheritance</h2>
+        <p>React favors <strong>composition</strong> — building UI by nesting components and passing props/<code class="inline">children</code>.</p>
+        <h3>4.1. Compose, do not extend</h3>
+        <div class="code"><pre>// Prefer — composition
+function Dialog({ title, children }) {
+  return (
+    &lt;div className=&quot;dialog&quot;&gt;
+      &lt;h2&gt;{title}&lt;/h2&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function WelcomeDialog() {
+  return (
+    &lt;Dialog title=&quot;Welcome&quot;&gt;
+      &lt;p&gt;Thanks for signing up.&lt;/p&gt;
+    &lt;/Dialog&gt;
+  );
+}</pre></div>
+        <div class="code"><pre>// Avoid — class inheritance (legacy pattern)
+// class WelcomeDialog extends Dialog { ... }</pre></div>
+        <p>Configure behavior with <strong>props</strong>, not subclass overrides.</p>
+        <h3>4.2. Specialization via props</h3>
+        <div class="code"><pre>function Button({ variant = &quot;primary&quot;, size = &quot;md&quot;, ...rest }) {
+  const className = `btn btn-${variant} btn-${size}`;
+  return &lt;button className={className} {...rest} /&gt;;
+}
+
+function DangerButton(props) {
+  return &lt;Button variant=&quot;danger&quot; {...props} /&gt;;
+}</pre></div>
+        <p><strong>Wrapper components</strong> reuse base UI with preset props.</p>
+        <h3>4.3. Containment vs specialization</h3>
+        <table>
+        <thead>
+        <tr><th>Pattern</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Containment</strong></td><td><code class="inline">Card</code> wraps arbitrary <code class="inline">children</code></td></tr>
+        <tr><td><strong>Specialization</strong></td><td><code class="inline">PrimaryButton</code> sets <code class="inline">variant=&quot;primary&quot;</code> on <code class="inline">Button</code></td></tr>
+        </tbody>
+        </table>
+        <p>Both are composition — no class hierarchy.</p>
+      </section>
+      <section id="5-component-composition-patterns">
+        <h2>5. Component composition patterns</h2>
+        <h3>5.1. Small presentational components</h3>
+        <p>Split <strong>data</strong> (File 03, 10) from <strong>presentation</strong> when helpful:</p>
+        <div class="code"><pre>function UserAvatar({ user, size = 40 }) {
+  return (
+    &lt;img
+      src={user.avatarUrl}
+      alt={user.name}
+      width={size}
+      height={size}
+      style={{ borderRadius: &quot;50%&quot; }}
+    /&gt;
+  );
+}
+
+function UserRow({ user }) {
+  return (
+    &lt;li className=&quot;user-row&quot;&gt;
+      &lt;UserAvatar user={user} /&gt;
+      &lt;span&gt;{user.name}&lt;/span&gt;
+      &lt;span&gt;{user.role}&lt;/span&gt;
+    &lt;/li&gt;
+  );
+}</pre></div>
+        <p>Not a strict rule — use when it improves reuse and tests.</p>
+        <h3>5.2. Config-driven UI</h3>
+        <p>Pass arrays of props to map into components (File 04):</p>
+        <div class="code"><pre>const links = [
+  { href: &quot;/&quot;, label: &quot;Home&quot; },
+  { href: &quot;/about&quot;, label: &quot;About&quot; },
+];
+
+function Nav() {
+  return (
+    &lt;nav&gt;
+      {links.map((link) =&gt; (
+        &lt;a key={link.href} href={link.href}&gt;{link.label}&lt;/a&gt;
+      ))}
+    &lt;/nav&gt;
+  );
+}</pre></div>
+        <h3>5.3. Prop drilling (preview)</h3>
+        <p>Passing props through many layers:</p>
+        <div class="code"><pre>function App() {
+  const user = { name: &quot;Bharat&quot; };
+  return &lt;Layout user={user} /&gt;;
+}
+
+function Layout({ user }) {
+  return &lt;Sidebar user={user} /&gt;;
+}
+
+function Sidebar({ user }) {
+  return &lt;UserMenu user={user} /&gt;;
+}</pre></div>
+        <p>Works for shallow trees. Deep drilling → <strong>Context</strong> (File 08) or state library (File 11).</p>
+        <h3>5.4. Fragment in composition</h3>
+        <p>Avoid extra DOM nodes when wrapping siblings for export:</p>
+        <div class="code"><pre>function TableRow({ cells }) {
+  return (
+    &lt;&gt;
+      {cells.map((cell, i) =&gt; (
+        &lt;td key={i}&gt;{cell}&lt;/td&gt;
+      ))}
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>Long form: <code class="inline">&lt;React.Fragment key={id}&gt;</code>. Details in File 04.</p>
+      </section>
+      <section id="6-common-questions">
+        <h2>6. Common questions</h2>
+        <h3>6.1. Can a component update its own props?</h3>
+        <p><strong>A:</strong> <strong>No.</strong> Props are read-only. The <strong>parent</strong> owns the data and passes new props on re-render.</p>
+        <h3>6.2. What is the difference between props and state?</h3>
+        <p><strong>A:</strong> <strong>Props</strong> are external inputs; <strong>state</strong> is internal (File 01, File 03). Components react to both by re-rendering.</p>
+        <h3>6.3. When should I use <code class="inline">children</code> vs a named prop like <code class="inline">footer</code>?</h3>
+        <p><strong>A:</strong> Use <strong><code class="inline">children</code></strong> for a single main slot (typical wrapper). Use <strong>named props</strong> for multiple distinct regions (header, footer, sidebar).</p>
+        <h3>6.4. What does spreading props (<code class="inline">{...props}</code>) do?</h3>
+        <p><strong>A:</strong> Copies all properties onto the target element or component. Useful for forwarding HTML attributes; avoid spreading unknown objects onto DOM nodes.</p>
+        <h3>6.5. Why compose instead of inherit in React?</h3>
+        <p><strong>A:</strong> Composition is <strong>flexible</strong> and avoids fragile class hierarchies. React&#x27;s model is built around nesting components and passing props.</p>
+        <h3>6.6. What is a callback prop?</h3>
+        <p><strong>A:</strong> A function passed from <strong>parent to child</strong> so the child can report events or data upward (<code class="inline">onChange</code>, <code class="inline">onSelect</code>).</p>
+        <h3>6.7. What is prop drilling?</h3>
+        <p><strong>A:</strong> Passing props through <strong>intermediate</strong> components that do not use them, only to reach a deep child. Fix with Context or global state when it hurts maintainability.</p>
+        <h3>6.8. Named or default export?</h3>
+        <p><strong>A:</strong> Either works. <strong>Named</strong> exports scale well for component libraries; <strong>default</strong> exports are common for page-level components. Pick one style per project.</p>
+        <h3>6.9. What is a render prop?</h3>
+        <p><strong>A:</strong> A prop (often <code class="inline">children</code>) that is a <strong>function</strong> receiving data from the parent component and returning UI. Custom hooks are often a simpler alternative (File 07).</p>
+        <h3>6.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 03 (state &amp; events), File 04 (lists &amp; conditional rendering).</p>
+      </section>
+      <footer>HTML note for React.js File 02. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

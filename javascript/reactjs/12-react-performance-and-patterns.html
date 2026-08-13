@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>12. Performance &amp; Patterns - React.js Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> React.js Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./reactjs.html">← React.js</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-when-to-optimize">1. When to optimize</a>
+        <a href="#2-re-renders-recap">2. Re-renders recap</a>
+        <a href="#3-react-memo">3. React.memo</a>
+        <a href="#4-usecallback">4. useCallback</a>
+        <a href="#5-usememo">5. useMemo</a>
+        <a href="#6-code-splitting-and-lazy">6. Code splitting and lazy</a>
+        <a href="#7-suspense-and-data-overview">7. Suspense and data (overview)</a>
+        <a href="#8-list-performance">8. List performance</a>
+        <a href="#9-uselayouteffect-brief">9. useLayoutEffect (brief)</a>
+        <a href="#10-putting-it-together">10. Putting it together</a>
+        <a href="#11-common-questions">11. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./reactjs.html">React.js</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">12. Performance &amp; Patterns</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>12. Performance &amp; Patterns</h1>
+        <p class="subtitle">File 12 — memo, useMemo, useCallback, code splitting, Suspense.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>React is fast by default. Optimize when <strong>profiling</strong> shows a problem — not preemptively everywhere. This chapter covers <strong><code class="inline">React.memo</code></strong>, <strong><code class="inline">useMemo</code></strong>, <strong><code class="inline">useCallback</code></strong>, <strong>lazy loading</strong>, and <strong>Suspense</strong> for splitting work and skipping unnecessary renders.</p>
+        <p>Builds on rendering (File 04), hooks (File 07), routing (File 09), and data fetching (File 10).</p>
+        <p><strong>Default rule today:</strong> measure first; fix <strong>wasted re-renders</strong> and <strong>large bundles</strong> before micro-optimizing; use <strong><code class="inline">memo</code> + stable props</strong> for expensive pure children; <strong>lazy-load</strong> routes and heavy components.</p>
+      </section>
+      <section id="1-when-to-optimize">
+        <h2>1. When to optimize</h2>
+        <h3>1.1. React is already efficient</h3>
+        <p>Reconciliation updates only changed DOM nodes. Most slowness comes from:</p>
+        <ul><li><strong>Huge lists</strong> without virtualization</li><li><strong>Expensive calculations</strong> every render</li><li><strong>Large JavaScript bundles</strong> slow initial load</li><li><strong>Unnecessary re-renders</strong> of heavy subtrees</li></ul>
+        <h3>1.2. Profile before memoizing</h3>
+        <p>Use <strong>React DevTools Profiler</strong> and browser <strong>Performance</strong> tab. Avoid sprinkling <code class="inline">memo</code>/<code class="inline">useMemo</code> on every component — they add memory and comparison cost.</p>
+      </section>
+      <section id="2-re-renders-recap">
+        <h2>2. Re-renders recap</h2>
+        <h3>2.1. What triggers re-render?</h3>
+        <ul><li><strong>State</strong> change in this component</li><li><strong>Context</strong> value change (if consumer)</li><li><strong>Parent</strong> re-rendered (child re-renders too, unless optimized)</li></ul>
+        <p>Props <strong>equal by reference</strong> for objects/functions — new reference every parent render → child thinks props changed.</p>
+        <h3>2.2. Children render with parent</h3>
+        <div class="code"><pre>function Parent() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;&gt;
+      &lt;button onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;{count}&lt;/button&gt;
+      &lt;ExpensiveList items={items} /&gt;  {/* re-renders on every count click */}
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>Fix by <strong>lifting state down</strong>, <strong>memo</strong>, or <strong>splitting</strong> state into smaller subtrees.</p>
+      </section>
+      <section id="3-react-memo">
+        <h2>3. React.memo</h2>
+        <h3>3.1. Skip re-render if props unchanged</h3>
+        <div class="code"><pre>const ExpensiveList = memo(function ExpensiveList({ items }) {
+  console.log(&quot;ExpensiveList render&quot;);
+  return (
+    &lt;ul&gt;
+      {items.map((item) =&gt; (
+        &lt;li key={item.id}&gt;{item.name}&lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+});</pre></div>
+        <p>Shallow-compares <strong>props</strong> — if each prop is <code class="inline">===</code> previous, skip render.</p>
+        <h3>3.2. Custom comparison</h3>
+        <div class="code"><pre>const UserRow = memo(
+  function UserRow({ user }) {
+    return &lt;div&gt;{user.name}&lt;/div&gt;;
+  },
+  (prev, next) =&gt; prev.user.id === next.user.id
+);</pre></div>
+        <p>Return <strong><code class="inline">true</code></strong> if props are <strong>equal</strong> (skip re-render).</p>
+        <h3>3.3. When memo helps</h3>
+        <ul><li>Component is <strong>expensive</strong> to render</li><li>Same props <strong>often</strong> across parent re-renders</li><li>Props are <strong>stable</strong> or primitives</li></ul>
+        <p>Memo <strong>does not help</strong> if props are new objects/functions every time — pair with <code class="inline">useCallback</code> / <code class="inline">useMemo</code> or restructure.</p>
+      </section>
+      <section id="4-usecallback">
+        <h2>4. useCallback</h2>
+        <h3>4.1. Stable function reference</h3>
+        <div class="code"><pre>function Parent() {
+  const [count, setCount] = useState(0);
+  const [text, setText] = useState(&quot;&quot;);
+
+  const handleSave = useCallback(() =&gt; {
+    save(text);
+  }, [text]);
+
+  return (
+    &lt;&gt;
+      &lt;input value={text} onChange={(e) =&gt; setText(e.target.value)} /&gt;
+      &lt;MemoizedToolbar onSave={handleSave} /&gt;
+      &lt;button onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;{count}&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <p>Without <code class="inline">useCallback</code>, <code class="inline">handleSave</code> is a <strong>new function</strong> each render → memoized child re-renders anyway.</p>
+        <h3>4.2. Dependency array</h3>
+        <p>Include everything <strong><code class="inline">handleSave</code></strong> closes over (<code class="inline">text</code>). Same rules as <code class="inline">useEffect</code> (File 05).</p>
+        <h3>4.3. When not to use useCallback</h3>
+        <ul><li>Child is not memoized</li><li>Handler passed to native DOM (<code class="inline">onClick</code>) — usually fine without</li><li>Premature optimization on cheap trees</li></ul>
+      </section>
+      <section id="5-usememo">
+        <h2>5. useMemo</h2>
+        <h3>5.1. Cache expensive computation</h3>
+        <div class="code"><pre>function ProductTable({ products, filter }) {
+  const filtered = useMemo(() =&gt; {
+    return products.filter((p) =&gt; p.name.includes(filter));
+  }, [products, filter]);
+
+  return &lt;Table rows={filtered} /&gt;;
+}</pre></div>
+        <p>Recomputes only when <strong><code class="inline">products</code></strong> or <strong><code class="inline">filter</code></strong> change.</p>
+        <h3>5.2. Stable object for Context or memo children</h3>
+        <div class="code"><pre>const value = useMemo(
+  () =&gt; ({ theme, toggleTheme }),
+  [theme, toggleTheme]
+);
+
+return (
+  &lt;ThemeContext.Provider value={value}&gt;{children}&lt;/ThemeContext.Provider&gt;
+);</pre></div>
+        <p>File 08 — avoid new context object every render.</p>
+        <h3>5.3. useMemo vs useCallback</h3>
+        <table>
+        <thead>
+        <tr><th>Hook</th><th>Returns</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong><code class="inline">useMemo</code></strong></td><td><strong>Value</strong> (object, array, number, filtered list)</td></tr>
+        <tr><td><strong><code class="inline">useCallback</code></strong></td><td><strong>Function</strong> (same as <code class="inline">useMemo(() =&gt; fn, deps)</code>)</td></tr>
+        </tbody>
+        </table>
+      </section>
+      <section id="6-code-splitting-and-lazy">
+        <h2>6. Code splitting and lazy</h2>
+        <h3>6.1. dynamic import()</h3>
+        <p>Split heavy modules into separate <strong>chunks</strong> loaded on demand:</p>
+        <div class="code"><pre>import { lazy, Suspense } from &quot;react&quot;;
+
+const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre></div>
+        <p>Webpack/Vite creates a separate file fetched when the component first renders.</p>
+        <h3>6.2. Suspense fallback</h3>
+        <div class="code"><pre>function App() {
+  return (
+    &lt;Suspense fallback={&lt;PageSkeleton /&gt;}&gt;
+      &lt;Routes&gt;
+        &lt;Route path=&quot;/admin&quot; element={&lt;AdminDashboard /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/Suspense&gt;
+  );
+}</pre></div>
+        <p>While chunk loads, <strong><code class="inline">fallback</code></strong> shows (File 09 — route-level splitting).</p>
+        <h3>6.3. What to lazy-load</h3>
+        <ul><li>Admin / settings routes (rare visits)</li><li>Rich editors, charts, maps</li><li>Not tiny components — overhead of async boundary</li></ul>
+      </section>
+      <section id="7-suspense-and-data-overview">
+        <h2>7. Suspense and data (overview)</h2>
+        <h3>7.1. Suspense for lazy components</h3>
+        <p>Primary use today: <strong>waiting for JS bundle</strong>, not yet universal for all data fetching.</p>
+        <h3>7.2. Suspense with TanStack Query / React 19</h3>
+        <p>Frameworks increasingly support <strong>Suspense boundaries</strong> for queries — <code class="inline">useSuspenseQuery</code> throws promise until data ready; nearest Suspense shows fallback.</p>
+        <div class="code"><pre>const { data } = useSuspenseQuery({ queryKey: [&quot;user&quot;, id], queryFn: fetchUser });</pre></div>
+        <p>File 10 — opt-in when your stack supports it.</p>
+      </section>
+      <section id="8-list-performance">
+        <h2>8. List performance</h2>
+        <h3>8.1. Virtualization</h3>
+        <p>Long lists (1000+ rows) — render only <strong>visible</strong> rows:</p>
+        <ul><li><strong><code class="inline">@tanstack/react-virtual</code></strong></li><li><strong><code class="inline">react-window</code></strong></li></ul>
+        <p>Mapping 10k <code class="inline">&lt;li&gt;</code> elements slows DOM and reconciliation.</p>
+        <h3>8.2. Keys and stable item components</h3>
+        <p>Stable <strong><code class="inline">key={item.id}</code></strong> (File 04). <strong><code class="inline">memo</code></strong> on row component when parent state changes often.</p>
+      </section>
+      <section id="9-uselayouteffect-brief">
+        <h2>9. useLayoutEffect (brief)</h2>
+        <p>Runs <strong>after DOM update, before paint</strong> — use for measuring layout or synchronous DOM writes that must happen before user sees frame. Rare; default to <strong><code class="inline">useEffect</code></strong> (File 05).</p>
+      </section>
+      <section id="10-putting-it-together">
+        <h2>10. Putting it together</h2>
+        <h3>10.1. Optimized list row</h3>
+        <div class="code"><pre>const ProductRow = memo(function ProductRow({ product, onSelect }) {
+  return (
+    &lt;tr onClick={() =&gt; onSelect(product.id)}&gt;
+      &lt;td&gt;{product.name}&lt;/td&gt;
+      &lt;td&gt;{product.price}&lt;/td&gt;
+    &lt;/tr&gt;
+  );
+});
+
+function ProductList({ products }) {
+  const [filter, setFilter] = useState(&quot;&quot;);
+  const [selectedId, setSelectedId] = useState(null);
+
+  const visible = useMemo(
+    () =&gt; products.filter((p) =&gt; p.name.includes(filter)),
+    [products, filter]
+  );
+
+  const handleSelect = useCallback((id) =&gt; {
+    setSelectedId(id);
+  }, []);
+
+  return (
+    &lt;&gt;
+      &lt;input value={filter} onChange={(e) =&gt; setFilter(e.target.value)} /&gt;
+      &lt;table&gt;
+        &lt;tbody&gt;
+          {visible.map((p) =&gt; (
+            &lt;ProductRow key={p.id} product={p} onSelect={handleSelect} /&gt;
+          ))}
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+      </section>
+      <section id="11-common-questions">
+        <h2>11. Common questions</h2>
+        <h3>11.1. Should I wrap every component in memo?</h3>
+        <p><strong>A:</strong> <strong>No.</strong> Only when Profiler shows <strong>expensive</strong> wasted renders and props can be stable.</p>
+        <h3>11.2. useMemo vs recalculating every render?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">useMemo</code></strong> when computation is <strong>measurably expensive</strong> or you need <strong>referential stability</strong> for deps/memo children.</p>
+        <h3>11.3. Why does memo not work with inline objects?</h3>
+        <p><strong>A:</strong> <strong><code class="inline">{ foo: 1 }</code></strong> is a <strong>new reference</strong> each render — shallow compare fails. Memoize the object or pass primitives.</p>
+        <h3>11.4. useCallback vs defining function in render?</h3>
+        <p><strong>A:</strong> Inline is fine unless a <strong>memoized child</strong> or <strong>effect dep</strong> needs stable identity.</p>
+        <h3>11.5. What is code splitting?</h3>
+        <p><strong>A:</strong> Loading parts of the app <strong>on demand</strong> via dynamic <code class="inline">import()</code> — smaller initial bundle.</p>
+        <h3>11.6. What does Suspense do?</h3>
+        <p><strong>A:</strong> Catches <strong>lazy components</strong> (and some async data patterns) while waiting — shows <strong>fallback</strong> UI.</p>
+        <h3>11.7. How do I speed up a 10,000 item list?</h3>
+        <p><strong>A:</strong> <strong>Virtualize</strong> — do not render all DOM nodes. Consider pagination.</p>
+        <h3>11.8. Does Context hurt performance?</h3>
+        <p><strong>A:</strong> <strong>Any consumer</strong> re-renders when value changes. Split contexts, memoize value, or use <strong>Zustand selectors</strong> (File 11).</p>
+        <h3>11.9. React Compiler / automatic memoization?</h3>
+        <p><strong>A:</strong> Emerging tooling may reduce manual memo — still understand concepts for debugging.</p>
+        <h3>11.10. What should I read next?</h3>
+        <p><strong>A:</strong> File 13 (testing memoized components), File 14 (architecture boundaries), File 10 (query suspense).</p>
+      </section>
+      <footer>HTML note for React.js File 12. Open from the React.js index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>

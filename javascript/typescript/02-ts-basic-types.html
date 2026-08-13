@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>02. Basic Types - TypeScript Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> TypeScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./typescript.html">← TypeScript</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-primitives-and-any">1. Primitives and `any`</a>
+        <a href="#2-arrays-and-tuples">2. Arrays and tuples</a>
+        <a href="#3-enum">3. `enum`</a>
+        <a href="#4-unknown-vs-any">4. `unknown` vs `any`</a>
+        <a href="#5-common-questions">5. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./typescript.html">TypeScript</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">02. Basic Types</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>02. Basic Types</h1>
+        <p class="subtitle">File 02 — primitives, arrays, tuples, enum, any vs unknown.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <p>TypeScript models JavaScript values with types. Most map directly to JS runtime types, plus a few TS-only constructs (<code class="inline">enum</code>, <code class="inline">tuple</code>, <code class="inline">void</code>, <code class="inline">never</code>).</p>
+      </section>
+      <section id="1-primitives-and-any">
+        <h2>1. Primitives and <code class="inline">any</code></h2>
+        <h3>1.1. JavaScript primitives in TypeScript</h3>
+        <table>
+        <thead>
+        <tr><th>TS type</th><th>JS equivalent</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">string</code></td><td>string</td><td><code class="inline">&quot;</code>hello<code class="inline"></code></td></tr>
+        <tr><td><code class="inline">number</code></td><td>number</td><td><code class="inline">42</code>, <code class="inline">3.14</code>, <code class="inline">NaN</code></td></tr>
+        <tr><td><code class="inline">boolean</code></td><td>boolean</td><td><code class="inline">true</code>, <code class="inline">false</code></td></tr>
+        <tr><td><code class="inline">bigint</code></td><td>bigint</td><td><code class="inline">100n</code></td></tr>
+        <tr><td><code class="inline">symbol</code></td><td>symbol</td><td><code class="inline">Symbol(&quot;id&quot;)</code></td></tr>
+        <tr><td><code class="inline">null</code></td><td>null</td><td><code class="inline">null</code></td></tr>
+        <tr><td><code class="inline">undefined</code></td><td>undefined</td><td><code class="inline">undefined</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>let name: string = &quot;Bharat&quot;;
+let count: number = 0;
+let ok: boolean = false;</pre></div>
+        <h3>1.2. <code class="inline">void</code> and <code class="inline">never</code></h3>
+        <p><strong><code class="inline">void</code></strong> — function returns nothing meaningful:</p>
+        <div class="code"><pre>function log(msg: string): void {
+  console.log(msg);
+}</pre></div>
+        <p><strong><code class="inline">never</code></strong> — function never returns (throws or infinite loop):</p>
+        <div class="code"><pre>function fail(msg: string): never {
+  throw new Error(msg);
+}</pre></div>
+        <h3>1.3. <code class="inline">any</code> — escape hatch (avoid when possible)</h3>
+        <p><code class="inline">any</code> disables type checking for that value:</p>
+        <div class="code"><pre>let value: any = 10;
+value = &quot;hello&quot;;
+value.foo.bar; // No compile error — dangerous</pre></div>
+        <p>Use <code class="inline">any</code> only for gradual migration or truly dynamic data. Prefer <code class="inline">unknown</code> (below).</p>
+        <h3>1.4. Type widening and literals</h3>
+        <div class="code"><pre>let x = &quot;hello&quot;;  // string
+const y = &quot;hello&quot;; // type &quot;hello&quot; (literal) — const cannot be reassigned</pre></div>
+        <p>Literal types are covered in depth in File 05.</p>
+      </section>
+      <section id="2-arrays-and-tuples">
+        <h2>2. Arrays and tuples</h2>
+        <h3>2.1. Array types</h3>
+        <p>Two equivalent syntaxes:</p>
+        <div class="code"><pre>const nums: number[] = [1, 2, 3];
+const tags: Array&lt;string&gt; = [&quot;ts&quot;, &quot;js&quot;];</pre></div>
+        <p>Read-only arrays:</p>
+        <div class="code"><pre>const frozen: readonly number[] = [1, 2, 3];
+// frozen.push(4); // Error</pre></div>
+        <h3>2.2. Tuples — fixed-length, typed arrays</h3>
+        <div class="code"><pre>type Point = [number, number];
+const origin: Point = [0, 0];
+
+type UserEntry = [string, number]; // [name, age]
+const row: UserEntry = [&quot;Bharat&quot;, 30];</pre></div>
+        <p>Optional and rest elements:</p>
+        <div class="code"><pre>type StringsAndOptionalNumber = [string, string, number?];
+type StringNumberBooleans = [string, number, ...boolean[]];</pre></div>
+        <h3>2.3. Tuple vs array</h3>
+        <table>
+        <thead>
+        <tr><th></th><th>Array</th><th>Tuple</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Length</td><td>Variable</td><td>Fixed (by type)</td></tr>
+        <tr><td>Use case</td><td>Homogeneous lists</td><td>CSV row, coordinates, <code class="inline">[key, value]</code> pairs</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// React useState return type is a tuple
+const [count, setCount]: [number, (n: number) =&gt; void] = useState(0);</pre></div>
+      </section>
+      <section id="3-enum">
+        <h2>3. <code class="inline">enum</code></h2>
+        <p>TypeScript <code class="inline">enum</code> creates a set of named constants. Prefer <strong><code class="inline">const enum</code></strong> or plain unions in modern code; enums remain common in legacy codebases.</p>
+        <h3>3.1. Numeric enum (default)</h3>
+        <div class="code"><pre>enum Direction {
+  Up,    // 0
+  Down,  // 1
+  Left,  // 2
+  Right, // 3
+}
+
+const move = Direction.Up;</pre></div>
+        <h3>3.2. String enum</h3>
+        <div class="code"><pre>enum Status {
+  Pending = &quot;PENDING&quot;,
+  Active = &quot;ACTIVE&quot;,
+  Done = &quot;DONE&quot;,
+}</pre></div>
+        <h3>3.3. Alternatives (often preferred)</h3>
+        <div class="code"><pre>// Union of string literals — no runtime object emitted
+type Status = &quot;PENDING&quot; | &quot;ACTIVE&quot; | &quot;DONE&quot;;
+
+const STATUS = {
+  Pending: &quot;PENDING&quot;,
+  Active: &quot;ACTIVE&quot;,
+} as const;
+type StatusFromConst = typeof STATUS[keyof typeof STATUS];</pre></div>
+        <p><strong>Rule of thumb:</strong> use string unions or <code class="inline">as const</code> objects unless you need enum-specific features or existing API compatibility.</p>
+      </section>
+      <section id="4-unknown-vs-any">
+        <h2>4. <code class="inline">unknown</code> vs <code class="inline">any</code></h2>
+        <p>Both accept any value. The difference is <strong>what you can do with them</strong>:</p>
+        <div class="code"><pre>let a: any = getValue();
+a.toFixed(); // OK — no check
+
+let u: unknown = getValue();
+// u.toFixed(); // Error — must narrow first
+
+if (typeof u === &quot;number&quot;) {
+  u.toFixed(2); // OK after narrowing
+}</pre></div>
+        <table>
+        <thead>
+        <tr><th></th><th><code class="inline">any</code></th><th><code class="inline">unknown</code></th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Assign anything to it</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Assign to stricter types</td><td>Yes (unsafe)</td><td>No — must narrow</td></tr>
+        <tr><td>Call methods / access props</td><td>Yes</td><td>No until narrowed</td></tr>
+        <tr><td>Recommended</td><td>Last resort</td><td>Default for &quot;don&#x27;t know yet&quot;</td></tr>
+        </tbody>
+        </table>
+        <h3>4.1. Narrowing <code class="inline">unknown</code></h3>
+        <div class="code"><pre>function parseJson(raw: string): unknown {
+  return JSON.parse(raw);
+}
+
+const data = parseJson(&#x27;{&quot;name&quot;:&quot;Bharat&quot;}&#x27;);
+
+if (
+  typeof data === &quot;object&quot; &amp;&amp;
+  data !== null &amp;&amp;
+  &quot;name&quot; in data &amp;&amp;
+  typeof (data as { name: unknown }).name === &quot;string&quot;
+) {
+  console.log(data.name);
+}</pre></div>
+        <p>Type guards and narrowing patterns are covered in File 07.</p>
+        <h3>4.2. <code class="inline">never</code> in exhaustiveness</h3>
+        <p>When narrowing unions, <code class="inline">never</code> proves you handled every case:</p>
+        <div class="code"><pre>type Shape = { kind: &quot;circle&quot;; r: number } | { kind: &quot;square&quot;; s: number };
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case &quot;circle&quot;:
+      return Math.PI * shape.r ** 2;
+    case &quot;square&quot;:
+      return shape.s ** 2;
+    default:
+      const _exhaustive: never = shape;
+      return _exhaustive;
+  }
+}</pre></div>
+      </section>
+      <section id="5-common-questions">
+        <h2>5. Common questions</h2>
+        <h3>5.1. What is the difference between <code class="inline">null</code> and <code class="inline">undefined</code> in TypeScript?</h3>
+        <p><strong>A:</strong> Both exist in JS. With <code class="inline">strictNullChecks</code>, you must handle them explicitly. Optional properties use <code class="inline">?:</code> which allows <code class="inline">undefined</code>.</p>
+        <h3>5.2. When should I use <code class="inline">any</code>?</h3>
+        <p><strong>A:</strong> Rarely — migration, third-party JS without types, or prototyping. Replace with proper types or <code class="inline">unknown</code> as soon as possible.</p>
+        <h3>5.3. Tuple vs array — when to use tuples?</h3>
+        <p><strong>A:</strong> When position and type at each index matter — <code class="inline">[string, number]</code>, hook return pairs, fixed CSV columns.</p>
+        <h3>5.4. Are TypeScript enums compiled to JavaScript?</h3>
+        <p><strong>A:</strong> Yes — they emit a runtime object (unless <code class="inline">const enum</code>, which inlines). String literal unions emit nothing extra.</p>
+        <h3>5.5. What is <code class="inline">readonly</code> for arrays?</h3>
+        <p><strong>A:</strong> Prevents mutating methods (<code class="inline">push</code>, <code class="inline">pop</code>) and reassignment of elements at the type level.</p>
+        <h3>5.6. Can I mix types in an array?</h3>
+        <p><strong>A:</strong> Yes — <code class="inline">(string | number)[]</code> or use a union. For fixed positions, prefer a tuple.</p>
+        <h3>5.7. Why prefer <code class="inline">unknown</code> over <code class="inline">any</code>?</h3>
+        <p><strong>A:</strong> <code class="inline">unknown</code> forces you to validate before use, keeping type safety at boundaries (API responses, <code class="inline">JSON.parse</code>).</p>
+        <h3>5.8. What is <code class="inline">never</code> used for besides throwing functions?</h3>
+        <p><strong>A:</strong> Exhaustiveness checks in <code class="inline">switch</code>, impossible branches after narrowing, and advanced conditional types (File 11).</p>
+      </section>
+      <footer>HTML note for TypeScript File 02. Open from the TypeScript index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>
