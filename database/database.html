@@ -3,29 +3,44 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>database Notes</title>
+  <title>Database - Notes Index</title>
   <link rel="stylesheet" href="../public/styles/common.css" />
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>database</h1>
-      <p class="muted">Folder index for database.</p>
-      <div class="bar">
-        <span class="chip">Self-contained HTML</span>
-        <span class="chip">Deploy-friendly filename</span>
-      </div>
-      <button class="btn" onclick="toggleTheme()" aria-label="Toggle theme">Toggle theme</button>
-    </header>
-    <section>
-      <h2>Subtracks</h2>
-      <ul>
-        <li><a href="./mongodb/README.md">mongodb/README.md</a></li>
-        <li><a href="./mongodb/index.html">mongodb/index.html</a></li>
-        <li><a href="./postgresql/README.md">postgresql/README.md</a></li>
-        <li><a href="./postgresql/index.html">postgresql/index.html</a></li>
-      </ul>
-    </section>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> Database</div>
+      <nav class="nav">
+        <a href="../index.html">← Home</a>
+        <a href="./postgresql/postgresql.html">PostgreSQL</a>
+        <a href="./mongodb/mongodb.html">MongoDB</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">Database</span>
+      </nav>
+      <header class="hero">
+        <h1>Database</h1>
+        <p class="subtitle">Notes for relational and document databases.</p>
+      </header>
+      <section>
+        <h2>Subtracks</h2>
+        <table>
+          <thead><tr><th>Track</th><th>Index</th></tr></thead>
+          <tbody>
+            <tr><td>PostgreSQL (SQL)</td><td><a href="./postgresql/postgresql.html">postgresql/postgresql.html</a></td></tr>
+            <tr><td>MongoDB (NoSQL)</td><td><a href="./mongodb/mongodb.html">mongodb/mongodb.html</a></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
   </div>
   <script>
     (function () {
@@ -33,11 +48,19 @@
       if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
       }
+      updateToggleUI();
     })();
     function toggleTheme() {
       document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      updateToggleUI();
+    }
+    function updateToggleUI() {
       var isDark = document.documentElement.classList.contains('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
     }
   </script>
 </body>

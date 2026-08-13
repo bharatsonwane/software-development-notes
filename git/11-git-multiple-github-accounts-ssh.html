@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../public/styles/common.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>How To Work With Multiple Github Accounts on a single Machine - Git Notes</title>
+  <style>
+    /* ===== Light mode (default) ===== */
+    :root {
+      --radius: 0.625rem;
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --sidebar: oklch(0.985 0 0);
+      --sidebar-foreground: oklch(0.145 0 0);
+      --sidebar-primary: oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border: oklch(0.922 0 0);
+      --chart-1: oklch(0.646 0.222 41.116);
+      --chart-2: oklch(0.6 0.118 184.704);
+      --chart-3: oklch(0.398 0.07 227.392);
+      --chart-4: oklch(0.828 0.189 84.429);
+      --chart-5: oklch(0.769 0.188 70.08);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.646 0.222 41.116 / 12%);
+      --chip-1-fg: oklch(0.5 0.18 41);
+      --chip-1-border: oklch(0.646 0.222 41.116 / 25%);
+      --chip-2-bg: oklch(0.6 0.118 184.704 / 12%);
+      --chip-2-fg: oklch(0.45 0.1 184);
+      --chip-2-border: oklch(0.6 0.118 184.704 / 25%);
+      --chip-3-bg: oklch(0.577 0.245 27.325 / 12%);
+      --chip-3-fg: oklch(0.45 0.2 27);
+      --chip-3-border: oklch(0.577 0.245 27.325 / 25%);
+      --chip-4-bg: oklch(0.398 0.07 227.392 / 12%);
+      --chip-4-fg: oklch(0.35 0.06 227);
+      --chip-4-border: oklch(0.398 0.07 227.392 / 25%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.646 0.222 41.116 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.646 0.222 41.116 / 10%);
+      --dot-glow: oklch(0.205 0 0 / 40%);
+
+      /* VS Code Light+ code tokens */
+      --code-bg: oklch(0.98 0 0);
+      --code-border: oklch(0.9 0 0);
+      --code-fg: oklch(0.15 0 0);
+      --code-comment: oklch(0.45 0.12 145);
+      --code-keyword: oklch(0.4 0.2 264);
+      --code-var: oklch(0.25 0.06 260);
+      --code-string: oklch(0.45 0.14 25);
+      --code-number: oklch(0.42 0.1 160);
+      --code-fn: oklch(0.45 0.1 75);
+      --code-type: oklch(0.42 0.1 200);
+    }
+
+    /* ===== Dark mode ===== */
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-primary: oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --chart-1: oklch(0.488 0.243 264.376);
+      --chart-2: oklch(0.696 0.17 162.48);
+      --chart-3: oklch(0.769 0.188 70.08);
+      --chart-4: oklch(0.627 0.265 303.9);
+      --chart-5: oklch(0.645 0.246 16.439);
+
+      /* Chip semantic tokens */
+      --chip-1-bg: oklch(0.488 0.243 264.376 / 15%);
+      --chip-1-fg: oklch(0.75 0.15 264);
+      --chip-1-border: oklch(0.488 0.243 264.376 / 30%);
+      --chip-2-bg: oklch(0.696 0.17 162.48 / 15%);
+      --chip-2-fg: oklch(0.82 0.12 162);
+      --chip-2-border: oklch(0.696 0.17 162.48 / 30%);
+      --chip-3-bg: oklch(0.645 0.246 16.439 / 15%);
+      --chip-3-fg: oklch(0.82 0.14 16);
+      --chip-3-border: oklch(0.645 0.246 16.439 / 30%);
+      --chip-4-bg: oklch(0.627 0.265 303.9 / 15%);
+      --chip-4-fg: oklch(0.82 0.16 303);
+      --chip-4-border: oklch(0.627 0.265 303.9 / 30%);
+
+      /* Callout / table header tints */
+      --callout-bg: oklch(0.488 0.243 264.376 / 8%);
+      --callout-warn-bg: oklch(0.769 0.188 70.08 / 8%);
+      --th-bg: oklch(0.488 0.243 264.376 / 12%);
+      --dot-glow: oklch(0.488 0.243 264.376 / 60%);
+
+      /* VS Code Dark+ code tokens */
+      --code-bg: oklch(0.17 0 0);
+      --code-border: oklch(0.27 0 0);
+      --code-fg: oklch(0.86 0 0);
+      --code-comment: oklch(0.6 0.1 145);
+      --code-keyword: oklch(0.65 0.14 250);
+      --code-var: oklch(0.78 0.1 230);
+      --code-string: oklch(0.7 0.1 50);
+      --code-number: oklch(0.78 0.08 130);
+      --code-fn: oklch(0.85 0.09 95);
+      --code-type: oklch(0.72 0.12 175);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--foreground);
+      background: var(--background);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 20px;
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 12px;
+      align-self: start;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--sidebar-foreground);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--sidebar-primary);
+      box-shadow: 0 0 12px var(--dot-glow);
+    }
+
+    .nav a {
+      display: block;
+      color: var(--muted-foreground);
+      text-decoration: none;
+      padding: 7px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      transition: background 120ms, color 120ms;
+      font-size: 0.9rem;
+    }
+
+    .nav a:hover {
+      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+
+    /* Main content */
+    main { min-width: 0; }
+
+    .hero {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      color: var(--foreground);
+    }
+
+    .subtitle {
+      color: var(--muted-foreground);
+      font-size: 0.95rem;
+    }
+
+    /* Chips */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .chip.prim { background: var(--chip-1-bg); color: var(--chip-1-fg); border-color: var(--chip-1-border); }
+    .chip.obj  { background: var(--chip-2-bg); color: var(--chip-2-fg); border-color: var(--chip-2-border); }
+    .chip.ref  { background: var(--chip-3-bg); color: var(--chip-3-fg); border-color: var(--chip-3-border); }
+    .chip.type { background: var(--chip-4-bg); color: var(--chip-4-fg); border-color: var(--chip-4-border); }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    h2, h3, h4 { line-height: 1.35; }
+
+    h2 {
+      color: var(--foreground);
+      border-left: 3px solid var(--chart-1);
+      padding-left: 10px;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      color: var(--chart-2);
+      margin: 16px 0 8px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      color: var(--chart-3);
+      font-size: 0.95rem;
+    }
+
+    p, li { color: var(--card-foreground); }
+
+    /* Callouts */
+    .callout {
+      border-left: 3px solid var(--chart-1);
+      background: var(--callout-bg);
+      padding: 10px 12px;
+      border-radius: calc(var(--radius) - 2px);
+      margin: 12px 0;
+      color: var(--card-foreground);
+    }
+
+    .callout.warn {
+      border-left-color: var(--chart-3);
+      background: var(--callout-warn-bg);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 10px 0;
+      border: 1px solid var(--border);
+      background: var(--secondary);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--foreground);
+      background: var(--th-bg);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 16px;
+      color: var(--muted-foreground);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background: var(--secondary);
+      color: var(--foreground);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: background 120ms;
+      width: 100%;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent);
+    }
+
+    .theme-toggle .icon { font-size: 1.1rem; }
+
+    /* Responsive */
+    @media (max-width: 1040px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> Git Notes</div>
+      <nav class="nav">
+        <a href="../index.html">← Home</a>
+        <a href="./git.html">← Git</a>
+        <a href="#intro">Intro</a>
+        <a href="#content">Content</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./git.html">Git</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">How To Work With Multiple Github Accounts on a single Machine</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>How To Work With Multiple Github Accounts on a single Machine</h1>
+      </header>
+      <section id="content">
+        <p>Let suppose I have two github accounts, <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatOffice</strong> and <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatPersonal</strong>. Now i want to setup my machine (Mac, Linux, or Windows) to easily talk to both the github accounts.</p>
+        <div class="callout">NOTE: This logic can be extended to more than two accounts also. :)</div>
+        <p>The setup can be done in 5 easy steps:</p>
+        <h2>Steps:</h2>
+        <ul><li><a href="#step-1">Step 1</a> : Create SSH keys for all accounts</li><li><a href="#step-2">Step 2</a> : Create a Config File and Make Host Entries</li><li><a href="#step-3">Step 3</a> : Add SSH keys to SSH Agent</li><li><a href="#step-4">Step 4</a> : Add SSH public key to the Github</li><li><a href="#step-5">Step 5</a> : Cloning GitHub repositories using different accounts</li></ul>
+        <h2>Step 1:- Create SSH keys for all accounts</h2>
+        <p>First make sure your current directory is your <strong>.ssh</strong> folder (navigate to the .ssh directory).</p>
+        <p><strong>Mac / Linux:</strong></p>
+        <div class="code"><pre>     cd ~/.ssh</pre></div>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code"><pre>     cd $env:USERPROFILE\.ssh</pre></div>
+        <p>If the .ssh directory does not exist, you can create and navigate to it:</p>
+        <p><strong>Mac / Linux:</strong></p>
+        <div class="code"><pre>     mkdir ~/.ssh
+     cd ~/.ssh</pre></div>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code"><pre>     New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.ssh
+     cd $env:USERPROFILE\.ssh</pre></div>
+        <p>Complete path will be like:</p>
+        <ul><li><strong>Mac/Linux:</strong> <code class="inline">~/.ssh</code> (e.g. <code class="inline">/Users/sonwanebr/.ssh</code>)</li><li><strong>Windows:</strong> <code class="inline">C:\Users\&lt;YourWindowsUsername&gt;\.ssh</code> (e.g. <code class="inline">C:\Users\sonwanebr\.ssh</code>)</li></ul>
+        <p>List files in the <strong>.ssh</strong> folder:</p>
+        <p><strong>Mac / Linux:</strong></p>
+        <div class="code"><pre>     ls ~/.ssh</pre></div>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code"><pre>     dir</pre></div>
+        <h3>A) Create SSH keys for all accounts</h3>
+        <p><strong>Windows:</strong> Use <strong>PowerShell</strong> (OpenSSH is built-in on Windows 10+). Run the commands below from the <code class="inline">.ssh</code> directory as shown above.</p>
+        <p>Syntax for generating a unique SSH key for an account with email and file name:</p>
+        <div class="code"><pre>      ssh-keygen -t rsa -C &quot;yourEmailAddress&quot; -f &quot;repoProvider_githubUsername&quot;</pre></div>
+        <p>here,</p>
+        <p><strong>-C</strong> stands for comment to help identify your ssh key</p>
+        <p><strong>-f</strong> stands for the file name where your ssh key get saved (*repoProvider_githubUsername* is ssh-key-name.)</p>
+        <p>#### Now generating SSH keys for my two accounts</p>
+        <div class="code"><pre>     ssh-keygen -t rsa -C &quot;myOfficeEmail@gmail.com&quot; -f &quot;bitbucket_bharatOffice&quot;
+     ssh-keygen -t rsa -C &quot;myPersonalEmail@gmail.com&quot; -f &quot;github_bharatPersonal&quot;</pre></div>
+        <p>Here <strong>bharatOffice</strong> is username of bitbucket corresponding to  <strong>myOfficeEmail</strong> email and for that <strong>bitbucket_bharatOffice</strong> is file name. And <strong>bharatPersonal</strong> is username of github corresponding to  <strong>myPersonalEmail</strong> email and for that <strong>github_bharatPersonal</strong> is file name.</p>
+        <p>After entering the command the terminal will ask for passphrase, leave it empty and proceed.</p>
+        <div class="callout">Now after adding keys , in your .ssh folder, a public key and a private will get generated.</div>
+        <p>&gt;The public key will have an extension __.pub__ and private key will be there without any extension both having same name which you have passed after __-f__ option in the above command. (in my case *bitbucket_bharatOffice* and *github_bharatPersonal*)</p>
+        <h2>Step 2:- Create a Config File and Make Host Entries</h2>
+        <p>The <strong>~/.ssh/config</strong> file allows us specify many config options for SSH.</p>
+        <p>If <strong>config</strong> file does not already exist, create one (make sure you are in the <strong>.ssh</strong> directory).</p>
+        <p><strong>Mac / Linux:</strong></p>
+        <div class="code"><pre>     cd ~/.ssh/
+     touch config</pre></div>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code"><pre>     cd $env:USERPROFILE\.ssh
+     New-Item -ItemType File -Force -Path config</pre></div>
+        <p>Open the config file in your editor:</p>
+        <p><strong>Mac / Linux:</strong></p>
+        <div class="code"><pre>     open config</pre></div>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code"><pre>     notepad config</pre></div>
+        <p>Now we need to add these lines to the file, each block corresponding to each account we created earlier.</p>
+        <div class="code"><pre>     #syntax ==&gt; 
+     Host repoProvider.com-githubUsername
+          HostName repoProvider.com
+          User git
+          IdentityFile ~/.ssh/repoProvider_githubUsername
+
+     #bharatOffice account
+     Host bitbucket.org-bharatOffice
+          HostName bitbucket.org
+          User git
+          IdentityFile ~/.ssh/bitbucket_bharatOffice
+
+     #bharatPersonal account
+     Host github.com-bharatPersonal
+          HostName github.com
+          User git
+          IdentityFile ~/.ssh/github_bharatPersonal</pre></div>
+        <div class="callout"><strong>Windows note:</strong> If <code class="inline">~</code> is not resolved in your SSH config, use the full path for <code class="inline">IdentityFile</code>, e.g. <code class="inline">C:\Users\sonwanebr\.ssh\github_bharatPersonal</code>.</div>
+        <h2>Step 3:- Add SSH keys to SSH Agent</h2>
+        <p>#### Start SSH Agent</p>
+        <p><strong>Windows:</strong> Run PowerShell as Administrator and execute:</p>
+        <div class="code"><pre>    Get-Service ssh-agent | Set-Service -StartupType Automatic
+    Start-Service ssh-agent
+    Get-Service ssh-agent</pre></div>
+        <p><strong>Mac:</strong> SSH agent usually runs by default. To start manually:</p>
+        <div class="code"><pre>     eval &quot;$(ssh-agent -s)&quot;</pre></div>
+        <p><strong>Linux:</strong> Start the agent if needed:</p>
+        <div class="code"><pre>     eval &quot;$(ssh-agent -s)&quot;</pre></div>
+        <p>Optional: First-time trust host (same on all platforms):</p>
+        <div class="code"><pre>     ssh -o StrictHostKeyChecking=no git@github.com</pre></div>
+        <p>Now we have the keys but they cannot be used until we add them to the SSH Agent.</p>
+        <p><strong>Mac</strong> (use <code class="inline">-K</code> to store in keychain):</p>
+        <div class="code"><pre>     ssh-add -K ~/.ssh/repoProvider_githubUsername
+     ssh-add -K ~/.ssh/bitbucket_bharatOffice
+     ssh-add -K ~/.ssh/github_bharatPersonal</pre></div>
+        <p><strong>Linux / Windows</strong> (no <code class="inline">-K</code> option):</p>
+        <div class="code"><pre>     ssh-add ~/.ssh/repoProvider_githubUsername
+     ssh-add ~/.ssh/bitbucket_bharatOffice
+     ssh-add ~/.ssh/github_bharatPersonal</pre></div>
+        <p>On Windows (PowerShell), use the full path:</p>
+        <div class="code"><pre>     ssh-add $env:USERPROFILE\.ssh\bitbucket_bharatOffice
+     ssh-add $env:USERPROFILE\.ssh\github_bharatPersonal</pre></div>
+        <p>You can read more about adding keys to SSH Agent <a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here.</a></p>
+        <h2>Step 4:- Add SSH public key to the Github</h2>
+        <p>For the next step we need to add our public key (that we have generated in our previous step) and add it to corresponding github accounts.</p>
+        <p>For doing this we need to:</p>
+        <p>__1. Copy the public key__</p>
+        <p>Open the <code class="inline">.pub</code> file and copy its contents, or copy it directly to the clipboard.</p>
+        <p><strong>Mac / Linux — open in editor:</strong></p>
+        <div class="code"><pre>     vim ~/.ssh/bitbucket_bharatOffice.pub
+     vim ~/.ssh/github_bharatPersonal.pub</pre></div>
+        <p><strong>Windows (PowerShell) — open in Notepad:</strong></p>
+        <div class="code"><pre>     notepad $env:USERPROFILE\.ssh\bitbucket_bharatOffice.pub
+     notepad $env:USERPROFILE\.ssh\github_bharatPersonal.pub</pre></div>
+        <p>&lt;p align=&quot;center&quot;&gt;OR</p>
+        <p><strong>Copy directly to clipboard:</strong></p>
+        <p><strong>Mac:</strong></p>
+        <div class="code"><pre>     pbcopy &lt; ~/.ssh/bitbucket_bharatOffice.pub
+     pbcopy &lt; ~/.ssh/github_bharatPersonal.pub</pre></div>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code"><pre>     Get-Content $env:USERPROFILE\.ssh\bitbucket_bharatOffice.pub | Set-Clipboard
+     Get-Content $env:USERPROFILE\.ssh\github_bharatPersonal.pub | Set-Clipboard</pre></div>
+        <p>__2. Paste the public key on Github__</p>
+        <ul><li>Sign in to Github Account</li><li>Goto <strong>Settings</strong> &gt; <strong>SSH and GPG keys</strong> &gt; <strong>New SSH Key</strong></li><li>Paste your copied public key and give it a Title of your choice.</li></ul>
+        <p>___OR___</p>
+        <ul><li>Sign in to Github</li><li>Paste this link in your browser (https://github.com/settings/keys) or click <a href="https://github.com/settings/keys">here</a></li><li>Click on <strong>New SSH Key</strong> and paste your copied key.</li></ul>
+        <h2>Step 5:- Cloning GitHub repositories using different accounts</h2>
+        <p>So we are done with our setups and now its time to see it in action. We will clone a repository using one of the account we have added.</p>
+        <p>Make a new project folder where you want to clone your repository and go to that directory from your terminal.</p>
+        <p>For Example: I am making a repository on my personal github account and naming it <strong>TestRepo</strong> Now for cloning the repo use the below command:</p>
+        <div class="code"><pre>     git clone git@{repoProvider.com}-{githubUsername}:{owner-user-name}/{the-repo-name}.git
+
+     [e.g.] git clone git@github.com-bharatPersonal:bharatPersonal/TestRepo.git</pre></div>
+        <h2>Step 6:- Change Remote URL for Cloned Repositories (Optional)</h2>
+        <p>If you have already cloned repositories using HTTPS, you can change the remote URL to use SSH for a smoother experience. First, navigate to the repository directory, then run the following commands to update the remote URL:</p>
+        <div class="code"><pre>     git remote -v # To check current URLs
+     git remote remove origin # Remove existed URLs
+     git remote add origin git@{repoProvider.com}-{githubUsername}:{owner-user-name}/{the-repo-name}.git # Add SSH URL        </pre></div>
+        <p>Pick the correct pair for your repository accordingly. To push or pull to the correct account we need to add the remote origin to the project</p>
+        <div class="code"><pre>     git remote add origin git@github.com-bharatPersonal:bharatPersonal
+     
+     git remote add origin git@github.com-bharatOffice:bharatOffice</pre></div>
+        <h2>Step 7:- Finally</h2>
+        <p>From now on, to ensure that our commits and pushes from each repository on the system uses the correct GitHub user — we will have to configure <strong>user.email</strong> and <strong>user.name</strong> in every repository freshly cloned or existing before.</p>
+        <p>To do this use the following commands.</p>
+        <div class="code"><pre>     git config user.email &quot;myOfficeEmail@gmail.com&quot;
+     git config user.name &quot;Bharat Sonwane&quot;
+     
+     git config user.email &quot;myPersonalEmail@gmail.com&quot;
+     git config user.name &quot;Bharat Sonwane&quot;</pre></div>
+        <p>Now you can use:</p>
+        <div class="code"><pre>     git push
+     
+     git pull</pre></div>
+      </section>
+      <footer>HTML note. Open from the Git index.</footer>
+    </main>
+  </div>
+  <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script>
+    var snippetEditors = [];
+
+    function applySnippetTheme() {
+      if (!window.CodeMirror) return;
+      var isDark = document.documentElement.classList.contains('dark');
+      var theme = isDark ? 'material-darker' : 'eclipse';
+      snippetEditors.forEach(function (cm) {
+        cm.setOption('theme', theme);
+      });
+    }
+
+    function initCodeMirrorSnippets() {
+      if (!window.CodeMirror) return;
+
+      document.querySelectorAll('.code pre').forEach(function (pre) {
+        var container = pre.closest('.code') || pre;
+        var host = document.createElement('div');
+        host.className = 'cm-snippet-block';
+        container.parentNode.replaceChild(host, container);
+
+        var cm = CodeMirror(host, {
+          value: pre.textContent.replace(/\n+$/, ''),
+          mode: 'javascript',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.getWrapperElement().classList.add('cm-snippet-editor');
+        snippetEditors.push(cm);
+      });
+
+      document.querySelectorAll('code.inline').forEach(function (inlineCode) {
+        var host = document.createElement('span');
+        inlineCode.parentNode.replaceChild(host, inlineCode);
+
+        var cm = CodeMirror(host, {
+          value: inlineCode.textContent,
+          mode: 'text/plain',
+          readOnly: true,
+          lineNumbers: false,
+          lineWrapping: false,
+          viewportMargin: Infinity,
+        });
+        cm.setSize('auto', 'auto');
+        cm.getWrapperElement().classList.add('cm-inline-editor');
+        snippetEditors.push(cm);
+      });
+
+      applySnippetTheme();
+    }
+
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+      initCodeMirrorSnippets();
+      updateToggleUI();
+    })();
+
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      var isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      applySnippetTheme();
+      updateToggleUI();
+    }
+
+    function updateToggleUI() {
+      var isDark = document.documentElement.classList.contains('dark');
+      var icon = document.getElementById('theme-icon');
+      var label = document.getElementById('theme-label');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+  </script>
+</body>
+</html>
