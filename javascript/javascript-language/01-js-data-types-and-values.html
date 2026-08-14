@@ -22,7 +22,7 @@
         <a href="#objects">2. Object Data Type</a>
         <a href="#compare">3. Primitive vs Non-primitive</a>
         <a href="#references">4. Values and References</a>
-        <a href="#type-checks">5. typeof and instanceof</a>
+        <a href="#type-checks">5. typeof, instanceof, toString.call</a>
         <a href="#language-basics">6. Language Basics</a>
         <a href="#common-questions">7. Common Questions</a>
         <a href="./01-js-data-types-animation.html">Animation visualizer</a>
@@ -62,7 +62,7 @@
         <div class="code"><pre>let x = 10;      // number
 x = "hello";     // now string — totally valid</pre></div>
         <div class="callout">Two broad categories: <strong>primitives</strong> and <strong>objects</strong> (everything else).</div>
-        <p><strong>Default rule today:</strong> use <code class="inline">typeof</code> for primitives, <code class="inline">=== null</code> for null, <code class="inline">Number.isNaN()</code> for NaN, <code class="inline">Array.isArray()</code> for arrays; remember objects are copied by <strong>reference</strong>.</p>
+        <p><strong>Default rule today:</strong> use <code class="inline">typeof</code> for primitives, <code class="inline">=== null</code> for null, <code class="inline">Number.isNaN()</code> for NaN, <code class="inline">Array.isArray()</code> for arrays; use <code class="inline">Object.prototype.toString.call(x)</code> when you need a precise internal type tag; remember objects are copied by <strong>reference</strong>.</p>
         <p>Interactive visualizer: open <a href="./01-js-data-types-animation.html">01-js-data-types-animation.html</a> in a browser — typeof, copy vs reference, null/undefined, NaN, boxing, Symbol (Run / Step).</p>
       </section>
 
@@ -235,7 +235,7 @@ console.log(o.x);  // 100</pre></div>
       </section>
 
       <section id="type-checks">
-        <h2>5. typeof and instanceof (type and instance) checking</h2>
+        <h2>5. typeof, instanceof, and Object.prototype.toString.call</h2>
 
         <h3>5.1. typeof operator</h3>
         <p>Returns a <strong>string</strong> naming the type:</p>
@@ -266,44 +266,86 @@ value === null;  // true</pre></div>
 
 "hello" instanceof String;  // false — primitive, not String object</pre></div>
 
-        <h3>5.4. typeof vs instanceof (quick table)</h3>
+        <h3>5.4. Object.prototype.toString.call(value)</h3>
+        <p>Every value has an internal type tag. <code class="inline">Object.prototype.toString.call(x)</code> reads that tag for <strong>any</strong> datatype — primitive or object — and returns a string like <code class="inline">[object Type]</code>.</p>
+        <p>Use <code class="inline">.call(x)</code> so you run <strong>Object</strong>'s <code class="inline">toString</code>, not the value's own (arrays, dates, and many objects override <code class="inline">toString</code>).</p>
+        <div class="code"><pre>const tag = (x) => Object.prototype.toString.call(x);
+
+tag("hello");          // "[object String]"
+tag(42);               // "[object Number]"
+tag(true);             // "[object Boolean]"
+tag(undefined);        // "[object Undefined]"
+tag(null);             // "[object Null]"     ← unlike typeof
+tag(Symbol("id"));     // "[object Symbol]"
+tag(10n);              // "[object BigInt]"
+tag({});               // "[object Object]"
+tag([]);               // "[object Array]"    ← unlike typeof
+tag(function () {});   // "[object Function]"
+tag(new Date());       // "[object Date]"
+tag(/js/i);            // "[object RegExp]"
+tag(new Map());        // "[object Map]"
+tag(new Set());        // "[object Set]"
+tag(Promise.resolve());// "[object Promise]"
+tag(NaN);              // "[object Number]"   — still a number</pre></div>
+        <div class="callout">Why <code class="inline">call</code>? <code class="inline">[].toString()</code> returns <code class="inline">""</code> (joined elements). <code class="inline">Object.prototype.toString.call([])</code> returns <code class="inline">"[object Array]"</code>.</div>
+        <p><code class="inline">.slice(8, -1)</code> drops <code class="inline">"[object "</code> and the closing <code class="inline">"]"</code>, leaving just the type name:</p>
+        <div class="code"><pre>Object.prototype.toString
+  .call(value)
+  .slice(8, -1);
+
+// Examples
+Object.prototype.toString.call("hello").slice(8, -1); // "String"
+Object.prototype.toString.call(42).slice(8, -1);      // "Number"
+Object.prototype.toString.call(null).slice(8, -1);    // "Null"
+Object.prototype.toString.call([]).slice(8, -1);      // "Array"
+Object.prototype.toString.call(new Date()).slice(8, -1); // "Date"</pre></div>
+        <p>A small helper for comparisons:</p>
+        <div class="code"><pre>function typeTag(x) {
+  return Object.prototype.toString.call(x).slice(8, -1);
+}
+
+typeTag(null);  // "Null"
+typeTag([]);    // "Array"</pre></div>
+        <p><strong>When to use it:</strong> distinguishing objects that all look like <code class="inline">typeof === "object"</code> (array vs date vs map vs null). Prefer dedicated checks when they exist (<code class="inline">Array.isArray</code>, <code class="inline">x === null</code>).</p>
+
+        <h3>5.5. typeof vs instanceof vs toString.call (quick table)</h3>
         <table>
           <thead>
-            <tr><th>Check</th><th>typeof</th><th>instanceof</th></tr>
+            <tr><th>Check</th><th>typeof</th><th>instanceof</th><th>Object.prototype.toString.call</th></tr>
           </thead>
           <tbody>
-            <tr><td>What it checks</td><td>Built-in type tag (returns a string)</td><td>Prototype chain relationship</td></tr>
-            <tr><td>Works well for</td><td>Primitives, functions, quick guards</td><td>Class/constructor-based objects</td></tr>
-            <tr><td>Returns</td><td>One of values like "string", "number", "object"</td><td>true or false</td></tr>
-            <tr><td>Arrays</td><td>typeof [] → "object" (not specific)</td><td>[] instanceof Array → true</td></tr>
-            <tr><td>null</td><td>typeof null → "object" (historical bug)</td><td>null instanceof Object → false</td></tr>
-            <tr><td>Cross-realm caveat</td><td>Usually stable for primitives</td><td>Can fail across realms (e.g., different iframes)</td></tr>
+            <tr><td>What it checks</td><td>Built-in type tag (returns a string)</td><td>Prototype chain relationship</td><td>Internal [[Class]] / type tag</td></tr>
+            <tr><td>Works well for</td><td>Primitives, functions, quick guards</td><td>Class/constructor-based objects</td><td>Any value — primitives and objects</td></tr>
+            <tr><td>Returns</td><td>One of values like "string", "number", "object"</td><td>true or false</td><td>"[object String]", "[object Array]", ...</td></tr>
+            <tr><td>Arrays</td><td>typeof [] → "object" (not specific)</td><td>[] instanceof Array → true</td><td>"[object Array]"</td></tr>
+            <tr><td>null</td><td>typeof null → "object" (historical bug)</td><td>null instanceof Object → false</td><td>"[object Null]"</td></tr>
+            <tr><td>Cross-realm caveat</td><td>Usually stable for primitives</td><td>Can fail across realms (e.g., different iframes)</td><td>Usually still works (same tag string)</td></tr>
           </tbody>
         </table>
 
-        <h3>5.5. Data types: primitive vs non-primitive</h3>
+        <h3>5.6. Data types: primitive vs non-primitive</h3>
         <table>
           <thead>
-            <tr><th>Data type</th><th>Category</th><th>typeof result</th><th>instanceof result</th><th>Recommended check</th></tr>
+            <tr><th>Data type</th><th>Category</th><th>typeof result</th><th>instanceof result</th><th>toString.call result</th><th>Recommended check</th></tr>
           </thead>
           <tbody>
-            <tr><td>String</td><td>Primitive</td><td>"string"</td><td>"hi" instanceof String → false</td><td>typeof x === "string"</td></tr>
-            <tr><td>Number</td><td>Primitive</td><td>"number"</td><td>42 instanceof Number → false</td><td>typeof x === "number" and Number.isFinite(x) when needed</td></tr>
-            <tr><td>Boolean</td><td>Primitive</td><td>"boolean"</td><td>true instanceof Boolean → false</td><td>typeof x === "boolean"</td></tr>
-            <tr><td>Undefined</td><td>Primitive</td><td>"undefined"</td><td>undefined instanceof Object → false</td><td>x === undefined or typeof x === "undefined"</td></tr>
-            <tr><td>Null</td><td>Primitive</td><td>"object" (quirk)</td><td>null instanceof Object → false</td><td>x === null</td></tr>
-            <tr><td>Symbol</td><td>Primitive</td><td>"symbol"</td><td>Symbol("id") instanceof Symbol → false</td><td>typeof x === "symbol"</td></tr>
-            <tr><td>BigInt</td><td>Primitive</td><td>"bigint"</td><td>100n instanceof BigInt → false</td><td>typeof x === "bigint"</td></tr>
-            <tr><td>Object (plain)</td><td>Non-primitive</td><td>"object"</td><td>({}) instanceof Object → true</td><td>x !== null &amp;&amp; typeof x === "object"</td></tr>
-            <tr><td>Array</td><td>Non-primitive</td><td>"object"</td><td>[] instanceof Array → true</td><td>Array.isArray(x)</td></tr>
-            <tr><td>Function</td><td>Non-primitive</td><td>"function"</td><td>(function(){}) instanceof Function → true</td><td>typeof x === "function"</td></tr>
-            <tr><td>Date</td><td>Non-primitive</td><td>"object"</td><td>new Date() instanceof Date → true</td><td>x instanceof Date</td></tr>
-            <tr><td>RegExp</td><td>Non-primitive</td><td>"object"</td><td>/x/ instanceof RegExp → true</td><td>x instanceof RegExp</td></tr>
-            <tr><td>Map</td><td>Non-primitive</td><td>"object"</td><td>new Map() instanceof Map → true</td><td>x instanceof Map</td></tr>
-            <tr><td>Set</td><td>Non-primitive</td><td>"object"</td><td>new Set() instanceof Set → true</td><td>x instanceof Set</td></tr>
-            <tr><td>WeakMap</td><td>Non-primitive</td><td>"object"</td><td>new WeakMap() instanceof WeakMap → true</td><td>x instanceof WeakMap</td></tr>
-            <tr><td>WeakSet</td><td>Non-primitive</td><td>"object"</td><td>new WeakSet() instanceof WeakSet → true</td><td>x instanceof WeakSet</td></tr>
-            <tr><td>Promise</td><td>Non-primitive</td><td>"object"</td><td>Promise.resolve() instanceof Promise → true</td><td>x instanceof Promise</td></tr>
+            <tr><td>String</td><td>Primitive</td><td>"string"</td><td>"hi" instanceof String → false</td><td>[object String]</td><td>typeof x === "string"</td></tr>
+            <tr><td>Number</td><td>Primitive</td><td>"number"</td><td>42 instanceof Number → false</td><td>[object Number]</td><td>typeof x === "number" and Number.isFinite(x) when needed</td></tr>
+            <tr><td>Boolean</td><td>Primitive</td><td>"boolean"</td><td>true instanceof Boolean → false</td><td>[object Boolean]</td><td>typeof x === "boolean"</td></tr>
+            <tr><td>Undefined</td><td>Primitive</td><td>"undefined"</td><td>undefined instanceof Object → false</td><td>[object Undefined]</td><td>x === undefined or typeof x === "undefined"</td></tr>
+            <tr><td>Null</td><td>Primitive</td><td>"object" (quirk)</td><td>null instanceof Object → false</td><td>[object Null]</td><td>x === null</td></tr>
+            <tr><td>Symbol</td><td>Primitive</td><td>"symbol"</td><td>Symbol("id") instanceof Symbol → false</td><td>[object Symbol]</td><td>typeof x === "symbol"</td></tr>
+            <tr><td>BigInt</td><td>Primitive</td><td>"bigint"</td><td>100n instanceof BigInt → false</td><td>[object BigInt]</td><td>typeof x === "bigint"</td></tr>
+            <tr><td>Object (plain)</td><td>Non-primitive</td><td>"object"</td><td>({}) instanceof Object → true</td><td>[object Object]</td><td>x !== null &amp;&amp; typeof x === "object"</td></tr>
+            <tr><td>Array</td><td>Non-primitive</td><td>"object"</td><td>[] instanceof Array → true</td><td>[object Array]</td><td>Array.isArray(x)</td></tr>
+            <tr><td>Function</td><td>Non-primitive</td><td>"function"</td><td>(function(){}) instanceof Function → true</td><td>[object Function]</td><td>typeof x === "function"</td></tr>
+            <tr><td>Date</td><td>Non-primitive</td><td>"object"</td><td>new Date() instanceof Date → true</td><td>[object Date]</td><td>x instanceof Date</td></tr>
+            <tr><td>RegExp</td><td>Non-primitive</td><td>"object"</td><td>/x/ instanceof RegExp → true</td><td>[object RegExp]</td><td>x instanceof RegExp</td></tr>
+            <tr><td>Map</td><td>Non-primitive</td><td>"object"</td><td>new Map() instanceof Map → true</td><td>[object Map]</td><td>x instanceof Map</td></tr>
+            <tr><td>Set</td><td>Non-primitive</td><td>"object"</td><td>new Set() instanceof Set → true</td><td>[object Set]</td><td>x instanceof Set</td></tr>
+            <tr><td>WeakMap</td><td>Non-primitive</td><td>"object"</td><td>new WeakMap() instanceof WeakMap → true</td><td>[object WeakMap]</td><td>x instanceof WeakMap</td></tr>
+            <tr><td>WeakSet</td><td>Non-primitive</td><td>"object"</td><td>new WeakSet() instanceof WeakSet → true</td><td>[object WeakSet]</td><td>x instanceof WeakSet</td></tr>
+            <tr><td>Promise</td><td>Non-primitive</td><td>"object"</td><td>Promise.resolve() instanceof Promise → true</td><td>[object Promise]</td><td>x instanceof Promise</td></tr>
           </tbody>
         </table>
 
@@ -312,6 +354,7 @@ value === null;  // true</pre></div>
             <tr><th>Goal</th><th>How</th></tr>
           </thead>
           <tbody>
+            <tr><td>Internal type tag for any value?</td><td><code class="inline">Object.prototype.toString.call(x)</code></td></tr>
             <tr><td>Is it an array?</td><td><code class="inline">Array.isArray(x)</code></td></tr>
             <tr><td>Is it NaN?</td><td><code class="inline">Number.isNaN(x)</code></td></tr>
             <tr><td>Is it a finite number?</td><td><code class="inline">Number.isFinite(x)</code></td></tr>
@@ -320,7 +363,7 @@ value === null;  // true</pre></div>
           </tbody>
         </table>
 
-        <h3>5.6. Boxing (brief)</h3>
+        <h3>5.7. Boxing (brief)</h3>
         <p>Primitives can be temporarily wrapped as objects when you access methods:</p>
         <div class="code"><pre>"hello".toUpperCase();  // works — JS wraps in String object, then discards it</pre></div>
         <p>Avoid <code class="inline">new String("hello")</code> — creates an object wrapper, rarely needed.</p>
@@ -400,27 +443,30 @@ const x = 1 + 2;  // 1 + 2 is expression; whole line is statement</pre></div>
         <p><strong>A:</strong> <code class="inline">undefined</code> means "not assigned / missing". <code class="inline">null</code> means "intentionally empty".</p>
 
         <h3>7.3. Why does typeof null return "object"?</h3>
-        <p><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null.</p>
+        <p><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null. <code class="inline">Object.prototype.toString.call(null)</code> returns <code class="inline">"[object Null]"</code>.</p>
 
-        <h3>7.4. Primitive vs object — what is the key difference?</h3>
+        <h3>7.4. What does Object.prototype.toString.call(value) do?</h3>
+        <p><strong>A:</strong> It returns the internal type tag as <code class="inline">"[object Type]"</code> for any value. Use <code class="inline">.call(value)</code> so you do not use the value's own <code class="inline">toString</code>. Useful when <code class="inline">typeof</code> only says <code class="inline">"object"</code> (arrays, dates, maps, null).</p>
+
+        <h3>7.5. Primitive vs object — what is the key difference?</h3>
         <p><strong>A:</strong> Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.</p>
 
-        <h3>7.5. Does const make objects immutable?</h3>
+        <h3>7.6. Does const make objects immutable?</h3>
         <p><strong>A:</strong> No. <code class="inline">const</code> prevents <strong>reassigning</strong> the variable. The object itself can still be mutated:</p>
         <div class="code"><pre>const obj = { a: 1 };
 obj.a = 2;       // OK
 obj = { a: 3 };  // TypeError — cannot reassign</pre></div>
 
-        <h3>7.6. What is NaN and how do you check for it?</h3>
+        <h3>7.7. What is NaN and how do you check for it?</h3>
         <p><strong>A:</strong> <code class="inline">NaN</code> means "Not a Number" (result of invalid math). Use <code class="inline">Number.isNaN(value)</code>, not <code class="inline">value === NaN</code>.</p>
 
-        <h3>7.7. Are semicolons required in JavaScript?</h3>
+        <h3>7.8. Are semicolons required in JavaScript?</h3>
         <p><strong>A:</strong> <strong>No</strong> — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.</p>
 
-        <h3>7.8. What is the difference between an expression and a statement?</h3>
+        <h3>7.9. What is the difference between an expression and a statement?</h3>
         <p><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</p>
 
-        <h3>7.9. What is a literal?</h3>
+        <h3>7.10. What is a literal?</h3>
         <p><strong>A:</strong> Syntax that creates a value directly — <code class="inline">42</code>, <code class="inline">"hi"</code>, <code class="inline">{ a: 1 }</code>, <code class="inline">[1, 2]</code>.</p>
       </section>
 
