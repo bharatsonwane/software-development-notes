@@ -47,20 +47,26 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>React components should be <strong>pure during render</strong>: given the same props and state, they return the same UI. Anything that <strong>touches the outside world</strong> — fetching data, subscribing to events, updating <code class="inline">document.title</code>, starting timers — is a <strong>side effect</strong>. <strong><code class="inline">useEffect</code></strong> runs that work <strong>after</strong> React paints the screen, and lets you <strong>sync</strong> component state with external systems.</p>
-        <p>Builds on state and events (File 03) and rendering patterns (File 04). File 10 goes deeper on <strong>data fetching</strong>; File 07 covers <strong>custom hooks</strong> that wrap effects.</p>
-        <p><strong>Default rule today:</strong> put side effects in <strong><code class="inline">useEffect</code></strong>, not in the render body; list every value from the component that the effect <strong>reads</strong> in the <strong>dependency array</strong>; return a <strong>cleanup</strong> function when you subscribe, listen, or create resources that must be torn down.</p>
+        <ul>
+          <li>React components should be <strong>pure during render</strong>: given the same props and state, they return the same UI. Anything that <strong>touches the outside world</strong> — fetching data, subscribing to events, updating <code class="inline">document.title</code>, starting timers — is a <strong>side effect</strong>. <strong><code class="inline">useEffect</code></strong> runs that work <strong>after</strong> React paints the screen, and lets you <strong>sync</strong> component state with external systems.</li>
+          <li>Builds on state and events (File 03) and rendering patterns (File 04). File 10 goes deeper on <strong>data fetching</strong>; File 07 covers <strong>custom hooks</strong> that wrap effects.</li>
+          <li><strong>Default rule today:</strong> put side effects in <strong><code class="inline">useEffect</code></strong>, not in the render body; list every value from the component that the effect <strong>reads</strong> in the <strong>dependency array</strong>; return a <strong>cleanup</strong> function when you subscribe, listen, or create resources that must be torn down.</li>
+        </ul>
       </section>
       <section id="1-side-effects-vs-render">
         <h2>1. Side effects vs render</h2>
         <h3>1.1. What belongs outside render</h3>
-        <p><strong>Render</strong> should compute UI from props and state only:</p>
+        <ul>
+          <li><strong>Render</strong> should compute UI from props and state only:</li>
+        </ul>
         <div class="code"><pre>function Greeting({ name }) {
   // Good — pure calculation during render
   const label = name.trim() || &quot;Guest&quot;;
   return &lt;h1&gt;Hello, {label}&lt;/h1&gt;;
 }</pre></div>
-        <p><strong>Side effects</strong> change something outside this render pass:</p>
+        <ul>
+          <li><strong>Side effects</strong> change something outside this render pass:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Side effect</th><th>Example</th></tr>
@@ -74,7 +80,9 @@
         <tr><td>Local storage</td><td><code class="inline">localStorage.setItem(&quot;theme&quot;, theme)</code></td></tr>
         </tbody>
         </table>
-        <p>Running these <strong>during render</strong> causes bugs: they may run on every render, race with each other, and break React&#x27;s predictable model (File 01 — pure components).</p>
+        <ul>
+          <li>Running these <strong>during render</strong> causes bugs: they may run on every render, race with each other, and break React&#x27;s predictable model (File 01 — pure components).</li>
+        </ul>
         <h3>1.2. Where useEffect runs</h3>
         <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
 
@@ -88,9 +96,13 @@ function Page({ userId }) {
 
   return user ? &lt;Profile user={user} /&gt; : &lt;p&gt;Loading...&lt;/p&gt;;
 }</pre></div>
-        <p><strong>Order on mount/update:</strong></p>
+        <ul>
+          <li><strong>Order on mount/update:</strong></li>
+        </ul>
         <ol><li>Component function runs (render).</li><li>React updates the DOM.</li><li>Browser paints.</li><li><strong><code class="inline">useEffect</code></strong> callbacks run.</li></ol>
-        <p>Effects do <strong>not</strong> block painting — good for responsiveness. For urgent DOM work before paint, React offers <strong><code class="inline">useLayoutEffect</code></strong> (File 12 — rare, mostly measurements).</p>
+        <ul>
+          <li>Effects do <strong>not</strong> block painting — good for responsiveness. For urgent DOM work before paint, React offers <strong><code class="inline">useLayoutEffect</code></strong> (File 12 — rare, mostly measurements).</li>
+        </ul>
       </section>
       <section id="2-basic-useeffect-syntax">
         <h2>2. Basic useEffect syntax</h2>
@@ -98,7 +110,9 @@ function Page({ userId }) {
         <div class="code"><pre>useEffect(() =&gt; {
   // effect body — side effect code here
 });</pre></div>
-        <p>The function you pass to <code class="inline">useEffect</code> is the <strong>effect</strong>. React calls it after render.</p>
+        <ul>
+          <li>The function you pass to <code class="inline">useEffect</code> is the <strong>effect</strong>. React calls it after render.</li>
+        </ul>
         <h3>2.2. Optional cleanup return</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const id = setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
@@ -107,7 +121,9 @@ function Page({ userId }) {
     clearInterval(id);  // cleanup — runs before next effect and on unmount
   };
 }, []);</pre></div>
-        <p>Return a <strong>cleanup function</strong> when you need to undo what the effect set up.</p>
+        <ul>
+          <li>Return a <strong>cleanup function</strong> when you need to undo what the effect set up.</li>
+        </ul>
         <h3>2.3. Dependency array (third argument)</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   // ...
@@ -126,7 +142,9 @@ function Page({ userId }) {
       <section id="3-dependency-array-in-depth">
         <h2>3. Dependency array in depth</h2>
         <h3>3.1. Include what you read</h3>
-        <p>If the effect <strong>uses</strong> a value from the component, include it in deps:</p>
+        <ul>
+          <li>If the effect <strong>uses</strong> a value from the component, include it in deps:</li>
+        </ul>
         <div class="code"><pre>function ChatRoom({ roomId }) {
   useEffect(() =&gt; {
     const connection = createConnection(roomId);
@@ -134,9 +152,13 @@ function Page({ userId }) {
     return () =&gt; connection.disconnect();
   }, [roomId]);  // roomId is read inside — must be listed
 }</pre></div>
-        <p>When <code class="inline">roomId</code> changes, React runs <strong>cleanup</strong> for the old room, then runs the effect for the new room.</p>
+        <ul>
+          <li>When <code class="inline">roomId</code> changes, React runs <strong>cleanup</strong> for the old room, then runs the effect for the new room.</li>
+        </ul>
         <h3>3.2. Stale closures</h3>
-        <p>Missing deps causes <strong>stale</strong> values inside the effect:</p>
+        <ul>
+          <li>Missing deps causes <strong>stale</strong> values inside the effect:</li>
+        </ul>
         <div class="code"><pre>function Counter() {
   const [count, setCount] = useState(0);
 
@@ -149,7 +171,9 @@ function Page({ userId }) {
 
   return &lt;button onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;{count}&lt;/button&gt;;
 }</pre></div>
-        <p><strong>Fix options:</strong></p>
+        <ul>
+          <li><strong>Fix options:</strong></li>
+        </ul>
         <div class="code"><pre>// Option A — add count to deps (effect re-subscribes when count changes)
 useEffect(() =&gt; {
   const id = setInterval(() =&gt; console.log(count), 1000);
@@ -159,7 +183,9 @@ useEffect(() =&gt; {
 // Option B — functional update in event handler, not in interval (often better design)
 // Option C — useRef for latest value without re-running effect (File 07)</pre></div>
         <h3>3.3. Stable functions and deps</h3>
-        <p>Functions defined in the component are <strong>new references</strong> every render:</p>
+        <ul>
+          <li>Functions defined in the component are <strong>new references</strong> every render:</li>
+        </ul>
         <div class="code"><pre>function Search({ query }) {
   function fetchResults() {
     return fetch(`/api?q=${query}`);
@@ -169,26 +195,36 @@ useEffect(() =&gt; {
     fetchResults();
   }, [fetchResults]);  // runs every render — fetchResults identity changes
 }</pre></div>
-        <p><strong>Fixes:</strong></p>
+        <ul>
+          <li><strong>Fixes:</strong></li>
+        </ul>
         <div class="code"><pre>// Move fetch inline in effect — only list query
 useEffect(() =&gt; {
   fetch(`/api?q=${query}`);
 }, [query]);
 
 // Or wrap fetchResults in useCallback when shared (File 12)</pre></div>
-        <p><strong>Setters from <code class="inline">useState</code></strong> and <strong><code class="inline">dispatch</code> from <code class="inline">useReducer</code></strong> are stable — safe to omit from deps (React guarantees identity).</p>
+        <ul>
+          <li><strong>Setters from <code class="inline">useState</code></strong> and <strong><code class="inline">dispatch</code> from <code class="inline">useReducer</code></strong> are stable — safe to omit from deps (React guarantees identity).</li>
+        </ul>
         <h3>3.4. Objects and arrays as deps</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   saveSettings(settings);
 }, [settings]);  // new object reference every render → effect runs every time</pre></div>
-        <p>If <code class="inline">settings</code> is recreated each render, the effect fires too often. <strong>Derive</strong> stable deps (primitives) or <strong>memoize</strong> the object (File 12).</p>
+        <ul>
+          <li>If <code class="inline">settings</code> is recreated each render, the effect fires too often. <strong>Derive</strong> stable deps (primitives) or <strong>memoize</strong> the object (File 12).</li>
+        </ul>
         <h3>3.5. ESLint <code class="inline">react-hooks/exhaustive-deps</code></h3>
-        <p>The <strong><code class="inline">eslint-plugin-react-hooks</code></strong> rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.</p>
+        <ul>
+          <li>The <strong><code class="inline">eslint-plugin-react-hooks</code></strong> rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.</li>
+        </ul>
       </section>
       <section id="4-cleanup">
         <h2>4. Cleanup</h2>
         <h3>4.1. When cleanup runs</h3>
-        <p>Cleanup runs:</p>
+        <ul>
+          <li>Cleanup runs:</li>
+        </ul>
         <ol><li><strong>Before</strong> the effect runs again (when deps change).</li><li>When the component <strong>unmounts</strong>.</li></ol>
         <div class="code"><pre>useEffect(() =&gt; {
   console.log(&quot;subscribe&quot;, roomId);
@@ -207,7 +243,9 @@ useEffect(() =&gt; {
   window.addEventListener(&quot;resize&quot;, onResize);
   return () =&gt; window.removeEventListener(&quot;resize&quot;, onResize);
 }, []);</pre></div>
-        <p>Always remove listeners, close connections, and abort fetches in cleanup.</p>
+        <ul>
+          <li>Always remove listeners, close connections, and abort fetches in cleanup.</li>
+        </ul>
         <h3>4.3. Aborting fetch</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const controller = new AbortController();
@@ -227,7 +265,9 @@ useEffect(() =&gt; {
   load();
   return () =&gt; controller.abort();
 }, [id]);</pre></div>
-        <p>Without abort, a slow response for <strong>old</strong> <code class="inline">id</code> can overwrite state after <strong>new</strong> <code class="inline">id</code> loaded (<strong>race condition</strong>). File 10 expands on loading/error UI.</p>
+        <ul>
+          <li>Without abort, a slow response for <strong>old</strong> <code class="inline">id</code> can overwrite state after <strong>new</strong> <code class="inline">id</code> loaded (<strong>race condition</strong>). File 10 expands on loading/error UI.</li>
+        </ul>
         <h3>4.4. Timers</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const id = setTimeout(() =&gt; setVisible(true), 300);
@@ -244,7 +284,9 @@ useEffect(() =&gt; {
 
   return &lt;ProductDetails product={product} /&gt;;
 }</pre></div>
-        <p>Small, self-contained — good first useEffect.</p>
+        <ul>
+          <li>Small, self-contained — good first useEffect.</li>
+        </ul>
         <h3>5.2. Fetch on mount / when id changes</h3>
         <div class="code"><pre>function UserProfile({ userId }) {
   const [user, setUser] = useState(null);
@@ -279,7 +321,9 @@ useEffect(() =&gt; {
 
   return &lt;Profile user={user} /&gt;;
 }</pre></div>
-        <p>For production apps, prefer <strong>TanStack Query</strong> or similar (File 10) instead of hand-rolled fetch effects.</p>
+        <ul>
+          <li>For production apps, prefer <strong>TanStack Query</strong> or similar (File 10) instead of hand-rolled fetch effects.</li>
+        </ul>
         <h3>5.3. Syncing to localStorage</h3>
         <div class="code"><pre>function usePersistedState(key, initial) {
   const [value, setValue] = useState(() =&gt; {
@@ -293,18 +337,24 @@ useEffect(() =&gt; {
 
   return [value, setValue];
 }</pre></div>
-        <p><strong>Note:</strong> reading <code class="inline">localStorage</code> in lazy <code class="inline">useState</code> initializer is fine; <strong>writing</strong> on every <code class="inline">value</code> change belongs in an effect (or event handler if you only save on explicit save).</p>
+        <ul>
+          <li><strong>Note:</strong> reading <code class="inline">localStorage</code> in lazy <code class="inline">useState</code> initializer is fine; <strong>writing</strong> on every <code class="inline">value</code> change belongs in an effect (or event handler if you only save on explicit save).</li>
+        </ul>
         <h3>5.4. External non-React library</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const chart = new Chart(canvasRef.current, { /* options */ });
   return () =&gt; chart.destroy();
 }, [data]);</pre></div>
-        <p>Create / destroy imperatively in effect + cleanup when the library is not React-aware.</p>
+        <ul>
+          <li>Create / destroy imperatively in effect + cleanup when the library is not React-aware.</li>
+        </ul>
       </section>
       <section id="6-when-not-to-use-useeffect">
         <h2>6. When not to use useEffect</h2>
         <h3>6.1. Deriving state during render</h3>
-        <p>Don&#x27;t sync state with props via effect when you can <strong>compute during render</strong>:</p>
+        <ul>
+          <li>Don&#x27;t sync state with props via effect when you can <strong>compute during render</strong>:</li>
+        </ul>
         <div class="code"><pre>// Avoid
 function FullName({ first, last }) {
   const [full, setFull] = useState(&quot;&quot;);
@@ -318,7 +368,9 @@ function FullName({ first, last }) {
   const full = `${first} ${last}`;
   return &lt;span&gt;{full}&lt;/span&gt;;
 }</pre></div>
-        <p>Use <strong><code class="inline">useMemo</code></strong> only when the computation is expensive (File 12).</p>
+        <ul>
+          <li>Use <strong><code class="inline">useMemo</code></strong> only when the computation is expensive (File 12).</li>
+        </ul>
         <h3>6.2. User events belong in handlers</h3>
         <div class="code"><pre>// Avoid — effect on every query change to POST analytics
 useEffect(() =&gt; {
@@ -331,9 +383,13 @@ function onSubmit(e) {
   trackSearch(query);
   runSearch(query);
 }</pre></div>
-        <p>Effects are for <strong>syncing with external systems</strong>, not for chaining <strong>event → state → event</strong>.</p>
+        <ul>
+          <li>Effects are for <strong>syncing with external systems</strong>, not for chaining <strong>event → state → event</strong>.</li>
+        </ul>
         <h3>6.3. Initial data that could be server-provided</h3>
-        <p>In frameworks with <strong>server components</strong> or <strong>loaders</strong> (File 09), fetch on the server or in the route loader instead of <code class="inline">useEffect</code> on mount when possible.</p>
+        <ul>
+          <li>In frameworks with <strong>server components</strong> or <strong>loaders</strong> (File 09), fetch on the server or in the route loader instead of <code class="inline">useEffect</code> on mount when possible.</li>
+        </ul>
         <h3>6.4. Resetting state when a prop changes</h3>
         <div class="code"><pre>// Avoid extra effect + flash
 useEffect(() =&gt; {
@@ -342,23 +398,30 @@ useEffect(() =&gt; {
 
 // Prefer — key on child resets state when userId changes
 &lt;UserItems key={userId} userId={userId} /&gt;</pre></div>
-        <p>Or pass <code class="inline">userId</code> and derive selection during render.</p>
+        <ul>
+          <li>Or pass <code class="inline">userId</code> and derive selection during render.</li>
+        </ul>
       </section>
       <section id="7-strict-mode-and-development-behavior">
         <h2>7. Strict Mode and development behavior</h2>
-        <p>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts → unmounts → remounts</strong> components to surface missing cleanup:</p>
+        <ul>
+          <li>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts → unmounts → remounts</strong> components to surface missing cleanup:</li>
+        </ul>
         <div class="code"><pre>useEffect(() =&gt; {
   console.log(&quot;effect&quot;);
   return () =&gt; console.log(&quot;cleanup&quot;);
 }, []);
 // Dev logs: effect, cleanup, effect
 // Prod logs: effect</pre></div>
-        <p><strong>Implications:</strong></p>
-        <ul><li>Effects must be <strong>idempotent</strong> — safe to run twice in dev.</li><li>Cleanup must fully undo the effect — subscriptions must not leak.</li><li>Do not rely on &quot;run once ever&quot; in dev without understanding Strict Mode.</li></ul>
+        <ul>
+          <li><strong>Implications:</strong></li>
+          <li>Effects must be <strong>idempotent</strong> — safe to run twice in dev.</li><li>Cleanup must fully undo the effect — subscriptions must not leak.</li><li>Do not rely on &quot;run once ever&quot; in dev without understanding Strict Mode.</li></ul>
       </section>
       <section id="8-multiple-effects">
         <h2>8. Multiple effects</h2>
-        <p>Split unrelated side effects into <strong>separate</strong> <code class="inline">useEffect</code> calls:</p>
+        <ul>
+          <li>Split unrelated side effects into <strong>separate</strong> <code class="inline">useEffect</code> calls:</li>
+        </ul>
         <div class="code"><pre>function Dashboard({ userId }) {
   useEffect(() =&gt; {
     document.title = &quot;Dashboard&quot;;
@@ -375,7 +438,9 @@ useEffect(() =&gt; {
 
   return &lt;div&gt;...&lt;/div&gt;;
 }</pre></div>
-        <p>Each effect has its own <strong>deps</strong> and <strong>cleanup</strong> — easier to reason about than one large effect.</p>
+        <ul>
+          <li>Each effect has its own <strong>deps</strong> and <strong>cleanup</strong> — easier to reason about than one large effect.</li>
+        </ul>
       </section>
       <section id="9-putting-it-together">
         <h2>9. Putting it together</h2>
@@ -405,7 +470,9 @@ function StatusBar() {
   const online = useOnlineStatus();
   return &lt;span&gt;{online ? &quot;Online&quot; : &quot;Offline&quot;}&lt;/span&gt;;
 }</pre></div>
-        <p>Custom hooks are just functions that call <code class="inline">useEffect</code> — File 07 formalizes the pattern.</p>
+        <ul>
+          <li>Custom hooks are just functions that call <code class="inline">useEffect</code> — File 07 formalizes the pattern.</li>
+        </ul>
         <h3>9.2. Debounced search (effect + cleanup)</h3>
         <div class="code"><pre>function SearchUsers({ onResults }) {
   const [query, setQuery] = useState(&quot;&quot;);
@@ -433,30 +500,52 @@ function StatusBar() {
     /&gt;
   );
 }</pre></div>
-        <p>Debounce cleanup cancels the pending fetch when <code class="inline">query</code> changes before 300ms.</p>
+        <ul>
+          <li>Debounce cleanup cancels the pending fetch when <code class="inline">query</code> changes before 300ms.</li>
+        </ul>
       </section>
       <section id="10-common-questions">
         <h2>10. Common questions</h2>
         <h3>10.1. What is a side effect in React?</h3>
-        <p><strong>A:</strong> Anything that touches <strong>outside</strong> the render result — network, DOM APIs, timers, subscriptions, storage. Run these in <strong><code class="inline">useEffect</code></strong>, not during render.</p>
+        <ul>
+          <li><strong>A:</strong> Anything that touches <strong>outside</strong> the render result — network, DOM APIs, timers, subscriptions, storage. Run these in <strong><code class="inline">useEffect</code></strong>, not during render.</li>
+        </ul>
         <h3>10.2. When does useEffect run?</h3>
-        <p><strong>A:</strong> <strong>After</strong> React commits the update to the DOM and the browser paints. On mount and after re-renders where <strong>dependencies</strong> changed (if you pass a dependency array).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>After</strong> React commits the update to the DOM and the browser paints. On mount and after re-renders where <strong>dependencies</strong> changed (if you pass a dependency array).</li>
+        </ul>
         <h3>10.3. What does an empty dependency array <code class="inline">[]</code> mean?</h3>
-        <p><strong>A:</strong> Run the effect <strong>once after mount</strong> (and run cleanup on unmount). In Strict Mode dev, mount/cleanup/mount runs once extra to test cleanup.</p>
+        <ul>
+          <li><strong>A:</strong> Run the effect <strong>once after mount</strong> (and run cleanup on unmount). In Strict Mode dev, mount/cleanup/mount runs once extra to test cleanup.</li>
+        </ul>
         <h3>10.4. What happens if I omit the dependency array?</h3>
-        <p><strong>A:</strong> The effect runs after <strong>every</strong> render. Rarely correct — almost always specify <code class="inline">[]</code> or <code class="inline">[deps]</code>.</p>
+        <ul>
+          <li><strong>A:</strong> The effect runs after <strong>every</strong> render. Rarely correct — almost always specify <code class="inline">[]</code> or <code class="inline">[deps]</code>.</li>
+        </ul>
         <h3>10.5. Why do I need a cleanup function?</h3>
-        <p><strong>A:</strong> To <strong>undo</strong> subscriptions, listeners, timers, and in-flight requests when deps change or the component unmounts. Prevents leaks and stale updates.</p>
+        <ul>
+          <li><strong>A:</strong> To <strong>undo</strong> subscriptions, listeners, timers, and in-flight requests when deps change or the component unmounts. Prevents leaks and stale updates.</li>
+        </ul>
         <h3>10.6. How do I fix stale closure bugs in effects?</h3>
-        <p><strong>A:</strong> Add missing values to the <strong>dependency array</strong>, use <strong>functional state updates</strong>, or store latest values in <strong><code class="inline">useRef</code></strong> (File 07). Follow <strong><code class="inline">exhaustive-deps</code></strong> lint warnings.</p>
+        <ul>
+          <li><strong>A:</strong> Add missing values to the <strong>dependency array</strong>, use <strong>functional state updates</strong>, or store latest values in <strong><code class="inline">useRef</code></strong> (File 07). Follow <strong><code class="inline">exhaustive-deps</code></strong> lint warnings.</li>
+        </ul>
         <h3>10.7. Can I fetch data in useEffect?</h3>
-        <p><strong>A:</strong> <strong>Yes</strong> for client-only loading. Use <strong>abort/cancel</strong> on cleanup to avoid races. For real apps, prefer <strong>TanStack Query</strong> or route <strong>loaders</strong> (Files 09–10).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Yes</strong> for client-only loading. Use <strong>abort/cancel</strong> on cleanup to avoid races. For real apps, prefer <strong>TanStack Query</strong> or route <strong>loaders</strong> (Files 09–10).</li>
+        </ul>
         <h3>10.8. Should I use useEffect to update state when props change?</h3>
-        <p><strong>A:</strong> Usually <strong>no</strong> — compute derived values during <strong>render</strong>, reset with <strong><code class="inline">key</code></strong>, or adjust design. Effects that only mirror props into state often cause extra renders.</p>
+        <ul>
+          <li><strong>A:</strong> Usually <strong>no</strong> — compute derived values during <strong>render</strong>, reset with <strong><code class="inline">key</code></strong>, or adjust design. Effects that only mirror props into state often cause extra renders.</li>
+        </ul>
         <h3>10.9. Why does my effect run twice in development?</h3>
-        <p><strong>A:</strong> <strong>Strict Mode</strong> intentionally double-invokes effects in dev to verify cleanup. Production runs once per dependency change.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Strict Mode</strong> intentionally double-invokes effects in dev to verify cleanup. Production runs once per dependency change.</li>
+        </ul>
         <h3>10.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).</p>
+        <ul>
+          <li><strong>A:</strong> File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 05. Open from the React.js index.</footer>
     </main>

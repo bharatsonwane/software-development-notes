@@ -43,14 +43,18 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p><strong>State</strong> lets components remember and update data over time. <strong>Events</strong> let users interact with the UI. React combines them with <strong>one-way data flow</strong>: data moves <strong>down</strong> via props; changes move <strong>up</strong> via <strong>callback</strong> props.</p>
-        <p>File 01 introduced <code class="inline">useState</code> briefly. This chapter goes deeper on <strong>updating state correctly</strong>, <strong>handling events</strong>, and <strong>lifting state</strong> to a common parent.</p>
-        <p><strong>Default rule today:</strong> treat state as <strong>immutable</strong> (copy, don&#x27;t mutate); use <strong>functional updates</strong> when the next value depends on the previous; lift state to the <strong>lowest common ancestor</strong> of components that need it.</p>
+        <ul>
+          <li><strong>State</strong> lets components remember and update data over time. <strong>Events</strong> let users interact with the UI. React combines them with <strong>one-way data flow</strong>: data moves <strong>down</strong> via props; changes move <strong>up</strong> via <strong>callback</strong> props.</li>
+          <li>File 01 introduced <code class="inline">useState</code> briefly. This chapter goes deeper on <strong>updating state correctly</strong>, <strong>handling events</strong>, and <strong>lifting state</strong> to a common parent.</li>
+          <li><strong>Default rule today:</strong> treat state as <strong>immutable</strong> (copy, don&#x27;t mutate); use <strong>functional updates</strong> when the next value depends on the previous; lift state to the <strong>lowest common ancestor</strong> of components that need it.</li>
+        </ul>
       </section>
       <section id="1-usestate-in-depth">
         <h2>1. useState in depth</h2>
         <h3>1.1. State and re-renders</h3>
-        <p>When you call a state <strong>setter</strong>, React:</p>
+        <ul>
+          <li>When you call a state <strong>setter</strong>, React:</li>
+        </ul>
         <ol><li>Schedules a <strong>re-render</strong> of that component.</li><li>Runs the component function again with the <strong>new</strong> state.</li><li>Updates the DOM where output changed (reconciliation).</li></ol>
         <div class="code"><pre>import { useState } from &quot;react&quot;;
 
@@ -65,29 +69,41 @@ function Counter() {
     &lt;/button&gt;
   );
 }</pre></div>
-        <p>Each click logs a new render with an incremented count.</p>
+        <ul>
+          <li>Each click logs a new render with an incremented count.</li>
+        </ul>
         <h3>1.2. Initial state and lazy initialization</h3>
         <div class="code"><pre>const [count, setCount] = useState(0);
 const [user, setUser] = useState({ name: &quot;&quot;, age: 0 });</pre></div>
-        <p><strong>Expensive initial value</strong> — pass a <strong>function</strong> so it runs only once:</p>
+        <ul>
+          <li><strong>Expensive initial value</strong> — pass a <strong>function</strong> so it runs only once:</li>
+        </ul>
         <div class="code"><pre>function ExpensiveInit() {
   const [data, setData] = useState(() =&gt; {
     return computeHeavyInitialValue();
   });
 }</pre></div>
-        <p>Without the function, <code class="inline">computeHeavyInitialValue()</code> would run on <strong>every</strong> render.</p>
+        <ul>
+          <li>Without the function, <code class="inline">computeHeavyInitialValue()</code> would run on <strong>every</strong> render.</li>
+        </ul>
         <h3>1.3. Functional updates</h3>
-        <p>When the next state depends on the <strong>previous</strong> state, use the updater form:</p>
+        <ul>
+          <li>When the next state depends on the <strong>previous</strong> state, use the updater form:</li>
+        </ul>
         <div class="code"><pre>setCount((prev) =&gt; prev + 1);
 setCount((prev) =&gt; prev + 1);  // safe when batched — both see correct prev</pre></div>
-        <p>Avoid stale closures in async handlers:</p>
+        <ul>
+          <li>Avoid stale closures in async handlers:</li>
+        </ul>
         <div class="code"><pre>// Risky if multiple updates batch
 setCount(count + 1);
 
 // Safer
 setCount((prev) =&gt; prev + 1);</pre></div>
         <h3>1.4. Object and array state (immutability)</h3>
-        <p><strong>Do not mutate</strong> state objects or arrays — replace with a <strong>new</strong> copy:</p>
+        <ul>
+          <li><strong>Do not mutate</strong> state objects or arrays — replace with a <strong>new</strong> copy:</li>
+        </ul>
         <div class="code"><pre>const [user, setUser] = useState({ name: &quot;Bharat&quot;, age: 30 });
 
 // Bad — mutates same object
@@ -96,37 +112,51 @@ setCount((prev) =&gt; prev + 1);</pre></div>
 
 // Good — new object
 setUser({ ...user, age: 31 });</pre></div>
-        <p>Arrays:</p>
+        <ul>
+          <li>Arrays:</li>
+        </ul>
         <div class="code"><pre>const [items, setItems] = useState([&quot;a&quot;, &quot;b&quot;]);
 
 setItems([...items, &quot;c&quot;]);           // add
 setItems(items.filter((x) =&gt; x !== &quot;a&quot;));  // remove
 setItems(items.map((x) =&gt; x === &quot;b&quot; ? &quot;B&quot; : x));  // update one</pre></div>
-        <p>Same idea as JavaScript immutability (File 12) — React compares by reference for change detection.</p>
+        <ul>
+          <li>Same idea as JavaScript immutability (File 12) — React compares by reference for change detection.</li>
+        </ul>
         <h3>1.5. Multiple state variables</h3>
-        <p>Split unrelated state — easier to reason about:</p>
+        <ul>
+          <li>Split unrelated state — easier to reason about:</li>
+        </ul>
         <div class="code"><pre>function Form() {
   const [name, setName] = useState(&quot;&quot;);
   const [email, setEmail] = useState(&quot;&quot;);
   const [agreed, setAgreed] = useState(false);
 }</pre></div>
-        <p>Combine into one object when fields always update together (File 06 — forms):</p>
+        <ul>
+          <li>Combine into one object when fields always update together (File 06 — forms):</li>
+        </ul>
         <div class="code"><pre>const [form, setForm] = useState({ name: &quot;&quot;, email: &quot;&quot; });
 
 setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
         <h3>1.6. Batching (brief)</h3>
-        <p>React <strong>batches</strong> multiple setters in the same event handler into <strong>one re-render</strong>:</p>
+        <ul>
+          <li>React <strong>batches</strong> multiple setters in the same event handler into <strong>one re-render</strong>:</li>
+        </ul>
         <div class="code"><pre>function handleClick() {
   setCount((c) =&gt; c + 1);
   setFlag((f) =&gt; !f);
   // one re-render, not two
 }</pre></div>
-        <p>React 18+ batches more cases (including promises/timeouts in many setups). File 05 for async interaction.</p>
+        <ul>
+          <li>React 18+ batches more cases (including promises/timeouts in many setups). File 05 for async interaction.</li>
+        </ul>
       </section>
       <section id="2-events-in-react">
         <h2>2. Events in React</h2>
         <h3>2.1. Synthetic events</h3>
-        <p>React wraps native DOM events in <strong>SyntheticEvent</strong> — same interface across browsers, pooled for performance (details rarely matter in app code):</p>
+        <ul>
+          <li>React wraps native DOM events in <strong>SyntheticEvent</strong> — same interface across browsers, pooled for performance (details rarely matter in app code):</li>
+        </ul>
         <div class="code"><pre>function Button() {
   function handleClick(event) {
     console.log(event.type);   // &quot;click&quot;
@@ -135,11 +165,17 @@ setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
 
   return &lt;button onClick={handleClick}&gt;Click&lt;/button&gt;;
 }</pre></div>
-        <p>Use <strong>camelCase</strong> event names: <code class="inline">onClick</code>, <code class="inline">onChange</code>, <code class="inline">onSubmit</code>, <code class="inline">onKeyDown</code>.</p>
+        <ul>
+          <li>Use <strong>camelCase</strong> event names: <code class="inline">onClick</code>, <code class="inline">onChange</code>, <code class="inline">onSubmit</code>, <code class="inline">onKeyDown</code>.</li>
+        </ul>
         <h3>2.2. Common handlers</h3>
-        <p><strong>Click:</strong></p>
+        <ul>
+          <li><strong>Click:</strong></li>
+        </ul>
         <div class="code"><pre>&lt;button onClick={() =&gt; console.log(&quot;clicked&quot;)}&gt;Go&lt;/button&gt;</pre></div>
-        <p><strong>Input change:</strong></p>
+        <ul>
+          <li><strong>Input change:</strong></li>
+        </ul>
         <div class="code"><pre>function SearchBox() {
   const [query, setQuery] = useState(&quot;&quot;);
 
@@ -151,7 +187,9 @@ setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
     /&gt;
   );
 }</pre></div>
-        <p><strong>Form submit:</strong></p>
+        <ul>
+          <li><strong>Form submit:</strong></li>
+        </ul>
         <div class="code"><pre>function LoginForm() {
   function handleSubmit(e) {
     e.preventDefault();  // don&#x27;t full-page reload
@@ -164,7 +202,9 @@ setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
     &lt;/form&gt;
   );
 }</pre></div>
-        <p>Full forms in File 06.</p>
+        <ul>
+          <li>Full forms in File 06.</li>
+        </ul>
         <h3>2.3. Passing arguments to handlers</h3>
         <div class="code"><pre>function ItemList({ items }) {
   function handleDelete(id) {
@@ -177,7 +217,9 @@ setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
     &lt;/button&gt;
   ));
 }</pre></div>
-        <p>Wrap in arrow function — <code class="inline">onClick={handleDelete(item.id)}</code> would <strong>call immediately</strong> on render.</p>
+        <ul>
+          <li>Wrap in arrow function — <code class="inline">onClick={handleDelete(item.id)}</code> would <strong>call immediately</strong> on render.</li>
+        </ul>
         <h3>2.4. preventDefault and stopPropagation</h3>
         <div class="code"><pre>function Link({ href, onNavigate }) {
   function handleClick(e) {
@@ -194,7 +236,9 @@ setForm((prev) =&gt; ({ ...prev, name: &quot;Bharat&quot; }));</pre></div>
       <section id="3-one-way-data-flow">
         <h2>3. One-way data flow</h2>
         <h3>3.1. Data down, events up</h3>
-        <p>Parent owns <strong>state</strong>; child receives <strong>props</strong> and <strong>callbacks</strong>:</p>
+        <ul>
+          <li>Parent owns <strong>state</strong>; child receives <strong>props</strong> and <strong>callbacks</strong>:</li>
+        </ul>
         <div class="code"><pre>function Parent() {
   const [text, setText] = useState(&quot;&quot;);
 
@@ -214,8 +258,9 @@ function Child({ value, onChange }) {
     /&gt;
   );
 }</pre></div>
-        <ul><li><strong>Down:</strong> <code class="inline">value={text}</code></li><li><strong>Up:</strong> <code class="inline">onChange</code> calls parent&#x27;s <code class="inline">setText</code></li></ul>
-        <p>Child does not own the text state — parent does (<strong>controlled</strong> pattern, File 06).</p>
+        <ul><li><strong>Down:</strong> <code class="inline">value={text}</code></li><li><strong>Up:</strong> <code class="inline">onChange</code> calls parent&#x27;s <code class="inline">setText</code></li>
+          <li>Child does not own the text state — parent does (<strong>controlled</strong> pattern, File 06).</li>
+        </ul>
         <h3>3.2. Unidirectional flow benefits</h3>
         <ul><li>Easier to trace bugs — state lives in one place.</li><li>Predictable UI — render is a function of state.</li><li>Siblings stay in sync when they share parent state.</li></ul>
         <h3>3.3. Controlled vs uncontrolled (preview)</h3>
@@ -229,11 +274,15 @@ function Child({ value, onChange }) {
         <tr><td>Typical</td><td>Forms, inputs</td><td>Simple file inputs, legacy</td></tr>
         </tbody>
         </table>
-        <p>Prefer <strong>controlled</strong> for most React forms.</p>
+        <ul>
+          <li>Prefer <strong>controlled</strong> for most React forms.</li>
+        </ul>
       </section>
       <section id="4-lifting-state-up">
         <h2>4. Lifting state up</h2>
-        <p>When <strong>two or more components</strong> need the same state, move it to their <strong>closest common parent</strong>.</p>
+        <ul>
+          <li>When <strong>two or more components</strong> need the same state, move it to their <strong>closest common parent</strong>.</li>
+        </ul>
         <h3>4.1. Problem: siblings need shared data</h3>
         <div class="code"><pre>// Won&#x27;t stay in sync — separate state each
 function BrokenApp() {
@@ -244,7 +293,9 @@ function BrokenApp() {
     &lt;/&gt;
   );
 }</pre></div>
-        <p>Each <code class="inline">TemperatureInput</code> would keep its own temperature.</p>
+        <ul>
+          <li>Each <code class="inline">TemperatureInput</code> would keep its own temperature.</li>
+        </ul>
         <h3>4.2. Solution: lift to parent</h3>
         <div class="code"><pre>function App() {
   const [temperature, setTemperature] = useState(&quot;&quot;);
@@ -283,9 +334,13 @@ function BoilingVerdict({ celsius }) {
   if (celsius &gt;= 100) return &lt;p&gt;Water boils.&lt;/p&gt;;
   return &lt;p&gt;Water does not boil.&lt;/p&gt;;
 }</pre></div>
-        <p>Parent holds <strong>single source of truth</strong>; children are controlled.</p>
+        <ul>
+          <li>Parent holds <strong>single source of truth</strong>; children are controlled.</li>
+        </ul>
         <h3>4.3. Lifting callback-only state</h3>
-        <p>Child triggers action; parent updates list:</p>
+        <ul>
+          <li>Child triggers action; parent updates list:</li>
+        </ul>
         <div class="code"><pre>function TodoApp() {
   const [todos, setTodos] = useState([]);
 
@@ -306,16 +361,22 @@ function BoilingVerdict({ celsius }) {
     &lt;/&gt;
   );
 }</pre></div>
-        <p>List rendering details in File 04.</p>
+        <ul>
+          <li>List rendering details in File 04.</li>
+        </ul>
         <h3>4.4. How far to lift</h3>
-        <p>Lift to the <strong>lowest</strong> ancestor that:</p>
-        <ul><li>Needs the state for its own render, or</li><li>Has both children that need read/write access.</li></ul>
-        <p>Lift too high → prop drilling (File 02, File 08). Keep state local when only one component cares.</p>
+        <ul>
+          <li>Lift to the <strong>lowest</strong> ancestor that:</li>
+          <li>Needs the state for its own render, or</li><li>Has both children that need read/write access.</li>
+          <li>Lift too high → prop drilling (File 02, File 08). Keep state local when only one component cares.</li>
+        </ul>
       </section>
       <section id="5-state-design-basics">
         <h2>5. State design basics</h2>
         <h3>5.1. Single source of truth</h3>
-        <p>Avoid duplicating the same fact in two state variables:</p>
+        <ul>
+          <li>Avoid duplicating the same fact in two state variables:</li>
+        </ul>
         <div class="code"><pre>// Bad — name and fullName can drift
 const [first, setFirst] = useState(&quot;&quot;);
 const [last, setLast] = useState(&quot;&quot;);
@@ -323,9 +384,13 @@ const [fullName, setFullName] = useState(&quot;&quot;);
 
 // Good — derive during render
 const fullName = `${first} ${last}`.trim();</pre></div>
-        <p><strong>Derived values</strong> — compute from state/props in render; don&#x27;t store unless expensive (File 12 — <code class="inline">useMemo</code>).</p>
+        <ul>
+          <li><strong>Derived values</strong> — compute from state/props in render; don&#x27;t store unless expensive (File 12 — <code class="inline">useMemo</code>).</li>
+        </ul>
         <h3>5.2. Minimal state</h3>
-        <p>Ask: &quot;What is the minimum state needed?&quot; Remove anything computable:</p>
+        <ul>
+          <li>Ask: &quot;What is the minimum state needed?&quot; Remove anything computable:</li>
+        </ul>
         <div class="code"><pre>const [items, setItems] = useState([]);
 const [filter, setFilter] = useState(&quot;&quot;);
 
@@ -344,30 +409,52 @@ const visibleItems = items.filter((item) =&gt;
         <tr><td>Lift shared state</td><td>Copy same data into sibling state</td></tr>
         </tbody>
         </table>
-        <p>Complex global state → File 08, File 11.</p>
+        <ul>
+          <li>Complex global state → File 08, File 11.</li>
+        </ul>
       </section>
       <section id="6-common-questions">
         <h2>6. Common questions</h2>
         <h3>6.1. Why doesn&#x27;t updating a variable re-render the component?</h3>
-        <p><strong>A:</strong> React only re-renders when <strong>state</strong> (via setter) or <strong>parent</strong> re-renders with new props. Plain <code class="inline">let</code> variables are not tracked.</p>
+        <ul>
+          <li><strong>A:</strong> React only re-renders when <strong>state</strong> (via setter) or <strong>parent</strong> re-renders with new props. Plain <code class="inline">let</code> variables are not tracked.</li>
+        </ul>
         <h3>6.2. Can I mutate state directly?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> Mutating objects/arrays in place may skip re-renders and breaks predictability. Always pass a <strong>new</strong> reference to the setter.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> Mutating objects/arrays in place may skip re-renders and breaks predictability. Always pass a <strong>new</strong> reference to the setter.</li>
+        </ul>
         <h3>6.3. When should I use the functional form of setState?</h3>
-        <p><strong>A:</strong> When the new state <strong>depends on the previous</strong> state, especially with batched updates or inside timeouts (<code class="inline">setCount(prev =&gt; prev + 1)</code>).</p>
+        <ul>
+          <li><strong>A:</strong> When the new state <strong>depends on the previous</strong> state, especially with batched updates or inside timeouts (<code class="inline">setCount(prev =&gt; prev + 1)</code>).</li>
+        </ul>
         <h3>6.4. What is lifting state up?</h3>
-        <p><strong>A:</strong> Moving shared state from child components to their <strong>common parent</strong>, then passing it down as props and updating via callbacks.</p>
+        <ul>
+          <li><strong>A:</strong> Moving shared state from child components to their <strong>common parent</strong>, then passing it down as props and updating via callbacks.</li>
+        </ul>
         <h3>6.5. What is one-way data flow?</h3>
-        <p><strong>A:</strong> Data flows <strong>down</strong> (props); events/callbacks flow <strong>up</strong>. Parents own state; children request changes through handlers.</p>
+        <ul>
+          <li><strong>A:</strong> Data flows <strong>down</strong> (props); events/callbacks flow <strong>up</strong>. Parents own state; children request changes through handlers.</li>
+        </ul>
         <h3>6.6. What is a SyntheticEvent?</h3>
-        <p><strong>A:</strong> React&#x27;s cross-browser wrapper around native DOM events, used by <code class="inline">onClick</code>, <code class="inline">onChange</code>, etc.</p>
+        <ul>
+          <li><strong>A:</strong> React&#x27;s cross-browser wrapper around native DOM events, used by <code class="inline">onClick</code>, <code class="inline">onChange</code>, etc.</li>
+        </ul>
         <h3>6.7. Why use <code class="inline">e.preventDefault()</code> on forms?</h3>
-        <p><strong>A:</strong> To stop the browser&#x27;s default <strong>full page reload</strong> on submit and handle submission in JavaScript instead.</p>
+        <ul>
+          <li><strong>A:</strong> To stop the browser&#x27;s default <strong>full page reload</strong> on submit and handle submission in JavaScript instead.</li>
+        </ul>
         <h3>6.8. What is the difference between controlled and uncontrolled components?</h3>
-        <p><strong>A:</strong> <strong>Controlled</strong> — React state is the source of truth for input value. <strong>Uncontrolled</strong> — DOM holds value; read via ref (File 07).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Controlled</strong> — React state is the source of truth for input value. <strong>Uncontrolled</strong> — DOM holds value; read via ref (File 07).</li>
+        </ul>
         <h3>6.9. Should every input have its own useState?</h3>
-        <p><strong>A:</strong> Often <strong>yes</strong> for simple forms, or <strong>one object</strong> for many related fields. Lift to parent when siblings or submit handler need the data.</p>
+        <ul>
+          <li><strong>A:</strong> Often <strong>yes</strong> for simple forms, or <strong>one object</strong> for many related fields. Lift to parent when siblings or submit handler need the data.</li>
+        </ul>
         <h3>6.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 04 (lists, keys, conditional UI), File 06 (forms), File 05 (useEffect for side effects).</p>
+        <ul>
+          <li><strong>A:</strong> File 04 (lists, keys, conditional UI), File 06 (forms), File 05 (useEffect for side effects).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 03. Open from the React.js index.</footer>
     </main>

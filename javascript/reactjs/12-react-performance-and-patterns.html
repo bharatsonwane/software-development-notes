@@ -48,23 +48,29 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>React is fast by default. Optimize when <strong>profiling</strong> shows a problem — not preemptively everywhere. This chapter covers <strong><code class="inline">React.memo</code></strong>, <strong><code class="inline">useMemo</code></strong>, <strong><code class="inline">useCallback</code></strong>, <strong>lazy loading</strong>, and <strong>Suspense</strong> for splitting work and skipping unnecessary renders.</p>
-        <p>Builds on rendering (File 04), hooks (File 07), routing (File 09), and data fetching (File 10).</p>
-        <p><strong>Default rule today:</strong> measure first; fix <strong>wasted re-renders</strong> and <strong>large bundles</strong> before micro-optimizing; use <strong><code class="inline">memo</code> + stable props</strong> for expensive pure children; <strong>lazy-load</strong> routes and heavy components.</p>
+        <ul>
+          <li>React is fast by default. Optimize when <strong>profiling</strong> shows a problem — not preemptively everywhere. This chapter covers <strong><code class="inline">React.memo</code></strong>, <strong><code class="inline">useMemo</code></strong>, <strong><code class="inline">useCallback</code></strong>, <strong>lazy loading</strong>, and <strong>Suspense</strong> for splitting work and skipping unnecessary renders.</li>
+          <li>Builds on rendering (File 04), hooks (File 07), routing (File 09), and data fetching (File 10).</li>
+          <li><strong>Default rule today:</strong> measure first; fix <strong>wasted re-renders</strong> and <strong>large bundles</strong> before micro-optimizing; use <strong><code class="inline">memo</code> + stable props</strong> for expensive pure children; <strong>lazy-load</strong> routes and heavy components.</li>
+        </ul>
       </section>
       <section id="1-when-to-optimize">
         <h2>1. When to optimize</h2>
         <h3>1.1. React is already efficient</h3>
-        <p>Reconciliation updates only changed DOM nodes. Most slowness comes from:</p>
-        <ul><li><strong>Huge lists</strong> without virtualization</li><li><strong>Expensive calculations</strong> every render</li><li><strong>Large JavaScript bundles</strong> slow initial load</li><li><strong>Unnecessary re-renders</strong> of heavy subtrees</li></ul>
+        <ul>
+          <li>Reconciliation updates only changed DOM nodes. Most slowness comes from:</li>
+          <li><strong>Huge lists</strong> without virtualization</li><li><strong>Expensive calculations</strong> every render</li><li><strong>Large JavaScript bundles</strong> slow initial load</li><li><strong>Unnecessary re-renders</strong> of heavy subtrees</li></ul>
         <h3>1.2. Profile before memoizing</h3>
-        <p>Use <strong>React DevTools Profiler</strong> and browser <strong>Performance</strong> tab. Avoid sprinkling <code class="inline">memo</code>/<code class="inline">useMemo</code> on every component — they add memory and comparison cost.</p>
+        <ul>
+          <li>Use <strong>React DevTools Profiler</strong> and browser <strong>Performance</strong> tab. Avoid sprinkling <code class="inline">memo</code>/<code class="inline">useMemo</code> on every component — they add memory and comparison cost.</li>
+        </ul>
       </section>
       <section id="2-re-renders-recap">
         <h2>2. Re-renders recap</h2>
         <h3>2.1. What triggers re-render?</h3>
-        <ul><li><strong>State</strong> change in this component</li><li><strong>Context</strong> value change (if consumer)</li><li><strong>Parent</strong> re-rendered (child re-renders too, unless optimized)</li></ul>
-        <p>Props <strong>equal by reference</strong> for objects/functions — new reference every parent render → child thinks props changed.</p>
+        <ul><li><strong>State</strong> change in this component</li><li><strong>Context</strong> value change (if consumer)</li><li><strong>Parent</strong> re-rendered (child re-renders too, unless optimized)</li>
+          <li>Props <strong>equal by reference</strong> for objects/functions — new reference every parent render → child thinks props changed.</li>
+        </ul>
         <h3>2.2. Children render with parent</h3>
         <div class="code"><pre>function Parent() {
   const [count, setCount] = useState(0);
@@ -75,7 +81,9 @@
     &lt;/&gt;
   );
 }</pre></div>
-        <p>Fix by <strong>lifting state down</strong>, <strong>memo</strong>, or <strong>splitting</strong> state into smaller subtrees.</p>
+        <ul>
+          <li>Fix by <strong>lifting state down</strong>, <strong>memo</strong>, or <strong>splitting</strong> state into smaller subtrees.</li>
+        </ul>
       </section>
       <section id="3-react-memo">
         <h2>3. React.memo</h2>
@@ -90,7 +98,9 @@
     &lt;/ul&gt;
   );
 });</pre></div>
-        <p>Shallow-compares <strong>props</strong> — if each prop is <code class="inline">===</code> previous, skip render.</p>
+        <ul>
+          <li>Shallow-compares <strong>props</strong> — if each prop is <code class="inline">===</code> previous, skip render.</li>
+        </ul>
         <h3>3.2. Custom comparison</h3>
         <div class="code"><pre>const UserRow = memo(
   function UserRow({ user }) {
@@ -98,10 +108,13 @@
   },
   (prev, next) =&gt; prev.user.id === next.user.id
 );</pre></div>
-        <p>Return <strong><code class="inline">true</code></strong> if props are <strong>equal</strong> (skip re-render).</p>
+        <ul>
+          <li>Return <strong><code class="inline">true</code></strong> if props are <strong>equal</strong> (skip re-render).</li>
+        </ul>
         <h3>3.3. When memo helps</h3>
-        <ul><li>Component is <strong>expensive</strong> to render</li><li>Same props <strong>often</strong> across parent re-renders</li><li>Props are <strong>stable</strong> or primitives</li></ul>
-        <p>Memo <strong>does not help</strong> if props are new objects/functions every time — pair with <code class="inline">useCallback</code> / <code class="inline">useMemo</code> or restructure.</p>
+        <ul><li>Component is <strong>expensive</strong> to render</li><li>Same props <strong>often</strong> across parent re-renders</li><li>Props are <strong>stable</strong> or primitives</li>
+          <li>Memo <strong>does not help</strong> if props are new objects/functions every time — pair with <code class="inline">useCallback</code> / <code class="inline">useMemo</code> or restructure.</li>
+        </ul>
       </section>
       <section id="4-usecallback">
         <h2>4. useCallback</h2>
@@ -122,9 +135,13 @@
     &lt;/&gt;
   );
 }</pre></div>
-        <p>Without <code class="inline">useCallback</code>, <code class="inline">handleSave</code> is a <strong>new function</strong> each render → memoized child re-renders anyway.</p>
+        <ul>
+          <li>Without <code class="inline">useCallback</code>, <code class="inline">handleSave</code> is a <strong>new function</strong> each render → memoized child re-renders anyway.</li>
+        </ul>
         <h3>4.2. Dependency array</h3>
-        <p>Include everything <strong><code class="inline">handleSave</code></strong> closes over (<code class="inline">text</code>). Same rules as <code class="inline">useEffect</code> (File 05).</p>
+        <ul>
+          <li>Include everything <strong><code class="inline">handleSave</code></strong> closes over (<code class="inline">text</code>). Same rules as <code class="inline">useEffect</code> (File 05).</li>
+        </ul>
         <h3>4.3. When not to use useCallback</h3>
         <ul><li>Child is not memoized</li><li>Handler passed to native DOM (<code class="inline">onClick</code>) — usually fine without</li><li>Premature optimization on cheap trees</li></ul>
       </section>
@@ -138,7 +155,9 @@
 
   return &lt;Table rows={filtered} /&gt;;
 }</pre></div>
-        <p>Recomputes only when <strong><code class="inline">products</code></strong> or <strong><code class="inline">filter</code></strong> change.</p>
+        <ul>
+          <li>Recomputes only when <strong><code class="inline">products</code></strong> or <strong><code class="inline">filter</code></strong> change.</li>
+        </ul>
         <h3>5.2. Stable object for Context or memo children</h3>
         <div class="code"><pre>const value = useMemo(
   () =&gt; ({ theme, toggleTheme }),
@@ -148,7 +167,9 @@
 return (
   &lt;ThemeContext.Provider value={value}&gt;{children}&lt;/ThemeContext.Provider&gt;
 );</pre></div>
-        <p>File 08 — avoid new context object every render.</p>
+        <ul>
+          <li>File 08 — avoid new context object every render.</li>
+        </ul>
         <h3>5.3. useMemo vs useCallback</h3>
         <table>
         <thead>
@@ -163,11 +184,15 @@ return (
       <section id="6-code-splitting-and-lazy">
         <h2>6. Code splitting and lazy</h2>
         <h3>6.1. dynamic import()</h3>
-        <p>Split heavy modules into separate <strong>chunks</strong> loaded on demand:</p>
+        <ul>
+          <li>Split heavy modules into separate <strong>chunks</strong> loaded on demand:</li>
+        </ul>
         <div class="code"><pre>import { lazy, Suspense } from &quot;react&quot;;
 
 const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre></div>
-        <p>Webpack/Vite creates a separate file fetched when the component first renders.</p>
+        <ul>
+          <li>Webpack/Vite creates a separate file fetched when the component first renders.</li>
+        </ul>
         <h3>6.2. Suspense fallback</h3>
         <div class="code"><pre>function App() {
   return (
@@ -178,31 +203,45 @@ const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre
     &lt;/Suspense&gt;
   );
 }</pre></div>
-        <p>While chunk loads, <strong><code class="inline">fallback</code></strong> shows (File 09 — route-level splitting).</p>
+        <ul>
+          <li>While chunk loads, <strong><code class="inline">fallback</code></strong> shows (File 09 — route-level splitting).</li>
+        </ul>
         <h3>6.3. What to lazy-load</h3>
         <ul><li>Admin / settings routes (rare visits)</li><li>Rich editors, charts, maps</li><li>Not tiny components — overhead of async boundary</li></ul>
       </section>
       <section id="7-suspense-and-data-overview">
         <h2>7. Suspense and data (overview)</h2>
         <h3>7.1. Suspense for lazy components</h3>
-        <p>Primary use today: <strong>waiting for JS bundle</strong>, not yet universal for all data fetching.</p>
+        <ul>
+          <li>Primary use today: <strong>waiting for JS bundle</strong>, not yet universal for all data fetching.</li>
+        </ul>
         <h3>7.2. Suspense with TanStack Query / React 19</h3>
-        <p>Frameworks increasingly support <strong>Suspense boundaries</strong> for queries — <code class="inline">useSuspenseQuery</code> throws promise until data ready; nearest Suspense shows fallback.</p>
+        <ul>
+          <li>Frameworks increasingly support <strong>Suspense boundaries</strong> for queries — <code class="inline">useSuspenseQuery</code> throws promise until data ready; nearest Suspense shows fallback.</li>
+        </ul>
         <div class="code"><pre>const { data } = useSuspenseQuery({ queryKey: [&quot;user&quot;, id], queryFn: fetchUser });</pre></div>
-        <p>File 10 — opt-in when your stack supports it.</p>
+        <ul>
+          <li>File 10 — opt-in when your stack supports it.</li>
+        </ul>
       </section>
       <section id="8-list-performance">
         <h2>8. List performance</h2>
         <h3>8.1. Virtualization</h3>
-        <p>Long lists (1000+ rows) — render only <strong>visible</strong> rows:</p>
-        <ul><li><strong><code class="inline">@tanstack/react-virtual</code></strong></li><li><strong><code class="inline">react-window</code></strong></li></ul>
-        <p>Mapping 10k <code class="inline">&lt;li&gt;</code> elements slows DOM and reconciliation.</p>
+        <ul>
+          <li>Long lists (1000+ rows) — render only <strong>visible</strong> rows:</li>
+          <li><strong><code class="inline">@tanstack/react-virtual</code></strong></li><li><strong><code class="inline">react-window</code></strong></li>
+          <li>Mapping 10k <code class="inline">&lt;li&gt;</code> elements slows DOM and reconciliation.</li>
+        </ul>
         <h3>8.2. Keys and stable item components</h3>
-        <p>Stable <strong><code class="inline">key={item.id}</code></strong> (File 04). <strong><code class="inline">memo</code></strong> on row component when parent state changes often.</p>
+        <ul>
+          <li>Stable <strong><code class="inline">key={item.id}</code></strong> (File 04). <strong><code class="inline">memo</code></strong> on row component when parent state changes often.</li>
+        </ul>
       </section>
       <section id="9-uselayouteffect-brief">
         <h2>9. useLayoutEffect (brief)</h2>
-        <p>Runs <strong>after DOM update, before paint</strong> — use for measuring layout or synchronous DOM writes that must happen before user sees frame. Rare; default to <strong><code class="inline">useEffect</code></strong> (File 05).</p>
+        <ul>
+          <li>Runs <strong>after DOM update, before paint</strong> — use for measuring layout or synchronous DOM writes that must happen before user sees frame. Rare; default to <strong><code class="inline">useEffect</code></strong> (File 05).</li>
+        </ul>
       </section>
       <section id="10-putting-it-together">
         <h2>10. Putting it together</h2>
@@ -246,25 +285,45 @@ function ProductList({ products }) {
       <section id="11-common-questions">
         <h2>11. Common questions</h2>
         <h3>11.1. Should I wrap every component in memo?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> Only when Profiler shows <strong>expensive</strong> wasted renders and props can be stable.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> Only when Profiler shows <strong>expensive</strong> wasted renders and props can be stable.</li>
+        </ul>
         <h3>11.2. useMemo vs recalculating every render?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">useMemo</code></strong> when computation is <strong>measurably expensive</strong> or you need <strong>referential stability</strong> for deps/memo children.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">useMemo</code></strong> when computation is <strong>measurably expensive</strong> or you need <strong>referential stability</strong> for deps/memo children.</li>
+        </ul>
         <h3>11.3. Why does memo not work with inline objects?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">{ foo: 1 }</code></strong> is a <strong>new reference</strong> each render — shallow compare fails. Memoize the object or pass primitives.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">{ foo: 1 }</code></strong> is a <strong>new reference</strong> each render — shallow compare fails. Memoize the object or pass primitives.</li>
+        </ul>
         <h3>11.4. useCallback vs defining function in render?</h3>
-        <p><strong>A:</strong> Inline is fine unless a <strong>memoized child</strong> or <strong>effect dep</strong> needs stable identity.</p>
+        <ul>
+          <li><strong>A:</strong> Inline is fine unless a <strong>memoized child</strong> or <strong>effect dep</strong> needs stable identity.</li>
+        </ul>
         <h3>11.5. What is code splitting?</h3>
-        <p><strong>A:</strong> Loading parts of the app <strong>on demand</strong> via dynamic <code class="inline">import()</code> — smaller initial bundle.</p>
+        <ul>
+          <li><strong>A:</strong> Loading parts of the app <strong>on demand</strong> via dynamic <code class="inline">import()</code> — smaller initial bundle.</li>
+        </ul>
         <h3>11.6. What does Suspense do?</h3>
-        <p><strong>A:</strong> Catches <strong>lazy components</strong> (and some async data patterns) while waiting — shows <strong>fallback</strong> UI.</p>
+        <ul>
+          <li><strong>A:</strong> Catches <strong>lazy components</strong> (and some async data patterns) while waiting — shows <strong>fallback</strong> UI.</li>
+        </ul>
         <h3>11.7. How do I speed up a 10,000 item list?</h3>
-        <p><strong>A:</strong> <strong>Virtualize</strong> — do not render all DOM nodes. Consider pagination.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Virtualize</strong> — do not render all DOM nodes. Consider pagination.</li>
+        </ul>
         <h3>11.8. Does Context hurt performance?</h3>
-        <p><strong>A:</strong> <strong>Any consumer</strong> re-renders when value changes. Split contexts, memoize value, or use <strong>Zustand selectors</strong> (File 11).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Any consumer</strong> re-renders when value changes. Split contexts, memoize value, or use <strong>Zustand selectors</strong> (File 11).</li>
+        </ul>
         <h3>11.9. React Compiler / automatic memoization?</h3>
-        <p><strong>A:</strong> Emerging tooling may reduce manual memo — still understand concepts for debugging.</p>
+        <ul>
+          <li><strong>A:</strong> Emerging tooling may reduce manual memo — still understand concepts for debugging.</li>
+        </ul>
         <h3>11.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 13 (testing memoized components), File 14 (architecture boundaries), File 10 (query suspense).</p>
+        <ul>
+          <li><strong>A:</strong> File 13 (testing memoized components), File 14 (architecture boundaries), File 10 (query suspense).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 12. Open from the React.js index.</footer>
     </main>

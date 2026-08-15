@@ -42,7 +42,9 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>TypeScript models JavaScript values with types. Most map directly to JS runtime types, plus a few TS-only constructs (<code class="inline">enum</code>, <code class="inline">tuple</code>, <code class="inline">void</code>, <code class="inline">never</code>).</p>
+        <ul>
+          <li>TypeScript models JavaScript values with types. Most map directly to JS runtime types, plus a few TS-only constructs (<code class="inline">enum</code>, <code class="inline">tuple</code>, <code class="inline">void</code>, <code class="inline">never</code>).</li>
+        </ul>
       </section>
       <section id="1-primitives-and-any">
         <h2>1. Primitives and <code class="inline">any</code></h2>
@@ -65,32 +67,46 @@
 let count: number = 0;
 let ok: boolean = false;</pre></div>
         <h3>1.2. <code class="inline">void</code> and <code class="inline">never</code></h3>
-        <p><strong><code class="inline">void</code></strong> — function returns nothing meaningful:</p>
+        <ul>
+          <li><strong><code class="inline">void</code></strong> — function returns nothing meaningful:</li>
+        </ul>
         <div class="code"><pre>function log(msg: string): void {
   console.log(msg);
 }</pre></div>
-        <p><strong><code class="inline">never</code></strong> — function never returns (throws or infinite loop):</p>
+        <ul>
+          <li><strong><code class="inline">never</code></strong> — function never returns (throws or infinite loop):</li>
+        </ul>
         <div class="code"><pre>function fail(msg: string): never {
   throw new Error(msg);
 }</pre></div>
         <h3>1.3. <code class="inline">any</code> — escape hatch (avoid when possible)</h3>
-        <p><code class="inline">any</code> disables type checking for that value:</p>
+        <ul>
+          <li><code class="inline">any</code> disables type checking for that value:</li>
+        </ul>
         <div class="code"><pre>let value: any = 10;
 value = &quot;hello&quot;;
 value.foo.bar; // No compile error — dangerous</pre></div>
-        <p>Use <code class="inline">any</code> only for gradual migration or truly dynamic data. Prefer <code class="inline">unknown</code> (below).</p>
+        <ul>
+          <li>Use <code class="inline">any</code> only for gradual migration or truly dynamic data. Prefer <code class="inline">unknown</code> (below).</li>
+        </ul>
         <h3>1.4. Type widening and literals</h3>
         <div class="code"><pre>let x = &quot;hello&quot;;  // string
 const y = &quot;hello&quot;; // type &quot;hello&quot; (literal) — const cannot be reassigned</pre></div>
-        <p>Literal types are covered in depth in File 05.</p>
+        <ul>
+          <li>Literal types are covered in depth in File 05.</li>
+        </ul>
       </section>
       <section id="2-arrays-and-tuples">
         <h2>2. Arrays and tuples</h2>
         <h3>2.1. Array types</h3>
-        <p>Two equivalent syntaxes:</p>
+        <ul>
+          <li>Two equivalent syntaxes:</li>
+        </ul>
         <div class="code"><pre>const nums: number[] = [1, 2, 3];
 const tags: Array&lt;string&gt; = [&quot;ts&quot;, &quot;js&quot;];</pre></div>
-        <p>Read-only arrays:</p>
+        <ul>
+          <li>Read-only arrays:</li>
+        </ul>
         <div class="code"><pre>const frozen: readonly number[] = [1, 2, 3];
 // frozen.push(4); // Error</pre></div>
         <h3>2.2. Tuples — fixed-length, typed arrays</h3>
@@ -99,7 +115,9 @@ const origin: Point = [0, 0];
 
 type UserEntry = [string, number]; // [name, age]
 const row: UserEntry = [&quot;Bharat&quot;, 30];</pre></div>
-        <p>Optional and rest elements:</p>
+        <ul>
+          <li>Optional and rest elements:</li>
+        </ul>
         <div class="code"><pre>type StringsAndOptionalNumber = [string, string, number?];
 type StringNumberBooleans = [string, number, ...boolean[]];</pre></div>
         <h3>2.3. Tuple vs array</h3>
@@ -117,7 +135,9 @@ const [count, setCount]: [number, (n: number) =&gt; void] = useState(0);</pre></
       </section>
       <section id="3-enum">
         <h2>3. <code class="inline">enum</code></h2>
-        <p>TypeScript <code class="inline">enum</code> creates a set of named constants. Prefer <strong><code class="inline">const enum</code></strong> or plain unions in modern code; enums remain common in legacy codebases.</p>
+        <ul>
+          <li>TypeScript <code class="inline">enum</code> creates a set of named constants. Prefer <strong><code class="inline">const enum</code></strong> or plain unions in modern code; enums remain common in legacy codebases.</li>
+        </ul>
         <h3>3.1. Numeric enum (default)</h3>
         <div class="code"><pre>enum Direction {
   Up,    // 0
@@ -142,11 +162,15 @@ const STATUS = {
   Active: &quot;ACTIVE&quot;,
 } as const;
 type StatusFromConst = typeof STATUS[keyof typeof STATUS];</pre></div>
-        <p><strong>Rule of thumb:</strong> use string unions or <code class="inline">as const</code> objects unless you need enum-specific features or existing API compatibility.</p>
+        <ul>
+          <li><strong>Rule of thumb:</strong> use string unions or <code class="inline">as const</code> objects unless you need enum-specific features or existing API compatibility.</li>
+        </ul>
       </section>
       <section id="4-unknown-vs-any">
         <h2>4. <code class="inline">unknown</code> vs <code class="inline">any</code></h2>
-        <p>Both accept any value. The difference is <strong>what you can do with them</strong>:</p>
+        <ul>
+          <li>Both accept any value. The difference is <strong>what you can do with them</strong>:</li>
+        </ul>
         <div class="code"><pre>let a: any = getValue();
 a.toFixed(); // OK — no check
 
@@ -182,9 +206,13 @@ if (
 ) {
   console.log(data.name);
 }</pre></div>
-        <p>Type guards and narrowing patterns are covered in File 07.</p>
+        <ul>
+          <li>Type guards and narrowing patterns are covered in File 07.</li>
+        </ul>
         <h3>4.2. <code class="inline">never</code> in exhaustiveness</h3>
-        <p>When narrowing unions, <code class="inline">never</code> proves you handled every case:</p>
+        <ul>
+          <li>When narrowing unions, <code class="inline">never</code> proves you handled every case:</li>
+        </ul>
         <div class="code"><pre>type Shape = { kind: &quot;circle&quot;; r: number } | { kind: &quot;square&quot;; s: number };
 
 function area(shape: Shape): number {
@@ -202,21 +230,37 @@ function area(shape: Shape): number {
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. What is the difference between <code class="inline">null</code> and <code class="inline">undefined</code> in TypeScript?</h3>
-        <p><strong>A:</strong> Both exist in JS. With <code class="inline">strictNullChecks</code>, you must handle them explicitly. Optional properties use <code class="inline">?:</code> which allows <code class="inline">undefined</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Both exist in JS. With <code class="inline">strictNullChecks</code>, you must handle them explicitly. Optional properties use <code class="inline">?:</code> which allows <code class="inline">undefined</code>.</li>
+        </ul>
         <h3>5.2. When should I use <code class="inline">any</code>?</h3>
-        <p><strong>A:</strong> Rarely — migration, third-party JS without types, or prototyping. Replace with proper types or <code class="inline">unknown</code> as soon as possible.</p>
+        <ul>
+          <li><strong>A:</strong> Rarely — migration, third-party JS without types, or prototyping. Replace with proper types or <code class="inline">unknown</code> as soon as possible.</li>
+        </ul>
         <h3>5.3. Tuple vs array — when to use tuples?</h3>
-        <p><strong>A:</strong> When position and type at each index matter — <code class="inline">[string, number]</code>, hook return pairs, fixed CSV columns.</p>
+        <ul>
+          <li><strong>A:</strong> When position and type at each index matter — <code class="inline">[string, number]</code>, hook return pairs, fixed CSV columns.</li>
+        </ul>
         <h3>5.4. Are TypeScript enums compiled to JavaScript?</h3>
-        <p><strong>A:</strong> Yes — they emit a runtime object (unless <code class="inline">const enum</code>, which inlines). String literal unions emit nothing extra.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — they emit a runtime object (unless <code class="inline">const enum</code>, which inlines). String literal unions emit nothing extra.</li>
+        </ul>
         <h3>5.5. What is <code class="inline">readonly</code> for arrays?</h3>
-        <p><strong>A:</strong> Prevents mutating methods (<code class="inline">push</code>, <code class="inline">pop</code>) and reassignment of elements at the type level.</p>
+        <ul>
+          <li><strong>A:</strong> Prevents mutating methods (<code class="inline">push</code>, <code class="inline">pop</code>) and reassignment of elements at the type level.</li>
+        </ul>
         <h3>5.6. Can I mix types in an array?</h3>
-        <p><strong>A:</strong> Yes — <code class="inline">(string | number)[]</code> or use a union. For fixed positions, prefer a tuple.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — <code class="inline">(string | number)[]</code> or use a union. For fixed positions, prefer a tuple.</li>
+        </ul>
         <h3>5.7. Why prefer <code class="inline">unknown</code> over <code class="inline">any</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">unknown</code> forces you to validate before use, keeping type safety at boundaries (API responses, <code class="inline">JSON.parse</code>).</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">unknown</code> forces you to validate before use, keeping type safety at boundaries (API responses, <code class="inline">JSON.parse</code>).</li>
+        </ul>
         <h3>5.8. What is <code class="inline">never</code> used for besides throwing functions?</h3>
-        <p><strong>A:</strong> Exhaustiveness checks in <code class="inline">switch</code>, impossible branches after narrowing, and advanced conditional types (File 11).</p>
+        <ul>
+          <li><strong>A:</strong> Exhaustiveness checks in <code class="inline">switch</code>, impossible branches after narrowing, and advanced conditional types (File 11).</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 02. Open from the TypeScript index.</footer>
     </main>

@@ -62,13 +62,17 @@
         <div class="code"><pre>let x = 10;      // number
 x = "hello";     // now string — totally valid</pre></div>
         <div class="callout">Two broad categories: <strong>primitives</strong> and <strong>objects</strong> (everything else).</div>
-        <p><strong>Default rule today:</strong> use <code class="inline">typeof</code> for primitives, <code class="inline">=== null</code> for null, <code class="inline">Number.isNaN()</code> for NaN, <code class="inline">Array.isArray()</code> for arrays; use <code class="inline">Object.prototype.toString.call(x)</code> when you need a precise internal type tag; remember objects are copied by <strong>reference</strong>.</p>
-        <p>Interactive visualizer: open <a href="./01-js-data-types-animation.html">01-js-data-types-animation.html</a> in a browser — typeof, copy vs reference, null/undefined, NaN, boxing, Symbol (Run / Step).</p>
+        <ul>
+          <li><strong>Default rule today:</strong> use <code class="inline">typeof</code> for primitives, <code class="inline">=== null</code> for null, <code class="inline">Number.isNaN()</code> for NaN, <code class="inline">Array.isArray()</code> for arrays; use <code class="inline">Object.prototype.toString.call(x)</code> when you need a precise internal type tag; remember objects are copied by <strong>reference</strong>.</li>
+          <li>Interactive visualizer: open <a href="./01-js-data-types-animation.html">01-js-data-types-animation.html</a> in a browser — typeof, copy vs reference, null/undefined, NaN, boxing, Symbol (Run / Step).</li>
+        </ul>
       </section>
 
       <section id="primitives">
         <h2>1. Primitives</h2>
-        <p>A <strong>primitive</strong> is a single, immutable value stored directly. JavaScript has <strong>7 primitive types</strong>:</p>
+        <ul>
+          <li>A <strong>primitive</strong> is a single, immutable value stored directly. JavaScript has <strong>7 primitive types</strong>:</li>
+        </ul>
 
         <table>
           <thead>
@@ -108,18 +112,26 @@ console.log(b);  // null</pre></div>
         <div class="code"><pre>typeof NaN;        // "number" (quirk!)
 Number("abc");     // NaN
 1 / 0;             // Infinity</pre></div>
-        <p><code class="inline">NaN</code> is the only value that is not equal to itself:</p>
+        <ul>
+          <li><code class="inline">NaN</code> is the only value that is not equal to itself:</li>
+        </ul>
         <div class="code"><pre>NaN === NaN;       // false
 Number.isNaN(NaN); // true — prefer this over global isNaN()</pre></div>
 
         <h3>1.4. symbol</h3>
-        <p>Used for unique property keys, often to avoid name collisions:</p>
+        <ul>
+          <li>Used for unique property keys, often to avoid name collisions:</li>
+        </ul>
         <div class="code"><pre>const id = Symbol("id");
 const user = { [id]: 123, name: "Bharat" };</pre></div>
-        <p>Every <code class="inline">Symbol()</code> call creates a <strong>new</strong> unique value, even with the same description.</p>
+        <ul>
+          <li>Every <code class="inline">Symbol()</code> call creates a <strong>new</strong> unique value, even with the same description.</li>
+        </ul>
 
         <h3>1.5. bigint</h3>
-        <p>For integers larger than <code class="inline">Number.MAX_SAFE_INTEGER</code> (<code class="inline">2^53 - 1</code>):</p>
+        <ul>
+          <li>For integers larger than <code class="inline">Number.MAX_SAFE_INTEGER</code> (<code class="inline">2^53 - 1</code>):</li>
+        </ul>
         <div class="code"><pre>const big = 9007199254740991n;
 typeof big;        // "bigint"
 
@@ -127,7 +139,9 @@ typeof big;        // "bigint"
 // 1n + 1  → TypeError</pre></div>
 
         <h3>1.6. Primitives are immutable</h3>
-        <p>You cannot change a primitive in place — operations return <strong>new</strong> values:</p>
+        <ul>
+          <li>You cannot change a primitive in place — operations return <strong>new</strong> values:</li>
+        </ul>
         <div class="code"><pre>const s = "hello";
 s.toUpperCase();   // "HELLO"
 console.log(s);    // still "hello"</pre></div>
@@ -135,7 +149,9 @@ console.log(s);    // still "hello"</pre></div>
 
       <section id="objects">
         <h2>2. Object data type</h2>
-        <p>An <strong>object</strong> is a collection of key–value pairs. In JS, <strong>arrays</strong>, <strong>functions</strong>, <strong>Date</strong>, <strong>Map</strong>, <strong>Set</strong>, and <strong>RegExp</strong> are also objects.</p>
+        <ul>
+          <li>An <strong>object</strong> is a collection of key–value pairs. In JS, <strong>arrays</strong>, <strong>functions</strong>, <strong>Date</strong>, <strong>Map</strong>, <strong>Set</strong>, and <strong>RegExp</strong> are also objects.</li>
+        </ul>
         <div class="code"><pre>const person = { name: "Bharat", age: 30 };
 const nums = [1, 2, 3];
 const greet = function () { return "hi"; };
@@ -181,7 +197,9 @@ Array.isArray(arr); // true — use this to check for arrays</pre></div>
         <h2>4. Values and references</h2>
 
         <h3>4.1. Values (primitive copy)</h3>
-        <p><strong>Primitives</strong> are copied <strong>by value</strong>:</p>
+        <ul>
+          <li><strong>Primitives</strong> are copied <strong>by value</strong>:</li>
+        </ul>
         <div class="code"><pre>let a = 10;
 let b = a;   // b gets a copy of the value
 b = 20;
@@ -189,14 +207,18 @@ console.log(a);  // 10
 console.log(b);  // 20</pre></div>
 
         <h3>4.2. References (object copy)</h3>
-        <p><strong>Objects</strong> are copied <strong>by reference</strong> — the variable holds a pointer to the same object in memory:</p>
+        <ul>
+          <li><strong>Objects</strong> are copied <strong>by reference</strong> — the variable holds a pointer to the same object in memory:</li>
+        </ul>
         <div class="code"><pre>const obj1 = { x: 1 };
 const obj2 = obj1;   // both point to the same object
 obj2.x = 99;
 console.log(obj1.x); // 99 — obj1 changed too!</pre></div>
 
         <h3>4.3. Reassignment vs mutability</h3>
-        <p>Reassignment changes what a variable points to. Mutability changes the value itself.</p>
+        <ul>
+          <li>Reassignment changes what a variable points to. Mutability changes the value itself.</li>
+        </ul>
         <div class="code"><pre>let n = 10;
 n = 20; // reassignment: n now points to a different primitive value
 
@@ -205,7 +227,9 @@ user.name = "B"; // mutation: same object, internal data changed
 // user = { name: "New" }; // TypeError with const: reassignment not allowed</pre></div>
 
         <h3>4.4. Shallow copy</h3>
-        <p>Spread and <code class="inline">Object.assign</code> create a <strong>shallow</strong> copy — top-level keys are copied, nested objects are still shared:</p>
+        <ul>
+          <li>Spread and <code class="inline">Object.assign</code> create a <strong>shallow</strong> copy — top-level keys are copied, nested objects are still shared:</li>
+        </ul>
         <div class="code"><pre>const original = { a: 1, nested: { b: 2 } };
 const copy = { ...original };
 
@@ -214,11 +238,15 @@ copy.nested.b = 200;
 
 console.log(original.a);        // 1
 console.log(original.nested.b); // 200 — nested object is shared!</pre></div>
-        <p>For a deep copy of plain data, <code class="inline">structuredClone()</code> works in modern environments:</p>
+        <ul>
+          <li>For a deep copy of plain data, <code class="inline">structuredClone()</code> works in modern environments:</li>
+        </ul>
         <div class="code"><pre>const deep = structuredClone(original);</pre></div>
 
         <h3>4.5. Passing to functions</h3>
-        <p>Primitives are passed by value; objects are passed by reference (the reference is copied):</p>
+        <ul>
+          <li>Primitives are passed by value; objects are passed by reference (the reference is copied):</li>
+        </ul>
         <div class="code"><pre>function changePrimitive(n) {
   n = 100;
 }
@@ -238,7 +266,9 @@ console.log(o.x);  // 100</pre></div>
         <h2>5. typeof, instanceof, and Object.prototype.toString.call</h2>
 
         <h3>5.1. typeof operator</h3>
-        <p>Returns a <strong>string</strong> naming the type:</p>
+        <ul>
+          <li>Returns a <strong>string</strong> naming the type:</li>
+        </ul>
         <div class="code"><pre>typeof "hello";     // "string"
 typeof 42;          // "number"
 typeof true;        // "boolean"
@@ -254,12 +284,16 @@ typeof new Set();   // "object"
 typeof null;        // "object"  ← famous bug, historical reason</pre></div>
 
         <h3>5.2. Checking for null</h3>
-        <p><code class="inline">typeof null === "object"</code> is misleading. Use strict equality:</p>
+        <ul>
+          <li><code class="inline">typeof null === "object"</code> is misleading. Use strict equality:</li>
+        </ul>
         <div class="code"><pre>const value = null;
 value === null;  // true</pre></div>
 
         <h3>5.3. instanceof</h3>
-        <p>Checks if an object appears in another object's prototype chain:</p>
+        <ul>
+          <li>Checks if an object appears in another object's prototype chain:</li>
+        </ul>
         <div class="code"><pre>[] instanceof Array;        // true
 [] instanceof Object;       // true
 ({}) instanceof Object;     // true
@@ -267,8 +301,10 @@ value === null;  // true</pre></div>
 "hello" instanceof String;  // false — primitive, not String object</pre></div>
 
         <h3>5.4. Object.prototype.toString.call(value)</h3>
-        <p>Every value has an internal type tag. <code class="inline">Object.prototype.toString.call(x)</code> reads that tag for <strong>any</strong> datatype — primitive or object — and returns a string like <code class="inline">[object Type]</code>.</p>
-        <p>Use <code class="inline">.call(x)</code> so you run <strong>Object</strong>'s <code class="inline">toString</code>, not the value's own (arrays, dates, and many objects override <code class="inline">toString</code>).</p>
+        <ul>
+          <li>Every value has an internal type tag. <code class="inline">Object.prototype.toString.call(x)</code> reads that tag for <strong>any</strong> datatype — primitive or object — and returns a string like <code class="inline">[object Type]</code>.</li>
+          <li>Use <code class="inline">.call(x)</code> so you run <strong>Object</strong>'s <code class="inline">toString</code>, not the value's own (arrays, dates, and many objects override <code class="inline">toString</code>).</li>
+        </ul>
         <div class="code"><pre>const tag = (x) => Object.prototype.toString.call(x);
 
 tag("hello");          // "[object String]"
@@ -288,7 +324,9 @@ tag(new Set());        // "[object Set]"
 tag(Promise.resolve());// "[object Promise]"
 tag(NaN);              // "[object Number]"   — still a number</pre></div>
         <div class="callout">Why <code class="inline">call</code>? <code class="inline">[].toString()</code> returns <code class="inline">""</code> (joined elements). <code class="inline">Object.prototype.toString.call([])</code> returns <code class="inline">"[object Array]"</code>.</div>
-        <p><code class="inline">.slice(8, -1)</code> drops <code class="inline">"[object "</code> and the closing <code class="inline">"]"</code>, leaving just the type name:</p>
+        <ul>
+          <li><code class="inline">.slice(8, -1)</code> drops <code class="inline">"[object "</code> and the closing <code class="inline">"]"</code>, leaving just the type name:</li>
+        </ul>
         <div class="code"><pre>Object.prototype.toString
   .call(value)
   .slice(8, -1);
@@ -299,14 +337,18 @@ Object.prototype.toString.call(42).slice(8, -1);      // "Number"
 Object.prototype.toString.call(null).slice(8, -1);    // "Null"
 Object.prototype.toString.call([]).slice(8, -1);      // "Array"
 Object.prototype.toString.call(new Date()).slice(8, -1); // "Date"</pre></div>
-        <p>A small helper for comparisons:</p>
+        <ul>
+          <li>A small helper for comparisons:</li>
+        </ul>
         <div class="code"><pre>function typeTag(x) {
   return Object.prototype.toString.call(x).slice(8, -1);
 }
 
 typeTag(null);  // "Null"
 typeTag([]);    // "Array"</pre></div>
-        <p><strong>When to use it:</strong> distinguishing objects that all look like <code class="inline">typeof === "object"</code> (array vs date vs map vs null). Prefer dedicated checks when they exist (<code class="inline">Array.isArray</code>, <code class="inline">x === null</code>).</p>
+        <ul>
+          <li><strong>When to use it:</strong> distinguishing objects that all look like <code class="inline">typeof === "object"</code> (array vs date vs map vs null). Prefer dedicated checks when they exist (<code class="inline">Array.isArray</code>, <code class="inline">x === null</code>).</li>
+        </ul>
 
         <h3>5.5. typeof vs instanceof vs toString.call (quick table)</h3>
         <table>
@@ -364,9 +406,13 @@ typeTag([]);    // "Array"</pre></div>
         </table>
 
         <h3>5.7. Boxing (brief)</h3>
-        <p>Primitives can be temporarily wrapped as objects when you access methods:</p>
+        <ul>
+          <li>Primitives can be temporarily wrapped as objects when you access methods:</li>
+        </ul>
         <div class="code"><pre>"hello".toUpperCase();  // works — JS wraps in String object, then discards it</pre></div>
-        <p>Avoid <code class="inline">new String("hello")</code> — creates an object wrapper, rarely needed.</p>
+        <ul>
+          <li>Avoid <code class="inline">new String("hello")</code> — creates an object wrapper, rarely needed.</li>
+        </ul>
       </section>
 
       <section id="language-basics">
@@ -381,10 +427,14 @@ typeTag([]);    // "Array"</pre></div>
 */
 
 const x = 1; // trailing comment</pre></div>
-        <p>Use comments for <strong>why</strong>, not <strong>what</strong> obvious code already shows.</p>
+        <ul>
+          <li>Use comments for <strong>why</strong>, not <strong>what</strong> obvious code already shows.</li>
+        </ul>
 
         <h3>6.2. Semicolons</h3>
-        <p>JavaScript has <strong>Automatic Semicolon Insertion (ASI)</strong> — the engine inserts semicolons when you omit them at line breaks in certain cases.</p>
+        <ul>
+          <li>JavaScript has <strong>Automatic Semicolon Insertion (ASI)</strong> — the engine inserts semicolons when you omit them at line breaks in certain cases.</li>
+        </ul>
         <div class="code"><pre>// Both valid
 const a = 1;
 const b = 2
@@ -397,7 +447,9 @@ function bad() {
         <div class="callout warn"><strong>Default rule:</strong> use semicolons consistently, or follow a project style guide (Prettier).</div>
 
         <h3>6.3. Literals</h3>
-        <p>A <strong>literal</strong> is syntax that creates a value directly:</p>
+        <ul>
+          <li>A <strong>literal</strong> is syntax that creates a value directly:</li>
+        </ul>
         <table>
           <thead>
             <tr><th>Literal</th><th>Example</th></tr>
@@ -430,44 +482,66 @@ count + 1;
 
 // Statement — const declaration is not an expression
 const x = 1 + 2;  // 1 + 2 is expression; whole line is statement</pre></div>
-        <p>Ternary (<code class="inline">cond ? a : b</code>) is an <strong>expression</strong>; <code class="inline">if/else</code> is a <strong>statement</strong> (File 04).</p>
+        <ul>
+          <li>Ternary (<code class="inline">cond ? a : b</code>) is an <strong>expression</strong>; <code class="inline">if/else</code> is a <strong>statement</strong> (File 04).</li>
+        </ul>
       </section>
 
       <section id="common-questions">
         <h2>7. Common questions</h2>
 
         <h3>7.1. How many data types does JavaScript have?</h3>
-        <p><strong>A:</strong> <strong>7 primitives</strong> + <strong>objects</strong> (which includes arrays, functions, dates, etc.).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>7 primitives</strong> + <strong>objects</strong> (which includes arrays, functions, dates, etc.).</li>
+        </ul>
 
         <h3>7.2. What is the difference between undefined and null?</h3>
-        <p><strong>A:</strong> <code class="inline">undefined</code> means "not assigned / missing". <code class="inline">null</code> means "intentionally empty".</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">undefined</code> means "not assigned / missing". <code class="inline">null</code> means "intentionally empty".</li>
+        </ul>
 
         <h3>7.3. Why does typeof null return "object"?</h3>
-        <p><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null. <code class="inline">Object.prototype.toString.call(null)</code> returns <code class="inline">"[object Null]"</code>.</p>
+        <ul>
+          <li><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null. <code class="inline">Object.prototype.toString.call(null)</code> returns <code class="inline">"[object Null]"</code>.</li>
+        </ul>
 
         <h3>7.4. What does Object.prototype.toString.call(value) do?</h3>
-        <p><strong>A:</strong> It returns the internal type tag as <code class="inline">"[object Type]"</code> for any value. Use <code class="inline">.call(value)</code> so you do not use the value's own <code class="inline">toString</code>. Useful when <code class="inline">typeof</code> only says <code class="inline">"object"</code> (arrays, dates, maps, null).</p>
+        <ul>
+          <li><strong>A:</strong> It returns the internal type tag as <code class="inline">"[object Type]"</code> for any value. Use <code class="inline">.call(value)</code> so you do not use the value's own <code class="inline">toString</code>. Useful when <code class="inline">typeof</code> only says <code class="inline">"object"</code> (arrays, dates, maps, null).</li>
+        </ul>
 
         <h3>7.5. Primitive vs object — what is the key difference?</h3>
-        <p><strong>A:</strong> Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.</p>
+        <ul>
+          <li><strong>A:</strong> Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.</li>
+        </ul>
 
         <h3>7.6. Does const make objects immutable?</h3>
-        <p><strong>A:</strong> No. <code class="inline">const</code> prevents <strong>reassigning</strong> the variable. The object itself can still be mutated:</p>
+        <ul>
+          <li><strong>A:</strong> No. <code class="inline">const</code> prevents <strong>reassigning</strong> the variable. The object itself can still be mutated:</li>
+        </ul>
         <div class="code"><pre>const obj = { a: 1 };
 obj.a = 2;       // OK
 obj = { a: 3 };  // TypeError — cannot reassign</pre></div>
 
         <h3>7.7. What is NaN and how do you check for it?</h3>
-        <p><strong>A:</strong> <code class="inline">NaN</code> means "Not a Number" (result of invalid math). Use <code class="inline">Number.isNaN(value)</code>, not <code class="inline">value === NaN</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">NaN</code> means "Not a Number" (result of invalid math). Use <code class="inline">Number.isNaN(value)</code>, not <code class="inline">value === NaN</code>.</li>
+        </ul>
 
         <h3>7.8. Are semicolons required in JavaScript?</h3>
-        <p><strong>A:</strong> <strong>No</strong> — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No</strong> — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.</li>
+        </ul>
 
         <h3>7.9. What is the difference between an expression and a statement?</h3>
-        <p><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</p>
+        <ul>
+          <li><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</li>
+        </ul>
 
         <h3>7.10. What is a literal?</h3>
-        <p><strong>A:</strong> Syntax that creates a value directly — <code class="inline">42</code>, <code class="inline">"hi"</code>, <code class="inline">{ a: 1 }</code>, <code class="inline">[1, 2]</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Syntax that creates a value directly — <code class="inline">42</code>, <code class="inline">"hi"</code>, <code class="inline">{ a: 1 }</code>, <code class="inline">[1, 2]</code>.</li>
+        </ul>
       </section>
 
       <footer>

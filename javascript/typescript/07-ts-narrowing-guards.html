@@ -42,7 +42,9 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p><strong>Narrowing</strong> refines a broad type to a specific one inside a branch so TypeScript allows safe operations.</p>
+        <ul>
+          <li><strong>Narrowing</strong> refines a broad type to a specific one inside a branch so TypeScript allows safe operations.</li>
+        </ul>
         <div class="code"><pre>function print(value: string | number) {
   if (typeof value === &quot;string&quot;) {
     console.log(value.toUpperCase()); // string
@@ -54,13 +56,17 @@
       <section id="1-typeof-and-instanceof-narrowing">
         <h2>1. <code class="inline">typeof</code> and <code class="inline">instanceof</code> narrowing</h2>
         <h3>1.1. <code class="inline">typeof</code> (primitives)</h3>
-        <p>Works well for: <code class="inline">string</code>, <code class="inline">number</code>, <code class="inline">boolean</code>, <code class="inline">bigint</code>, <code class="inline">symbol</code>, <code class="inline">undefined</code>, <code class="inline">function</code>.</p>
+        <ul>
+          <li>Works well for: <code class="inline">string</code>, <code class="inline">number</code>, <code class="inline">boolean</code>, <code class="inline">bigint</code>, <code class="inline">symbol</code>, <code class="inline">undefined</code>, <code class="inline">function</code>.</li>
+        </ul>
         <div class="code"><pre>function assertString(x: unknown) {
   if (typeof x === &quot;string&quot;) {
     x.length; // OK
   }
 }</pre></div>
-        <p><strong>Caveat:</strong> <code class="inline">typeof null === &quot;object&quot;</code> in JavaScript — combine with null check:</p>
+        <ul>
+          <li><strong>Caveat:</strong> <code class="inline">typeof null === &quot;object&quot;</code> in JavaScript — combine with null check:</li>
+        </ul>
         <div class="code"><pre>if (typeof value === &quot;object&quot; &amp;&amp; value !== null) {
   // object (not null)
 }</pre></div>
@@ -80,11 +86,15 @@ function handle(err: unknown) {
     console.log(err.message);
   }
 }</pre></div>
-        <p><code class="inline">instanceof</code> checks the prototype chain — useful for class instances, not plain object shapes.</p>
+        <ul>
+          <li><code class="inline">instanceof</code> checks the prototype chain — useful for class instances, not plain object shapes.</li>
+        </ul>
       </section>
       <section id="2-truthiness-narrowing">
         <h2>2. Truthiness narrowing</h2>
-        <p>Falsy values in JS: <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>.</p>
+        <ul>
+          <li>Falsy values in JS: <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>.</li>
+        </ul>
         <div class="code"><pre>function printName(name: string | null | undefined) {
   if (name) {
     console.log(name.toUpperCase());
@@ -97,14 +107,18 @@ function handle(err: unknown) {
   }
 }</pre></div>
         <h3>2.2. <code class="inline">== null</code> / <code class="inline">!= null</code></h3>
-        <p>Checks both <code class="inline">null</code> and <code class="inline">undefined</code>:</p>
+        <ul>
+          <li>Checks both <code class="inline">null</code> and <code class="inline">undefined</code>:</li>
+        </ul>
         <div class="code"><pre>if (value != null) {
   // value is neither null nor undefined
 }</pre></div>
       </section>
       <section id="3-type-predicates-is">
         <h2>3. Type predicates (<code class="inline">is</code>)</h2>
-        <p>A <strong>type predicate</strong> tells TypeScript a boolean function narrows the type:</p>
+        <ul>
+          <li>A <strong>type predicate</strong> tells TypeScript a boolean function narrows the type:</li>
+        </ul>
         <div class="code"><pre>interface Fish {
   swim: () =&gt; void;
 }
@@ -124,7 +138,9 @@ function move(pet: Fish | Bird) {
     pet.fly();
   }
 }</pre></div>
-        <p>Custom guards are essential for <strong>discriminated unions</strong> without a single tag field:</p>
+        <ul>
+          <li>Custom guards are essential for <strong>discriminated unions</strong> without a single tag field:</li>
+        </ul>
         <div class="code"><pre>function isSuccess&lt;T&gt;(
   result: { ok: true; data: T } | { ok: false; error: string }
 ): result is { ok: true; data: T } {
@@ -133,7 +149,9 @@ function move(pet: Fish | Bird) {
       </section>
       <section id="4-in-operator-narrowing">
         <h2>4. <code class="inline">in</code> operator narrowing</h2>
-        <p>Check if a property exists on an object:</p>
+        <ul>
+          <li>Check if a property exists on an object:</li>
+        </ul>
         <div class="code"><pre>type Cat = { meow: () =&gt; void };
 type Dog = { bark: () =&gt; void };
 
@@ -144,7 +162,9 @@ function speak(pet: Cat | Dog) {
     pet.bark();
   }
 }</pre></div>
-        <p>Works with discriminated unions:</p>
+        <ul>
+          <li>Works with discriminated unions:</li>
+        </ul>
         <div class="code"><pre>type Action =
   | { type: &quot;increment&quot;; amount: number }
   | { type: &quot;reset&quot; };
@@ -161,7 +181,9 @@ function reducer(state: number, action: Action): number {
         <div class="code"><pre>let x: string | number = &quot;hello&quot;;
 x = 42; // now narrowed to number in following code</pre></div>
         <h3>4.2. Control flow analysis</h3>
-        <p>TypeScript tracks narrowing across <code class="inline">if</code>, <code class="inline">else</code>, <code class="inline">switch</code>, early <code class="inline">return</code>, and <code class="inline">throw</code>:</p>
+        <ul>
+          <li>TypeScript tracks narrowing across <code class="inline">if</code>, <code class="inline">else</code>, <code class="inline">switch</code>, early <code class="inline">return</code>, and <code class="inline">throw</code>:</li>
+        </ul>
         <div class="code"><pre>function process(value: string | null) {
   if (!value) {
     return;
@@ -173,21 +195,37 @@ x = 42; // now narrowed to number in following code</pre></div>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. What is narrowing?</h3>
-        <p><strong>A:</strong> Refining a union or <code class="inline">unknown</code> to a specific type inside a conditional branch.</p>
+        <ul>
+          <li><strong>A:</strong> Refining a union or <code class="inline">unknown</code> to a specific type inside a conditional branch.</li>
+        </ul>
         <h3>5.2. <code class="inline">typeof</code> vs <code class="inline">instanceof</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">typeof</code> for primitives (and functions). <code class="inline">instanceof</code> for class instances.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">typeof</code> for primitives (and functions). <code class="inline">instanceof</code> for class instances.</li>
+        </ul>
         <h3>5.3. What is a type predicate?</h3>
-        <p><strong>A:</strong> Return type <code class="inline">arg is Type</code> on a boolean function — custom narrowing for TS.</p>
+        <ul>
+          <li><strong>A:</strong> Return type <code class="inline">arg is Type</code> on a boolean function — custom narrowing for TS.</li>
+        </ul>
         <h3>5.4. Why doesn&#x27;t <code class="inline">typeof</code> narrow <code class="inline">null</code> correctly?</h3>
-        <p><strong>A:</strong> JS quirk — <code class="inline">typeof null === &quot;object&quot;</code>. Always add <code class="inline">value !== null</code>.</p>
+        <ul>
+          <li><strong>A:</strong> JS quirk — <code class="inline">typeof null === &quot;object&quot;</code>. Always add <code class="inline">value !== null</code>.</li>
+        </ul>
         <h3>5.5. Does narrowing work across function boundaries?</h3>
-        <p><strong>A:</strong> Generally <strong>no</strong> — TS does not track mutations on outer variables inside nested functions (unless const or proven immutable).</p>
+        <ul>
+          <li><strong>A:</strong> Generally <strong>no</strong> — TS does not track mutations on outer variables inside nested functions (unless const or proven immutable).</li>
+        </ul>
         <h3>5.6. How do I narrow <code class="inline">unknown</code> from <code class="inline">JSON.parse</code>?</h3>
-        <p><strong>A:</strong> Validate with <code class="inline">typeof</code>, <code class="inline">Array.isArray</code>, custom type guards, or libraries like Zod/io-ts.</p>
+        <ul>
+          <li><strong>A:</strong> Validate with <code class="inline">typeof</code>, <code class="inline">Array.isArray</code>, custom type guards, or libraries like Zod/io-ts.</li>
+        </ul>
         <h3>5.7. What is discriminant narrowing?</h3>
-        <p><strong>A:</strong> Switching on a shared field (<code class="inline">kind</code>, <code class="inline">type</code>, <code class="inline">status</code>) to narrow tagged unions (File 05).</p>
+        <ul>
+          <li><strong>A:</strong> Switching on a shared field (<code class="inline">kind</code>, <code class="inline">type</code>, <code class="inline">status</code>) to narrow tagged unions (File 05).</li>
+        </ul>
         <h3>5.8. Can I assert a type without narrowing?</h3>
-        <p><strong>A:</strong> Type assertions (<code class="inline">as Type</code>) force TS to trust you — no runtime check. Prefer guards when data is external.</p>
+        <ul>
+          <li><strong>A:</strong> Type assertions (<code class="inline">as Type</code>) force TS to trust you — no runtime check. Prefer guards when data is external.</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 07. Open from the TypeScript index.</footer>
     </main>

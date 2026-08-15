@@ -49,9 +49,11 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Tests give confidence that components <strong>behave correctly for users</strong> — not that implementation details match snapshots. <strong>React Testing Library (RTL)</strong> queries the DOM like a user and fires <strong>real events</strong>. Pair with <strong>Vitest</strong> or <strong>Jest</strong> as the test runner.</p>
-        <p>Builds on components, state, forms, and hooks (Files 02–07). File 14 covers error boundaries tested similarly.</p>
-        <p><strong>Default rule today:</strong> test <strong>behavior and accessibility</strong>, not internal state; query by <strong>role/label/text</strong>; use <strong><code class="inline">userEvent</code></strong> over raw <code class="inline">fireEvent</code> when simulating typing and clicks; mock <strong>network</strong>, not child components, unless isolating a unit.</p>
+        <ul>
+          <li>Tests give confidence that components <strong>behave correctly for users</strong> — not that implementation details match snapshots. <strong>React Testing Library (RTL)</strong> queries the DOM like a user and fires <strong>real events</strong>. Pair with <strong>Vitest</strong> or <strong>Jest</strong> as the test runner.</li>
+          <li>Builds on components, state, forms, and hooks (Files 02–07). File 14 covers error boundaries tested similarly.</li>
+          <li><strong>Default rule today:</strong> test <strong>behavior and accessibility</strong>, not internal state; query by <strong>role/label/text</strong>; use <strong><code class="inline">userEvent</code></strong> over raw <code class="inline">fireEvent</code> when simulating typing and clicks; mock <strong>network</strong>, not child components, unless isolating a unit.</li>
+        </ul>
       </section>
       <section id="1-testing-philosophy">
         <h2>1. Testing philosophy</h2>
@@ -63,7 +65,9 @@ expect(await screen.findByText(/success/i)).toBeInTheDocument();
 
 // Avoid — testing implementation
 expect(component.state.count).toBe(1);</pre></div>
-        <p>Users do not see <code class="inline">state</code> or hook names — tests should not depend on them.</p>
+        <ul>
+          <li>Users do not see <code class="inline">state</code> or hook names — tests should not depend on them.</li>
+        </ul>
         <h3>1.2. Testing Library guiding principle</h3>
         <div class="callout">The more your tests resemble the way your software is used, the more confidence they can give you.</div>
       </section>
@@ -82,7 +86,9 @@ export default defineConfig({
 });</pre></div>
         <div class="code"><pre>// src/test/setup.js
 import &quot;@testing-library/jest-dom/vitest&quot;;</pre></div>
-        <p>CRA/Jest projects use similar packages with <code class="inline">setupTests.js</code>.</p>
+        <ul>
+          <li>CRA/Jest projects use similar packages with <code class="inline">setupTests.js</code>.</li>
+        </ul>
         <h3>2.2. Basic test</h3>
         <div class="code"><pre>import { render, screen } from &quot;@testing-library/react&quot;;
 import { describe, it, expect } from &quot;vitest&quot;;
@@ -111,7 +117,9 @@ describe(&quot;Greeting&quot;, () =&gt; {
         <tr><td>Last resort</td><td><strong>getByTestId</strong></td><td><code class="inline">getByTestId(&quot;custom-widget&quot;)</code></td></tr>
         </tbody>
         </table>
-        <p><strong>Role + accessible name</strong> encourages accessible markup (File 06 — labels).</p>
+        <ul>
+          <li><strong>Role + accessible name</strong> encourages accessible markup (File 06 — labels).</li>
+        </ul>
         <h3>3.2. getBy vs queryBy vs findBy</h3>
         <table>
         <thead>
@@ -143,14 +151,18 @@ it(&quot;updates input&quot;, async () =&gt; {
   await user.type(input, &quot;react&quot;);
   expect(input).toHaveValue(&quot;react&quot;);
 });</pre></div>
-        <p><strong><code class="inline">userEvent</code></strong> simulates realistic keyboard/mouse sequences — preferred over <strong><code class="inline">fireEvent.click</code></strong> for interactions.</p>
+        <ul>
+          <li><strong><code class="inline">userEvent</code></strong> simulates realistic keyboard/mouse sequences — preferred over <strong><code class="inline">fireEvent.click</code></strong> for interactions.</li>
+        </ul>
         <h3>4.2. Form submit</h3>
         <div class="code"><pre>await user.type(screen.getByLabelText(/email/i), &quot;a@b.com&quot;);
 await user.type(screen.getByLabelText(/password/i), &quot;secret123&quot;);
 await user.click(screen.getByRole(&quot;button&quot;, { name: /log in/i }));
 
 expect(await screen.findByText(/welcome/i)).toBeInTheDocument();</pre></div>
-        <p>Matches File 06 form patterns.</p>
+        <ul>
+          <li>Matches File 06 form patterns.</li>
+        </ul>
         <h3>4.3. Keyboard</h3>
         <div class="code"><pre>await user.keyboard(&quot;{Enter}&quot;);
 await user.tab();</pre></div>
@@ -163,7 +175,9 @@ await user.tab();</pre></div>
 await waitFor(() =&gt; {
   expect(screen.getByText(&quot;Ada Lovelace&quot;)).toBeInTheDocument();
 });</pre></div>
-        <p>Prefer <strong><code class="inline">findBy*</code></strong> when waiting for one element.</p>
+        <ul>
+          <li>Prefer <strong><code class="inline">findBy*</code></strong> when waiting for one element.</li>
+        </ul>
         <h3>5.2. Mocking fetch</h3>
         <div class="code"><pre>import { vi } from &quot;vitest&quot;;
 
@@ -182,9 +196,13 @@ beforeEach(() =&gt; {
 afterEach(() =&gt; {
   vi.unstubAllGlobals();
 });</pre></div>
-        <p>Or use <strong>MSW (Mock Service Worker)</strong> for realistic HTTP mocking across tests.</p>
+        <ul>
+          <li>Or use <strong>MSW (Mock Service Worker)</strong> for realistic HTTP mocking across tests.</li>
+        </ul>
         <h3>5.3. QueryClient wrapper</h3>
-        <p>For TanStack Query components (File 10):</p>
+        <ul>
+          <li>For TanStack Query components (File 10):</li>
+        </ul>
         <div class="code"><pre>function renderWithQuery(ui) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -193,7 +211,9 @@ afterEach(() =&gt; {
     &lt;QueryClientProvider client={client}&gt;{ui}&lt;/QueryClientProvider&gt;
   );
 }</pre></div>
-        <p>Disable retries in tests for faster failures.</p>
+        <ul>
+          <li>Disable retries in tests for faster failures.</li>
+        </ul>
       </section>
       <section id="6-providers-and-routing">
         <h2>6. Providers and routing</h2>
@@ -210,7 +230,9 @@ afterEach(() =&gt; {
     &lt;/QueryClientProvider&gt;
   );
 }</pre></div>
-        <p>Wrap <strong>Context</strong>, <strong>Router</strong>, and <strong>Query</strong> once — reuse in tests (File 08, File 09).</p>
+        <ul>
+          <li>Wrap <strong>Context</strong>, <strong>Router</strong>, and <strong>Query</strong> once — reuse in tests (File 08, File 09).</li>
+        </ul>
         <h3>6.2. MemoryRouter</h3>
         <div class="code"><pre>import { MemoryRouter } from &quot;react-router-dom&quot;;
 
@@ -235,7 +257,9 @@ it(&quot;increments&quot;, () =&gt; {
 
   expect(result.current.count).toBe(1);
 });</pre></div>
-        <p>File 07 — custom hooks tested in isolation.</p>
+        <ul>
+          <li>File 07 — custom hooks tested in isolation.</li>
+        </ul>
         <h3>7.2. Wrapper for hook context</h3>
         <div class="code"><pre>renderHook(() =&gt; useTheme(), {
   wrapper: ThemeProvider,
@@ -247,9 +271,13 @@ it(&quot;increments&quot;, () =&gt; {
         <div class="code"><pre>vi.mock(&quot;./api&quot;, () =&gt; ({
   fetchUser: vi.fn(() =&gt; Promise.resolve({ id: 1, name: &quot;Ada&quot; })),
 }));</pre></div>
-        <p>Mock <strong>boundaries</strong> (API module), not every child component.</p>
+        <ul>
+          <li>Mock <strong>boundaries</strong> (API module), not every child component.</li>
+        </ul>
         <h3>8.2. Avoid mocking React itself</h3>
-        <p>Do not mock <code class="inline">useState</code> — test through UI. Exception: error boundary tests with forced throws.</p>
+        <ul>
+          <li>Do not mock <code class="inline">useState</code> — test through UI. Exception: error boundary tests with forced throws.</li>
+        </ul>
       </section>
       <section id="9-accessibility-checks">
         <h2>9. Accessibility checks</h2>
@@ -261,7 +289,9 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
   const { container } = render(&lt;LoginForm /&gt;);
   expect(await axe(container)).toHaveNoViolations();
 });</pre></div>
-        <p>RTL queries by role already push accessible markup.</p>
+        <ul>
+          <li>RTL queries by role already push accessible markup.</li>
+        </ul>
       </section>
       <section id="10-what-to-test-per-feature">
         <h2>10. What to test per feature</h2>
@@ -277,7 +307,9 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
         <tr><td>Error UI</td><td>Error message when fetch fails</td></tr>
         </tbody>
         </table>
-        <p>Skip snapshot-only tests of large trees — brittle and low signal.</p>
+        <ul>
+          <li>Skip snapshot-only tests of large trees — brittle and low signal.</li>
+        </ul>
       </section>
       <section id="11-putting-it-together">
         <h2>11. Putting it together</h2>
@@ -314,25 +346,45 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
       <section id="12-common-questions">
         <h2>12. Common questions</h2>
         <h3>12.1. RTL vs Enzyme?</h3>
-        <p><strong>A:</strong> <strong>RTL</strong> is the modern default — user-centric. Enzyme shallow-renders implementation details; avoid for new projects.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>RTL</strong> is the modern default — user-centric. Enzyme shallow-renders implementation details; avoid for new projects.</li>
+        </ul>
         <h3>12.2. getByRole vs getByTestId?</h3>
-        <p><strong>A:</strong> Prefer <strong>role</strong> — forces accessible UI. <strong>testId</strong> only when no semantic query works.</p>
+        <ul>
+          <li><strong>A:</strong> Prefer <strong>role</strong> — forces accessible UI. <strong>testId</strong> only when no semantic query works.</li>
+        </ul>
         <h3>12.3. fireEvent vs userEvent?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">userEvent</code></strong> simulates full interaction (focus, keydown, input). <strong><code class="inline">fireEvent</code></strong> is lower level — use for edge cases.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">userEvent</code></strong> simulates full interaction (focus, keydown, input). <strong><code class="inline">fireEvent</code></strong> is lower level — use for edge cases.</li>
+        </ul>
         <h3>12.4. How do I test async fetch?</h3>
-        <p><strong>A:</strong> Mock <strong><code class="inline">fetch</code></strong> or <strong>MSW</strong>; use <strong><code class="inline">findBy*</code></strong> or <strong><code class="inline">waitFor</code></strong>. Disable query retries in tests.</p>
+        <ul>
+          <li><strong>A:</strong> Mock <strong><code class="inline">fetch</code></strong> or <strong>MSW</strong>; use <strong><code class="inline">findBy*</code></strong> or <strong><code class="inline">waitFor</code></strong>. Disable query retries in tests.</li>
+        </ul>
         <h3>12.5. Should I test implementation details?</h3>
-        <p><strong>A:</strong> <strong>No</strong> — avoid asserting private state, hook call order, or child component props unless unit-testing a hook directly.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No</strong> — avoid asserting private state, hook call order, or child component props unless unit-testing a hook directly.</li>
+        </ul>
         <h3>12.6. How do I test React Router?</h3>
-        <p><strong>A:</strong> Wrap in <strong><code class="inline">MemoryRouter</code></strong> with <strong><code class="inline">initialEntries</code></strong>, assert navigation with <strong><code class="inline">screen</code></strong> or <strong><code class="inline">useNavigate</code> mock</strong>.</p>
+        <ul>
+          <li><strong>A:</strong> Wrap in <strong><code class="inline">MemoryRouter</code></strong> with <strong><code class="inline">initialEntries</code></strong>, assert navigation with <strong><code class="inline">screen</code></strong> or <strong><code class="inline">useNavigate</code> mock</strong>.</li>
+        </ul>
         <h3>12.7. How do I test custom hooks?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">renderHook</code></strong> + <strong><code class="inline">act</code></strong> for updates. Provide <strong>wrapper</strong> with required providers.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">renderHook</code></strong> + <strong><code class="inline">act</code></strong> for updates. Provide <strong>wrapper</strong> with required providers.</li>
+        </ul>
         <h3>12.8. Snapshot tests — yes or no?</h3>
-        <p><strong>A:</strong> Sparingly for <strong>stable</strong> small output. Prefer behavior assertions.</p>
+        <ul>
+          <li><strong>A:</strong> Sparingly for <strong>stable</strong> small output. Prefer behavior assertions.</li>
+        </ul>
         <h3>12.9. Where do test files live?</h3>
-        <p><strong>A:</strong> Colocated <strong><code class="inline">Component.test.jsx</code></strong> next to source, or <strong><code class="inline">__tests__/</code></strong> folder — team convention.</p>
+        <ul>
+          <li><strong>A:</strong> Colocated <strong><code class="inline">Component.test.jsx</code></strong> next to source, or <strong><code class="inline">__tests__/</code></strong> folder — team convention.</li>
+        </ul>
         <h3>12.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 14 (error boundaries, architecture), File 06/09 for features to test, MSW docs for API mocking.</p>
+        <ul>
+          <li><strong>A:</strong> File 14 (error boundaries, architecture), File 06/09 for features to test, MSW docs for API mocking.</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 13. Open from the React.js index.</footer>
     </main>

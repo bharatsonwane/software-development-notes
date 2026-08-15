@@ -42,11 +42,15 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Advanced TypeScript features model <strong>string patterns</strong>, <strong>extract types from other types</strong>, and <strong>prevent mixing similar primitives</strong> at compile time.</p>
+        <ul>
+          <li>Advanced TypeScript features model <strong>string patterns</strong>, <strong>extract types from other types</strong>, and <strong>prevent mixing similar primitives</strong> at compile time.</li>
+        </ul>
       </section>
       <section id="1-infer-keyword">
         <h2>1. <code class="inline">infer</code> keyword</h2>
-        <p>Inside a <strong>conditional type</strong>, <code class="inline">infer</code> declares a type variable to capture part of a matched type:</p>
+        <ul>
+          <li>Inside a <strong>conditional type</strong>, <code class="inline">infer</code> declares a type variable to capture part of a matched type:</li>
+        </ul>
         <div class="code"><pre>type ElementType&lt;T&gt; = T extends (infer U)[] ? U : T;
 
 type A = ElementType&lt;string[]&gt;;  // string
@@ -59,7 +63,9 @@ type R = MyReturnType&lt;() =&gt; string&gt;; // string</pre></div>
         <div class="code"><pre>type Awaited&lt;T&gt; = T extends Promise&lt;infer U&gt; ? U : T;
 
 type Data = Awaited&lt;Promise&lt;{ id: number }&gt;&gt;; // { id: number }</pre></div>
-        <p>Built-in <code class="inline">Awaited&lt;T&gt;</code> (TS 4.5+) handles nested promises.</p>
+        <ul>
+          <li>Built-in <code class="inline">Awaited&lt;T&gt;</code> (TS 4.5+) handles nested promises.</li>
+        </ul>
         <h3>1.3. Tuple element inference</h3>
         <div class="code"><pre>type Head&lt;T&gt; = T extends [infer H, ...unknown[]] ? H : never;
 type Tail&lt;T&gt; = T extends [unknown, ...infer Rest] ? Rest : never;
@@ -68,7 +74,9 @@ type H = Head&lt;[string, number, boolean]&gt;; // string</pre></div>
       </section>
       <section id="2-template-literal-types">
         <h2>2. Template literal types</h2>
-        <p>Combine string literal types like template strings:</p>
+        <ul>
+          <li>Combine string literal types like template strings:</li>
+        </ul>
         <div class="code"><pre>type EventName = &quot;click&quot; | &quot;focus&quot; | &quot;blur&quot;;
 type HandlerName = `on${Capitalize&lt;EventName&gt;}`;
 // &quot;onClick&quot; | &quot;onFocus&quot; | &quot;onBlur&quot;</pre></div>
@@ -105,7 +113,9 @@ type UserEvents = PropEvents&lt;{ name: string; age: number }&gt;;
       </section>
       <section id="3-branded-types">
         <h2>3. Branded types</h2>
-        <p><strong>Branded</strong> (nominal) types prevent accidentally mixing structurally identical types:</p>
+        <ul>
+          <li><strong>Branded</strong> (nominal) types prevent accidentally mixing structurally identical types:</li>
+        </ul>
         <div class="code"><pre>type UserId = string &amp; { readonly __brand: &quot;UserId&quot; };
 type OrderId = string &amp; { readonly __brand: &quot;OrderId&quot; };
 
@@ -131,7 +141,9 @@ type Email = Brand&lt;string, &quot;Email&quot;&gt;;
 type Password = Brand&lt;string, &quot;Password&quot;&gt;;
 
 function register(email: Email, password: Password) {}</pre></div>
-        <p>Forces explicit creation functions — raw strings cannot slip through.</p>
+        <ul>
+          <li>Forces explicit creation functions — raw strings cannot slip through.</li>
+        </ul>
         <h3>3.2. Units of measure (pattern)</h3>
         <div class="code"><pre>type Meters = number &amp; { readonly unit: &quot;m&quot; };
 type Feet = number &amp; { readonly unit: &quot;ft&quot; };
@@ -156,7 +168,9 @@ async function apiGet&lt;Path extends keyof ApiRoutes&gt;(
 }
 
 const users = await apiGet(&quot;/users&quot;); // User[]</pre></div>
-        <p>Libraries like <strong>tRPC</strong>, <strong>Hono RPC</strong>, and <strong>OpenAPI generators</strong> automate this pattern.</p>
+        <ul>
+          <li>Libraries like <strong>tRPC</strong>, <strong>Hono RPC</strong>, and <strong>OpenAPI generators</strong> automate this pattern.</li>
+        </ul>
         <h3>4.2. Builder pattern with chained generics</h3>
         <div class="code"><pre>class QueryBuilder&lt;T extends Record&lt;string, unknown&gt;&gt; {
   where&lt;K extends keyof T&gt;(key: K, value: T[K]): this {
@@ -168,7 +182,9 @@ const q = new QueryBuilder&lt;{ name: string; age: number }&gt;();
 q.where(&quot;name&quot;, &quot;Bharat&quot;); // OK
 // q.where(&quot;age&quot;, &quot;thirty&quot;); // Error</pre></div>
         <h3>4.3. Zod / schema validation at boundaries</h3>
-        <p>Types are compile-time only — validate external data at runtime:</p>
+        <ul>
+          <li>Types are compile-time only — validate external data at runtime:</li>
+        </ul>
         <div class="code"><pre>import { z } from &quot;zod&quot;;
 
 const UserSchema = z.object({
@@ -181,7 +197,9 @@ type User = z.infer&lt;typeof UserSchema&gt;;
 function parseUser(raw: unknown): User {
   return UserSchema.parse(raw);
 }</pre></div>
-        <p>Single source of truth: schema → runtime check + inferred TS type.</p>
+        <ul>
+          <li>Single source of truth: schema → runtime check + inferred TS type.</li>
+        </ul>
         <h3>4.4. Const assertions for API contracts</h3>
         <div class="code"><pre>const ROUTES = {
   home: &quot;/&quot;,
@@ -191,27 +209,45 @@ function parseUser(raw: unknown): User {
 type Route = typeof ROUTES[keyof typeof ROUTES];
 // &quot;/&quot; | &quot;/profile&quot;</pre></div>
         <h3>4.5. Checklist for type-safe boundaries</h3>
-        <p>Advanced types shine at <strong>system boundaries</strong> — HTTP, env vars, config keys — where mistakes are costly:</p>
+        <ul>
+          <li>Advanced types shine at <strong>system boundaries</strong> — HTTP, env vars, config keys — where mistakes are costly:</li>
+        </ul>
         <ol><li><strong>Parse</strong> external input (<code class="inline">unknown</code> → validated type)</li><li><strong>Brand</strong> IDs and domain primitives</li><li><strong>Discriminate</strong> responses with tagged unions (File 05)</li><li><strong>Derive</strong> types from schemas or const objects — avoid duplicating shapes</li></ol>
       </section>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. What does <code class="inline">infer</code> do?</h3>
-        <p><strong>A:</strong> Captures a type inside a conditional match — &quot;if T looks like X, name this part U&quot;.</p>
+        <ul>
+          <li><strong>A:</strong> Captures a type inside a conditional match — &quot;if T looks like X, name this part U&quot;.</li>
+        </ul>
         <h3>5.2. Are template literal types only for strings?</h3>
-        <p><strong>A:</strong> Yes — they operate on string literal types and string manipulation utilities.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — they operate on string literal types and string manipulation utilities.</li>
+        </ul>
         <h3>5.3. Do branded types exist at runtime?</h3>
-        <p><strong>A:</strong> No — brands are compile-time only. Runtime validation still needed for untrusted input.</p>
+        <ul>
+          <li><strong>A:</strong> No — brands are compile-time only. Runtime validation still needed for untrusted input.</li>
+        </ul>
         <h3>5.4. When are advanced types worth it?</h3>
-        <p><strong>A:</strong> Libraries, design systems, API clients, large teams. Overkill for small scripts.</p>
+        <ul>
+          <li><strong>A:</strong> Libraries, design systems, API clients, large teams. Overkill for small scripts.</li>
+        </ul>
         <h3>5.5. What is the difference between <code class="inline">infer</code> and generics?</h3>
-        <p><strong>A:</strong> Generics declare parameters on types/functions. <code class="inline">infer</code> extracts types <strong>inside</strong> conditional type logic.</p>
+        <ul>
+          <li><strong>A:</strong> Generics declare parameters on types/functions. <code class="inline">infer</code> extracts types <strong>inside</strong> conditional type logic.</li>
+        </ul>
         <h3>5.6. Can template literals be too slow to compile?</h3>
-        <p><strong>A:</strong> Very large cartesian products of unions can slow <code class="inline">tsc</code>. Split types or simplify unions if builds lag.</p>
+        <ul>
+          <li><strong>A:</strong> Very large cartesian products of unions can slow <code class="inline">tsc</code>. Split types or simplify unions if builds lag.</li>
+        </ul>
         <h3>5.7. How does Zod relate to TypeScript?</h3>
-        <p><strong>A:</strong> Zod validates at runtime; <code class="inline">z.infer</code> gives static types — bridges the compile/runtime gap.</p>
+        <ul>
+          <li><strong>A:</strong> Zod validates at runtime; <code class="inline">z.infer</code> gives static types — bridges the compile/runtime gap.</li>
+        </ul>
         <h3>5.8. What is <code class="inline">satisfies</code> (TS 4.9+)?</h3>
-        <p><strong>A:</strong> Checks value matches type while preserving narrow literal inference — great for config objects:</p>
+        <ul>
+          <li><strong>A:</strong> Checks value matches type while preserving narrow literal inference — great for config objects:</li>
+        </ul>
         <div class="code"><pre>const palette = {
   red: &quot;#f00&quot;,
   green: &quot;#0f0&quot;,

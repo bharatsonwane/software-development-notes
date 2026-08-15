@@ -36,60 +36,94 @@
         <h1>How To Work With Multiple Github Accounts on a single Machine</h1>
       </header>
       <section id="content">
-        <p>Let suppose I have two github accounts, <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatOffice</strong> and <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatPersonal</strong>. Now i want to setup my machine (Mac, Linux, or Windows) to easily talk to both the github accounts.</p>
+        <ul>
+          <li>Let suppose I have two github accounts, <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatOffice</strong> and <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatPersonal</strong>. Now i want to setup my machine (Mac, Linux, or Windows) to easily talk to both the github accounts.</li>
+        </ul>
         <div class="callout">NOTE: This logic can be extended to more than two accounts also. :)</div>
-        <p>The setup can be done in 5 easy steps:</p>
+        <ul>
+          <li>The setup can be done in 5 easy steps:</li>
+        </ul>
         <h2>Steps:</h2>
         <ul><li><a href="#step-1">Step 1</a> : Create SSH keys for all accounts</li><li><a href="#step-2">Step 2</a> : Create a Config File and Make Host Entries</li><li><a href="#step-3">Step 3</a> : Add SSH keys to SSH Agent</li><li><a href="#step-4">Step 4</a> : Add SSH public key to the Github</li><li><a href="#step-5">Step 5</a> : Cloning GitHub repositories using different accounts</li></ul>
         <h2>Step 1:- Create SSH keys for all accounts</h2>
-        <p>First make sure your current directory is your <strong>.ssh</strong> folder (navigate to the .ssh directory).</p>
-        <p><strong>Mac / Linux:</strong></p>
+        <ul>
+          <li>First make sure your current directory is your <strong>.ssh</strong> folder (navigate to the .ssh directory).</li>
+          <li><strong>Mac / Linux:</strong></li>
+        </ul>
         <div class="code"><pre>     cd ~/.ssh</pre></div>
-        <p><strong>Windows (PowerShell):</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell):</strong></li>
+        </ul>
         <div class="code"><pre>     cd $env:USERPROFILE\.ssh</pre></div>
-        <p>If the .ssh directory does not exist, you can create and navigate to it:</p>
-        <p><strong>Mac / Linux:</strong></p>
+        <ul>
+          <li>If the .ssh directory does not exist, you can create and navigate to it:</li>
+          <li><strong>Mac / Linux:</strong></li>
+        </ul>
         <div class="code"><pre>     mkdir ~/.ssh
      cd ~/.ssh</pre></div>
-        <p><strong>Windows (PowerShell):</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell):</strong></li>
+        </ul>
         <div class="code"><pre>     New-Item -ItemType Directory -Force -Path $env:USERPROFILE\.ssh
      cd $env:USERPROFILE\.ssh</pre></div>
-        <p>Complete path will be like:</p>
-        <ul><li><strong>Mac/Linux:</strong> <code class="inline">~/.ssh</code> (e.g. <code class="inline">/Users/sonwanebr/.ssh</code>)</li><li><strong>Windows:</strong> <code class="inline">C:\Users\&lt;YourWindowsUsername&gt;\.ssh</code> (e.g. <code class="inline">C:\Users\sonwanebr\.ssh</code>)</li></ul>
-        <p>List files in the <strong>.ssh</strong> folder:</p>
-        <p><strong>Mac / Linux:</strong></p>
+        <ul>
+          <li>Complete path will be like:</li>
+          <li><strong>Mac/Linux:</strong> <code class="inline">~/.ssh</code> (e.g. <code class="inline">/Users/sonwanebr/.ssh</code>)</li><li><strong>Windows:</strong> <code class="inline">C:\Users\&lt;YourWindowsUsername&gt;\.ssh</code> (e.g. <code class="inline">C:\Users\sonwanebr\.ssh</code>)</li>
+          <li>List files in the <strong>.ssh</strong> folder:</li>
+          <li><strong>Mac / Linux:</strong></li>
+        </ul>
         <div class="code"><pre>     ls ~/.ssh</pre></div>
-        <p><strong>Windows (PowerShell):</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell):</strong></li>
+        </ul>
         <div class="code"><pre>     dir</pre></div>
         <h3>A) Create SSH keys for all accounts</h3>
-        <p><strong>Windows:</strong> Use <strong>PowerShell</strong> (OpenSSH is built-in on Windows 10+). Run the commands below from the <code class="inline">.ssh</code> directory as shown above.</p>
-        <p>Syntax for generating a unique SSH key for an account with email and file name:</p>
+        <ul>
+          <li><strong>Windows:</strong> Use <strong>PowerShell</strong> (OpenSSH is built-in on Windows 10+). Run the commands below from the <code class="inline">.ssh</code> directory as shown above.</li>
+          <li>Syntax for generating a unique SSH key for an account with email and file name:</li>
+        </ul>
         <div class="code"><pre>      ssh-keygen -t rsa -C &quot;yourEmailAddress&quot; -f &quot;repoProvider_githubUsername&quot;</pre></div>
-        <p>here,</p>
-        <p><strong>-C</strong> stands for comment to help identify your ssh key</p>
-        <p><strong>-f</strong> stands for the file name where your ssh key get saved (*repoProvider_githubUsername* is ssh-key-name.)</p>
-        <p>#### Now generating SSH keys for my two accounts</p>
+        <ul>
+          <li>here,</li>
+          <li><strong>-C</strong> stands for comment to help identify your ssh key</li>
+          <li><strong>-f</strong> stands for the file name where your ssh key get saved (*repoProvider_githubUsername* is ssh-key-name.)</li>
+          <li>#### Now generating SSH keys for my two accounts</li>
+        </ul>
         <div class="code"><pre>     ssh-keygen -t rsa -C &quot;myOfficeEmail@gmail.com&quot; -f &quot;bitbucket_bharatOffice&quot;
      ssh-keygen -t rsa -C &quot;myPersonalEmail@gmail.com&quot; -f &quot;github_bharatPersonal&quot;</pre></div>
-        <p>Here <strong>bharatOffice</strong> is username of bitbucket corresponding to  <strong>myOfficeEmail</strong> email and for that <strong>bitbucket_bharatOffice</strong> is file name. And <strong>bharatPersonal</strong> is username of github corresponding to  <strong>myPersonalEmail</strong> email and for that <strong>github_bharatPersonal</strong> is file name.</p>
-        <p>After entering the command the terminal will ask for passphrase, leave it empty and proceed.</p>
+        <ul>
+          <li>Here <strong>bharatOffice</strong> is username of bitbucket corresponding to  <strong>myOfficeEmail</strong> email and for that <strong>bitbucket_bharatOffice</strong> is file name. And <strong>bharatPersonal</strong> is username of github corresponding to  <strong>myPersonalEmail</strong> email and for that <strong>github_bharatPersonal</strong> is file name.</li>
+          <li>After entering the command the terminal will ask for passphrase, leave it empty and proceed.</li>
+        </ul>
         <div class="callout">Now after adding keys , in your .ssh folder, a public key and a private will get generated.</div>
-        <p>&gt;The public key will have an extension __.pub__ and private key will be there without any extension both having same name which you have passed after __-f__ option in the above command. (in my case *bitbucket_bharatOffice* and *github_bharatPersonal*)</p>
+        <ul>
+          <li>&gt;The public key will have an extension __.pub__ and private key will be there without any extension both having same name which you have passed after __-f__ option in the above command. (in my case *bitbucket_bharatOffice* and *github_bharatPersonal*)</li>
+        </ul>
         <h2>Step 2:- Create a Config File and Make Host Entries</h2>
-        <p>The <strong>~/.ssh/config</strong> file allows us specify many config options for SSH.</p>
-        <p>If <strong>config</strong> file does not already exist, create one (make sure you are in the <strong>.ssh</strong> directory).</p>
-        <p><strong>Mac / Linux:</strong></p>
+        <ul>
+          <li>The <strong>~/.ssh/config</strong> file allows us specify many config options for SSH.</li>
+          <li>If <strong>config</strong> file does not already exist, create one (make sure you are in the <strong>.ssh</strong> directory).</li>
+          <li><strong>Mac / Linux:</strong></li>
+        </ul>
         <div class="code"><pre>     cd ~/.ssh/
      touch config</pre></div>
-        <p><strong>Windows (PowerShell):</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell):</strong></li>
+        </ul>
         <div class="code"><pre>     cd $env:USERPROFILE\.ssh
      New-Item -ItemType File -Force -Path config</pre></div>
-        <p>Open the config file in your editor:</p>
-        <p><strong>Mac / Linux:</strong></p>
+        <ul>
+          <li>Open the config file in your editor:</li>
+          <li><strong>Mac / Linux:</strong></li>
+        </ul>
         <div class="code"><pre>     open config</pre></div>
-        <p><strong>Windows (PowerShell):</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell):</strong></li>
+        </ul>
         <div class="code"><pre>     notepad config</pre></div>
-        <p>Now we need to add these lines to the file, each block corresponding to each account we created earlier.</p>
+        <ul>
+          <li>Now we need to add these lines to the file, each block corresponding to each account we created earlier.</li>
+        </ul>
         <div class="code"><pre>     #syntax ==&gt; 
      Host repoProvider.com-githubUsername
           HostName repoProvider.com
@@ -109,78 +143,113 @@
           IdentityFile ~/.ssh/github_bharatPersonal</pre></div>
         <div class="callout"><strong>Windows note:</strong> If <code class="inline">~</code> is not resolved in your SSH config, use the full path for <code class="inline">IdentityFile</code>, e.g. <code class="inline">C:\Users\sonwanebr\.ssh\github_bharatPersonal</code>.</div>
         <h2>Step 3:- Add SSH keys to SSH Agent</h2>
-        <p>#### Start SSH Agent</p>
-        <p><strong>Windows:</strong> Run PowerShell as Administrator and execute:</p>
+        <ul>
+          <li>#### Start SSH Agent</li>
+          <li><strong>Windows:</strong> Run PowerShell as Administrator and execute:</li>
+        </ul>
         <div class="code"><pre>    Get-Service ssh-agent | Set-Service -StartupType Automatic
     Start-Service ssh-agent
     Get-Service ssh-agent</pre></div>
-        <p><strong>Mac:</strong> SSH agent usually runs by default. To start manually:</p>
+        <ul>
+          <li><strong>Mac:</strong> SSH agent usually runs by default. To start manually:</li>
+        </ul>
         <div class="code"><pre>     eval &quot;$(ssh-agent -s)&quot;</pre></div>
-        <p><strong>Linux:</strong> Start the agent if needed:</p>
+        <ul>
+          <li><strong>Linux:</strong> Start the agent if needed:</li>
+        </ul>
         <div class="code"><pre>     eval &quot;$(ssh-agent -s)&quot;</pre></div>
-        <p>Optional: First-time trust host (same on all platforms):</p>
+        <ul>
+          <li>Optional: First-time trust host (same on all platforms):</li>
+        </ul>
         <div class="code"><pre>     ssh -o StrictHostKeyChecking=no git@github.com</pre></div>
-        <p>Now we have the keys but they cannot be used until we add them to the SSH Agent.</p>
-        <p><strong>Mac</strong> (use <code class="inline">-K</code> to store in keychain):</p>
+        <ul>
+          <li>Now we have the keys but they cannot be used until we add them to the SSH Agent.</li>
+          <li><strong>Mac</strong> (use <code class="inline">-K</code> to store in keychain):</li>
+        </ul>
         <div class="code"><pre>     ssh-add -K ~/.ssh/repoProvider_githubUsername
      ssh-add -K ~/.ssh/bitbucket_bharatOffice
      ssh-add -K ~/.ssh/github_bharatPersonal</pre></div>
-        <p><strong>Linux / Windows</strong> (no <code class="inline">-K</code> option):</p>
+        <ul>
+          <li><strong>Linux / Windows</strong> (no <code class="inline">-K</code> option):</li>
+        </ul>
         <div class="code"><pre>     ssh-add ~/.ssh/repoProvider_githubUsername
      ssh-add ~/.ssh/bitbucket_bharatOffice
      ssh-add ~/.ssh/github_bharatPersonal</pre></div>
-        <p>On Windows (PowerShell), use the full path:</p>
+        <ul>
+          <li>On Windows (PowerShell), use the full path:</li>
+        </ul>
         <div class="code"><pre>     ssh-add $env:USERPROFILE\.ssh\bitbucket_bharatOffice
      ssh-add $env:USERPROFILE\.ssh\github_bharatPersonal</pre></div>
-        <p>You can read more about adding keys to SSH Agent <a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here.</a></p>
+        <ul>
+          <li>You can read more about adding keys to SSH Agent <a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here.</a></li>
+        </ul>
         <h2>Step 4:- Add SSH public key to the Github</h2>
-        <p>For the next step we need to add our public key (that we have generated in our previous step) and add it to corresponding github accounts.</p>
-        <p>For doing this we need to:</p>
-        <p>__1. Copy the public key__</p>
-        <p>Open the <code class="inline">.pub</code> file and copy its contents, or copy it directly to the clipboard.</p>
-        <p><strong>Mac / Linux — open in editor:</strong></p>
+        <ul>
+          <li>For the next step we need to add our public key (that we have generated in our previous step) and add it to corresponding github accounts.</li>
+          <li>For doing this we need to:</li>
+          <li>__1. Copy the public key__</li>
+          <li>Open the <code class="inline">.pub</code> file and copy its contents, or copy it directly to the clipboard.</li>
+          <li><strong>Mac / Linux — open in editor:</strong></li>
+        </ul>
         <div class="code"><pre>     vim ~/.ssh/bitbucket_bharatOffice.pub
      vim ~/.ssh/github_bharatPersonal.pub</pre></div>
-        <p><strong>Windows (PowerShell) — open in Notepad:</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell) — open in Notepad:</strong></li>
+        </ul>
         <div class="code"><pre>     notepad $env:USERPROFILE\.ssh\bitbucket_bharatOffice.pub
      notepad $env:USERPROFILE\.ssh\github_bharatPersonal.pub</pre></div>
-        <p>&lt;p align=&quot;center&quot;&gt;OR</p>
-        <p><strong>Copy directly to clipboard:</strong></p>
-        <p><strong>Mac:</strong></p>
+        <ul>
+          <li>&lt;p align=&quot;center&quot;&gt;OR</li>
+          <li><strong>Copy directly to clipboard:</strong></li>
+          <li><strong>Mac:</strong></li>
+        </ul>
         <div class="code"><pre>     pbcopy &lt; ~/.ssh/bitbucket_bharatOffice.pub
      pbcopy &lt; ~/.ssh/github_bharatPersonal.pub</pre></div>
-        <p><strong>Windows (PowerShell):</strong></p>
+        <ul>
+          <li><strong>Windows (PowerShell):</strong></li>
+        </ul>
         <div class="code"><pre>     Get-Content $env:USERPROFILE\.ssh\bitbucket_bharatOffice.pub | Set-Clipboard
      Get-Content $env:USERPROFILE\.ssh\github_bharatPersonal.pub | Set-Clipboard</pre></div>
-        <p>__2. Paste the public key on Github__</p>
-        <ul><li>Sign in to Github Account</li><li>Goto <strong>Settings</strong> &gt; <strong>SSH and GPG keys</strong> &gt; <strong>New SSH Key</strong></li><li>Paste your copied public key and give it a Title of your choice.</li></ul>
-        <p>___OR___</p>
-        <ul><li>Sign in to Github</li><li>Paste this link in your browser (https://github.com/settings/keys) or click <a href="https://github.com/settings/keys">here</a></li><li>Click on <strong>New SSH Key</strong> and paste your copied key.</li></ul>
+        <ul>
+          <li>__2. Paste the public key on Github__</li>
+          <li>Sign in to Github Account</li><li>Goto <strong>Settings</strong> &gt; <strong>SSH and GPG keys</strong> &gt; <strong>New SSH Key</strong></li><li>Paste your copied public key and give it a Title of your choice.</li>
+          <li>___OR___</li>
+          <li>Sign in to Github</li><li>Paste this link in your browser (https://github.com/settings/keys) or click <a href="https://github.com/settings/keys">here</a></li><li>Click on <strong>New SSH Key</strong> and paste your copied key.</li></ul>
         <h2>Step 5:- Cloning GitHub repositories using different accounts</h2>
-        <p>So we are done with our setups and now its time to see it in action. We will clone a repository using one of the account we have added.</p>
-        <p>Make a new project folder where you want to clone your repository and go to that directory from your terminal.</p>
-        <p>For Example: I am making a repository on my personal github account and naming it <strong>TestRepo</strong> Now for cloning the repo use the below command:</p>
+        <ul>
+          <li>So we are done with our setups and now its time to see it in action. We will clone a repository using one of the account we have added.</li>
+          <li>Make a new project folder where you want to clone your repository and go to that directory from your terminal.</li>
+          <li>For Example: I am making a repository on my personal github account and naming it <strong>TestRepo</strong> Now for cloning the repo use the below command:</li>
+        </ul>
         <div class="code"><pre>     git clone git@{repoProvider.com}-{githubUsername}:{owner-user-name}/{the-repo-name}.git
 
      [e.g.] git clone git@github.com-bharatPersonal:bharatPersonal/TestRepo.git</pre></div>
         <h2>Step 6:- Change Remote URL for Cloned Repositories (Optional)</h2>
-        <p>If you have already cloned repositories using HTTPS, you can change the remote URL to use SSH for a smoother experience. First, navigate to the repository directory, then run the following commands to update the remote URL:</p>
+        <ul>
+          <li>If you have already cloned repositories using HTTPS, you can change the remote URL to use SSH for a smoother experience. First, navigate to the repository directory, then run the following commands to update the remote URL:</li>
+        </ul>
         <div class="code"><pre>     git remote -v # To check current URLs
      git remote remove origin # Remove existed URLs
      git remote add origin git@{repoProvider.com}-{githubUsername}:{owner-user-name}/{the-repo-name}.git # Add SSH URL        </pre></div>
-        <p>Pick the correct pair for your repository accordingly. To push or pull to the correct account we need to add the remote origin to the project</p>
+        <ul>
+          <li>Pick the correct pair for your repository accordingly. To push or pull to the correct account we need to add the remote origin to the project</li>
+        </ul>
         <div class="code"><pre>     git remote add origin git@github.com-bharatPersonal:bharatPersonal
      
      git remote add origin git@github.com-bharatOffice:bharatOffice</pre></div>
         <h2>Step 7:- Finally</h2>
-        <p>From now on, to ensure that our commits and pushes from each repository on the system uses the correct GitHub user — we will have to configure <strong>user.email</strong> and <strong>user.name</strong> in every repository freshly cloned or existing before.</p>
-        <p>To do this use the following commands.</p>
+        <ul>
+          <li>From now on, to ensure that our commits and pushes from each repository on the system uses the correct GitHub user — we will have to configure <strong>user.email</strong> and <strong>user.name</strong> in every repository freshly cloned or existing before.</li>
+          <li>To do this use the following commands.</li>
+        </ul>
         <div class="code"><pre>     git config user.email &quot;myOfficeEmail@gmail.com&quot;
      git config user.name &quot;Bharat Sonwane&quot;
      
      git config user.email &quot;myPersonalEmail@gmail.com&quot;
      git config user.name &quot;Bharat Sonwane&quot;</pre></div>
-        <p>Now you can use:</p>
+        <ul>
+          <li>Now you can use:</li>
+        </ul>
         <div class="code"><pre>     git push
      
      git pull</pre></div>

@@ -45,14 +45,18 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p><strong>Hooks</strong> are functions that let function components use state, effects, refs, and more. This chapter covers <strong>rules</strong> you must follow, <strong>custom hooks</strong> for reusable logic, <strong><code class="inline">useRef</code></strong> for values and DOM access, and <strong><code class="inline">useId</code></strong> for stable ids.</p>
-        <p>Builds on <code class="inline">useState</code> (File 03), <code class="inline">useEffect</code> (File 05), and forms (File 06). File 08 adds <strong>Context</strong> and <strong>useReducer</strong>.</p>
-        <p><strong>Default rule today:</strong> only call hooks at the <strong>top level</strong> of React functions; prefix reusable hook logic with <strong><code class="inline">use</code></strong>; use <strong><code class="inline">useRef</code></strong> for mutable values that should not trigger re-renders; use <strong><code class="inline">useId</code></strong> for accessibility ids in SSR-safe apps.</p>
+        <ul>
+          <li><strong>Hooks</strong> are functions that let function components use state, effects, refs, and more. This chapter covers <strong>rules</strong> you must follow, <strong>custom hooks</strong> for reusable logic, <strong><code class="inline">useRef</code></strong> for values and DOM access, and <strong><code class="inline">useId</code></strong> for stable ids.</li>
+          <li>Builds on <code class="inline">useState</code> (File 03), <code class="inline">useEffect</code> (File 05), and forms (File 06). File 08 adds <strong>Context</strong> and <strong>useReducer</strong>.</li>
+          <li><strong>Default rule today:</strong> only call hooks at the <strong>top level</strong> of React functions; prefix reusable hook logic with <strong><code class="inline">use</code></strong>; use <strong><code class="inline">useRef</code></strong> for mutable values that should not trigger re-renders; use <strong><code class="inline">useId</code></strong> for accessibility ids in SSR-safe apps.</li>
+        </ul>
       </section>
       <section id="1-rules-of-hooks">
         <h2>1. Rules of Hooks</h2>
         <h3>1.1. Only call hooks at the top level</h3>
-        <p>Do <strong>not</strong> call hooks inside loops, conditions, or nested functions:</p>
+        <ul>
+          <li>Do <strong>not</strong> call hooks inside loops, conditions, or nested functions:</li>
+        </ul>
         <div class="code"><pre>// Wrong
 function Bad({ show }) {
   if (show) {
@@ -66,18 +70,26 @@ function Good({ show }) {
   if (!show) return null;
   return &lt;div&gt;{x}&lt;/div&gt;;
 }</pre></div>
-        <p>React relies on <strong>call order</strong> being identical every render to match state to the right hook.</p>
+        <ul>
+          <li>React relies on <strong>call order</strong> being identical every render to match state to the right hook.</li>
+        </ul>
         <h3>1.2. Only call hooks from React functions</h3>
-        <p>Call hooks from:</p>
-        <ul><li><strong>Function components</strong></li><li><strong>Custom hooks</strong> (functions whose names start with <code class="inline">use</code>)</li></ul>
-        <p>Do <strong>not</strong> call hooks from regular JS functions, class components, or event handlers.</p>
+        <ul>
+          <li>Call hooks from:</li>
+          <li><strong>Function components</strong></li><li><strong>Custom hooks</strong> (functions whose names start with <code class="inline">use</code>)</li>
+          <li>Do <strong>not</strong> call hooks from regular JS functions, class components, or event handlers.</li>
+        </ul>
         <h3>1.3. ESLint enforcement</h3>
-        <p><strong><code class="inline">eslint-plugin-react-hooks</code></strong> with rules <strong><code class="inline">rules-of-hooks</code></strong> and <strong><code class="inline">exhaustive-deps</code></strong> catches most mistakes. Enable them in every React project.</p>
+        <ul>
+          <li><strong><code class="inline">eslint-plugin-react-hooks</code></strong> with rules <strong><code class="inline">rules-of-hooks</code></strong> and <strong><code class="inline">exhaustive-deps</code></strong> catches most mistakes. Enable them in every React project.</li>
+        </ul>
       </section>
       <section id="2-custom-hooks">
         <h2>2. Custom hooks</h2>
         <h3>2.1. What is a custom hook?</h3>
-        <p>A <strong>function</strong> that <strong>calls other hooks</strong> and returns state, handlers, or refs for components to use:</p>
+        <ul>
+          <li>A <strong>function</strong> that <strong>calls other hooks</strong> and returns state, handlers, or refs for components to use:</li>
+        </ul>
         <div class="code"><pre>function useCounter(initial = 0) {
   const [count, setCount] = useState(initial);
   const increment = () =&gt; setCount((c) =&gt; c + 1);
@@ -90,17 +102,25 @@ function App() {
   const { count, increment } = useCounter(0);
   return &lt;button onClick={increment}&gt;{count}&lt;/button&gt;;
 }</pre></div>
-        <p>Each component calling <code class="inline">useCounter</code> gets <strong>its own</strong> independent state.</p>
+        <ul>
+          <li>Each component calling <code class="inline">useCounter</code> gets <strong>its own</strong> independent state.</li>
+        </ul>
         <h3>2.2. Naming convention</h3>
-        <p>Name must start with <strong><code class="inline">use</code></strong> so React (and linters) know it may call hooks:</p>
+        <ul>
+          <li>Name must start with <strong><code class="inline">use</code></strong> so React (and linters) know it may call hooks:</li>
+        </ul>
         <div class="code"><pre>function useLocalStorage(key, initial) { ... }
 function useMediaQuery(query) { ... }</pre></div>
         <h3>2.3. Extract when logic repeats</h3>
-        <p>Extract a custom hook when:</p>
-        <ul><li>Same <strong>state + effect + handlers</strong> appear in multiple components</li><li>A component grows too large and one concern can be isolated</li><li>You want to <strong>test</strong> logic separately from UI</li></ul>
-        <p>Keep hooks <strong>focused</strong> — one responsibility per hook when possible.</p>
+        <ul>
+          <li>Extract a custom hook when:</li>
+          <li>Same <strong>state + effect + handlers</strong> appear in multiple components</li><li>A component grows too large and one concern can be isolated</li><li>You want to <strong>test</strong> logic separately from UI</li>
+          <li>Keep hooks <strong>focused</strong> — one responsibility per hook when possible.</li>
+        </ul>
         <h3>2.4. Custom hook wrapping useEffect</h3>
-        <p>From File 05 — online status:</p>
+        <ul>
+          <li>From File 05 — online status:</li>
+        </ul>
         <div class="code"><pre>function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -118,16 +138,22 @@ function useMediaQuery(query) { ... }</pre></div>
   return isOnline;
 }</pre></div>
         <h3>2.5. Returning stable APIs</h3>
-        <p>Return an <strong>object</strong> or <strong>tuple</strong> — document whether functions are stable. For callbacks passed to effects, wrap in <strong><code class="inline">useCallback</code></strong> when needed (File 12).</p>
+        <ul>
+          <li>Return an <strong>object</strong> or <strong>tuple</strong> — document whether functions are stable. For callbacks passed to effects, wrap in <strong><code class="inline">useCallback</code></strong> when needed (File 12).</li>
+        </ul>
       </section>
       <section id="3-useref">
         <h2>3. useRef</h2>
         <h3>3.1. Ref object persists across renders</h3>
         <div class="code"><pre>const ref = useRef(initialValue);
 // ref.current — read/write without re-render</pre></div>
-        <p>Updating <strong><code class="inline">ref.current</code></strong> does <strong>not</strong> trigger a re-render (unlike <code class="inline">setState</code>).</p>
+        <ul>
+          <li>Updating <strong><code class="inline">ref.current</code></strong> does <strong>not</strong> trigger a re-render (unlike <code class="inline">setState</code>).</li>
+        </ul>
         <h3>3.2. DOM refs</h3>
-        <p>Attach to JSX to access the underlying DOM node:</p>
+        <ul>
+          <li>Attach to JSX to access the underlying DOM node:</li>
+        </ul>
         <div class="code"><pre>function FocusInput() {
   const inputRef = useRef(null);
 
@@ -142,9 +168,13 @@ function useMediaQuery(query) { ... }</pre></div>
     &lt;/&gt;
   );
 }</pre></div>
-        <p>Use for: focus, scroll, measuring size, integrating non-React libraries.</p>
+        <ul>
+          <li>Use for: focus, scroll, measuring size, integrating non-React libraries.</li>
+        </ul>
         <h3>3.3. Mutable instance values</h3>
-        <p>Store timers, previous props, or any value that should survive renders without causing them:</p>
+        <ul>
+          <li>Store timers, previous props, or any value that should survive renders without causing them:</li>
+        </ul>
         <div class="code"><pre>function Timer() {
   const intervalRef = useRef(null);
 
@@ -171,15 +201,21 @@ function useMediaQuery(query) { ... }</pre></div>
     return () =&gt; sub.unsubscribe();
   }, []);  // empty deps — always calls latest onMessage
 }</pre></div>
-        <p>Pattern: keep ref synced each render; effect reads <code class="inline">ref.current</code>.</p>
+        <ul>
+          <li>Pattern: keep ref synced each render; effect reads <code class="inline">ref.current</code>.</li>
+        </ul>
         <h3>3.6. ref callback (advanced)</h3>
         <div class="code"><pre>&lt;div ref={(node) =&gt; { /* node mounted or unmounted */ }} /&gt;</pre></div>
-        <p>Use when you need setup/teardown per DOM node. Less common than object ref.</p>
+        <ul>
+          <li>Use when you need setup/teardown per DOM node. Less common than object ref.</li>
+        </ul>
       </section>
       <section id="4-useid">
         <h2>4. useId</h2>
         <h3>4.1. Stable unique ids for accessibility</h3>
-        <p>Link labels, inputs, and error messages with matching <strong><code class="inline">id</code></strong> / <strong><code class="inline">htmlFor</code></strong>:</p>
+        <ul>
+          <li>Link labels, inputs, and error messages with matching <strong><code class="inline">id</code></strong> / <strong><code class="inline">htmlFor</code></strong>:</li>
+        </ul>
         <div class="code"><pre>function EmailField({ label, error }) {
   const id = useId();
   const errorId = `${id}-error`;
@@ -197,9 +233,13 @@ function useMediaQuery(query) { ... }</pre></div>
   );
 }</pre></div>
         <h3>4.2. SSR and hydration</h3>
-        <p><strong><code class="inline">useId</code></strong> generates ids that are <strong>consistent</strong> between server and client render — avoid <code class="inline">Math.random()</code> or increment counters for ids in SSR apps.</p>
+        <ul>
+          <li><strong><code class="inline">useId</code></strong> generates ids that are <strong>consistent</strong> between server and client render — avoid <code class="inline">Math.random()</code> or increment counters for ids in SSR apps.</li>
+        </ul>
         <h3>4.3. Do not use useId for list keys</h3>
-        <p><strong>Keys</strong> in lists need stable <strong>data ids</strong> (<code class="inline">item.id</code>), not <code class="inline">useId()</code> — <code class="inline">useId</code> is per component instance, not per list item logic.</p>
+        <ul>
+          <li><strong>Keys</strong> in lists need stable <strong>data ids</strong> (<code class="inline">item.id</code>), not <code class="inline">useId()</code> — <code class="inline">useId</code> is per component instance, not per list item logic.</li>
+        </ul>
       </section>
       <section id="5-composing-hooks">
         <h2>5. Composing hooks</h2>
@@ -219,21 +259,29 @@ function useMediaQuery(query) { ... }</pre></div>
 
   return { user, loading };
 }</pre></div>
-        <p>File 10 covers server-state libraries that replace hand-rolled fetch hooks.</p>
+        <ul>
+          <li>File 10 covers server-state libraries that replace hand-rolled fetch hooks.</li>
+        </ul>
         <h3>5.2. Split hooks by concern</h3>
         <div class="code"><pre>function ProfilePage({ userId }) {
   const { user, loading } = useUser(userId);
   const isOnline = useOnlineStatus();
   // render...
 }</pre></div>
-        <p>Smaller hooks compose into readable components.</p>
+        <ul>
+          <li>Smaller hooks compose into readable components.</li>
+        </ul>
       </section>
       <section id="6-hook-pitfalls">
         <h2>6. Hook pitfalls</h2>
         <h3>6.1. Over-abstracting too early</h3>
-        <p>Not every <code class="inline">useState</code> needs a custom hook. Extract when <strong>reuse</strong> or <strong>clarity</strong> justifies it.</p>
+        <ul>
+          <li>Not every <code class="inline">useState</code> needs a custom hook. Extract when <strong>reuse</strong> or <strong>clarity</strong> justifies it.</li>
+        </ul>
         <h3>6.2. Hidden dependencies</h3>
-        <p>Custom hooks should document required <strong>props/args</strong> and return values. Callers still need correct <strong>effect deps</strong> inside the hook.</p>
+        <ul>
+          <li>Custom hooks should document required <strong>props/args</strong> and return values. Callers still need correct <strong>effect deps</strong> inside the hook.</li>
+        </ul>
         <h3>6.3. Ref vs state</h3>
         <table>
         <thead>
@@ -273,25 +321,45 @@ function Search() {
       <section id="8-common-questions">
         <h2>8. Common questions</h2>
         <h3>8.1. What are the Rules of Hooks?</h3>
-        <p><strong>A:</strong> Call hooks only at the <strong>top level</strong> of React functions, and only from <strong>components</strong> or <strong>custom hooks</strong> — never inside conditions, loops, or plain functions.</p>
+        <ul>
+          <li><strong>A:</strong> Call hooks only at the <strong>top level</strong> of React functions, and only from <strong>components</strong> or <strong>custom hooks</strong> — never inside conditions, loops, or plain functions.</li>
+        </ul>
         <h3>8.2. What is a custom hook?</h3>
-        <p><strong>A:</strong> A reusable function named <strong><code class="inline">useSomething</code></strong> that calls hooks and returns state, effects, or handlers for components.</p>
+        <ul>
+          <li><strong>A:</strong> A reusable function named <strong><code class="inline">useSomething</code></strong> that calls hooks and returns state, effects, or handlers for components.</li>
+        </ul>
         <h3>8.3. Does each component share custom hook state?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> Each call site gets <strong>independent</strong> state, like <code class="inline">useState</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> Each call site gets <strong>independent</strong> state, like <code class="inline">useState</code>.</li>
+        </ul>
         <h3>8.4. When do I use useRef vs useState?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">useState</code></strong> when UI should update. <strong><code class="inline">useRef</code></strong> for DOM access or mutable values that should <strong>not</strong> re-render on change.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">useState</code></strong> when UI should update. <strong><code class="inline">useRef</code></strong> for DOM access or mutable values that should <strong>not</strong> re-render on change.</li>
+        </ul>
         <h3>8.5. What is useId for?</h3>
-        <p><strong>A:</strong> Generate <strong>stable unique ids</strong> for <code class="inline">label</code>/<code class="inline">input</code>/<code class="inline">aria-*</code> links, especially with <strong>SSR</strong>.</p>
+        <ul>
+          <li><strong>A:</strong> Generate <strong>stable unique ids</strong> for <code class="inline">label</code>/<code class="inline">input</code>/<code class="inline">aria-*</code> links, especially with <strong>SSR</strong>.</li>
+        </ul>
         <h3>8.6. Can I use useId as a list key?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> Use stable ids from <strong>data</strong> (<code class="inline">item.id</code>).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> Use stable ids from <strong>data</strong> (<code class="inline">item.id</code>).</li>
+        </ul>
         <h3>8.7. Why store callbacks in refs?</h3>
-        <p><strong>A:</strong> So <strong>effects</strong> with empty deps can call the <strong>latest</strong> callback without re-subscribing every render.</p>
+        <ul>
+          <li><strong>A:</strong> So <strong>effects</strong> with empty deps can call the <strong>latest</strong> callback without re-subscribing every render.</li>
+        </ul>
         <h3>8.8. Can custom hooks return JSX?</h3>
-        <p><strong>A:</strong> They <strong>can</strong>, but usually return <strong>data and functions</strong> — keep UI in components. Exception: small shared layout hooks are rare.</p>
+        <ul>
+          <li><strong>A:</strong> They <strong>can</strong>, but usually return <strong>data and functions</strong> — keep UI in components. Exception: small shared layout hooks are rare.</li>
+        </ul>
         <h3>8.9. How do I test custom hooks?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">@testing-library/react</code></strong> <strong><code class="inline">renderHook</code></strong> (File 13) — render hook in isolation and assert return values.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">@testing-library/react</code></strong> <strong><code class="inline">renderHook</code></strong> (File 13) — render hook in isolation and assert return values.</li>
+        </ul>
         <h3>8.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 08 (Context, useReducer), File 12 (useCallback/useMemo with hooks), File 13 (testing hooks).</p>
+        <ul>
+          <li><strong>A:</strong> File 08 (Context, useReducer), File 12 (useCallback/useMemo with hooks), File 13 (testing hooks).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 07. Open from the React.js index.</footer>
     </main>

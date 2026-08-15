@@ -44,15 +44,19 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>An <strong>object</strong> stores data as <strong>key–value pairs</strong> (properties). Keys are strings or symbols; values can be any type. Objects are <strong>mutable</strong> and passed <strong>by reference</strong> (File 01).</p>
-        <p>Unlike arrays, object property order is mostly insertion order for string keys (with some integer-key rules). Use objects for <strong>named records</strong>, <strong>configuration</strong>, and <strong>behavior</strong> (methods).</p>
-        <p><strong>Default rule today:</strong> use <strong>object literals</strong> <code class="inline">{}</code>, <strong>bracket notation</strong> for dynamic keys, <strong>destructuring</strong> for unpacking, <strong>spread</strong> for shallow copies, and <strong><code class="inline">JSON.stringify</code>/<code class="inline">parse</code></strong> only for JSON-safe data.</p>
-        <p>Interactive visualizer: open <a href="./07-js-objects-animation.html">07-js-objects-animation.html</a> in a browser — dot vs bracket, shallow copy, destructuring, keys/values/entries, hasOwn vs <code class="inline">in</code>, optional chaining (Run / Step).</p>
+        <ul>
+          <li>An <strong>object</strong> stores data as <strong>key–value pairs</strong> (properties). Keys are strings or symbols; values can be any type. Objects are <strong>mutable</strong> and passed <strong>by reference</strong> (File 01).</li>
+          <li>Unlike arrays, object property order is mostly insertion order for string keys (with some integer-key rules). Use objects for <strong>named records</strong>, <strong>configuration</strong>, and <strong>behavior</strong> (methods).</li>
+          <li><strong>Default rule today:</strong> use <strong>object literals</strong> <code class="inline">{}</code>, <strong>bracket notation</strong> for dynamic keys, <strong>destructuring</strong> for unpacking, <strong>spread</strong> for shallow copies, and <strong><code class="inline">JSON.stringify</code>/<code class="inline">parse</code></strong> only for JSON-safe data.</li>
+          <li>Interactive visualizer: open <a href="./07-js-objects-animation.html">07-js-objects-animation.html</a> in a browser — dot vs bracket, shallow copy, destructuring, keys/values/entries, hasOwn vs <code class="inline">in</code>, optional chaining (Run / Step).</li>
+        </ul>
       </section>
       <section id="1-object-basics">
         <h2>1. Object basics</h2>
         <h3>1.1. Object literals</h3>
-        <p>The most common way to create an object:</p>
+        <ul>
+          <li>The most common way to create an object:</li>
+        </ul>
         <div class="code"><pre>const user = {
   name: &quot;Bharat&quot;,
   age: 30,
@@ -67,17 +71,23 @@ const point = {
   x: 10,
   y: 20,
 };</pre></div>
-        <p><strong>Object constructor</strong> — rarely needed for plain data:</p>
+        <ul>
+          <li><strong>Object constructor</strong> — rarely needed for plain data:</li>
+        </ul>
         <div class="code"><pre>const obj = new Object();
 obj.name = &quot;Bharat&quot;;
 
 // Prefer literal — shorter and clearer
 const better = { name: &quot;Bharat&quot; };</pre></div>
         <h3>1.2. Dot vs bracket notation</h3>
-        <p><strong>Dot notation</strong> — when the key is a valid identifier and known at write time:</p>
+        <ul>
+          <li><strong>Dot notation</strong> — when the key is a valid identifier and known at write time:</li>
+        </ul>
         <div class="code"><pre>user.name;   // &quot;Bharat&quot;
 user.age;    // 30</pre></div>
-        <p><strong>Bracket notation</strong> — when the key is dynamic, has spaces, or is stored in a variable:</p>
+        <ul>
+          <li><strong>Bracket notation</strong> — when the key is dynamic, has spaces, or is stored in a variable:</li>
+        </ul>
         <div class="code"><pre>user[&quot;name&quot;];           // &quot;Bharat&quot;
 
 const key = &quot;age&quot;;
@@ -109,12 +119,16 @@ user[&quot;email&quot;] = &quot;b@example.com&quot;;
 delete user.email;
 
 console.log(user);  // { name: &quot;Bharat&quot;, age: 30 }</pre></div>
-        <p><code class="inline">delete</code> returns <code class="inline">true</code> (or <code class="inline">false</code> for non-configurable properties). Setting to <code class="inline">undefined</code> <strong>keeps</strong> the key:</p>
+        <ul>
+          <li><code class="inline">delete</code> returns <code class="inline">true</code> (or <code class="inline">false</code> for non-configurable properties). Setting to <code class="inline">undefined</code> <strong>keeps</strong> the key:</li>
+        </ul>
         <div class="code"><pre>user.nickname = undefined;
 Object.keys(user);  // still includes &quot;nickname&quot; if set
 delete user.nickname;</pre></div>
         <h3>1.4. Nested objects</h3>
-        <p>Objects can contain other objects and arrays:</p>
+        <ul>
+          <li>Objects can contain other objects and arrays:</li>
+        </ul>
         <div class="code"><pre>const company = {
   name: &quot;Acme&quot;,
   address: {
@@ -130,7 +144,9 @@ delete user.nickname;</pre></div>
 company.address.city;              // &quot;Pune&quot;
 company.employees[0].name;         // &quot;Bharat&quot;
 company.employees[0][&quot;role&quot;];    // &quot;dev&quot;</pre></div>
-        <p>Optional chaining for safe deep access (File 03):</p>
+        <ul>
+          <li>Optional chaining for safe deep access (File 03):</li>
+        </ul>
         <div class="code"><pre>company.contact?.phone;          // undefined — no error
 company.address?.zip ?? &quot;N/A&quot;;   // &quot;N/A&quot;</pre></div>
         <h3>1.5. Checking properties</h3>
@@ -162,17 +178,23 @@ obj2.a === undefined;          // true</pre></div>
 Object.keys(user);     // [&quot;name&quot;, &quot;age&quot;]
 Object.values(user);   // [&quot;Bharat&quot;, 30]
 Object.entries(user);  // [[&quot;name&quot;, &quot;Bharat&quot;], [&quot;age&quot;, 30]]</pre></div>
-        <p>Loop own enumerable keys (File 04 — prefer over <code class="inline">for...in</code> on objects):</p>
+        <ul>
+          <li>Loop own enumerable keys (File 04 — prefer over <code class="inline">for...in</code> on objects):</li>
+        </ul>
         <div class="code"><pre>for (const [key, value] of Object.entries(user)) {
   console.log(key, value);
 }</pre></div>
-        <p><code class="inline">Object.fromEntries</code> — reverse of <code class="inline">entries</code>:</p>
+        <ul>
+          <li><code class="inline">Object.fromEntries</code> — reverse of <code class="inline">entries</code>:</li>
+        </ul>
         <div class="code"><pre>const pairs = [[&quot;a&quot;, 1], [&quot;b&quot;, 2]];
 Object.fromEntries(pairs);  // { a: 1, b: 2 }</pre></div>
       </section>
       <section id="2-methods-this-intro">
         <h2>2. Methods &amp; this (intro)</h2>
-        <p>A <strong>method</strong> is a function stored as an object property.</p>
+        <ul>
+          <li>A <strong>method</strong> is a function stored as an object property.</li>
+        </ul>
         <h3>2.1. Methods as properties</h3>
         <div class="code"><pre>const calculator = {
   add(a, b) {
@@ -185,7 +207,9 @@ Object.fromEntries(pairs);  // { a: 1, b: 2 }</pre></div>
 
 calculator.add(5, 3);       // 8
 calculator[&quot;subtract&quot;](5, 3); // 2</pre></div>
-        <p>Functions are objects — you can attach them after creation:</p>
+        <ul>
+          <li>Functions are objects — you can attach them after creation:</li>
+        </ul>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot; };
 
 user.greet = function () {
@@ -194,14 +218,18 @@ user.greet = function () {
 
 user.greet();  // &quot;Hi, Bharat&quot;</pre></div>
         <h3>2.2. Method shorthand (ES6)</h3>
-        <p>Shorthand inside literals — same as <code class="inline">greet: function() { }</code>:</p>
+        <ul>
+          <li>Shorthand inside literals — same as <code class="inline">greet: function() { }</code>:</li>
+        </ul>
         <div class="code"><pre>const user = {
   name: &quot;Bharat&quot;,
   greet() {
     return `Hello, ${this.name}`;
   },
 };</pre></div>
-        <p>Arrow functions as methods — <strong><code class="inline">this</code> is not the object</strong> (File 08):</p>
+        <ul>
+          <li>Arrow functions as methods — <strong><code class="inline">this</code> is not the object</strong> (File 08):</li>
+        </ul>
         <div class="code"><pre>const bad = {
   name: &quot;Bharat&quot;,
   greet: () =&gt; `Hello, ${this?.name}`,  // this is NOT bad
@@ -214,7 +242,9 @@ const good = {
   },
 };</pre></div>
         <h3>2.3. <code class="inline">this</code> in methods (intro)</h3>
-        <p>Inside a regular method, <strong><code class="inline">this</code></strong> is the object <strong>before the dot</strong> at call time:</p>
+        <ul>
+          <li>Inside a regular method, <strong><code class="inline">this</code></strong> is the object <strong>before the dot</strong> at call time:</li>
+        </ul>
         <div class="code"><pre>const user = {
   name: &quot;Bharat&quot;,
   logName() {
@@ -226,9 +256,13 @@ user.logName();  // &quot;Bharat&quot;
 
 const fn = user.logName;
 fn();            // undefined — this is not user (strict/module)</pre></div>
-        <p>Losing <code class="inline">this</code> is a common bug — File 08 covers <code class="inline">bind</code>, <code class="inline">call</code>, and <code class="inline">apply</code>.</p>
+        <ul>
+          <li>Losing <code class="inline">this</code> is a common bug — File 08 covers <code class="inline">bind</code>, <code class="inline">call</code>, and <code class="inline">apply</code>.</li>
+        </ul>
         <h3>2.4. Computed property names</h3>
-        <p>Use <code class="inline">[expression]</code> as a key when defining the object:</p>
+        <ul>
+          <li>Use <code class="inline">[expression]</code> as a key when defining the object:</li>
+        </ul>
         <div class="code"><pre>const field = &quot;status&quot;;
 const value = &quot;active&quot;;
 
@@ -239,7 +273,9 @@ const record = {
 };
 
 // { id: 1, status: &quot;active&quot;, statusCode: 200 }</pre></div>
-        <p>Works in method shorthand too:</p>
+        <ul>
+          <li>Works in method shorthand too:</li>
+        </ul>
         <div class="code"><pre>const methodName = &quot;run&quot;;
 
 const job = {
@@ -249,7 +285,9 @@ const job = {
 };
 
 job.run();  // &quot;done&quot;</pre></div>
-        <p><strong>Symbol keys</strong> — unique, hidden from most loops (File 01, File 11):</p>
+        <ul>
+          <li><strong>Symbol keys</strong> — unique, hidden from most loops (File 01, File 11):</li>
+        </ul>
         <div class="code"><pre>const id = Symbol(&quot;id&quot;);
 const user = {
   name: &quot;Bharat&quot;,
@@ -262,19 +300,25 @@ Object.keys(user);  // [&quot;name&quot;] — symbol not listed</pre></div>
       <section id="3-destructuring-spread">
         <h2>3. Destructuring &amp; spread</h2>
         <h3>3.1. Object destructuring basics</h3>
-        <p>Unpack properties into variables:</p>
+        <ul>
+          <li>Unpack properties into variables:</li>
+        </ul>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot;, age: 30, city: &quot;Pune&quot; };
 
 const { name, age } = user;
 console.log(name, age);  // &quot;Bharat&quot; 30</pre></div>
-        <p>Order does not matter — names match <strong>keys</strong>:</p>
+        <ul>
+          <li>Order does not matter — names match <strong>keys</strong>:</li>
+        </ul>
         <div class="code"><pre>const { age, name } = user;  // same result</pre></div>
         <h3>3.2. Renaming and defaults</h3>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot; };
 
 const { name: userName, role = &quot;guest&quot; } = user;
 // userName = &quot;Bharat&quot;, role = &quot;guest&quot;</pre></div>
-        <p>Rename + default:</p>
+        <ul>
+          <li>Rename + default:</li>
+        </ul>
         <div class="code"><pre>const { name: n = &quot;Anonymous&quot; } = {};
 console.log(n);  // &quot;Anonymous&quot;</pre></div>
         <h3>3.3. Nested destructuring</h3>
@@ -292,29 +336,39 @@ const {
 
 console.log(id, name);  // 1 &quot;Bharat&quot;</pre></div>
         <h3>3.4. Rest in destructuring</h3>
-        <p>Collect remaining properties into a new object:</p>
+        <ul>
+          <li>Collect remaining properties into a new object:</li>
+        </ul>
         <div class="code"><pre>const user = { id: 1, name: &quot;Bharat&quot;, age: 30, role: &quot;admin&quot; };
 
 const { id, ...profile } = user;
 // id = 1
 // profile = { name: &quot;Bharat&quot;, age: 30, role: &quot;admin&quot; }</pre></div>
-        <p>Useful for separating fields before passing to a function:</p>
+        <ul>
+          <li>Useful for separating fields before passing to a function:</li>
+        </ul>
         <div class="code"><pre>function updateUser(id, changes) {
   // apply changes
 }
 
 const { id, ...changes } = user;
 updateUser(id, changes);</pre></div>
-        <p>Rest must be <strong>last</strong> in the pattern:</p>
+        <ul>
+          <li>Rest must be <strong>last</strong> in the pattern:</li>
+        </ul>
         <div class="code"><pre>// const { ...rest, id } = user;  // SyntaxError</pre></div>
         <h3>3.5. Object spread</h3>
-        <p><strong>Shallow copy</strong> and merge (File 01, File 06):</p>
+        <ul>
+          <li><strong>Shallow copy</strong> and merge (File 01, File 06):</li>
+        </ul>
         <div class="code"><pre>const defaults = { theme: &quot;dark&quot;, lang: &quot;en&quot; };
 const userPrefs = { lang: &quot;hi&quot; };
 
 const settings = { ...defaults, ...userPrefs };
 // { theme: &quot;dark&quot;, lang: &quot;hi&quot; } — later keys win</pre></div>
-        <p>Clone top level:</p>
+        <ul>
+          <li>Clone top level:</li>
+        </ul>
         <div class="code"><pre>const original = { a: 1, nested: { b: 2 } };
 const copy = { ...original };
 
@@ -323,11 +377,15 @@ copy.nested.b = 99;
 
 console.log(original.a);          // 1
 console.log(original.nested.b);   // 99 — nested still shared</pre></div>
-        <p>Add properties:</p>
+        <ul>
+          <li>Add properties:</li>
+        </ul>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot; };
 const withAge = { ...user, age: 30 };</pre></div>
         <h3>3.6. Object.assign</h3>
-        <p>Older API — same shallow merge behavior:</p>
+        <ul>
+          <li>Older API — same shallow merge behavior:</li>
+        </ul>
         <div class="code"><pre>const target = { a: 1 };
 const source = { b: 2, c: 3 };
 
@@ -344,7 +402,9 @@ const merged = Object.assign({}, target, { d: 4 });  // new object</pre></div>
         <tr><td><code class="inline">Object.assign(target, src)</code></td><td>Yes (<code class="inline">target</code>)</td><td>Use <code class="inline">{}</code> as first arg for copy</td></tr>
         </tbody>
         </table>
-        <p>Destructuring in function parameters (File 05):</p>
+        <ul>
+          <li>Destructuring in function parameters (File 05):</li>
+        </ul>
         <div class="code"><pre>function createUser({ name, age = 18, role = &quot;user&quot; }) {
   return { name, age, role };
 }
@@ -353,16 +413,22 @@ createUser({ name: &quot;Bharat&quot; });</pre></div>
       </section>
       <section id="4-json">
         <h2>4. JSON</h2>
-        <p><strong>JSON</strong> (JavaScript Object Notation) is a <strong>text format</strong> for data exchange. It is <strong>not</strong> the same as a JS object — only a subset of values are valid JSON.</p>
+        <ul>
+          <li><strong>JSON</strong> (JavaScript Object Notation) is a <strong>text format</strong> for data exchange. It is <strong>not</strong> the same as a JS object — only a subset of values are valid JSON.</li>
+        </ul>
         <h3>4.1. JSON.stringify</h3>
-        <p>Convert a JS value to a JSON <strong>string</strong>:</p>
+        <ul>
+          <li>Convert a JS value to a JSON <strong>string</strong>:</li>
+        </ul>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot;, age: 30 };
 
 JSON.stringify(user);
 // &#x27;{&quot;name&quot;:&quot;Bharat&quot;,&quot;age&quot;:30}&#x27;
 
 JSON.stringify(user, null, 2);  // pretty-print with 2-space indent</pre></div>
-        <p>Replacer — filter keys or transform:</p>
+        <ul>
+          <li>Replacer — filter keys or transform:</li>
+        </ul>
         <div class="code"><pre>JSON.stringify(user, [&quot;name&quot;]);  // &#x27;{&quot;name&quot;:&quot;Bharat&quot;}&#x27;
 
 JSON.stringify(user, (key, value) =&gt; {
@@ -370,17 +436,23 @@ JSON.stringify(user, (key, value) =&gt; {
   return value;
 });</pre></div>
         <h3>4.2. JSON.parse</h3>
-        <p>Parse a JSON string back to JS values:</p>
+        <ul>
+          <li>Parse a JSON string back to JS values:</li>
+        </ul>
         <div class="code"><pre>const json = &#x27;{&quot;name&quot;:&quot;Bharat&quot;,&quot;age&quot;:30}&#x27;;
 const user = JSON.parse(json);
 
 user.name;  // &quot;Bharat&quot;</pre></div>
-        <p>Reviver — transform while parsing:</p>
+        <ul>
+          <li>Reviver — transform while parsing:</li>
+        </ul>
         <div class="code"><pre>JSON.parse(&#x27;{&quot;date&quot;:&quot;2026-06-25&quot;}&#x27;, (key, value) =&gt; {
   if (key === &quot;date&quot;) return new Date(value);
   return value;
 });</pre></div>
-        <p>Always <strong>validate</strong> external JSON — <code class="inline">parse</code> throws on invalid input:</p>
+        <ul>
+          <li>Always <strong>validate</strong> external JSON — <code class="inline">parse</code> throws on invalid input:</li>
+        </ul>
         <div class="code"><pre>try {
   JSON.parse(&quot;{ invalid }&quot;);
 } catch (e) {
@@ -410,12 +482,16 @@ JSON.stringify({ fn: () =&gt; {} });         // &#x27;{}&#x27;
 const obj = {};
 obj.self = obj;
 // JSON.stringify(obj);  // TypeError — circular</pre></div>
-        <p>For APIs and storage, design <strong>plain JSON-serializable</strong> DTOs — no methods, dates as strings or epoch numbers.</p>
+        <ul>
+          <li>For APIs and storage, design <strong>plain JSON-serializable</strong> DTOs — no methods, dates as strings or epoch numbers.</li>
+        </ul>
       </section>
       <section id="5-immutability-descriptors">
         <h2>5. Immutability &amp; descriptors</h2>
         <h3>5.1. Property descriptors</h3>
-        <p>Every property has metadata — <strong>writable</strong>, <strong>enumerable</strong>, <strong>configurable</strong>:</p>
+        <ul>
+          <li>Every property has metadata — <strong>writable</strong>, <strong>enumerable</strong>, <strong>configurable</strong>:</li>
+        </ul>
         <div class="code"><pre>const obj = { name: &quot;Ada&quot; };
 Object.getOwnPropertyDescriptor(obj, &quot;name&quot;);
 // { value: &#x27;Ada&#x27;, writable: true, enumerable: true, configurable: true }
@@ -440,26 +516,44 @@ Object.defineProperty(obj, &quot;id&quot;, {
         <div class="code"><pre>const config = Object.freeze({ theme: &quot;dark&quot; });
 config.theme = &quot;light&quot;;  // silent fail (or throw in strict)
 config.newKey = 1;       // ignored</pre></div>
-        <p><strong>Shallow only</strong> — nested objects can still mutate unless deeply frozen.</p>
+        <ul>
+          <li><strong>Shallow only</strong> — nested objects can still mutate unless deeply frozen.</li>
+        </ul>
       </section>
       <section id="6-common-questions">
         <h2>6. Common questions</h2>
         <h3>6.1. What is the difference between dot and bracket notation?</h3>
-        <p><strong>A:</strong> Dot works for fixed identifier keys. Brackets work for <strong>dynamic</strong> keys, variables, and keys with spaces or special characters.</p>
+        <ul>
+          <li><strong>A:</strong> Dot works for fixed identifier keys. Brackets work for <strong>dynamic</strong> keys, variables, and keys with spaces or special characters.</li>
+        </ul>
         <h3>6.2. How do you check if an object has its own property?</h3>
-        <p><strong>A:</strong> Use <strong><code class="inline">Object.hasOwn(obj, key)</code></strong> (or <code class="inline">obj.hasOwnProperty(key)</code> on plain objects). Avoid relying only on <code class="inline">obj.key === undefined</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Use <strong><code class="inline">Object.hasOwn(obj, key)</code></strong> (or <code class="inline">obj.hasOwnProperty(key)</code> on plain objects). Avoid relying only on <code class="inline">obj.key === undefined</code>.</li>
+        </ul>
         <h3>6.3. What is the difference between <code class="inline">in</code> and <code class="inline">Object.hasOwn</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">in</code></strong> checks the prototype chain too. <strong><code class="inline">Object.hasOwn</code></strong> checks <strong>own</strong> properties only.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">in</code></strong> checks the prototype chain too. <strong><code class="inline">Object.hasOwn</code></strong> checks <strong>own</strong> properties only.</li>
+        </ul>
         <h3>6.4. Does spread <code class="inline">{ ...obj }</code> deep copy an object?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> It is a <strong>shallow</strong> copy. Nested objects are still shared. Use <code class="inline">structuredClone()</code> for deep copies of plain data (File 01).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> It is a <strong>shallow</strong> copy. Nested objects are still shared. Use <code class="inline">structuredClone()</code> for deep copies of plain data (File 01).</li>
+        </ul>
         <h3>6.5. What is object destructuring?</h3>
-        <p><strong>A:</strong> Syntax to unpack properties from an object into variables: <code class="inline">const { name, age } = user</code>. Supports renaming, defaults, nesting, and rest (<code class="inline">...rest</code>).</p>
+        <ul>
+          <li><strong>A:</strong> Syntax to unpack properties from an object into variables: <code class="inline">const { name, age } = user</code>. Supports renaming, defaults, nesting, and rest (<code class="inline">...rest</code>).</li>
+        </ul>
         <h3>6.6. What is the difference between <code class="inline">Object.assign</code> and spread?</h3>
-        <p><strong>A:</strong> Both do <strong>shallow</strong> merge. <code class="inline">Object.assign(target, src)</code> <strong>mutates</strong> <code class="inline">target</code>. Spread creates a <strong>new</strong> object: <code class="inline">{ ...a, ...b }</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Both do <strong>shallow</strong> merge. <code class="inline">Object.assign(target, src)</code> <strong>mutates</strong> <code class="inline">target</code>. Spread creates a <strong>new</strong> object: <code class="inline">{ ...a, ...b }</code>.</li>
+        </ul>
         <h3>6.7. What is the difference between a JS object and JSON?</h3>
-        <p><strong>A:</strong> A JS object is an in-memory structure (any valid property values, methods). JSON is a <strong>string format</strong> with a limited set of types — no functions, <code class="inline">undefined</code>, or symbols.</p>
+        <ul>
+          <li><strong>A:</strong> A JS object is an in-memory structure (any valid property values, methods). JSON is a <strong>string format</strong> with a limited set of types — no functions, <code class="inline">undefined</code>, or symbols.</li>
+        </ul>
         <h3>6.8. Why should arrow functions be avoided as object methods?</h3>
-        <p><strong>A:</strong> Arrow methods do not have their own <strong><code class="inline">this</code></strong>. They inherit <code class="inline">this</code> from the enclosing scope, so <code class="inline">this</code> usually will not refer to the object. Use method shorthand instead (File 08).</p>
+        <ul>
+          <li><strong>A:</strong> Arrow methods do not have their own <strong><code class="inline">this</code></strong>. They inherit <code class="inline">this</code> from the enclosing scope, so <code class="inline">this</code> usually will not refer to the object. Use method shorthand instead (File 08).</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 07. Open from the JS Language index.</footer>
     </main>

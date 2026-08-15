@@ -42,11 +42,15 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Production TypeScript is less about syntax and more about <strong>team habits</strong> — consistent strictness, lint rules, and a sensible migration path from JavaScript.</p>
+        <ul>
+          <li>Production TypeScript is less about syntax and more about <strong>team habits</strong> — consistent strictness, lint rules, and a sensible migration path from JavaScript.</li>
+        </ul>
       </section>
       <section id="1-avoiding-any">
         <h2>1. Avoiding <code class="inline">any</code></h2>
-        <p><code class="inline">any</code> disables the type checker for that value and propagates unsafety:</p>
+        <ul>
+          <li><code class="inline">any</code> disables the type checker for that value and propagates unsafety:</li>
+        </ul>
         <div class="code"><pre>// Bad — errors hidden until runtime
 function parse(data: any) {
   return data.items.map((i: any) =&gt; i.name);
@@ -80,7 +84,9 @@ function parse(data: unknown) {
     &quot;@typescript-eslint/no-unsafe-member-access&quot;: &quot;error&quot;
   }
 }</pre></div>
-        <p>Start with <code class="inline">&quot;warn&quot;</code> on legacy codebases; tighten to <code class="inline">&quot;error&quot;</code> over time.</p>
+        <ul>
+          <li>Start with <code class="inline">&quot;warn&quot;</code> on legacy codebases; tighten to <code class="inline">&quot;error&quot;</code> over time.</li>
+        </ul>
         <h3>1.3. <code class="inline">unknown</code> at boundaries, concrete types inside</h3>
         <div class="code"><pre>async function fetchJson(url: string): Promise&lt;unknown&gt; {
   const res = await fetch(url);
@@ -92,7 +98,9 @@ const user = UserSchema.parse(raw); // concrete User type after validation</pre>
       </section>
       <section id="2-prefer-interface-vs-type-in-teams">
         <h2>2. Prefer <code class="inline">interface</code> vs <code class="inline">type</code> in teams</h2>
-        <p>There is no universal winner — <strong>consistency</strong> matters.</p>
+        <ul>
+          <li>There is no universal winner — <strong>consistency</strong> matters.</li>
+        </ul>
         <h3>2.1. Practical convention</h3>
         <div class="code"><pre>// Object shapes / class contracts
 interface User {
@@ -109,12 +117,15 @@ type UserId = string;</pre></div>
         <h3>2.2. When <code class="inline">interface</code> wins</h3>
         <ul><li>Public API objects you may <strong>extend</strong> later</li><li><strong>Declaration merging</strong> (augmenting Express, Jest globals)</li><li>Class <code class="inline">implements</code> contracts</li></ul>
         <h3>2.3. When <code class="inline">type</code> wins</h3>
-        <ul><li><strong>Unions and intersections</strong></li><li><strong>Mapped / conditional</strong> types</li><li>Aliasing primitives and computed types</li></ul>
-        <p>Document the team rule in README or ESLint — avoid bikeshedding per PR.</p>
+        <ul><li><strong>Unions and intersections</strong></li><li><strong>Mapped / conditional</strong> types</li><li>Aliasing primitives and computed types</li>
+          <li>Document the team rule in README or ESLint — avoid bikeshedding per PR.</li>
+        </ul>
       </section>
       <section id="3-eslint-and-typescript">
         <h2>3. ESLint and TypeScript</h2>
-        <p>Use <strong><code class="inline">typescript-eslint</code></strong> for type-aware linting:</p>
+        <ul>
+          <li>Use <strong><code class="inline">typescript-eslint</code></strong> for type-aware linting:</li>
+        </ul>
         <div class="code"><pre>npm install -D eslint @eslint/js typescript-eslint</pre></div>
         <div class="code"><pre>// eslint.config.js (flat config)
 import eslint from &quot;@eslint/js&quot;;
@@ -146,7 +157,9 @@ export default tseslint.config(
         </tbody>
         </table>
         <h3>3.2. Formatting</h3>
-        <p>Pair ESLint with <strong>Prettier</strong> — ESLint for logic, Prettier for formatting. Avoid duplicate stylistic rules.</p>
+        <ul>
+          <li>Pair ESLint with <strong>Prettier</strong> — ESLint for logic, Prettier for formatting. Avoid duplicate stylistic rules.</li>
+        </ul>
         <h3>3.3. CI pipeline</h3>
         <div class="code"><pre>{
   &quot;scripts&quot;: {
@@ -155,14 +168,18 @@ export default tseslint.config(
     &quot;check&quot;: &quot;npm run typecheck &amp;&amp; npm run lint&quot;
   }
 }</pre></div>
-        <p>Run <code class="inline">check</code> on every PR — types and lint together catch different bug classes.</p>
+        <ul>
+          <li>Run <code class="inline">check</code> on every PR — types and lint together catch different bug classes.</li>
+        </ul>
       </section>
       <section id="4-migration-from-javascript">
         <h2>4. Migration from JavaScript</h2>
         <h3>4.1. Rename strategy</h3>
         <div class="code"><pre>app.js  →  app.ts
 utils.js → utils.ts (one file at a time)</pre></div>
-        <p>Enable gradual adoption:</p>
+        <ul>
+          <li>Enable gradual adoption:</li>
+        </ul>
         <div class="code"><pre>{
   &quot;compilerOptions&quot;: {
     &quot;allowJs&quot;: true,
@@ -170,17 +187,25 @@ utils.js → utils.ts (one file at a time)</pre></div>
     &quot;strict&quot;: true
   }
 }</pre></div>
-        <p>Turn on <code class="inline">&quot;checkJs&quot;: true</code> for <code class="inline">.js</code> files with <code class="inline">// @ts-check</code> at the top.</p>
+        <ul>
+          <li>Turn on <code class="inline">&quot;checkJs&quot;: true</code> for <code class="inline">.js</code> files with <code class="inline">// @ts-check</code> at the top.</li>
+        </ul>
         <h3>4.2. Migration order</h3>
         <ol><li>Add <code class="inline">tsconfig.json</code> + <code class="inline">typescript</code> dev dependency</li><li>Rename <strong>leaf</strong> modules first (no dependents)</li><li>Add types at <strong>boundaries</strong> (API responses, config, shared models)</li><li>Replace <code class="inline">any</code> introduced during migration</li><li>Enable stricter flags incrementally (<code class="inline">strictNullChecks</code>, <code class="inline">noImplicitAny</code>)</li></ol>
         <h3>4.3. Typing existing JS libraries</h3>
         <div class="code"><pre>npm install -D @types/lodash</pre></div>
-        <p>If no types exist:</p>
+        <ul>
+          <li>If no types exist:</li>
+        </ul>
         <div class="code"><pre>// types/shims.d.ts
 declare module &quot;legacy-lib&quot;;</pre></div>
-        <p>Or write accurate <code class="inline">.d.ts</code> for the subset you use.</p>
+        <ul>
+          <li>Or write accurate <code class="inline">.d.ts</code> for the subset you use.</li>
+        </ul>
         <h3>4.4. <code class="inline">jsdoc</code> bridge</h3>
-        <p>Before renaming, add JSDoc to <code class="inline">.js</code>:</p>
+        <ul>
+          <li>Before renaming, add JSDoc to <code class="inline">.js</code>:</li>
+        </ul>
         <div class="code"><pre>/**
  * @param {string} name
  * @returns {string}
@@ -188,28 +213,48 @@ declare module &quot;legacy-lib&quot;;</pre></div>
 export function greet(name) {
   return `Hello, ${name}`;
 }</pre></div>
-        <p><code class="inline">checkJs</code> uses JSDoc as types — smooth stepping stone to <code class="inline">.ts</code>.</p>
+        <ul>
+          <li><code class="inline">checkJs</code> uses JSDoc as types — smooth stepping stone to <code class="inline">.ts</code>.</li>
+        </ul>
         <h3>4.5. Do not rewrite everything at once</h3>
-        <p>Migrate <strong>by feature</strong> or <strong>by folder</strong>. Mixed <code class="inline">.js</code> and <code class="inline">.ts</code> is normal for months in large apps.</p>
+        <ul>
+          <li>Migrate <strong>by feature</strong> or <strong>by folder</strong>. Mixed <code class="inline">.js</code> and <code class="inline">.ts</code> is normal for months in large apps.</li>
+        </ul>
       </section>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. Is <code class="inline">any</code> ever acceptable?</h3>
-        <p><strong>A:</strong> During migration or with truly dynamic plugins — isolate it, document why, and plan removal.</p>
+        <ul>
+          <li><strong>A:</strong> During migration or with truly dynamic plugins — isolate it, document why, and plan removal.</li>
+        </ul>
         <h3>5.2. Should strict mode be non-negotiable?</h3>
-        <p><strong>A:</strong> For new projects, yes. Legacy projects enable flags incrementally.</p>
+        <ul>
+          <li><strong>A:</strong> For new projects, yes. Legacy projects enable flags incrementally.</li>
+        </ul>
         <h3>5.3. <code class="inline">eslint</code> vs <code class="inline">tsc</code> — which catches what?</h3>
-        <p><strong>A:</strong> <code class="inline">tsc</code> — type correctness. ESLint — patterns, async misuse, style, some type-aware rules. Use both.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">tsc</code> — type correctness. ESLint — patterns, async misuse, style, some type-aware rules. Use both.</li>
+        </ul>
         <h3>5.4. How long does JS → TS migration take?</h3>
-        <p><strong>A:</strong> Depends on size. Leaf-first + boundaries-first often gives value in weeks, full strict coverage in months.</p>
+        <ul>
+          <li><strong>A:</strong> Depends on size. Leaf-first + boundaries-first often gives value in weeks, full strict coverage in months.</li>
+        </ul>
         <h3>5.5. <code class="inline">@ts-ignore</code> vs <code class="inline">@ts-expect-error</code>?</h3>
-        <p><strong>A:</strong> Prefer <code class="inline">@ts-expect-error</code> — fails if the error is fixed, so you remove the comment. <code class="inline">@ts-ignore</code> silently stays.</p>
+        <ul>
+          <li><strong>A:</strong> Prefer <code class="inline">@ts-expect-error</code> — fails if the error is fixed, so you remove the comment. <code class="inline">@ts-ignore</code> silently stays.</li>
+        </ul>
         <h3>5.6. Should tests be <code class="inline">.ts</code> too?</h3>
-        <p><strong>A:</strong> Yes when the app is TS — tests get the same type safety and refactoring support.</p>
+        <ul>
+          <li><strong>A:</strong> Yes when the app is TS — tests get the same type safety and refactoring support.</li>
+        </ul>
         <h3>5.7. Monorepo: one tsconfig or many?</h3>
-        <p><strong>A:</strong> Per package with project references (File 09) — shared strict base config extended per package.</p>
+        <ul>
+          <li><strong>A:</strong> Per package with project references (File 09) — shared strict base config extended per package.</li>
+        </ul>
         <h3>5.8. What is the single best habit for maintainable TS?</h3>
-        <p><strong>A:</strong> Treat <strong>external data as <code class="inline">unknown</code></strong> until validated — never trust <code class="inline">JSON.parse</code>, form input, or query params as typed.</p>
+        <ul>
+          <li><strong>A:</strong> Treat <strong>external data as <code class="inline">unknown</code></strong> until validated — never trust <code class="inline">JSON.parse</code>, form input, or query params as typed.</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 12. Open from the TypeScript index.</footer>
     </main>

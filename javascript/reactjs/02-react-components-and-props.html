@@ -43,14 +43,18 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>File 01 introduced components and basic props. This chapter goes deeper: how to <strong>structure components</strong>, pass props <strong>flexibly</strong>, use <strong><code class="inline">children</code></strong> for layouts, and <strong>compose</strong> UI without inheritance.</p>
-        <p>Props stay <strong>read-only</strong> — if a child needs to change data, the parent updates <strong>state</strong> and passes new props (File 03).</p>
-        <p><strong>Default rule today:</strong> prefer <strong>composition</strong> over inheritance; keep <strong>one main export</strong> per file when possible; use <strong>destructuring</strong> and <strong>spread</strong> for props; lift shared UI into <strong>layout/wrapper</strong> components.</p>
+        <ul>
+          <li>File 01 introduced components and basic props. This chapter goes deeper: how to <strong>structure components</strong>, pass props <strong>flexibly</strong>, use <strong><code class="inline">children</code></strong> for layouts, and <strong>compose</strong> UI without inheritance.</li>
+          <li>Props stay <strong>read-only</strong> — if a child needs to change data, the parent updates <strong>state</strong> and passes new props (File 03).</li>
+          <li><strong>Default rule today:</strong> prefer <strong>composition</strong> over inheritance; keep <strong>one main export</strong> per file when possible; use <strong>destructuring</strong> and <strong>spread</strong> for props; lift shared UI into <strong>layout/wrapper</strong> components.</li>
+        </ul>
       </section>
       <section id="1-function-components-in-depth">
         <h2>1. Function components in depth</h2>
         <h3>1.1. Anatomy of a component file</h3>
-        <p>Typical file layout:</p>
+        <ul>
+          <li>Typical file layout:</li>
+        </ul>
         <div class="code"><pre>// UserCard.jsx
 import { Avatar } from &quot;./Avatar.jsx&quot;;
 import styles from &quot;./UserCard.module.css&quot;;
@@ -64,8 +68,9 @@ export function UserCard({ name, role, avatarUrl }) {
     &lt;/article&gt;
   );
 }</pre></div>
-        <p>Conventions:</p>
-        <ul><li><strong>PascalCase</strong> filename matching component (<code class="inline">UserCard.jsx</code>).</li><li><strong>Named export</strong> for reusable components; <strong>default export</strong> for page/route root (team choice — stay consistent).</li><li>Keep <strong>markup + minimal logic</strong> in the component; extract helpers to separate files if they grow.</li></ul>
+        <ul>
+          <li>Conventions:</li>
+          <li><strong>PascalCase</strong> filename matching component (<code class="inline">UserCard.jsx</code>).</li><li><strong>Named export</strong> for reusable components; <strong>default export</strong> for page/route root (team choice — stay consistent).</li><li>Keep <strong>markup + minimal logic</strong> in the component; extract helpers to separate files if they grow.</li></ul>
         <h3>1.2. Named vs default export</h3>
         <div class="code"><pre>// Named — explicit imports, good for multiple exports
 export function Button() { /* ... */ }
@@ -76,17 +81,24 @@ import { Button, IconButton } from &quot;./Button.jsx&quot;;</pre></div>
 export default function Dashboard() { /* ... */ }
 
 import Dashboard from &quot;./Dashboard.jsx&quot;;</pre></div>
-        <p>Avoid mixing many default exports in one file.</p>
+        <ul>
+          <li>Avoid mixing many default exports in one file.</li>
+        </ul>
         <h3>1.3. Components must return valid UI</h3>
-        <p>Return JSX, <code class="inline">null</code>, or a <strong>Fragment</strong>. Do not return plain objects or undefined accidentally:</p>
+        <ul>
+          <li>Return JSX, <code class="inline">null</code>, or a <strong>Fragment</strong>. Do not return plain objects or undefined accidentally:</li>
+        </ul>
         <div class="code"><pre>function MaybeShow({ show, content }) {
   if (!show) return null;   // render nothing
   return &lt;p&gt;{content}&lt;/p&gt;;
 }</pre></div>
-        <p>Early returns keep JSX readable (File 04 — conditional rendering).</p>
+        <ul>
+          <li>Early returns keep JSX readable (File 04 — conditional rendering).</li>
+        </ul>
         <h3>1.4. Single responsibility</h3>
-        <p>Split when a component:</p>
-        <ul><li>Exceeds ~100–150 lines (guideline, not a rule).</li><li>Handles unrelated concerns (fetch + form + table).</li><li>Is reused with small variations → extract props or <code class="inline">children</code>.</li></ul>
+        <ul>
+          <li>Split when a component:</li>
+          <li>Exceeds ~100–150 lines (guideline, not a rule).</li><li>Handles unrelated concerns (fetch + form + table).</li><li>Is reused with small variations → extract props or <code class="inline">children</code>.</li></ul>
         <div class="code"><pre>// Before — one big component
 function UserPage() {
   /* header + profile + posts + footer */
@@ -115,7 +127,9 @@ function UserPage() {
     &lt;/div&gt;
   );
 }</pre></div>
-        <p>Rest props — forward unknown props to a DOM element:</p>
+        <ul>
+          <li>Rest props — forward unknown props to a DOM element:</li>
+        </ul>
         <div class="code"><pre>function PrimaryButton({ label, ...rest }) {
   return (
     &lt;button type=&quot;button&quot; className=&quot;btn-primary&quot; {...rest}&gt;
@@ -125,18 +139,26 @@ function UserPage() {
 }
 
 &lt;PrimaryButton label=&quot;Save&quot; onClick={handleSave} disabled={loading} /&gt;</pre></div>
-        <p>Useful for native attributes (<code class="inline">aria-*</code>, <code class="inline">data-*</code>, <code class="inline">className</code>).</p>
+        <ul>
+          <li>Useful for native attributes (<code class="inline">aria-*</code>, <code class="inline">data-*</code>, <code class="inline">className</code>).</li>
+        </ul>
         <h3>2.2. Passing objects and spreading</h3>
-        <p>Parent bundles related props:</p>
+        <ul>
+          <li>Parent bundles related props:</li>
+        </ul>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot;, age: 30, role: &quot;Dev&quot; };
 
 &lt;UserCard {...user} /&gt;
 // same as &lt;UserCard name={user.name} age={user.age} role={user.role} /&gt;</pre></div>
-        <p>Child picks what it needs — extra keys on DOM spread can warn in React; only spread onto DOM what belongs there.</p>
-        <p>Explicit is often clearer for public APIs:</p>
+        <ul>
+          <li>Child picks what it needs — extra keys on DOM spread can warn in React; only spread onto DOM what belongs there.</li>
+          <li>Explicit is often clearer for public APIs:</li>
+        </ul>
         <div class="code"><pre>&lt;UserCard name={user.name} role={user.role} /&gt;</pre></div>
         <h3>2.3. Boolean and optional props</h3>
-        <p><strong>Boolean props</strong> — shorthand when <code class="inline">true</code>:</p>
+        <ul>
+          <li><strong>Boolean props</strong> — shorthand when <code class="inline">true</code>:</li>
+        </ul>
         <div class="code"><pre>function Modal({ open, dismissible }) {
   if (!open) return null;
   return (
@@ -148,7 +170,9 @@ function UserPage() {
 
 &lt;Modal open dismissible /&gt;   // open={true} dismissible={true}
 &lt;Modal open={false} /&gt;</pre></div>
-        <p><strong>Optional props</strong> — defaults or conditional render:</p>
+        <ul>
+          <li><strong>Optional props</strong> — defaults or conditional render:</li>
+        </ul>
         <div class="code"><pre>function Alert({ title, message, variant = &quot;info&quot; }) {
   return (
     &lt;div className={`alert alert-${variant}`}&gt;
@@ -158,7 +182,9 @@ function UserPage() {
   );
 }</pre></div>
         <h3>2.4. Props are a snapshot</h3>
-        <p>Props do not update inside the child by themselves — parent re-render passes <strong>new</strong> props:</p>
+        <ul>
+          <li>Props do not update inside the child by themselves — parent re-render passes <strong>new</strong> props:</li>
+        </ul>
         <div class="code"><pre>function Child({ count }) {
   // count is whatever parent passed for this render
   return &lt;p&gt;{count}&lt;/p&gt;;
@@ -173,13 +199,17 @@ function Parent() {
     &lt;/&gt;
   );
 }</pre></div>
-        <p>Never mutate props:</p>
+        <ul>
+          <li>Never mutate props:</li>
+        </ul>
         <div class="code"><pre>// Bad
 function Bad({ user }) {
   user.name = &quot;Changed&quot;;  // mutates parent&#x27;s object
 }</pre></div>
         <h3>2.5. Typing props (PropTypes / TypeScript)</h3>
-        <p>JavaScript — optional <strong>PropTypes</strong> (runtime, dev only):</p>
+        <ul>
+          <li>JavaScript — optional <strong>PropTypes</strong> (runtime, dev only):</li>
+        </ul>
         <div class="code"><pre>import PropTypes from &quot;prop-types&quot;;
 
 function UserCard({ name, age }) {
@@ -190,7 +220,9 @@ UserCard.propTypes = {
   name: PropTypes.string.isRequired,
   age: PropTypes.number,
 };</pre></div>
-        <p><strong>TypeScript</strong> — preferred in many codebases:</p>
+        <ul>
+          <li><strong>TypeScript</strong> — preferred in many codebases:</li>
+        </ul>
         <div class="code"><pre>type UserCardProps = {
   name: string;
   age?: number;
@@ -199,9 +231,13 @@ UserCard.propTypes = {
 function UserCard({ name, age }: UserCardProps) {
   return &lt;p&gt;{name}, {age ?? &quot;N/A&quot;}&lt;/p&gt;;
 }</pre></div>
-        <p>Types document the public contract of a component.</p>
+        <ul>
+          <li>Types document the public contract of a component.</li>
+        </ul>
         <h3>2.6. Callback props</h3>
-        <p>Parent passes <strong>functions</strong> so child can notify parent (events up, data down):</p>
+        <ul>
+          <li>Parent passes <strong>functions</strong> so child can notify parent (events up, data down):</li>
+        </ul>
         <div class="code"><pre>function SearchInput({ value, onChange }) {
   return (
     &lt;input
@@ -215,7 +251,9 @@ function Parent() {
   const [query, setQuery] = useState(&quot;&quot;);
   return &lt;SearchInput value={query} onChange={setQuery} /&gt;;
 }</pre></div>
-        <p>Naming: <code class="inline">on</code> + event for handlers (<code class="inline">onClick</code>, <code class="inline">onSubmit</code>, <code class="inline">onSelectUser</code>). Full event flow in File 03.</p>
+        <ul>
+          <li>Naming: <code class="inline">on</code> + event for handlers (<code class="inline">onClick</code>, <code class="inline">onSubmit</code>, <code class="inline">onSelectUser</code>). Full event flow in File 03.</li>
+        </ul>
       </section>
       <section id="3-the-children-prop">
         <h2>3. The <code class="inline">children</code> prop</h2>
@@ -233,10 +271,13 @@ function Parent() {
   &lt;p&gt;Content here&lt;/p&gt;
   &lt;button&gt;Save&lt;/button&gt;
 &lt;/Panel&gt;</pre></div>
-        <p><code class="inline">children</code> can be:</p>
-        <ul><li>Text: <code class="inline">&lt;Button&gt;Click&lt;/Button&gt;</code></li><li>Element(s): nested JSX</li><li>Expression: <code class="inline">{items.map(...)}</code> (File 04)</li></ul>
+        <ul>
+          <li><code class="inline">children</code> can be:</li>
+          <li>Text: <code class="inline">&lt;Button&gt;Click&lt;/Button&gt;</code></li><li>Element(s): nested JSX</li><li>Expression: <code class="inline">{items.map(...)}</code> (File 04)</li></ul>
         <h3>3.2. Multiple slots (explicit props)</h3>
-        <p>When you need <strong>named regions</strong>, use extra props instead of only <code class="inline">children</code>:</p>
+        <ul>
+          <li>When you need <strong>named regions</strong>, use extra props instead of only <code class="inline">children</code>:</li>
+        </ul>
         <div class="code"><pre>function Card({ header, footer, children }) {
   return (
     &lt;article&gt;
@@ -253,9 +294,13 @@ function Parent() {
 &gt;
   &lt;p&gt;Body content&lt;/p&gt;
 &lt;/Card&gt;</pre></div>
-        <p>Alternative names: <code class="inline">sidebar</code>, <code class="inline">actions</code>, <code class="inline">leading</code>, <code class="inline">trailing</code>.</p>
+        <ul>
+          <li>Alternative names: <code class="inline">sidebar</code>, <code class="inline">actions</code>, <code class="inline">leading</code>, <code class="inline">trailing</code>.</li>
+        </ul>
         <h3>3.3. Layout components</h3>
-        <p><strong>Layout</strong> components wrap pages with shared chrome:</p>
+        <ul>
+          <li><strong>Layout</strong> components wrap pages with shared chrome:</li>
+        </ul>
         <div class="code"><pre>function AppLayout({ children }) {
   return (
     &lt;div className=&quot;app&quot;&gt;
@@ -273,9 +318,13 @@ function App() {
     &lt;/AppLayout&gt;
   );
 }</pre></div>
-        <p>Same pattern for <code class="inline">Modal</code>, <code class="inline">Card</code>, <code class="inline">Sidebar</code>, <code class="inline">Stack</code>, <code class="inline">Grid</code> wrappers.</p>
+        <ul>
+          <li>Same pattern for <code class="inline">Modal</code>, <code class="inline">Card</code>, <code class="inline">Sidebar</code>, <code class="inline">Stack</code>, <code class="inline">Grid</code> wrappers.</li>
+        </ul>
         <h3>3.4. Children as function (render prop intro)</h3>
-        <p>Pass a <strong>function</strong> as child to share data from parent wrapper:</p>
+        <ul>
+          <li>Pass a <strong>function</strong> as child to share data from parent wrapper:</li>
+        </ul>
         <div class="code"><pre>function MouseTracker({ children }) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
@@ -291,11 +340,15 @@ function App() {
 &lt;MouseTracker&gt;
   {({ x, y }) =&gt; &lt;p&gt;Mouse: {x}, {y}&lt;/p&gt;}
 &lt;/MouseTracker&gt;</pre></div>
-        <p>Also called <strong>render props</strong>. Custom hooks often replace this pattern today (File 07).</p>
+        <ul>
+          <li>Also called <strong>render props</strong>. Custom hooks often replace this pattern today (File 07).</li>
+        </ul>
       </section>
       <section id="4-composition-vs-inheritance">
         <h2>4. Composition vs inheritance</h2>
-        <p>React favors <strong>composition</strong> — building UI by nesting components and passing props/<code class="inline">children</code>.</p>
+        <ul>
+          <li>React favors <strong>composition</strong> — building UI by nesting components and passing props/<code class="inline">children</code>.</li>
+        </ul>
         <h3>4.1. Compose, do not extend</h3>
         <div class="code"><pre>// Prefer — composition
 function Dialog({ title, children }) {
@@ -316,7 +369,9 @@ function WelcomeDialog() {
 }</pre></div>
         <div class="code"><pre>// Avoid — class inheritance (legacy pattern)
 // class WelcomeDialog extends Dialog { ... }</pre></div>
-        <p>Configure behavior with <strong>props</strong>, not subclass overrides.</p>
+        <ul>
+          <li>Configure behavior with <strong>props</strong>, not subclass overrides.</li>
+        </ul>
         <h3>4.2. Specialization via props</h3>
         <div class="code"><pre>function Button({ variant = &quot;primary&quot;, size = &quot;md&quot;, ...rest }) {
   const className = `btn btn-${variant} btn-${size}`;
@@ -326,7 +381,9 @@ function WelcomeDialog() {
 function DangerButton(props) {
   return &lt;Button variant=&quot;danger&quot; {...props} /&gt;;
 }</pre></div>
-        <p><strong>Wrapper components</strong> reuse base UI with preset props.</p>
+        <ul>
+          <li><strong>Wrapper components</strong> reuse base UI with preset props.</li>
+        </ul>
         <h3>4.3. Containment vs specialization</h3>
         <table>
         <thead>
@@ -337,12 +394,16 @@ function DangerButton(props) {
         <tr><td><strong>Specialization</strong></td><td><code class="inline">PrimaryButton</code> sets <code class="inline">variant=&quot;primary&quot;</code> on <code class="inline">Button</code></td></tr>
         </tbody>
         </table>
-        <p>Both are composition — no class hierarchy.</p>
+        <ul>
+          <li>Both are composition — no class hierarchy.</li>
+        </ul>
       </section>
       <section id="5-component-composition-patterns">
         <h2>5. Component composition patterns</h2>
         <h3>5.1. Small presentational components</h3>
-        <p>Split <strong>data</strong> (File 03, 10) from <strong>presentation</strong> when helpful:</p>
+        <ul>
+          <li>Split <strong>data</strong> (File 03, 10) from <strong>presentation</strong> when helpful:</li>
+        </ul>
         <div class="code"><pre>function UserAvatar({ user, size = 40 }) {
   return (
     &lt;img
@@ -364,9 +425,13 @@ function UserRow({ user }) {
     &lt;/li&gt;
   );
 }</pre></div>
-        <p>Not a strict rule — use when it improves reuse and tests.</p>
+        <ul>
+          <li>Not a strict rule — use when it improves reuse and tests.</li>
+        </ul>
         <h3>5.2. Config-driven UI</h3>
-        <p>Pass arrays of props to map into components (File 04):</p>
+        <ul>
+          <li>Pass arrays of props to map into components (File 04):</li>
+        </ul>
         <div class="code"><pre>const links = [
   { href: &quot;/&quot;, label: &quot;Home&quot; },
   { href: &quot;/about&quot;, label: &quot;About&quot; },
@@ -382,7 +447,9 @@ function Nav() {
   );
 }</pre></div>
         <h3>5.3. Prop drilling (preview)</h3>
-        <p>Passing props through many layers:</p>
+        <ul>
+          <li>Passing props through many layers:</li>
+        </ul>
         <div class="code"><pre>function App() {
   const user = { name: &quot;Bharat&quot; };
   return &lt;Layout user={user} /&gt;;
@@ -395,9 +462,13 @@ function Layout({ user }) {
 function Sidebar({ user }) {
   return &lt;UserMenu user={user} /&gt;;
 }</pre></div>
-        <p>Works for shallow trees. Deep drilling → <strong>Context</strong> (File 08) or state library (File 11).</p>
+        <ul>
+          <li>Works for shallow trees. Deep drilling → <strong>Context</strong> (File 08) or state library (File 11).</li>
+        </ul>
         <h3>5.4. Fragment in composition</h3>
-        <p>Avoid extra DOM nodes when wrapping siblings for export:</p>
+        <ul>
+          <li>Avoid extra DOM nodes when wrapping siblings for export:</li>
+        </ul>
         <div class="code"><pre>function TableRow({ cells }) {
   return (
     &lt;&gt;
@@ -407,30 +478,52 @@ function Sidebar({ user }) {
     &lt;/&gt;
   );
 }</pre></div>
-        <p>Long form: <code class="inline">&lt;React.Fragment key={id}&gt;</code>. Details in File 04.</p>
+        <ul>
+          <li>Long form: <code class="inline">&lt;React.Fragment key={id}&gt;</code>. Details in File 04.</li>
+        </ul>
       </section>
       <section id="6-common-questions">
         <h2>6. Common questions</h2>
         <h3>6.1. Can a component update its own props?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> Props are read-only. The <strong>parent</strong> owns the data and passes new props on re-render.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> Props are read-only. The <strong>parent</strong> owns the data and passes new props on re-render.</li>
+        </ul>
         <h3>6.2. What is the difference between props and state?</h3>
-        <p><strong>A:</strong> <strong>Props</strong> are external inputs; <strong>state</strong> is internal (File 01, File 03). Components react to both by re-rendering.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Props</strong> are external inputs; <strong>state</strong> is internal (File 01, File 03). Components react to both by re-rendering.</li>
+        </ul>
         <h3>6.3. When should I use <code class="inline">children</code> vs a named prop like <code class="inline">footer</code>?</h3>
-        <p><strong>A:</strong> Use <strong><code class="inline">children</code></strong> for a single main slot (typical wrapper). Use <strong>named props</strong> for multiple distinct regions (header, footer, sidebar).</p>
+        <ul>
+          <li><strong>A:</strong> Use <strong><code class="inline">children</code></strong> for a single main slot (typical wrapper). Use <strong>named props</strong> for multiple distinct regions (header, footer, sidebar).</li>
+        </ul>
         <h3>6.4. What does spreading props (<code class="inline">{...props}</code>) do?</h3>
-        <p><strong>A:</strong> Copies all properties onto the target element or component. Useful for forwarding HTML attributes; avoid spreading unknown objects onto DOM nodes.</p>
+        <ul>
+          <li><strong>A:</strong> Copies all properties onto the target element or component. Useful for forwarding HTML attributes; avoid spreading unknown objects onto DOM nodes.</li>
+        </ul>
         <h3>6.5. Why compose instead of inherit in React?</h3>
-        <p><strong>A:</strong> Composition is <strong>flexible</strong> and avoids fragile class hierarchies. React&#x27;s model is built around nesting components and passing props.</p>
+        <ul>
+          <li><strong>A:</strong> Composition is <strong>flexible</strong> and avoids fragile class hierarchies. React&#x27;s model is built around nesting components and passing props.</li>
+        </ul>
         <h3>6.6. What is a callback prop?</h3>
-        <p><strong>A:</strong> A function passed from <strong>parent to child</strong> so the child can report events or data upward (<code class="inline">onChange</code>, <code class="inline">onSelect</code>).</p>
+        <ul>
+          <li><strong>A:</strong> A function passed from <strong>parent to child</strong> so the child can report events or data upward (<code class="inline">onChange</code>, <code class="inline">onSelect</code>).</li>
+        </ul>
         <h3>6.7. What is prop drilling?</h3>
-        <p><strong>A:</strong> Passing props through <strong>intermediate</strong> components that do not use them, only to reach a deep child. Fix with Context or global state when it hurts maintainability.</p>
+        <ul>
+          <li><strong>A:</strong> Passing props through <strong>intermediate</strong> components that do not use them, only to reach a deep child. Fix with Context or global state when it hurts maintainability.</li>
+        </ul>
         <h3>6.8. Named or default export?</h3>
-        <p><strong>A:</strong> Either works. <strong>Named</strong> exports scale well for component libraries; <strong>default</strong> exports are common for page-level components. Pick one style per project.</p>
+        <ul>
+          <li><strong>A:</strong> Either works. <strong>Named</strong> exports scale well for component libraries; <strong>default</strong> exports are common for page-level components. Pick one style per project.</li>
+        </ul>
         <h3>6.9. What is a render prop?</h3>
-        <p><strong>A:</strong> A prop (often <code class="inline">children</code>) that is a <strong>function</strong> receiving data from the parent component and returning UI. Custom hooks are often a simpler alternative (File 07).</p>
+        <ul>
+          <li><strong>A:</strong> A prop (often <code class="inline">children</code>) that is a <strong>function</strong> receiving data from the parent component and returning UI. Custom hooks are often a simpler alternative (File 07).</li>
+        </ul>
         <h3>6.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 03 (state &amp; events), File 04 (lists &amp; conditional rendering).</p>
+        <ul>
+          <li><strong>A:</strong> File 03 (state &amp; events), File 04 (lists &amp; conditional rendering).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 02. Open from the React.js index.</footer>
     </main>

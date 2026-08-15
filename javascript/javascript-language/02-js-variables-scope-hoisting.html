@@ -50,9 +50,13 @@
       </header>
 
       <section id="intro-notes">
-        <p>JavaScript gives you three keywords to declare variables: <code class="inline">const</code>, <code class="inline">let</code>, and <code class="inline">var</code>. They differ in <strong>scope</strong>, <strong>redeclaration rules</strong>, and <strong>hoisting behavior</strong>. Understanding those differences prevents bugs like accidental globals, stale loop variables, and "cannot access before initialization" errors.</p>
+        <ul>
+          <li>JavaScript gives you three keywords to declare variables: <code class="inline">const</code>, <code class="inline">let</code>, and <code class="inline">var</code>. They differ in <strong>scope</strong>, <strong>redeclaration rules</strong>, and <strong>hoisting behavior</strong>. Understanding those differences prevents bugs like accidental globals, stale loop variables, and "cannot access before initialization" errors.</li>
+        </ul>
         <div class="callout"><strong>Default rule today:</strong> use <code class="inline">const</code> by default, <code class="inline">let</code> when you need to reassign, and avoid <code class="inline">var</code> in new code.</div>
-        <p>Interactive visualizer: open <a href="./02-js-scope-hoisting-animation.html">02-js-scope-hoisting-animation.html</a> in a browser — TDZ, <code class="inline">var</code> hoisting, block vs function scope, scope chain, shadowing (Run / Step).</p>
+        <ul>
+          <li>Interactive visualizer: open <a href="./02-js-scope-hoisting-animation.html">02-js-scope-hoisting-animation.html</a> in a browser — TDZ, <code class="inline">var</code> hoisting, block vs function scope, scope chain, shadowing (Run / Step).</li>
+        </ul>
       </section>
 
       <section id="const-let-var">
@@ -95,7 +99,9 @@ var total = 0;
 var total = 1;    // OK with var (usually a mistake)</pre></div>
 
         <h3>1.4. const — constant binding, not constant value</h3>
-        <p><code class="inline">const</code> means the <strong>variable binding</strong> cannot change. The <strong>value</strong> can still be mutated if it is an object or array:</p>
+        <ul>
+          <li><code class="inline">const</code> means the <strong>variable binding</strong> cannot change. The <strong>value</strong> can still be mutated if it is an object or array:</li>
+        </ul>
         <div class="code"><pre>const user = { name: "Bharat" };
 user.name = "Dev";     // OK — mutating the object
 user = { name: "X" };  // TypeError — cannot reassign the variable
@@ -103,11 +109,15 @@ user = { name: "X" };  // TypeError — cannot reassign the variable
 const nums = [1, 2];
 nums.push(3);          // OK
 nums = [4, 5];         // TypeError</pre></div>
-        <p>You must assign <code class="inline">const</code> at declaration time:</p>
+        <ul>
+          <li>You must assign <code class="inline">const</code> at declaration time:</li>
+        </ul>
         <div class="code"><pre>const x;   // SyntaxError — missing initializer</pre></div>
 
         <h3>1.5. Temporal Dead Zone (TDZ)</h3>
-        <p><code class="inline">const</code> and <code class="inline">let</code> exist from the <strong>start of their block</strong>, but you cannot access them <strong>until the declaration line runs</strong>. That gap is the <strong>Temporal Dead Zone</strong>.</p>
+        <ul>
+          <li><code class="inline">const</code> and <code class="inline">let</code> exist from the <strong>start of their block</strong>, but you cannot access them <strong>until the declaration line runs</strong>. That gap is the <strong>Temporal Dead Zone</strong>.</li>
+        </ul>
         <div class="code"><pre>console.log(x);  // undefined — var is hoisted and initialized
 var x = 5;
 
@@ -120,7 +130,9 @@ let y = 5;</pre></div>
   let message = "hello";   // TDZ ends
   console.log(message);    // "hello"
 }</pre></div>
-        <p>Even <code class="inline">typeof</code> is unsafe on an undeclared <code class="inline">const</code>/<code class="inline">let</code> in the same scope:</p>
+        <ul>
+          <li>Even <code class="inline">typeof</code> is unsafe on an undeclared <code class="inline">const</code>/<code class="inline">let</code> in the same scope:</li>
+        </ul>
         <div class="code"><pre>typeof undeclaredVar;     // "undefined" — no binding exists
 let local;
 typeof local;             // "undefined" — declared but not assigned
@@ -143,10 +155,14 @@ let notYetDeclared = 1;</pre></div>
 
       <section id="scope">
         <h2>2. Scope</h2>
-        <p><strong>Scope</strong> is the region where a variable name is visible and accessible. JavaScript uses <strong>lexical (static) scope</strong> — a function "sees" variables from the scopes where it was <strong>written</strong>, not where it is <strong>called</strong>.</p>
+        <ul>
+          <li><strong>Scope</strong> is the region where a variable name is visible and accessible. JavaScript uses <strong>lexical (static) scope</strong> — a function "sees" variables from the scopes where it was <strong>written</strong>, not where it is <strong>called</strong>.</li>
+        </ul>
 
         <h3>2.1. Global scope</h3>
-        <p>Variables declared <strong>outside</strong> any function or block live in the <strong>global scope</strong>. In browsers, global bindings become properties of <code class="inline">window</code> (with exceptions for <code class="inline">const</code>/<code class="inline">let</code>).</p>
+        <ul>
+          <li>Variables declared <strong>outside</strong> any function or block live in the <strong>global scope</strong>. In browsers, global bindings become properties of <code class="inline">window</code> (with exceptions for <code class="inline">const</code>/<code class="inline">let</code>).</li>
+        </ul>
         <div class="code"><pre>const appName = "MyApp";   // global (script/module top level)
 
 function showName() {
@@ -154,7 +170,9 @@ function showName() {
 }</pre></div>
 
         <h3>2.2. Function scope</h3>
-        <p><code class="inline">var</code> and <strong>function declarations</strong> are scoped to the <strong>nearest function</strong>:</p>
+        <ul>
+          <li><code class="inline">var</code> and <strong>function declarations</strong> are scoped to the <strong>nearest function</strong>:</li>
+        </ul>
         <div class="code"><pre>function demo() {
   var x = 1;
   if (true) {
@@ -164,7 +182,9 @@ function showName() {
 }</pre></div>
 
         <h3>2.3. Block scope</h3>
-        <p><code class="inline">const</code> and <code class="inline">let</code> are scoped to the <strong>nearest block</strong> (<code class="inline">{ ... }</code>) — including <code class="inline">if</code>, <code class="inline">for</code>, <code class="inline">while</code>, and standalone blocks:</p>
+        <ul>
+          <li><code class="inline">const</code> and <code class="inline">let</code> are scoped to the <strong>nearest block</strong> (<code class="inline">{ ... }</code>) — including <code class="inline">if</code>, <code class="inline">for</code>, <code class="inline">while</code>, and standalone blocks:</li>
+        </ul>
         <div class="code"><pre>if (true) {
   let blockScoped = 10;
   const alsoBlock = 20;
@@ -179,7 +199,9 @@ for (var j = 0; j &lt; 3; j++) {
 }</pre></div>
 
         <h3>2.4. Scope chain</h3>
-        <p>When code reads a variable, JS walks <strong>outward</strong> through nested scopes until it finds a binding. If none is found (in non-strict sloppy mode for assignments), it may create a global.</p>
+        <ul>
+          <li>When code reads a variable, JS walks <strong>outward</strong> through nested scopes until it finds a binding. If none is found (in non-strict sloppy mode for assignments), it may create a global.</li>
+        </ul>
         <div class="code"><pre>const outer = "global";
 
 function outerFn() {
@@ -196,7 +218,9 @@ function outerFn() {
 }</pre></div>
 
         <h3>2.5. Variable shadowing</h3>
-        <p>An inner scope can declare the <strong>same name</strong> as an outer scope, <strong>hiding</strong> the outer variable:</p>
+        <ul>
+          <li>An inner scope can declare the <strong>same name</strong> as an outer scope, <strong>hiding</strong> the outer variable:</li>
+        </ul>
         <div class="code"><pre>let value = "outer";
 
 function test() {
@@ -206,7 +230,9 @@ function test() {
 
 test();
 console.log(value);      // "outer"</pre></div>
-        <p>Shadowing is legal with <code class="inline">const</code>/<code class="inline">let</code> across blocks, but you cannot shadow a <code class="inline">const</code>/<code class="inline">let</code> with <code class="inline">var</code> in the same block:</p>
+        <ul>
+          <li>Shadowing is legal with <code class="inline">const</code>/<code class="inline">let</code> across blocks, but you cannot shadow a <code class="inline">const</code>/<code class="inline">let</code> with <code class="inline">var</code> in the same block:</li>
+        </ul>
         <div class="code"><pre>let x = 1;
 {
   // var x = 2;  // SyntaxError — var cannot redeclare let in same block
@@ -214,11 +240,15 @@ console.log(value);      // "outer"</pre></div>
 }</pre></div>
 
         <h3>2.6. Strict mode and accidental globals</h3>
-        <p>Without <code class="inline">"use strict"</code>, assigning to an undeclared name creates a <strong>global</strong> property:</p>
+        <ul>
+          <li>Without <code class="inline">"use strict"</code>, assigning to an undeclared name creates a <strong>global</strong> property:</li>
+        </ul>
         <div class="code"><pre>function oops() {
   mystery = 42;   // creates global `mystery` (avoid!)
 }</pre></div>
-        <p>In <strong>strict mode</strong>, that throws <code class="inline">ReferenceError</code>:</p>
+        <ul>
+          <li>In <strong>strict mode</strong>, that throws <code class="inline">ReferenceError</code>:</li>
+        </ul>
         <div class="code"><pre>"use strict";
 function safe() {
   mystery = 42;   // ReferenceError
@@ -228,30 +258,40 @@ function safe() {
 
       <section id="hoisting">
         <h2>3. Hoisting</h2>
-        <p><strong>Hoisting</strong> is JS moving <strong>declarations</strong> to the top of their scope during the compile phase. It does <strong>not</strong> move assignments or initializations.</p>
-        <p>Think of it in two steps:</p>
+        <ul>
+          <li><strong>Hoisting</strong> is JS moving <strong>declarations</strong> to the top of their scope during the compile phase. It does <strong>not</strong> move assignments or initializations.</li>
+          <li>Think of it in two steps:</li>
+        </ul>
         <ol>
           <li><strong>Create</strong> bindings (names registered in scope).</li>
           <li><strong>Run</strong> the code line by line (assign values).</li>
         </ol>
 
         <h3>3.1. var hoisting</h3>
-        <p><code class="inline">var</code> declarations are hoisted and initialized to <strong><code class="inline">undefined</code></strong>:</p>
+        <ul>
+          <li><code class="inline">var</code> declarations are hoisted and initialized to <strong><code class="inline">undefined</code></strong>:</li>
+        </ul>
         <div class="code"><pre>console.log(a);  // undefined — declared, not yet assigned
 var a = 10;
 console.log(a);  // 10</pre></div>
-        <p>Conceptually similar to:</p>
+        <ul>
+          <li>Conceptually similar to:</li>
+        </ul>
         <div class="code"><pre>var a;             // hoisted declaration
 console.log(a);    // undefined
 a = 10;</pre></div>
 
         <h3>3.2. const and let hoisting</h3>
-        <p><code class="inline">const</code> and <code class="inline">let</code> are also hoisted, but stay in the <strong>TDZ</strong> until their declaration line:</p>
+        <ul>
+          <li><code class="inline">const</code> and <code class="inline">let</code> are also hoisted, but stay in the <strong>TDZ</strong> until their declaration line:</li>
+        </ul>
         <div class="code"><pre>// console.log(b);  // ReferenceError — TDZ
 let b = 2;</pre></div>
 
         <h3>3.3. Function declaration hoisting</h3>
-        <p><strong>Function declarations</strong> are fully hoisted — you can call them before the line they appear on:</p>
+        <ul>
+          <li><strong>Function declarations</strong> are fully hoisted — you can call them before the line they appear on:</li>
+        </ul>
         <div class="code"><pre>greet();  // "hi" — works
 
 function greet() {
@@ -259,7 +299,9 @@ function greet() {
 }</pre></div>
 
         <h3>3.4. Function expression hoisting</h3>
-        <p><strong>Function expressions</strong> follow variable hoisting rules (<code class="inline">const</code>/<code class="inline">let</code> → TDZ, <code class="inline">var</code> → <code class="inline">undefined</code>):</p>
+        <ul>
+          <li><strong>Function expressions</strong> follow variable hoisting rules (<code class="inline">const</code>/<code class="inline">let</code> → TDZ, <code class="inline">var</code> → <code class="inline">undefined</code>):</li>
+        </ul>
         <div class="code"><pre>// sayHi();  // TypeError — sayHi is undefined (var hoisted, not the function)
 
 var sayHi = function () {
@@ -272,13 +314,17 @@ const greet = function () {
 };</pre></div>
 
         <h3>3.5. Class declarations</h3>
-        <p><code class="inline">class</code> declarations are hoisted but <strong>not initialized</strong> until their line — same TDZ behavior as <code class="inline">const</code>/<code class="inline">let</code>:</p>
+        <ul>
+          <li><code class="inline">class</code> declarations are hoisted but <strong>not initialized</strong> until their line — same TDZ behavior as <code class="inline">const</code>/<code class="inline">let</code>:</li>
+        </ul>
         <div class="code"><pre>// const c = new Person();  // ReferenceError
 
 class Person {}</pre></div>
 
         <h3>3.6. Hoisting order (same scope)</h3>
-        <p>When names collide in one scope, <strong>function declarations</strong> take precedence over <code class="inline">var</code>:</p>
+        <ul>
+          <li>When names collide in one scope, <strong>function declarations</strong> take precedence over <code class="inline">var</code>:</li>
+        </ul>
         <div class="code"><pre>console.log(typeof fn);  // "function"
 
 var fn = "string";
@@ -286,7 +332,9 @@ var fn = "string";
 function fn() {
   return "fn";
 }</pre></div>
-        <p>After all lines run, <code class="inline">fn</code> is the string <code class="inline">"string"</code> because the assignment wins at runtime — but the initial hoisted binding was the function. This pattern is confusing; avoid mixing <code class="inline">var</code> and function declarations with the same name.</p>
+        <ul>
+          <li>After all lines run, <code class="inline">fn</code> is the string <code class="inline">"string"</code> because the assignment wins at runtime — but the initial hoisted binding was the function. This pattern is confusing; avoid mixing <code class="inline">var</code> and function declarations with the same name.</li>
+        </ul>
 
         <h3>3.7. Summary table</h3>
         <table>
@@ -309,28 +357,44 @@ function fn() {
         <h2>4. Common questions</h2>
 
         <h3>4.1. What is the difference between const, let, and var?</h3>
-        <p><strong>A:</strong> <code class="inline">const</code> and <code class="inline">let</code> are block-scoped, cannot be redeclared in the same scope, and sit in the TDZ until initialized. <code class="inline">const</code> does not allow reassignment; <code class="inline">let</code> does. <code class="inline">var</code> is function-scoped, can be redeclared, and hoists as <code class="inline">undefined</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">const</code> and <code class="inline">let</code> are block-scoped, cannot be redeclared in the same scope, and sit in the TDZ until initialized. <code class="inline">const</code> does not allow reassignment; <code class="inline">let</code> does. <code class="inline">var</code> is function-scoped, can be redeclared, and hoists as <code class="inline">undefined</code>.</li>
+        </ul>
 
         <h3>4.2. What is the Temporal Dead Zone?</h3>
-        <p><strong>A:</strong> The period between entering a scope and executing the <code class="inline">const</code>/<code class="inline">let</code> declaration line. The binding exists but accessing it throws <code class="inline">ReferenceError</code>.</p>
+        <ul>
+          <li><strong>A:</strong> The period between entering a scope and executing the <code class="inline">const</code>/<code class="inline">let</code> declaration line. The binding exists but accessing it throws <code class="inline">ReferenceError</code>.</li>
+        </ul>
 
         <h3>4.3. Does hoisting move code physically to the top?</h3>
-        <p><strong>A:</strong> No. It is a mental model. During compilation, JS registers declarations in scope first; then it executes the code top to bottom. Assignments and initializations stay on their original lines.</p>
+        <ul>
+          <li><strong>A:</strong> No. It is a mental model. During compilation, JS registers declarations in scope first; then it executes the code top to bottom. Assignments and initializations stay on their original lines.</li>
+        </ul>
 
         <h3>4.4. Why does for (var i = 0; ...) break closures in loops?</h3>
-        <p><strong>A:</strong> <code class="inline">var</code> is function-scoped, so there is <strong>one</strong> <code class="inline">i</code> shared by all iterations. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, which is what you want with async callbacks.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">var</code> is function-scoped, so there is <strong>one</strong> <code class="inline">i</code> shared by all iterations. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, which is what you want with async callbacks.</li>
+        </ul>
 
         <h3>4.5. Can I use a variable before declaring it with var?</h3>
-        <p><strong>A:</strong> You can read it without a <code class="inline">ReferenceError</code>, but the value is <code class="inline">undefined</code> until the assignment runs — a common source of bugs. Prefer <code class="inline">const</code>/<code class="inline">let</code> so TDZ catches the mistake early.</p>
+        <ul>
+          <li><strong>A:</strong> You can read it without a <code class="inline">ReferenceError</code>, but the value is <code class="inline">undefined</code> until the assignment runs — a common source of bugs. Prefer <code class="inline">const</code>/<code class="inline">let</code> so TDZ catches the mistake early.</li>
+        </ul>
 
         <h3>4.6. Are function declarations hoisted above var?</h3>
-        <p><strong>A:</strong> In the same scope, the function declaration wins during the initial hoisting phase. If you later assign to the same name with <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code>, that assignment overwrites it at runtime.</p>
+        <ul>
+          <li><strong>A:</strong> In the same scope, the function declaration wins during the initial hoisting phase. If you later assign to the same name with <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code>, that assignment overwrites it at runtime.</li>
+        </ul>
 
         <h3>4.7. What is lexical scope?</h3>
-        <p><strong>A:</strong> Scope is determined by <strong>where code is written</strong> in the source, not by the call stack at runtime. Inner functions can read outer variables; that outer lookup chain is the <strong>scope chain</strong>.</p>
+        <ul>
+          <li><strong>A:</strong> Scope is determined by <strong>where code is written</strong> in the source, not by the call stack at runtime. Inner functions can read outer variables; that outer lookup chain is the <strong>scope chain</strong>.</li>
+        </ul>
 
         <h3>4.8. Should I ever use var?</h3>
-        <p><strong>A:</strong> In modern JS, rarely. Use <code class="inline">const</code>/<code class="inline">let</code>. You may still see <code class="inline">var</code> in older tutorials, legacy codebases, or snippets that rely on function scope — know it for interviews and maintenance, not for new features.</p>
+        <ul>
+          <li><strong>A:</strong> In modern JS, rarely. Use <code class="inline">const</code>/<code class="inline">let</code>. You may still see <code class="inline">var</code> in older tutorials, legacy codebases, or snippets that rely on function scope — know it for interviews and maintenance, not for new features.</li>
+        </ul>
       </section>
 
       <footer>

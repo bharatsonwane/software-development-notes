@@ -47,9 +47,11 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Most apps load <strong>remote data</strong>. You need predictable <strong>loading</strong>, <strong>error</strong>, and <strong>success</strong> UI, plus rules for <strong>when</strong> to fetch, <strong>caching</strong>, and <strong>refetching</strong>. This chapter covers hand-rolled <strong><code class="inline">fetch</code></strong> with React state, then <strong>TanStack Query</strong> (React Query) as the modern default for <strong>server state</strong>.</p>
-        <p>Builds on <code class="inline">useEffect</code> (File 05), lists and conditionals (File 04), and routing loaders (File 09).</p>
-        <p><strong>Default rule today:</strong> treat <strong>server state</strong> separately from <strong>UI state</strong>; use <strong>TanStack Query</strong> (or similar) for API data in production apps; hand-roll <code class="inline">fetch</code> + <code class="inline">useState</code> only for small cases or learning.</p>
+        <ul>
+          <li>Most apps load <strong>remote data</strong>. You need predictable <strong>loading</strong>, <strong>error</strong>, and <strong>success</strong> UI, plus rules for <strong>when</strong> to fetch, <strong>caching</strong>, and <strong>refetching</strong>. This chapter covers hand-rolled <strong><code class="inline">fetch</code></strong> with React state, then <strong>TanStack Query</strong> (React Query) as the modern default for <strong>server state</strong>.</li>
+          <li>Builds on <code class="inline">useEffect</code> (File 05), lists and conditionals (File 04), and routing loaders (File 09).</li>
+          <li><strong>Default rule today:</strong> treat <strong>server state</strong> separately from <strong>UI state</strong>; use <strong>TanStack Query</strong> (or similar) for API data in production apps; hand-roll <code class="inline">fetch</code> + <code class="inline">useState</code> only for small cases or learning.</li>
+        </ul>
       </section>
       <section id="1-server-state-vs-client-state">
         <h2>1. Server state vs client state</h2>
@@ -64,14 +66,20 @@
         <tr><td><code class="inline">useState</code>, <code class="inline">useReducer</code></td><td>fetch, TanStack Query, SWR</td></tr>
         </tbody>
         </table>
-        <p>Do not mirror entire API responses into global Redux unless you need to — <strong>server cache libraries</strong> handle sync, deduping, and staleness.</p>
+        <ul>
+          <li>Do not mirror entire API responses into global Redux unless you need to — <strong>server cache libraries</strong> handle sync, deduping, and staleness.</li>
+        </ul>
         <h3>1.2. Async UI states</h3>
-        <p>Every fetch UI should handle:</p>
+        <ul>
+          <li>Every fetch UI should handle:</li>
+        </ul>
         <div class="code"><pre>if (loading) return &lt;Spinner /&gt;;
 if (error) return &lt;ErrorMessage error={error} /&gt;;
 if (!data) return null;
 return &lt;DataView data={data} /&gt;;</pre></div>
-        <p>File 04 — early return pattern.</p>
+        <ul>
+          <li>File 04 — early return pattern.</li>
+        </ul>
       </section>
       <section id="2-fetch-with-usestate-and-useeffect">
         <h2>2. Fetch with useState and useEffect</h2>
@@ -108,8 +116,9 @@ return &lt;DataView data={data} /&gt;;</pre></div>
   return &lt;div&gt;{user.name}&lt;/div&gt;;
 }</pre></div>
         <h3>2.2. Race conditions</h3>
-        <p>When <strong><code class="inline">userId</code></strong> changes quickly, an older request may finish last. Fixes:</p>
-        <ul><li><strong><code class="inline">AbortController</code></strong> abort on cleanup (File 05)</li><li><strong><code class="inline">cancelled</code> flag</strong> (above)</li><li>Query library handles this automatically</li></ul>
+        <ul>
+          <li>When <strong><code class="inline">userId</code></strong> changes quickly, an older request may finish last. Fixes:</li>
+          <li><strong><code class="inline">AbortController</code></strong> abort on cleanup (File 05)</li><li><strong><code class="inline">cancelled</code> flag</strong> (above)</li><li>Query library handles this automatically</li></ul>
         <h3>2.3. Extract to custom hook</h3>
         <div class="code"><pre>function useUser(userId) {
   const [state, setState] = useState({ data: null, loading: true, error: null });
@@ -131,7 +140,9 @@ return &lt;DataView data={data} /&gt;;</pre></div>
 
   return state;
 }</pre></div>
-        <p>Good for learning; production apps benefit from a query library.</p>
+        <ul>
+          <li>Good for learning; production apps benefit from a query library.</li>
+        </ul>
       </section>
       <section id="3-post-put-delete-mutations">
         <h2>3. POST, PUT, DELETE (mutations)</h2>
@@ -154,9 +165,13 @@ return &lt;DataView data={data} /&gt;;</pre></div>
     setSaving(false);
   }
 }</pre></div>
-        <p>Mutations often live in <strong>handlers</strong> (File 06), not <code class="inline">useEffect</code>.</p>
+        <ul>
+          <li>Mutations often live in <strong>handlers</strong> (File 06), not <code class="inline">useEffect</code>.</li>
+        </ul>
         <h3>3.2. Optimistic updates</h3>
-        <p>Update UI <strong>before</strong> server confirms; roll back on error — TanStack Query <strong><code class="inline">onMutate</code></strong> / <strong><code class="inline">useOptimistic</code></strong> (React 19) simplify this.</p>
+        <ul>
+          <li>Update UI <strong>before</strong> server confirms; roll back on error — TanStack Query <strong><code class="inline">onMutate</code></strong> / <strong><code class="inline">useOptimistic</code></strong> (React 19) simplify this.</li>
+        </ul>
       </section>
       <section id="4-tanstack-query-basics">
         <h2>4. TanStack Query basics</h2>
@@ -190,7 +205,9 @@ function UserProfile({ userId }) {
   if (isError) return &lt;p&gt;Error: {error.message}&lt;/p&gt;;
   return &lt;div&gt;{data.name}&lt;/div&gt;;
 }</pre></div>
-        <p><strong><code class="inline">queryKey</code></strong> — unique cache identity. <strong><code class="inline">queryFn</code></strong> — returns a Promise of data.</p>
+        <ul>
+          <li><strong><code class="inline">queryKey</code></strong> — unique cache identity. <strong><code class="inline">queryFn</code></strong> — returns a Promise of data.</li>
+        </ul>
         <h3>4.3. What TanStack Query gives you</h3>
         <table>
         <thead>
@@ -231,7 +248,9 @@ function CreatePostForm() {
     &lt;/button&gt;
   );
 }</pre></div>
-        <p><strong><code class="inline">invalidateQueries</code></strong> — refetch lists after create/update.</p>
+        <ul>
+          <li><strong><code class="inline">invalidateQueries</code></strong> — refetch lists after create/update.</li>
+        </ul>
       </section>
       <section id="5-query-keys-and-cache-rules">
         <h2>5. Query keys and cache rules</h2>
@@ -239,17 +258,22 @@ function CreatePostForm() {
         <div class="code"><pre>[&quot;users&quot;]                    // all users list
 [&quot;users&quot;, userId]            // one user
 [&quot;users&quot;, userId, &quot;posts&quot;]   // nested resource</pre></div>
-        <p>Keys should include <strong>every variable</strong> the queryFn uses.</p>
+        <ul>
+          <li>Keys should include <strong>every variable</strong> the queryFn uses.</li>
+        </ul>
         <h3>5.2. enabled option</h3>
-        <p>Skip fetch until ready:</p>
+        <ul>
+          <li>Skip fetch until ready:</li>
+        </ul>
         <div class="code"><pre>useQuery({
   queryKey: [&quot;user&quot;, userId],
   queryFn: () =&gt; fetchUser(userId),
   enabled: !!userId,
 });</pre></div>
         <h3>5.3. staleTime and gcTime</h3>
-        <ul><li><strong><code class="inline">staleTime</code></strong> — how long data is &quot;fresh&quot; before background refetch</li><li><strong><code class="inline">gcTime</code></strong> (formerly cacheTime) — how long unused cache stays in memory</li></ul>
-        <p>Tune per resource — static config vs live dashboard differ.</p>
+        <ul><li><strong><code class="inline">staleTime</code></strong> — how long data is &quot;fresh&quot; before background refetch</li><li><strong><code class="inline">gcTime</code></strong> (formerly cacheTime) — how long unused cache stays in memory</li>
+          <li>Tune per resource — static config vs live dashboard differ.</li>
+        </ul>
       </section>
       <section id="6-react-router-loaders-query">
         <h2>6. React Router loaders + Query</h2>
@@ -262,7 +286,9 @@ loader: async ({ params }) =&gt; {
   });
   return null;
 };</pre></div>
-        <p>Component uses same <strong><code class="inline">queryKey</code></strong> — instant cache hit (File 09).</p>
+        <ul>
+          <li>Component uses same <strong><code class="inline">queryKey</code></strong> — instant cache hit (File 09).</li>
+        </ul>
         <h3>6.2. When to use loader vs useQuery alone</h3>
         <table>
         <thead>
@@ -273,16 +299,22 @@ loader: async ({ params }) =&gt; {
         <tr><td>Avoid loading spinner on navigation</td><td>Simpler setup</td></tr>
         </tbody>
         </table>
-        <p>Both are valid; combine for best UX on important routes.</p>
+        <ul>
+          <li>Both are valid; combine for best UX on important routes.</li>
+        </ul>
       </section>
       <section id="7-error-and-loading-ux">
         <h2>7. Error and loading UX</h2>
         <h3>7.1. Granular loading</h3>
         <ul><li><strong>Initial load</strong> — full-page or skeleton</li><li><strong>Background refetch</strong> — subtle indicator, keep showing stale data</li><li><strong><code class="inline">isFetching</code> vs <code class="inline">isLoading</code></strong> in TanStack Query — know the difference</li></ul>
         <h3>7.2. Error boundaries vs query error</h3>
-        <p><strong>Query <code class="inline">isError</code></strong> — expected API failures, retry buttons. <strong>Error boundary</strong> — unexpected render throws (File 14).</p>
+        <ul>
+          <li><strong>Query <code class="inline">isError</code></strong> — expected API failures, retry buttons. <strong>Error boundary</strong> — unexpected render throws (File 14).</li>
+        </ul>
         <h3>7.3. Empty states</h3>
-        <p>Distinguish <strong>loaded empty array</strong> from <strong>still loading</strong>:</p>
+        <ul>
+          <li>Distinguish <strong>loaded empty array</strong> from <strong>still loading</strong>:</li>
+        </ul>
         <div class="code"><pre>if (isLoading) return &lt;Spinner /&gt;;
 if (data.length === 0) return &lt;p&gt;No results.&lt;/p&gt;;</pre></div>
       </section>
@@ -299,7 +331,9 @@ if (data.length === 0) return &lt;p&gt;No results.&lt;/p&gt;;</pre></div>
         <tr><td><strong>fetch in Server Components</strong></td><td>Next.js — data on server, not client effect</td></tr>
         </tbody>
         </table>
-        <p>Pick one <strong>server cache</strong> strategy per app; avoid mixing many overlapping libraries.</p>
+        <ul>
+          <li>Pick one <strong>server cache</strong> strategy per app; avoid mixing many overlapping libraries.</li>
+        </ul>
       </section>
       <section id="9-putting-it-together">
         <h2>9. Putting it together</h2>
@@ -338,25 +372,45 @@ function ProductDetail({ id }) {
       <section id="10-common-questions">
         <h2>10. Common questions</h2>
         <h3>10.1. Where should I fetch — useEffect or event handler?</h3>
-        <p><strong>A:</strong> <strong>Load data</strong> — <code class="inline">useEffect</code>, route <strong>loader</strong>, or <strong><code class="inline">useQuery</code></strong>. <strong>Mutations</strong> — <strong>event handlers</strong> / <strong><code class="inline">useMutation</code></strong>, not effect on mount.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Load data</strong> — <code class="inline">useEffect</code>, route <strong>loader</strong>, or <strong><code class="inline">useQuery</code></strong>. <strong>Mutations</strong> — <strong>event handlers</strong> / <strong><code class="inline">useMutation</code></strong>, not effect on mount.</li>
+        </ul>
         <h3>10.2. What is server state?</h3>
-        <p><strong>A:</strong> Data that <strong>lives on the server</strong> and you <strong>cache</strong> on the client — users, lists, permissions. Different from UI toggles and form drafts.</p>
+        <ul>
+          <li><strong>A:</strong> Data that <strong>lives on the server</strong> and you <strong>cache</strong> on the client — users, lists, permissions. Different from UI toggles and form drafts.</li>
+        </ul>
         <h3>10.3. Why TanStack Query over raw fetch?</h3>
-        <p><strong>A:</strong> <strong>Caching</strong>, deduping, retries, background refresh, and less boilerplate for loading/error.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Caching</strong>, deduping, retries, background refresh, and less boilerplate for loading/error.</li>
+        </ul>
         <h3>10.4. What is a query key?</h3>
-        <p><strong>A:</strong> A <strong>serializable array</strong> identifying a query in the cache — must include all variables (<code class="inline">userId</code>, filters).</p>
+        <ul>
+          <li><strong>A:</strong> A <strong>serializable array</strong> identifying a query in the cache — must include all variables (<code class="inline">userId</code>, filters).</li>
+        </ul>
         <h3>10.5. How do I refetch after a mutation?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">queryClient.invalidateQueries({ queryKey: [...] })</code></strong> or update cache directly with <strong><code class="inline">setQueryData</code></strong>.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">queryClient.invalidateQueries({ queryKey: [...] })</code></strong> or update cache directly with <strong><code class="inline">setQueryData</code></strong>.</li>
+        </ul>
         <h3>10.6. How do I avoid fetch races?</h3>
-        <p><strong>A:</strong> <strong>AbortController</strong>, cancelled flag, or use a library that cancels outdated queries by key.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>AbortController</strong>, cancelled flag, or use a library that cancels outdated queries by key.</li>
+        </ul>
         <h3>10.7. isLoading vs isFetching?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">isLoading</code></strong> — no cached data yet and fetching. <strong><code class="inline">isFetching</code></strong> — any in-flight request (including background).</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">isLoading</code></strong> — no cached data yet and fetching. <strong><code class="inline">isFetching</code></strong> — any in-flight request (including background).</li>
+        </ul>
         <h3>10.8. Should I store API data in useContext?</h3>
-        <p><strong>A:</strong> Usually <strong>no</strong> — use TanStack Query. Context fits <strong>auth session</strong>, theme, not full API cache.</p>
+        <ul>
+          <li><strong>A:</strong> Usually <strong>no</strong> — use TanStack Query. Context fits <strong>auth session</strong>, theme, not full API cache.</li>
+        </ul>
         <h3>10.9. Loader vs useQuery?</h3>
-        <p><strong>A:</strong> <strong>Loader</strong> prefetches before route render. <strong>useQuery</strong> fetches when component mounts. Combine with shared <strong><code class="inline">queryKey</code></strong>.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Loader</strong> prefetches before route render. <strong>useQuery</strong> fetches when component mounts. Combine with shared <strong><code class="inline">queryKey</code></strong>.</li>
+        </ul>
         <h3>10.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 11 (global client state), File 12 (Suspense + queries), File 09 (loaders).</p>
+        <ul>
+          <li><strong>A:</strong> File 11 (global client state), File 12 (Suspense + queries), File 09 (loaders).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 10. Open from the React.js index.</footer>
     </main>

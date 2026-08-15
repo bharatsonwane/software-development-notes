@@ -45,33 +45,49 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Capstone for interview prep. Builds on Files 05–12.</p>
-        <p>Interactive visualizer: open <a href="./16-js-interview-polyfills-animation.html">16-js-interview-polyfills-animation.html</a> in a browser — bind/map/filter polyfills, Promise resolve/then, debounce, flat/reduce (Run / Step).</p>
+        <ul>
+          <li>Capstone for interview prep. Builds on Files 05–12.</li>
+          <li>Interactive visualizer: open <a href="./16-js-interview-polyfills-animation.html">16-js-interview-polyfills-animation.html</a> in a browser — bind/map/filter polyfills, Promise resolve/then, debounce, flat/reduce (Run / Step).</li>
+        </ul>
       </section>
       <section id="1-object-oriented-concepts">
         <h2>1. Object-oriented concepts</h2>
         <h3>1.1. Encapsulation</h3>
-        <p>Hide internal state — <strong>closures</strong> (File 08), <strong><code class="inline">#</code> private fields</strong> (File 09), or module scope (File 11).</p>
+        <ul>
+          <li>Hide internal state — <strong>closures</strong> (File 08), <strong><code class="inline">#</code> private fields</strong> (File 09), or module scope (File 11).</li>
+        </ul>
         <h3>1.2. Inheritance</h3>
-        <p>Share behavior via <strong>prototype chain</strong> or <strong><code class="inline">extends</code></strong> (File 09).</p>
+        <ul>
+          <li>Share behavior via <strong>prototype chain</strong> or <strong><code class="inline">extends</code></strong> (File 09).</li>
+        </ul>
         <h3>1.3. Polymorphism</h3>
-        <p>Same interface, different implementations — method <strong>override</strong> in subclasses:</p>
+        <ul>
+          <li>Same interface, different implementations — method <strong>override</strong> in subclasses:</li>
+        </ul>
         <div class="code"><pre>class Shape { area() { throw new Error(&quot;implement&quot;); } }
 class Circle extends Shape {
   constructor(r) { super(); this.r = r; }
   area() { return Math.PI * this.r ** 2; }
 }</pre></div>
         <h3>1.4. Abstraction</h3>
-        <p>Expose simple API, hide complexity — e.g. <code class="inline">fetch</code> wrapper, repository class over raw HTTP.</p>
+        <ul>
+          <li>Expose simple API, hide complexity — e.g. <code class="inline">fetch</code> wrapper, repository class over raw HTTP.</li>
+        </ul>
       </section>
       <section id="2-design-patterns">
         <h2>2. Design patterns</h2>
         <h3>2.1. Module pattern</h3>
-        <p>IIFE or ES modules with private scope (File 08, 11).</p>
+        <ul>
+          <li>IIFE or ES modules with private scope (File 08, 11).</li>
+        </ul>
         <h3>2.2. Revealing module</h3>
-        <p>Return public object from closure (File 08).</p>
+        <ul>
+          <li>Return public object from closure (File 08).</li>
+        </ul>
         <h3>2.3. Singleton</h3>
-        <p>One shared instance:</p>
+        <ul>
+          <li>One shared instance:</li>
+        </ul>
         <div class="code"><pre>const Database = (function () {
   let instance;
   return {
@@ -82,7 +98,9 @@ class Circle extends Shape {
   };
 })();</pre></div>
         <h3>2.4. Factory</h3>
-        <p>Function that creates objects:</p>
+        <ul>
+          <li>Function that creates objects:</li>
+        </ul>
         <div class="code"><pre>function createUser(role) {
   return role === &quot;admin&quot;
     ? { role, canDelete: true }
@@ -99,7 +117,9 @@ class Circle extends Shape {
   }
 }</pre></div>
         <h3>2.6. Strategy</h3>
-        <p>Swap algorithms at runtime:</p>
+        <ul>
+          <li>Swap algorithms at runtime:</li>
+        </ul>
         <div class="code"><pre>const strategies = {
   json: (d) =&gt; JSON.stringify(d),
   csv: (d) =&gt; d.map((r) =&gt; r.join(&quot;,&quot;)).join(&quot;\n&quot;),
@@ -108,7 +128,9 @@ function exportData(format, data) {
   return strategies[format](data);
 }</pre></div>
         <h3>2.7. Adapter &amp; Decorator</h3>
-        <p><strong>Adapter</strong> — wrap foreign API to match your interface. <strong>Decorator</strong> — add behavior without changing core (stage-3 <code class="inline">@</code> decorators in File 12).</p>
+        <ul>
+          <li><strong>Adapter</strong> — wrap foreign API to match your interface. <strong>Decorator</strong> — add behavior without changing core (stage-3 <code class="inline">@</code> decorators in File 12).</li>
+        </ul>
       </section>
       <section id="3-polyfill-implementations">
         <h2>3. Polyfill implementations</h2>
@@ -207,7 +229,9 @@ function exportData(format, data) {
     ? arr.reduce((acc, v) =&gt; acc.concat(Array.isArray(v) ? flatten(v, depth - 1) : v), [])
     : arr.slice();
 }</pre></div>
-        <p>Debounce, throttle, curry, once, memoize — full implementations in File 12.</p>
+        <ul>
+          <li>Debounce, throttle, curry, once, memoize — full implementations in File 12.</li>
+        </ul>
       </section>
       <section id="4-coding-interview-problems">
         <h2>4. Coding interview problems</h2>
@@ -285,27 +309,43 @@ await sleep(1000);</pre></div>
   }
 }</pre></div>
         <h3>4.11. LRU Cache (sketch)</h3>
-        <p>Use <strong>Map</strong> (insertion order) — on get, delete and re-set key to mark recent; evict first key when over capacity.</p>
+        <ul>
+          <li>Use <strong>Map</strong> (insertion order) — on get, delete and re-set key to mark recent; evict first key when over capacity.</li>
+        </ul>
       </section>
       <section id="5-security-basics">
         <h2>5. Security basics</h2>
         <h3>5.1. XSS (Cross-Site Scripting)</h3>
-        <p>Injected script runs in victim&#x27;s browser. <strong>Prevent:</strong> escape output, <strong><code class="inline">textContent</code></strong> not <code class="inline">innerHTML</code>, CSP, sanitize HTML (DOMPurify).</p>
+        <ul>
+          <li>Injected script runs in victim&#x27;s browser. <strong>Prevent:</strong> escape output, <strong><code class="inline">textContent</code></strong> not <code class="inline">innerHTML</code>, CSP, sanitize HTML (DOMPurify).</li>
+        </ul>
         <h3>5.2. CSRF (Cross-Site Request Forgery)</h3>
-        <p>Tricks browser into sending authenticated request. <strong>Prevent:</strong> CSRF tokens, <strong>SameSite</strong> cookies.</p>
+        <ul>
+          <li>Tricks browser into sending authenticated request. <strong>Prevent:</strong> CSRF tokens, <strong>SameSite</strong> cookies.</li>
+        </ul>
         <h3>5.3. CORS</h3>
-        <p>Browser blocks cross-origin responses unless server sends <strong><code class="inline">Access-Control-Allow-Origin</code></strong>. Preflight for non-simple requests.</p>
+        <ul>
+          <li>Browser blocks cross-origin responses unless server sends <strong><code class="inline">Access-Control-Allow-Origin</code></strong>. Preflight for non-simple requests.</li>
+        </ul>
         <h3>5.4. CSP (Content Security Policy)</h3>
-        <p>HTTP header restricting script/style sources — mitigates XSS.</p>
+        <ul>
+          <li>HTTP header restricting script/style sources — mitigates XSS.</li>
+        </ul>
         <h3>5.5. Sanitization</h3>
-        <p>Never trust user HTML. Validate on server; encode on output.</p>
+        <ul>
+          <li>Never trust user HTML. Validate on server; encode on output.</li>
+        </ul>
       </section>
       <section id="6-engine-performance-interview">
         <h2>6. Engine &amp; performance (interview)</h2>
         <h3>6.1. De-optimization</h3>
-        <p>V8 may <strong>bail out</strong> of optimized code when types change unpredictably (e.g. adding properties to objects in hot loops with varying shapes). Keep object shapes stable (File 12 — hidden classes).</p>
+        <ul>
+          <li>V8 may <strong>bail out</strong> of optimized code when types change unpredictably (e.g. adding properties to objects in hot loops with varying shapes). Keep object shapes stable (File 12 — hidden classes).</li>
+        </ul>
         <h3>6.2. Virtualization</h3>
-        <p>Render only visible list rows (<strong>react-window</strong>, <strong>@tanstack/react-virtual</strong>) — React File 12.</p>
+        <ul>
+          <li>Render only visible list rows (<strong>react-window</strong>, <strong>@tanstack/react-virtual</strong>) — React File 12.</li>
+        </ul>
         <h3>6.3. Function chaining</h3>
         <div class="code"><pre>class Chain {
   constructor(v) { this.v = v; }
@@ -314,26 +354,44 @@ await sleep(1000);</pre></div>
   val() { return this.v; }
 }
 new Chain(2).add(3).mul(4).val();  // 20</pre></div>
-        <p>Pipe/compose — File 12.</p>
+        <ul>
+          <li>Pipe/compose — File 12.</li>
+        </ul>
       </section>
       <section id="7-common-questions">
         <h2>7. Common questions</h2>
         <h3>7.1. Implement bind from scratch?</h3>
-        <p><strong>A:</strong> Return function that calls original with fixed <strong><code class="inline">this</code></strong> and partial args (section 3.4).</p>
+        <ul>
+          <li><strong>A:</strong> Return function that calls original with fixed <strong><code class="inline">this</code></strong> and partial args (section 3.4).</li>
+        </ul>
         <h3>7.2. Implement Promise.all?</h3>
-        <p><strong>A:</strong> Wrap in Promise; resolve array when all fulfill; reject on first rejection (section 3.7).</p>
+        <ul>
+          <li><strong>A:</strong> Wrap in Promise; resolve array when all fulfill; reject on first rejection (section 3.7).</li>
+        </ul>
         <h3>7.3. What is event delegation?</h3>
-        <p><strong>A:</strong> File 15 — single parent listener for many children.</p>
+        <ul>
+          <li><strong>A:</strong> File 15 — single parent listener for many children.</li>
+        </ul>
         <h3>7.4. XSS vs CSRF?</h3>
-        <p><strong>A:</strong> <strong>XSS</strong> — run attacker script in your page. <strong>CSRF</strong> — forge request using victim&#x27;s cookies.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>XSS</strong> — run attacker script in your page. <strong>CSRF</strong> — forge request using victim&#x27;s cookies.</li>
+        </ul>
         <h3>7.5. Shallow vs deep copy?</h3>
-        <p><strong>A:</strong> File 01, 06 — spread/<code class="inline">Object.assign</code> shallow; <strong><code class="inline">structuredClone</code></strong> or recursive clone deep.</p>
+        <ul>
+          <li><strong>A:</strong> File 01, 06 — spread/<code class="inline">Object.assign</code> shallow; <strong><code class="inline">structuredClone</code></strong> or recursive clone deep.</li>
+        </ul>
         <h3>7.6. What is the revealing module pattern?</h3>
-        <p><strong>A:</strong> File 08 — IIFE returns public API, keeps private vars in closure.</p>
+        <ul>
+          <li><strong>A:</strong> File 08 — IIFE returns public API, keeps private vars in closure.</li>
+        </ul>
         <h3>7.7. Flatten nested array?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">flat(Infinity)</code></strong> or recursive reduce (section 3.8).</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">flat(Infinity)</code></strong> or recursive reduce (section 3.8).</li>
+        </ul>
         <h3>7.8. How does debounce differ from throttle?</h3>
-        <p><strong>A:</strong> File 12 — debounce waits for pause; throttle limits rate.</p>
+        <ul>
+          <li><strong>A:</strong> File 12 — debounce waits for pause; throttle limits rate.</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 16. Open from the JS Language index.</footer>
     </main>

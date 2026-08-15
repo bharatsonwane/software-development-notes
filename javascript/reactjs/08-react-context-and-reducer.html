@@ -45,9 +45,11 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>When many components need the same data, passing props through every layer (<strong>prop drilling</strong>) gets painful. <strong>Context</strong> shares values across the tree without explicit props at each level. <strong><code class="inline">useReducer</code></strong> manages complex state updates with a predictable <strong>action → state</strong> flow — similar to Redux, built into React.</p>
-        <p>Builds on state (File 03) and hooks patterns (File 07). File 11 covers global stores (Zustand, Redux Toolkit) when Context is not enough.</p>
-        <p><strong>Default rule today:</strong> use <strong>Context</strong> for <strong>low-frequency, widely shared</strong> data (theme, locale, auth user); colocate providers <strong>as low as possible</strong>; pair <strong><code class="inline">useReducer</code></strong> with Context for non-trivial shared state; split contexts to avoid unnecessary re-renders.</p>
+        <ul>
+          <li>When many components need the same data, passing props through every layer (<strong>prop drilling</strong>) gets painful. <strong>Context</strong> shares values across the tree without explicit props at each level. <strong><code class="inline">useReducer</code></strong> manages complex state updates with a predictable <strong>action → state</strong> flow — similar to Redux, built into React.</li>
+          <li>Builds on state (File 03) and hooks patterns (File 07). File 11 covers global stores (Zustand, Redux Toolkit) when Context is not enough.</li>
+          <li><strong>Default rule today:</strong> use <strong>Context</strong> for <strong>low-frequency, widely shared</strong> data (theme, locale, auth user); colocate providers <strong>as low as possible</strong>; pair <strong><code class="inline">useReducer</code></strong> with Context for non-trivial shared state; split contexts to avoid unnecessary re-renders.</li>
+        </ul>
       </section>
       <section id="1-prop-drilling-problem">
         <h2>1. Prop drilling problem</h2>
@@ -64,9 +66,13 @@ function Layout({ user, setUser }) {
 function Sidebar({ user, setUser }) {
   return &lt;UserMenu user={user} setUser={setUser} /&gt;;
 }</pre></div>
-        <p><code class="inline">Layout</code> and <code class="inline">Sidebar</code> do not use <code class="inline">user</code> — they only forward props. Context (or a store) removes the middle passes.</p>
+        <ul>
+          <li><code class="inline">Layout</code> and <code class="inline">Sidebar</code> do not use <code class="inline">user</code> — they only forward props. Context (or a store) removes the middle passes.</li>
+        </ul>
         <h3>1.2. When lifting state is still enough</h3>
-        <p>If only <strong>two or three</strong> levels share state, <strong>lifting state up</strong> (File 03) may be simpler than Context. Reach for Context when the tree is deep or many branches need the same value.</p>
+        <ul>
+          <li>If only <strong>two or three</strong> levels share state, <strong>lifting state up</strong> (File 03) may be simpler than Context. Reach for Context when the tree is deep or many branches need the same value.</li>
+        </ul>
       </section>
       <section id="2-context-api">
         <h2>2. Context API</h2>
@@ -80,7 +86,9 @@ export function useTheme() {
   if (!ctx) throw new Error(&quot;useTheme must be used within ThemeProvider&quot;);
   return ctx;
 }</pre></div>
-        <p>Default <code class="inline">null</code> (or a sentinel) lets custom hooks <strong>fail fast</strong> outside a provider.</p>
+        <ul>
+          <li>Default <code class="inline">null</code> (or a sentinel) lets custom hooks <strong>fail fast</strong> outside a provider.</li>
+        </ul>
         <h3>2.2. Provider</h3>
         <div class="code"><pre>export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(&quot;light&quot;);
@@ -92,7 +100,9 @@ export function useTheme() {
     &lt;/ThemeContext.Provider&gt;
   );
 }</pre></div>
-        <p>Wrap the subtree that should access the context:</p>
+        <ul>
+          <li>Wrap the subtree that should access the context:</li>
+        </ul>
         <div class="code"><pre>function App() {
   return (
     &lt;ThemeProvider&gt;
@@ -109,9 +119,13 @@ export function useTheme() {
     &lt;/button&gt;
   );
 }</pre></div>
-        <p>Any descendant of <code class="inline">ThemeProvider</code> can call <code class="inline">useTheme()</code> without prop chains.</p>
+        <ul>
+          <li>Any descendant of <code class="inline">ThemeProvider</code> can call <code class="inline">useTheme()</code> without prop chains.</li>
+        </ul>
         <h3>2.4. Colocate providers</h3>
-        <p>Place providers <strong>as close as needed</strong> to consumers — not always at app root:</p>
+        <ul>
+          <li>Place providers <strong>as close as needed</strong> to consumers — not always at app root:</li>
+        </ul>
         <div class="code"><pre>function DashboardRoutes() {
   return (
     &lt;DashboardProvider&gt;
@@ -119,22 +133,30 @@ export function useTheme() {
     &lt;/DashboardProvider&gt;
   );
 }</pre></div>
-        <p>Smaller subtrees = fewer components that re-render when context value changes.</p>
+        <ul>
+          <li>Smaller subtrees = fewer components that re-render when context value changes.</li>
+        </ul>
       </section>
       <section id="3-context-performance">
         <h2>3. Context performance</h2>
         <h3>3.1. Re-renders when value changes</h3>
-        <p>When <strong><code class="inline">Provider value={...}</code></strong> changes, <strong>all consumers</strong> of that context re-render (unless optimized — File 12).</p>
-        <p>Avoid recreating the value object every render without need:</p>
+        <ul>
+          <li>When <strong><code class="inline">Provider value={...}</code></strong> changes, <strong>all consumers</strong> of that context re-render (unless optimized — File 12).</li>
+          <li>Avoid recreating the value object every render without need:</li>
+        </ul>
         <div class="code"><pre>// New object every render — all consumers re-render
 &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
 
 // Better — memoize value when dependencies stable
 const value = useMemo(() =&gt; ({ theme, setTheme }), [theme]);
 &lt;ThemeContext.Provider value={value}&gt;</pre></div>
-        <p><code class="inline">setTheme</code> from <code class="inline">useState</code> is stable — only <code class="inline">theme</code> needs to be in deps.</p>
+        <ul>
+          <li><code class="inline">setTheme</code> from <code class="inline">useState</code> is stable — only <code class="inline">theme</code> needs to be in deps.</li>
+        </ul>
         <h3>3.2. Split contexts</h3>
-        <p>Separate <strong>read-heavy</strong> data from <strong>actions</strong>:</p>
+        <ul>
+          <li>Separate <strong>read-heavy</strong> data from <strong>actions</strong>:</li>
+        </ul>
         <div class="code"><pre>const ThemeStateContext = createContext(null);
 const ThemeDispatchContext = createContext(null);
 
@@ -148,7 +170,9 @@ function ThemeProvider({ children }) {
     &lt;/ThemeStateContext.Provider&gt;
   );
 }</pre></div>
-        <p>Components that only call <code class="inline">setTheme</code> subscribe to <strong>dispatch</strong> context and skip re-renders when <code class="inline">theme</code> changes (if they only use dispatch).</p>
+        <ul>
+          <li>Components that only call <code class="inline">setTheme</code> subscribe to <strong>dispatch</strong> context and skip re-renders when <code class="inline">theme</code> changes (if they only use dispatch).</li>
+        </ul>
         <h3>3.3. When Context is a poor fit</h3>
         <ul><li><strong>High-frequency updates</strong> (mouse position, keystrokes in huge trees)</li><li><strong>Large app state</strong> with many selectors — use <strong>Zustand / Redux</strong> (File 11)</li><li><strong>Server cache</strong> — use <strong>TanStack Query</strong> (File 10)</li></ul>
       </section>
@@ -179,7 +203,9 @@ function Counter() {
     &lt;/&gt;
   );
 }</pre></div>
-        <p><strong><code class="inline">dispatch</code></strong> is stable — safe to pass down without <code class="inline">useCallback</code>.</p>
+        <ul>
+          <li><strong><code class="inline">dispatch</code></strong> is stable — safe to pass down without <code class="inline">useCallback</code>.</li>
+        </ul>
         <h3>4.2. When to prefer useReducer over useState</h3>
         <table>
         <thead>
@@ -194,9 +220,13 @@ function Counter() {
         <h3>4.3. Lazy initial state</h3>
         <div class="code"><pre>const [state, dispatch] = useReducer(reducer, initialArg, initFunction);
 // initFunction(initialArg) runs once for expensive setup</pre></div>
-        <p>Same idea as lazy <code class="inline">useState</code> (File 03).</p>
+        <ul>
+          <li>Same idea as lazy <code class="inline">useState</code> (File 03).</li>
+        </ul>
         <h3>4.4. Immer (optional)</h3>
-        <p>Libraries like <strong>Immer</strong> let you write &quot;mutating&quot; logic that produces immutable state — common in Redux Toolkit (File 11).</p>
+        <ul>
+          <li>Libraries like <strong>Immer</strong> let you write &quot;mutating&quot; logic that produces immutable state — common in Redux Toolkit (File 11).</li>
+        </ul>
       </section>
       <section id="5-context-usereducer-together">
         <h2>5. Context + useReducer together</h2>
@@ -256,11 +286,17 @@ function CartSummary() {
       <section id="6-common-context-use-cases">
         <h2>6. Common Context use cases</h2>
         <h3>6.1. Theme and locale</h3>
-        <p>Theme, language, density — read by many components, changes infrequently.</p>
+        <ul>
+          <li>Theme, language, density — read by many components, changes infrequently.</li>
+        </ul>
         <h3>6.2. Auth session</h3>
-        <p>Current user and login/logout — often Context + fetch on mount (File 10). Keep <strong>token</strong> in httpOnly cookies when possible (security — not React-specific).</p>
+        <ul>
+          <li>Current user and login/logout — often Context + fetch on mount (File 10). Keep <strong>token</strong> in httpOnly cookies when possible (security — not React-specific).</li>
+        </ul>
         <h3>6.3. Dependency injection (testing)</h3>
-        <p>Provide mock services via Context in tests without rewiring imports.</p>
+        <ul>
+          <li>Provide mock services via Context in tests without rewiring imports.</li>
+        </ul>
       </section>
       <section id="7-putting-it-together">
         <h2>7. Putting it together</h2>
@@ -293,30 +329,52 @@ export function TodosProvider({ children }) {
     &lt;/TodosContext.Provider&gt;
   );
 }</pre></div>
-        <p>List UI from File 04 consumes <code class="inline">todos</code> and dispatches actions — no prop drilling through layout chrome.</p>
+        <ul>
+          <li>List UI from File 04 consumes <code class="inline">todos</code> and dispatches actions — no prop drilling through layout chrome.</li>
+        </ul>
       </section>
       <section id="8-common-questions">
         <h2>8. Common questions</h2>
         <h3>8.1. What is prop drilling?</h3>
-        <p><strong>A:</strong> Passing props through <strong>many intermediate</strong> components that do not use them, only forward them down.</p>
+        <ul>
+          <li><strong>A:</strong> Passing props through <strong>many intermediate</strong> components that do not use them, only forward them down.</li>
+        </ul>
         <h3>8.2. When should I use Context?</h3>
-        <p><strong>A:</strong> When <strong>many components</strong> in a subtree need the same value and prop drilling hurts. Not for every shared bit of state.</p>
+        <ul>
+          <li><strong>A:</strong> When <strong>many components</strong> in a subtree need the same value and prop drilling hurts. Not for every shared bit of state.</li>
+        </ul>
         <h3>8.3. Does Context replace Redux?</h3>
-        <p><strong>A:</strong> <strong>Context + useReducer</strong> covers moderate global state. <strong>Redux / Zustand</strong> (File 11) scale better for large apps, devtools, and middleware.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Context + useReducer</strong> covers moderate global state. <strong>Redux / Zustand</strong> (File 11) scale better for large apps, devtools, and middleware.</li>
+        </ul>
         <h3>8.4. Why split state and dispatch contexts?</h3>
-        <p><strong>A:</strong> So components that only <strong>dispatch</strong> do not re-render when <strong>state</strong> changes.</p>
+        <ul>
+          <li><strong>A:</strong> So components that only <strong>dispatch</strong> do not re-render when <strong>state</strong> changes.</li>
+        </ul>
         <h3>8.5. useReducer vs useState?</h3>
-        <p><strong>A:</strong> <strong>useState</strong> for simple local state. <strong>useReducer</strong> when updates are <strong>event-driven</strong>, related, or complex.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>useState</strong> for simple local state. <strong>useReducer</strong> when updates are <strong>event-driven</strong>, related, or complex.</li>
+        </ul>
         <h3>8.6. Is dispatch stable?</h3>
-        <p><strong>A:</strong> <strong>Yes</strong> — <code class="inline">dispatch</code> identity from <code class="inline">useReducer</code> does not change between renders.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Yes</strong> — <code class="inline">dispatch</code> identity from <code class="inline">useReducer</code> does not change between renders.</li>
+        </ul>
         <h3>8.7. Can I put functions in context value?</h3>
-        <p><strong>A:</strong> <strong>Yes</strong>, but a <strong>new object</strong> <code class="inline">{ user, logout }</code> each render re-renders all consumers. <strong>Memoize</strong> the value object.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Yes</strong>, but a <strong>new object</strong> <code class="inline">{ user, logout }</code> each render re-renders all consumers. <strong>Memoize</strong> the value object.</li>
+        </ul>
         <h3>8.8. Where should Provider live?</h3>
-        <p><strong>A:</strong> As <strong>low</strong> in the tree as still covers all consumers — avoid wrapping the entire app if only one section needs it.</p>
+        <ul>
+          <li><strong>A:</strong> As <strong>low</strong> in the tree as still covers all consumers — avoid wrapping the entire app if only one section needs it.</li>
+        </ul>
         <h3>8.9. How do I type Context in TypeScript?</h3>
-        <p><strong>A:</strong> Type <code class="inline">createContext&lt;T | null&gt;(null)</code> and narrow in custom hooks after null check.</p>
+        <ul>
+          <li><strong>A:</strong> Type <code class="inline">createContext&lt;T | null&gt;(null)</code> and narrow in custom hooks after null check.</li>
+        </ul>
         <h3>8.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 09 (routing), File 11 (Zustand / Redux Toolkit), File 12 (memoizing context consumers).</p>
+        <ul>
+          <li><strong>A:</strong> File 09 (routing), File 11 (Zustand / Redux Toolkit), File 12 (memoizing context consumers).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 08. Open from the React.js index.</footer>
     </main>

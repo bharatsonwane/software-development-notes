@@ -43,10 +43,12 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>An <strong>array</strong> is an ordered list of values. Arrays are <strong>objects</strong> (File 01) — they are copied and passed <strong>by reference</strong>, and you check them with <code class="inline">Array.isArray()</code>, not <code class="inline">typeof</code>.</p>
-        <p>Indexes are <strong>zero-based</strong>: first element is <code class="inline">[0]</code>, last is <code class="inline">[length - 1]</code>. Arrays are <strong>mutable</strong> — most methods below change the array in place unless noted.</p>
-        <p><strong>Default rule today:</strong> use <strong><code class="inline">for...of</code></strong> or <strong><code class="inline">map</code>/<code class="inline">filter</code>/<code class="inline">reduce</code></strong> instead of manual index loops when possible; use <strong><code class="inline">spread</code></strong> or <strong><code class="inline">slice()</code></strong> to copy before mutating shared data; prefer <strong><code class="inline">find</code>/<code class="inline">some</code>/<code class="inline">every</code></strong> over manual search loops.</p>
-        <p>Interactive visualizer: open <a href="./06-js-arrays-animation.html">06-js-arrays-animation.html</a> in a browser — index/length, push/pop/shift/unshift, map/filter, splice vs slice, spread copy (Run / Step).</p>
+        <ul>
+          <li>An <strong>array</strong> is an ordered list of values. Arrays are <strong>objects</strong> (File 01) — they are copied and passed <strong>by reference</strong>, and you check them with <code class="inline">Array.isArray()</code>, not <code class="inline">typeof</code>.</li>
+          <li>Indexes are <strong>zero-based</strong>: first element is <code class="inline">[0]</code>, last is <code class="inline">[length - 1]</code>. Arrays are <strong>mutable</strong> — most methods below change the array in place unless noted.</li>
+          <li><strong>Default rule today:</strong> use <strong><code class="inline">for...of</code></strong> or <strong><code class="inline">map</code>/<code class="inline">filter</code>/<code class="inline">reduce</code></strong> instead of manual index loops when possible; use <strong><code class="inline">spread</code></strong> or <strong><code class="inline">slice()</code></strong> to copy before mutating shared data; prefer <strong><code class="inline">find</code>/<code class="inline">some</code>/<code class="inline">every</code></strong> over manual search loops.</li>
+          <li>Interactive visualizer: open <a href="./06-js-arrays-animation.html">06-js-arrays-animation.html</a> in a browser — index/length, push/pop/shift/unshift, map/filter, splice vs slice, spread copy (Run / Step).</li>
+        </ul>
       </section>
       <section id="1-creating-accessing">
         <h2>1. Creating &amp; accessing</h2>
@@ -78,33 +80,45 @@ fruits[2];    // &quot;cherry&quot;
 fruits[10];   // undefined — no error, out of bounds
 
 fruits.length;  // 3</pre></div>
-        <p><strong>Negative index</strong> — not built-in; use <code class="inline">at()</code> (ES2022+):</p>
+        <ul>
+          <li><strong>Negative index</strong> — not built-in; use <code class="inline">at()</code> (ES2022+):</li>
+        </ul>
         <div class="code"><pre>fruits.at(-1);   // &quot;cherry&quot; — last
 fruits.at(-2);   // &quot;banana&quot;</pre></div>
-        <p>Assign by index — grows array if needed:</p>
+        <ul>
+          <li>Assign by index — grows array if needed:</li>
+        </ul>
         <div class="code"><pre>const arr = [1, 2];
 arr[5] = 99;
 console.log(arr);       // [1, 2, empty × 3, 99]
 console.log(arr.length);  // 6</pre></div>
-        <p>Sparse arrays (holes) — avoid when possible; some methods skip holes:</p>
+        <ul>
+          <li>Sparse arrays (holes) — avoid when possible; some methods skip holes:</li>
+        </ul>
         <div class="code"><pre>const sparse = [1, , 3];  // hole at index 1
 sparse.length;            // 3
 sparse[1];                // undefined</pre></div>
         <h3>1.3. length property</h3>
-        <p><code class="inline">length</code> is the number of slots (including empty ones), not always &quot;count of defined values&quot;:</p>
+        <ul>
+          <li><code class="inline">length</code> is the number of slots (including empty ones), not always &quot;count of defined values&quot;:</li>
+        </ul>
         <div class="code"><pre>const arr = [10, 20, 30];
 arr.length;        // 3
 
 arr.length = 2;    // truncates — [10, 20]
 arr.length = 5;    // extends with empty slots</pre></div>
-        <p>Setting <code class="inline">length</code> shorter <strong>removes</strong> trailing elements:</p>
+        <ul>
+          <li>Setting <code class="inline">length</code> shorter <strong>removes</strong> trailing elements:</li>
+        </ul>
         <div class="code"><pre>const nums = [1, 2, 3, 4, 5];
 nums.length = 3;
 console.log(nums);  // [1, 2, 3]</pre></div>
       </section>
       <section id="2-mutating-methods">
         <h2>2. Mutating methods</h2>
-        <p>These methods <strong>change the original array</strong>.</p>
+        <ul>
+          <li>These methods <strong>change the original array</strong>.</li>
+        </ul>
         <h3>2.1. Add / remove at end — push &amp; pop</h3>
         <div class="code"><pre>const stack = [1, 2];
 
@@ -113,7 +127,9 @@ console.log(stack);  // [1, 2, 3]
 
 stack.pop();         // returns removed: 3
 console.log(stack);  // [1, 2]</pre></div>
-        <p><code class="inline">push</code> accepts multiple arguments:</p>
+        <ul>
+          <li><code class="inline">push</code> accepts multiple arguments:</li>
+        </ul>
         <div class="code"><pre>[1].push(2, 3, 4);   // [1, 2, 3, 4]</pre></div>
         <h3>2.2. Add / remove at start — unshift &amp; shift</h3>
         <div class="code"><pre>const queue = [2, 3];
@@ -123,9 +139,13 @@ console.log(queue);  // [1, 2, 3]
 
 queue.shift();       // 1 — removed value
 console.log(queue);  // [2, 3]</pre></div>
-        <p><code class="inline">shift</code> and <code class="inline">unshift</code> are <strong>O(n)</strong> — slower on large arrays than <code class="inline">push</code>/<code class="inline">pop</code>.</p>
+        <ul>
+          <li><code class="inline">shift</code> and <code class="inline">unshift</code> are <strong>O(n)</strong> — slower on large arrays than <code class="inline">push</code>/<code class="inline">pop</code>.</li>
+        </ul>
         <h3>2.3. splice — insert, remove, replace</h3>
-        <p><code class="inline">arr.splice(start, deleteCount, ...items)</code> — versatile in-place editor:</p>
+        <ul>
+          <li><code class="inline">arr.splice(start, deleteCount, ...items)</code> — versatile in-place editor:</li>
+        </ul>
         <div class="code"><pre>const arr = [1, 2, 3, 4, 5];
 
 // Remove 2 elements starting at index 1
@@ -153,7 +173,9 @@ arr.splice(2, 1, 99);       // arr is [1, 2, 99, 4, 5]</pre></div>
 [1, 2, 3].reverse();                 // [3, 2, 1]
 
 [0, 0, 0].fill(7, 1, 3);             // [0, 7, 7]</pre></div>
-        <p><strong>Sort pitfall</strong> — default sort converts to strings:</p>
+        <ul>
+          <li><strong>Sort pitfall</strong> — default sort converts to strings:</li>
+        </ul>
         <div class="code"><pre>[10, 2, 1].sort();           // [1, 10, 2] — wrong for numbers
 [10, 2, 1].sort((a, b) =&gt; a - b);  // [1, 2, 10]</pre></div>
         <h3>2.5. Non-mutating alternatives</h3>
@@ -175,30 +197,44 @@ console.log(sorted);    // [1, 2, 3]</pre></div>
       </section>
       <section id="3-iteration-transformation">
         <h2>3. Iteration &amp; transformation</h2>
-        <p>Most take a <strong>callback</strong> <code class="inline">(element, index, array) =&gt; ...</code> (File 05). They skip <strong>holes</strong> in sparse arrays unless noted.</p>
+        <ul>
+          <li>Most take a <strong>callback</strong> <code class="inline">(element, index, array) =&gt; ...</code> (File 05). They skip <strong>holes</strong> in sparse arrays unless noted.</li>
+        </ul>
         <h3>3.1. forEach</h3>
-        <p>Run a function for each element. Returns <strong><code class="inline">undefined</code></strong>. Cannot <code class="inline">break</code> — use <code class="inline">for...of</code> if you need early exit (File 04).</p>
+        <ul>
+          <li>Run a function for each element. Returns <strong><code class="inline">undefined</code></strong>. Cannot <code class="inline">break</code> — use <code class="inline">for...of</code> if you need early exit (File 04).</li>
+        </ul>
         <div class="code"><pre>[1, 2, 3].forEach((n, i) =&gt; {
   console.log(i, n);
 });</pre></div>
         <h3>3.2. map</h3>
-        <p>Transform each element → <strong>new array</strong> of same length:</p>
+        <ul>
+          <li>Transform each element → <strong>new array</strong> of same length:</li>
+        </ul>
         <div class="code"><pre>const doubled = [1, 2, 3].map((n) =&gt; n * 2);
 console.log(doubled);  // [2, 4, 6]</pre></div>
         <div class="code"><pre>const users = [{ name: &quot;A&quot; }, { name: &quot;B&quot; }];
 const names = users.map((u) =&gt; u.name);  // [&quot;A&quot;, &quot;B&quot;]</pre></div>
         <h3>3.3. filter</h3>
-        <p>Keep elements where callback returns <strong>truthy</strong> → <strong>new array</strong> (possibly shorter):</p>
+        <ul>
+          <li>Keep elements where callback returns <strong>truthy</strong> → <strong>new array</strong> (possibly shorter):</li>
+        </ul>
         <div class="code"><pre>const evens = [1, 2, 3, 4].filter((n) =&gt; n % 2 === 0);
 console.log(evens);  // [2, 4]</pre></div>
         <h3>3.4. reduce</h3>
-        <p>Fold array into a <strong>single value</strong> (or object/array accumulator):</p>
+        <ul>
+          <li>Fold array into a <strong>single value</strong> (or object/array accumulator):</li>
+        </ul>
         <div class="code"><pre>const sum = [1, 2, 3, 4].reduce((acc, n) =&gt; acc + n, 0);
 console.log(sum);  // 10</pre></div>
-        <p>Without initial value, first element becomes accumulator (risky on empty arrays):</p>
+        <ul>
+          <li>Without initial value, first element becomes accumulator (risky on empty arrays):</li>
+        </ul>
         <div class="code"><pre>[1, 2, 3].reduce((acc, n) =&gt; acc + n);  // 6 — works here
 // [].reduce((acc, n) =&gt; acc + n);      // TypeError on empty</pre></div>
-        <p>Build objects:</p>
+        <ul>
+          <li>Build objects:</li>
+        </ul>
         <div class="code"><pre>const pairs = [[&quot;a&quot;, 1], [&quot;b&quot;, 2]];
 const obj = pairs.reduce((acc, [k, v]) =&gt; {
   acc[k] = v;
@@ -226,9 +262,13 @@ const obj = pairs.reduce((acc, [k, v]) =&gt; {
 users.find((u) =&gt; u.active);       // { id: 2, active: true }
 users.findIndex((u) =&gt; u.id === 3); // 2
 users.findLast((u) =&gt; u.active);   // { id: 3, active: true }</pre></div>
-        <p>Prefer <code class="inline">find</code> over <code class="inline">filter()[0]</code> — stops at first match.</p>
+        <ul>
+          <li>Prefer <code class="inline">find</code> over <code class="inline">filter()[0]</code> — stops at first match.</li>
+        </ul>
         <h3>3.6. some &amp; every</h3>
-        <p>Short-circuit boolean tests:</p>
+        <ul>
+          <li>Short-circuit boolean tests:</li>
+        </ul>
         <div class="code"><pre>[1, 2, 3].some((n) =&gt; n &gt; 2);    // true — at least one
 [1, 2, 3].every((n) =&gt; n &gt; 0);   // true — all
 
@@ -277,7 +317,9 @@ users.findLast((u) =&gt; u.active);   // { id: 3, active: true }</pre></div>
       <section id="4-spread-copy">
         <h2>4. Spread &amp; copy</h2>
         <h3>4.1. Shallow copy</h3>
-        <p>Arrays hold <strong>references</strong> to objects (File 01). Copying duplicates the <strong>array</strong>, not nested objects:</p>
+        <ul>
+          <li>Arrays hold <strong>references</strong> to objects (File 01). Copying duplicates the <strong>array</strong>, not nested objects:</li>
+        </ul>
         <div class="code"><pre>const original = [1, { x: 1 }];
 const copy = [...original];       // or original.slice()
 
@@ -286,28 +328,44 @@ copy[1].x = 99;
 
 console.log(original[0]);   // 1
 console.log(original[1].x); // 99 — nested object shared!</pre></div>
-        <p>Deep copy plain data: <code class="inline">structuredClone(original)</code> (File 01).</p>
+        <ul>
+          <li>Deep copy plain data: <code class="inline">structuredClone(original)</code> (File 01).</li>
+        </ul>
         <h3>4.2. Spread in arrays</h3>
-        <p><strong>Copy:</strong></p>
+        <ul>
+          <li><strong>Copy:</strong></li>
+        </ul>
         <div class="code"><pre>const a = [1, 2, 3];
 const b = [...a];</pre></div>
-        <p><strong>Merge:</strong></p>
+        <ul>
+          <li><strong>Merge:</strong></li>
+        </ul>
         <div class="code"><pre>const first = [1, 2];
 const second = [3, 4];
 const combined = [...first, ...second];  // [1, 2, 3, 4]</pre></div>
-        <p><strong>Insert / prepend:</strong></p>
+        <ul>
+          <li><strong>Insert / prepend:</strong></li>
+        </ul>
         <div class="code"><pre>const arr = [2, 3];
 const withHead = [1, ...arr];      // [1, 2, 3]
 const withMid = [...arr, 4, 5];    // [2, 3, 4, 5]</pre></div>
-        <p>Spread in function calls (File 05):</p>
+        <ul>
+          <li>Spread in function calls (File 05):</li>
+        </ul>
         <div class="code"><pre>Math.max(...[1, 5, 3]);   // 5</pre></div>
         <h3>4.3. concat vs spread</h3>
-        <p>Both produce new arrays:</p>
+        <ul>
+          <li>Both produce new arrays:</li>
+        </ul>
         <div class="code"><pre>[1, 2].concat([3, 4]);     // [1, 2, 3, 4]
 [1, 2, ...[3, 4]];         // [1, 2, 3, 4]</pre></div>
-        <p>Spread is more flexible for interleaving values; <code class="inline">concat</code> accepts multiple arrays directly.</p>
+        <ul>
+          <li>Spread is more flexible for interleaving values; <code class="inline">concat</code> accepts multiple arrays directly.</li>
+        </ul>
         <h3>4.4. Destructuring arrays (brief)</h3>
-        <p>Pull elements into variables (File 07 goes deeper):</p>
+        <ul>
+          <li>Pull elements into variables (File 07 goes deeper):</li>
+        </ul>
         <div class="code"><pre>const [first, second, ...rest] = [1, 2, 3, 4];
 // first=1, second=2, rest=[3, 4]
 
@@ -316,28 +374,46 @@ const [, , third] = [1, 2, 3];  // skip with commas
 
 const [head = &quot;default&quot;, ...tail] = [];
 // head=&quot;default&quot;, tail=[]</pre></div>
-        <p>Swap without temp:</p>
+        <ul>
+          <li>Swap without temp:</li>
+        </ul>
         <div class="code"><pre>let a = 1, b = 2;
 [a, b] = [b, a];</pre></div>
       </section>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. How do you check if a value is an array?</h3>
-        <p><strong>A:</strong> Use <strong><code class="inline">Array.isArray(value)</code></strong>. <code class="inline">typeof []</code> returns <code class="inline">&quot;object&quot;</code>, which is not specific enough.</p>
+        <ul>
+          <li><strong>A:</strong> Use <strong><code class="inline">Array.isArray(value)</code></strong>. <code class="inline">typeof []</code> returns <code class="inline">&quot;object&quot;</code>, which is not specific enough.</li>
+        </ul>
         <h3>5.2. What is the difference between <code class="inline">map</code> and <code class="inline">forEach</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">map</code></strong> returns a <strong>new array</strong> with transformed values. <strong><code class="inline">forEach</code></strong> runs side effects and returns <strong><code class="inline">undefined</code></strong>. Use <code class="inline">map</code> when you need a result array.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">map</code></strong> returns a <strong>new array</strong> with transformed values. <strong><code class="inline">forEach</code></strong> runs side effects and returns <strong><code class="inline">undefined</code></strong>. Use <code class="inline">map</code> when you need a result array.</li>
+        </ul>
         <h3>5.3. What is the difference between <code class="inline">filter</code> and <code class="inline">find</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">filter</code></strong> returns <strong>all</strong> matches as an array. <strong><code class="inline">find</code></strong> returns the <strong>first</strong> match (or <code class="inline">undefined</code>) and stops early.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">filter</code></strong> returns <strong>all</strong> matches as an array. <strong><code class="inline">find</code></strong> returns the <strong>first</strong> match (or <code class="inline">undefined</code>) and stops early.</li>
+        </ul>
         <h3>5.4. Does <code class="inline">sort()</code> mutate the original array?</h3>
-        <p><strong>A:</strong> <strong>Yes.</strong> It sorts in place. Copy first: <code class="inline">[...arr].sort(compareFn)</code> or use <code class="inline">toSorted()</code> (ES2023+).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Yes.</strong> It sorts in place. Copy first: <code class="inline">[...arr].sort(compareFn)</code> or use <code class="inline">toSorted()</code> (ES2023+).</li>
+        </ul>
         <h3>5.5. Why does <code class="inline">[10, 2, 1].sort()</code> give <code class="inline">[1, 10, 2]</code>?</h3>
-        <p><strong>A:</strong> Default sort converts elements to <strong>strings</strong>. Use <code class="inline">(a, b) =&gt; a - b</code> for numeric sort.</p>
+        <ul>
+          <li><strong>A:</strong> Default sort converts elements to <strong>strings</strong>. Use <code class="inline">(a, b) =&gt; a - b</code> for numeric sort.</li>
+        </ul>
         <h3>5.6. What is the difference between <code class="inline">slice</code> and <code class="inline">splice</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">slice</code></strong> returns a <strong>shallow copy</strong> of a portion — does not mutate. <strong><code class="inline">splice</code></strong> <strong>mutates</strong> the array (remove/insert/replace).</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">slice</code></strong> returns a <strong>shallow copy</strong> of a portion — does not mutate. <strong><code class="inline">splice</code></strong> <strong>mutates</strong> the array (remove/insert/replace).</li>
+        </ul>
         <h3>5.7. Is <code class="inline">[...arr]</code> a deep copy?</h3>
-        <p><strong>A:</strong> <strong>No.</strong> It is a <strong>shallow</strong> copy. Top-level elements are copied; nested objects/arrays are still shared. Use <code class="inline">structuredClone()</code> for deep copies of plain data.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No.</strong> It is a <strong>shallow</strong> copy. Top-level elements are copied; nested objects/arrays are still shared. Use <code class="inline">structuredClone()</code> for deep copies of plain data.</li>
+        </ul>
         <h3>5.8. What does <code class="inline">reduce</code> need as a second argument?</h3>
-        <p><strong>A:</strong> An <strong>initial accumulator</strong> value. Always provide one for empty arrays and when the result type differs from elements (e.g. summing to <code class="inline">0</code>, building <code class="inline">{}</code>).</p>
+        <ul>
+          <li><strong>A:</strong> An <strong>initial accumulator</strong> value. Always provide one for empty arrays and when the result type differs from elements (e.g. summing to <code class="inline">0</code>, building <code class="inline">{}</code>).</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 06. Open from the JS Language index.</footer>
     </main>

@@ -43,10 +43,12 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p><strong>Operators</strong> act on values and produce a result. <strong>Coercion</strong> is when JavaScript converts a value from one type to another — sometimes automatically (implicit), sometimes because you asked (explicit).</p>
-        <p>These two ideas are tightly linked: many operators trigger coercion before comparing or combining values. Knowing which operators coerce and how helps you avoid bugs like <code class="inline">&quot;5&quot; + 1</code> vs <code class="inline">&quot;5&quot; - 1</code>.</p>
-        <p><strong>Default rule today:</strong> use <strong><code class="inline">===</code></strong> for equality, prefer <strong>explicit</strong> conversions when you need them, and learn the small list of <strong>falsy</strong> values by heart.</p>
-        <p>Interactive visualizer: open <a href="./03-js-operators-coercion-animation.html">03-js-operators-coercion-animation.html</a> in a browser — <code class="inline">+</code> vs <code class="inline">-</code>, <code class="inline">==</code>/<code class="inline">===</code>, <code class="inline">Object.is</code>, <code class="inline">&amp;&amp;</code>/<code class="inline">||</code>/<code class="inline">??</code>, truthy/falsy (Run / Step).</p>
+        <ul>
+          <li><strong>Operators</strong> act on values and produce a result. <strong>Coercion</strong> is when JavaScript converts a value from one type to another — sometimes automatically (implicit), sometimes because you asked (explicit).</li>
+          <li>These two ideas are tightly linked: many operators trigger coercion before comparing or combining values. Knowing which operators coerce and how helps you avoid bugs like <code class="inline">&quot;5&quot; + 1</code> vs <code class="inline">&quot;5&quot; - 1</code>.</li>
+          <li><strong>Default rule today:</strong> use <strong><code class="inline">===</code></strong> for equality, prefer <strong>explicit</strong> conversions when you need them, and learn the small list of <strong>falsy</strong> values by heart.</li>
+          <li>Interactive visualizer: open <a href="./03-js-operators-coercion-animation.html">03-js-operators-coercion-animation.html</a> in a browser — <code class="inline">+</code> vs <code class="inline">-</code>, <code class="inline">==</code>/<code class="inline">===</code>, <code class="inline">Object.is</code>, <code class="inline">&amp;&amp;</code>/<code class="inline">||</code>/<code class="inline">??</code>, truthy/falsy (Run / Step).</li>
+        </ul>
       </section>
       <section id="1-operators">
         <h2>1. Operators</h2>
@@ -75,16 +77,20 @@ let n = 5;
 n++;        // n is 6; expression evaluates to 5 (postfix)
 ++n;        // n is 7; expression evaluates to 7 (prefix)</pre></div>
         <h3>1.2. Assignment operators</h3>
-        <p>Assign a value to a variable. Compound forms combine an operation with assignment:</p>
+        <ul>
+          <li>Assign a value to a variable. Compound forms combine an operation with assignment:</li>
+        </ul>
         <div class="code"><pre>let x = 10;
 
 x += 5;   // x = x + 5  → 15
-x -= 3;   // 12
-x *= 2;   // 24
-x /= 4;   // 6
-x %= 5;   // 1
-x **= 3;  // 1</pre></div>
-        <p>Logical assignment (ES2021+):</p>
+x -= 3;   // x = x - 3  → 12
+x *= 2;   // x = x * 2  → 24
+x /= 4;   // x = x / 4  → 6
+x %= 5;   // x = x % 5  → 1
+x **= 3;  // x = x ** 3 → 1</pre></div>
+        <ul>
+          <li>Logical assignment (ES2021+):</li>
+        </ul>
         <div class="code"><pre>let a = null;
 a ??= 10;   // assign only if null/undefined → a is 10
 a ??= 20;   // no change → still 10
@@ -93,7 +99,9 @@ let b = 0;
 b ||= 5;    // assign if falsy → b is 5
 b &amp;&amp;= 0;    // assign if truthy → b is 0</pre></div>
         <h3>1.3. Comparison operators (relational)</h3>
-        <p>Compare two values; return a <strong>boolean</strong>. Operands are coerced to numbers when comparing numbers/strings (except with <code class="inline">===</code> / <code class="inline">!==</code>).</p>
+        <ul>
+          <li>Compare two values; return a <strong>boolean</strong>. Operands are coerced to numbers when comparing numbers/strings (except with <code class="inline">===</code> / <code class="inline">!==</code>).</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
@@ -111,7 +119,9 @@ null &gt;= 0;    // true — null coerces to 0
 null == 0;    // true
 null === 0;   // false</pre></div>
         <h3>1.4. Logical operators</h3>
-        <p>Work with <strong>boolean</strong> logic. Operands are coerced to boolean unless using <code class="inline">&amp;&amp;</code> / <code class="inline">||</code> for short-circuit <strong>value</strong> return.</p>
+        <ul>
+          <li>Work with <strong>boolean</strong> logic. Operands are coerced to boolean unless using <code class="inline">&amp;&amp;</code> / <code class="inline">||</code> for short-circuit <strong>value</strong> return.</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Operator</th><th>Name</th><th>Behavior</th></tr>
@@ -130,7 +140,9 @@ null || &quot;default&quot;; // &quot;default&quot;
 !true;             // false
 !&quot;hello&quot;;          // false
 !0;                // true</pre></div>
-        <p>Short-circuit evaluation — right side may never run:</p>
+        <ul>
+          <li>Short-circuit evaluation — right side may never run:</li>
+        </ul>
         <div class="code"><pre>const user = null;
 const name = user &amp;&amp; user.name;   // null — no error, user.name not accessed
 
@@ -161,8 +173,10 @@ delete obj.a;    // true (already gone, still &quot;succeeds&quot;)
 
 &quot;toString&quot; in {};  // true — inherited from Object.prototype</pre></div>
         <h3>1.6. Operator precedence (brief)</h3>
-        <p>When multiple operators appear in one expression, <strong>precedence</strong> decides evaluation order. Use parentheses when in doubt.</p>
-        <p>High → low (partial list):</p>
+        <ul>
+          <li>When multiple operators appear in one expression, <strong>precedence</strong> decides evaluation order. Use parentheses when in doubt.</li>
+          <li>High → low (partial list):</li>
+        </ul>
         <ol><li><code class="inline">()</code> grouping</li><li><code class="inline">++</code> <code class="inline">--</code> (postfix), <code class="inline">?.</code> <code class="inline">??</code> <code class="inline">?.</code></li><li><code class="inline">!</code> unary <code class="inline">+</code> unary <code class="inline">-</code> <code class="inline">typeof</code></li><li><code class="inline">**</code></li><li><code class="inline">*</code> <code class="inline">/</code> <code class="inline">%</code></li><li><code class="inline">+</code> <code class="inline">-</code></li><li><code class="inline">&lt;</code> <code class="inline">&lt;=</code> <code class="inline">&gt;</code> <code class="inline">&gt;=</code></li><li><code class="inline">==</code> <code class="inline">!=</code> <code class="inline">===</code> <code class="inline">!==</code></li><li><code class="inline">&amp;&amp;</code></li><li><code class="inline">||</code></li><li><code class="inline">??</code> (cannot mix with <code class="inline">&amp;&amp;</code>/<code class="inline">||</code> without parentheses)</li><li><code class="inline">=</code> <code class="inline">+=</code> <code class="inline">-=</code> …</li></ol>
         <div class="code"><pre>2 + 3 * 4;       // 14, not 20
 (2 + 3) * 4;     // 20
@@ -183,7 +197,9 @@ delete obj.a;    // true (already gone, still &quot;succeeds&quot;)
         <tr><td><code class="inline">!=</code></td><td>Loose inequality</td><td>Yes</td></tr>
         </tbody>
         </table>
-        <p><strong>Always prefer <code class="inline">===</code> and <code class="inline">!==</code></strong> unless you have a specific reason for loose equality.</p>
+        <ul>
+          <li><strong>Always prefer <code class="inline">===</code> and <code class="inline">!==</code></strong> unless you have a specific reason for loose equality.</li>
+        </ul>
         <div class="code"><pre>5 === 5;       // true
 5 === &quot;5&quot;;     // false — different types
 
@@ -192,14 +208,20 @@ delete obj.a;    // true (already gone, still &quot;succeeds&quot;)
 &quot;&quot; == false;   // true
 null == undefined;  // true (special case)
 null === undefined; // false</pre></div>
-        <p>Loose equality algorithm (simplified):</p>
+        <ul>
+          <li>Loose equality algorithm (simplified):</li>
+        </ul>
         <ol><li>Same type → compare with <code class="inline">===</code> rules.</li><li><code class="inline">null == undefined</code> → <code class="inline">true</code> (only each other).</li><li>Number vs string → string to number.</li><li>Boolean vs anything → boolean to number (<code class="inline">0</code> or <code class="inline">1</code>).</li><li>Object vs primitive → object to primitive (<code class="inline">valueOf</code> / <code class="inline">toString</code>).</li></ol>
         <h3>2.2. <code class="inline">Object.is</code></h3>
-        <p>ES6 added <strong><code class="inline">Object.is</code></strong> for cases where <code class="inline">===</code> is not enough:</p>
+        <ul>
+          <li>ES6 added <strong><code class="inline">Object.is</code></strong> for cases where <code class="inline">===</code> is not enough:</li>
+        </ul>
         <div class="code"><pre>Object.is(NaN, NaN);   // true  (NaN === NaN is false)
 Object.is(+0, -0);     // false ( +0 === -0 is true)
 Object.is(5, 5);       // true — same as === for normal values</pre></div>
-        <p>Use <code class="inline">Object.is</code> when you explicitly care about <code class="inline">NaN</code> equality or signed zero. For everyday checks, <code class="inline">===</code> is fine.</p>
+        <ul>
+          <li>Use <code class="inline">Object.is</code> when you explicitly care about <code class="inline">NaN</code> equality or signed zero. For everyday checks, <code class="inline">===</code> is fine.</li>
+        </ul>
         <h3>2.3. Special equality cases</h3>
         <div class="code"><pre>// NaN
 NaN == NaN;            // false
@@ -223,9 +245,13 @@ a === b;               // true — same reference
 &quot;&quot; == false;           // true
 &quot;&quot; === false;          // false</pre></div>
         <h3>2.4. Deep equality</h3>
-        <p><strong><code class="inline">===</code></strong> compares <strong>references</strong> for objects — not structure.</p>
+        <ul>
+          <li><strong><code class="inline">===</code></strong> compares <strong>references</strong> for objects — not structure.</li>
+        </ul>
         <div class="code"><pre>{ a: 1 } === { a: 1 };  // false</pre></div>
-        <p><strong>Shallow compare</strong> — one level:</p>
+        <ul>
+          <li><strong>Shallow compare</strong> — one level:</li>
+        </ul>
         <div class="code"><pre>function shallowEqual(a, b) {
   if (a === b) return true;
   if (typeof a !== &quot;object&quot; || typeof b !== &quot;object&quot; || !a || !b) return false;
@@ -234,7 +260,9 @@ a === b;               // true — same reference
   if (keysA.length !== keysB.length) return false;
   return keysA.every((k) =&gt; Object.is(a[k], b[k]));
 }</pre></div>
-        <p><strong>Deep equality</strong> — recursive compare (interview classic):</p>
+        <ul>
+          <li><strong>Deep equality</strong> — recursive compare (interview classic):</li>
+        </ul>
         <div class="code"><pre>function deepEqual(a, b) {
   if (Object.is(a, b)) return true;
   if (typeof a !== &quot;object&quot; || typeof b !== &quot;object&quot; || !a || !b) return false;
@@ -243,11 +271,15 @@ a === b;               // true — same reference
   if (keysA.length !== keysB.length) return false;
   return keysA.every((k) =&gt; deepEqual(a[k], b[k]));
 }</pre></div>
-        <p><strong>Practical options:</strong> <code class="inline">structuredClone</code> + compare (heavy), <strong><code class="inline">JSON.stringify(a) === JSON.stringify(b)</code></strong> (only for JSON-safe data, key order matters), or libraries like <strong>lodash <code class="inline">isEqual</code></strong>.</p>
+        <ul>
+          <li><strong>Practical options:</strong> <code class="inline">structuredClone</code> + compare (heavy), <strong><code class="inline">JSON.stringify(a) === JSON.stringify(b)</code></strong> (only for JSON-safe data, key order matters), or libraries like <strong>lodash <code class="inline">isEqual</code></strong>.</li>
+        </ul>
       </section>
       <section id="3-type-coercion">
         <h2>3. Type coercion</h2>
-        <p><strong>Coercion</strong> is automatic or manual conversion between types. JavaScript is <strong>weakly typed</strong> — it will convert values when operators or contexts require it.</p>
+        <ul>
+          <li><strong>Coercion</strong> is automatic or manual conversion between types. JavaScript is <strong>weakly typed</strong> — it will convert values when operators or contexts require it.</li>
+        </ul>
         <h3>3.1. Implicit vs explicit coercion</h3>
         <table>
         <thead>
@@ -266,10 +298,14 @@ if (&quot;0&quot;) { /* runs — non-empty string is truthy */ }
 Number(&quot;5&quot;);    // 5
 String(42);     // &quot;42&quot;
 Boolean(&quot;&quot;);    // false</pre></div>
-        <p>Prefer <strong>explicit</strong> conversion in application code — it documents intent and avoids surprises.</p>
+        <ul>
+          <li>Prefer <strong>explicit</strong> conversion in application code — it documents intent and avoids surprises.</li>
+        </ul>
         <h3>3.2. Abstract operations (ToNumber, ToString, ToBoolean)</h3>
-        <p>The spec defines internal conversion rules. Practical summary:</p>
-        <p><strong>ToNumber:</strong></p>
+        <ul>
+          <li>The spec defines internal conversion rules. Practical summary:</li>
+          <li><strong>ToNumber:</strong></li>
+        </ul>
         <table>
         <thead>
         <tr><th>Input</th><th>Result</th></tr>
@@ -284,7 +320,9 @@ Boolean(&quot;&quot;);    // false</pre></div>
         <tr><td>Objects</td><td>Call <code class="inline">valueOf</code> / <code class="inline">toString</code>, then convert again</td></tr>
         </tbody>
         </table>
-        <p><strong>ToString:</strong></p>
+        <ul>
+          <li><strong>ToString:</strong></li>
+        </ul>
         <table>
         <thead>
         <tr><th>Input</th><th>Result</th></tr>
@@ -297,7 +335,9 @@ Boolean(&quot;&quot;);    // false</pre></div>
         <tr><td>Objects</td><td>Call <code class="inline">toString</code> (often <code class="inline">&quot;[object Object]&quot;</code>)</td></tr>
         </tbody>
         </table>
-        <p><strong>ToBoolean:</strong></p>
+        <ul>
+          <li><strong>ToBoolean:</strong></li>
+        </ul>
         <table>
         <thead>
         <tr><th>Input</th><th>Result</th></tr>
@@ -336,7 +376,9 @@ typeof null;         // &quot;object&quot;
 // parseInt vs Number
 parseInt(&quot;42px&quot;);    // 42 — parses until invalid char
 Number(&quot;42px&quot;);      // NaN — whole string must be valid</pre></div>
-        <p>When reviewing code, treat <strong><code class="inline">==</code></strong> as a red flag unless comparing <code class="inline">null</code>/<code class="inline">undefined</code> with intent:</p>
+        <ul>
+          <li>When reviewing code, treat <strong><code class="inline">==</code></strong> as a red flag unless comparing <code class="inline">null</code>/<code class="inline">undefined</code> with intent:</li>
+        </ul>
         <div class="code"><pre>// Idiomatic null/undefined check
 if (value == null) { /* null OR undefined */ }
 
@@ -363,16 +405,22 @@ String(null);        // &quot;null&quot;
 Boolean(0);          // false
 Boolean([]);         // true — empty array is truthy!
 Boolean({});         // true</pre></div>
-        <p>Safe string conversion:</p>
+        <ul>
+          <li>Safe string conversion:</li>
+        </ul>
         <div class="code"><pre>const value = null;
 String(value);           // &quot;null&quot;
 // value.toString();     // TypeError</pre></div>
       </section>
       <section id="4-truthy-falsy">
         <h2>4. Truthy &amp; falsy</h2>
-        <p>In <strong>boolean contexts</strong> (<code class="inline">if</code>, <code class="inline">while</code>, <code class="inline">&amp;&amp;</code>, <code class="inline">||</code>, <code class="inline">!</code>, ternary), values are coerced to <code class="inline">true</code> or <code class="inline">false</code>.</p>
+        <ul>
+          <li>In <strong>boolean contexts</strong> (<code class="inline">if</code>, <code class="inline">while</code>, <code class="inline">&amp;&amp;</code>, <code class="inline">||</code>, <code class="inline">!</code>, ternary), values are coerced to <code class="inline">true</code> or <code class="inline">false</code>.</li>
+        </ul>
         <h3>4.1. Falsy values (only 8)</h3>
-        <p>There are exactly <strong>8 falsy</strong> values in JavaScript:</p>
+        <ul>
+          <li>There are exactly <strong>8 falsy</strong> values in JavaScript:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Value</th><th>Notes</th></tr>
@@ -388,7 +436,9 @@ String(value);           // &quot;null&quot;
         <tr><td><code class="inline">NaN</code></td><td>Not a Number</td></tr>
         </tbody>
         </table>
-        <p><strong>Everything else is truthy</strong> — including <code class="inline">&quot;0&quot;</code>, <code class="inline">&quot;false&quot;</code>, <code class="inline">[]</code>, <code class="inline">{}</code>, <code class="inline">function(){}</code>.</p>
+        <ul>
+          <li><strong>Everything else is truthy</strong> — including <code class="inline">&quot;0&quot;</code>, <code class="inline">&quot;false&quot;</code>, <code class="inline">[]</code>, <code class="inline">{}</code>, <code class="inline">function(){}</code>.</li>
+        </ul>
         <div class="code"><pre>if ([]) {
   console.log(&quot;empty array is truthy&quot;);  // runs!
 }</pre></div>
@@ -428,7 +478,9 @@ if (arr.length === 0) { /* actually empty */ }</pre></div>
 &quot;&quot; ?? &quot;default&quot;;   // &quot;&quot; — empty string is not nullish
 
 null ?? undefined ?? &quot;fallback&quot;;  // &quot;fallback&quot;</pre></div>
-        <p>Use <strong><code class="inline">??</code></strong> when <code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, or <code class="inline">false</code> are valid values you want to keep:</p>
+        <ul>
+          <li>Use <strong><code class="inline">??</code></strong> when <code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, or <code class="inline">false</code> are valid values you want to keep:</li>
+        </ul>
         <div class="code"><pre>function setCount(count) {
   const value = count ?? 0;   // only default if null/undefined
   // not: count || 0  — would turn -0 into 0 (OK) but also reject... 
@@ -438,21 +490,37 @@ null ?? undefined ?? &quot;fallback&quot;;  // &quot;fallback&quot;</pre></div>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. What is the difference between <code class="inline">==</code> and <code class="inline">===</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">===</code> compares <strong>type and value</strong> without coercion. <code class="inline">==</code> coerces operands to the same type before comparing. Use <code class="inline">===</code> by default.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">===</code> compares <strong>type and value</strong> without coercion. <code class="inline">==</code> coerces operands to the same type before comparing. Use <code class="inline">===</code> by default.</li>
+        </ul>
         <h3>5.2. Why does <code class="inline">&quot;5&quot; + 1</code> give <code class="inline">&quot;51&quot;</code> but <code class="inline">&quot;5&quot; - 1</code> gives <code class="inline">4</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">+</code> does <strong>string concatenation</strong> if either operand is a string. <code class="inline">-</code> only works on numbers, so both operands are coerced to numbers first.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">+</code> does <strong>string concatenation</strong> if either operand is a string. <code class="inline">-</code> only works on numbers, so both operands are coerced to numbers first.</li>
+        </ul>
         <h3>5.3. What are all the falsy values in JavaScript?</h3>
-        <p><strong>A:</strong> <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, and <code class="inline">NaN</code>. All other values are truthy.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, and <code class="inline">NaN</code>. All other values are truthy.</li>
+        </ul>
         <h3>5.4. Is an empty array <code class="inline">[]</code> truthy or falsy?</h3>
-        <p><strong>A:</strong> <strong>Truthy.</strong> Only the 8 falsy values above evaluate to <code class="inline">false</code>. To check emptiness, use <code class="inline">arr.length === 0</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Truthy.</strong> Only the 8 falsy values above evaluate to <code class="inline">false</code>. To check emptiness, use <code class="inline">arr.length === 0</code>.</li>
+        </ul>
         <h3>5.5. When should I use <code class="inline">??</code> instead of <code class="inline">||</code>?</h3>
-        <p><strong>A:</strong> Use <code class="inline">??</code> when <code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, or <code class="inline">false</code> are valid values you must preserve. <code class="inline">||</code> treats them as missing and falls through to the default.</p>
+        <ul>
+          <li><strong>A:</strong> Use <code class="inline">??</code> when <code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, or <code class="inline">false</code> are valid values you must preserve. <code class="inline">||</code> treats them as missing and falls through to the default.</li>
+        </ul>
         <h3>5.6. What is the difference between <code class="inline">Object.is</code> and <code class="inline">===</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">Object.is(NaN, NaN)</code> is <code class="inline">true</code>; <code class="inline">NaN === NaN</code> is <code class="inline">false</code>. <code class="inline">Object.is(+0, -0)</code> is <code class="inline">false</code>; <code class="inline">+0 === -0</code> is <code class="inline">true</code>. Otherwise they agree.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">Object.is(NaN, NaN)</code> is <code class="inline">true</code>; <code class="inline">NaN === NaN</code> is <code class="inline">false</code>. <code class="inline">Object.is(+0, -0)</code> is <code class="inline">false</code>; <code class="inline">+0 === -0</code> is <code class="inline">true</code>. Otherwise they agree.</li>
+        </ul>
         <h3>5.7. What is type coercion?</h3>
-        <p><strong>A:</strong> Automatic or manual conversion between types. Implicit coercion happens in expressions like <code class="inline">&quot;5&quot; - 1</code> or <code class="inline">if (value)</code>. Explicit coercion uses <code class="inline">Number()</code>, <code class="inline">String()</code>, or <code class="inline">Boolean()</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Automatic or manual conversion between types. Implicit coercion happens in expressions like <code class="inline">&quot;5&quot; - 1</code> or <code class="inline">if (value)</code>. Explicit coercion uses <code class="inline">Number()</code>, <code class="inline">String()</code>, or <code class="inline">Boolean()</code>.</li>
+        </ul>
         <h3>5.8. How do I safely convert a string to a number?</h3>
-        <p><strong>A:</strong> Use <code class="inline">Number(str)</code> when the whole string must be numeric. Use <code class="inline">parseInt(str, 10)</code> or <code class="inline">parseFloat(str)</code> when parsing prefixes like <code class="inline">&quot;42px&quot;</code>. Always pass radix <code class="inline">10</code> to <code class="inline">parseInt</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Use <code class="inline">Number(str)</code> when the whole string must be numeric. Use <code class="inline">parseInt(str, 10)</code> or <code class="inline">parseFloat(str)</code> when parsing prefixes like <code class="inline">&quot;42px&quot;</code>. Always pass radix <code class="inline">10</code> to <code class="inline">parseInt</code>.</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 03. Open from the JS Language index.</footer>
     </main>

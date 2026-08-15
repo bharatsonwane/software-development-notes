@@ -42,11 +42,15 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Objects dominate application data. TypeScript describes object shapes with <strong><code class="inline">interface</code></strong> and <strong><code class="inline">type</code></strong> aliases.</p>
+        <ul>
+          <li>Objects dominate application data. TypeScript describes object shapes with <strong><code class="inline">interface</code></strong> and <strong><code class="inline">type</code></strong> aliases.</li>
+        </ul>
       </section>
       <section id="1-interface-syntax">
         <h2>1. <code class="inline">interface</code> syntax</h2>
-        <p>An <strong>interface</strong> names the shape of an object:</p>
+        <ul>
+          <li>An <strong>interface</strong> names the shape of an object:</li>
+        </ul>
         <div class="code"><pre>interface User {
   id: number;
   name: string;
@@ -85,24 +89,32 @@ interface UserConstructor {
       </section>
       <section id="2-type-aliases">
         <h2>2. <code class="inline">type</code> aliases</h2>
-        <p><strong><code class="inline">type</code></strong> creates an alias for any type — objects, unions, primitives, tuples:</p>
+        <ul>
+          <li><strong><code class="inline">type</code></strong> creates an alias for any type — objects, unions, primitives, tuples:</li>
+        </ul>
         <div class="code"><pre>type UserId = number;
 type Point = { x: number; y: number };
 
 type Result =
   | { success: true; data: string }
   | { success: false; error: string };</pre></div>
-        <p>Object shapes with <code class="inline">type</code>:</p>
+        <ul>
+          <li>Object shapes with <code class="inline">type</code>:</li>
+        </ul>
         <div class="code"><pre>type User = {
   id: number;
   name: string;
   email?: string;
 };</pre></div>
-        <p>For a plain object shape, <code class="inline">interface User</code> and <code class="inline">type User = { ... }</code> are often interchangeable.</p>
+        <ul>
+          <li>For a plain object shape, <code class="inline">interface User</code> and <code class="inline">type User = { ... }</code> are often interchangeable.</li>
+        </ul>
       </section>
       <section id="3-extending-interfaces">
         <h2>3. Extending interfaces</h2>
-        <p>Interfaces support <strong>declaration merging</strong> and <strong><code class="inline">extends</code></strong>:</p>
+        <ul>
+          <li>Interfaces support <strong>declaration merging</strong> and <strong><code class="inline">extends</code></strong>:</li>
+        </ul>
         <div class="code"><pre>interface Person {
   name: string;
 }
@@ -117,7 +129,9 @@ const emp: Employee = {
   employeeId: 101,
   department: &quot;Engineering&quot;,
 };</pre></div>
-        <p>Multiple inheritance:</p>
+        <ul>
+          <li>Multiple inheritance:</li>
+        </ul>
         <div class="code"><pre>interface Named {
   name: string;
 }
@@ -128,7 +142,9 @@ interface Aged {
 
 interface Person extends Named, Aged {}</pre></div>
         <h3>3.1. Extending with <code class="inline">type</code> (intersection)</h3>
-        <p>Types use <strong><code class="inline">&amp;</code></strong> (intersection), not <code class="inline">extends</code>:</p>
+        <ul>
+          <li>Types use <strong><code class="inline">&amp;</code></strong> (intersection), not <code class="inline">extends</code>:</li>
+        </ul>
         <div class="code"><pre>type Person = Named &amp; Aged;
 
 type Employee = Person &amp; {
@@ -157,7 +173,9 @@ type Employee = Person &amp; {
 interface Window {
   theme: &quot;light&quot; | &quot;dark&quot;;
 }</pre></div>
-        <p>Types cannot be merged — duplicate <code class="inline">type Window</code> is an error.</p>
+        <ul>
+          <li>Types cannot be merged — duplicate <code class="inline">type Window</code> is an error.</li>
+        </ul>
         <h3>4.2. Practical team guidelines</h3>
         <div class="code"><pre>// Object shape for a domain model
 interface Product {
@@ -173,9 +191,13 @@ type ApiResponse&lt;T&gt; =
 
 // Reusable primitive alias
 type ProductId = string;</pre></div>
-        <p>Many codebases use <strong><code class="inline">interface</code> for objects</strong> and <strong><code class="inline">type</code> for everything else</strong>. Consistency within a project matters more than the rule itself.</p>
+        <ul>
+          <li>Many codebases use <strong><code class="inline">interface</code> for objects</strong> and <strong><code class="inline">type</code> for everything else</strong>. Consistency within a project matters more than the rule itself.</li>
+        </ul>
         <h3>4.3. Implementing in classes</h3>
-        <p>Both work with <code class="inline">implements</code>:</p>
+        <ul>
+          <li>Both work with <code class="inline">implements</code>:</li>
+        </ul>
         <div class="code"><pre>interface Serializable {
   serialize(): string;
 }
@@ -190,21 +212,37 @@ class User implements Serializable {
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. Can I use <code class="inline">interface</code> and <code class="inline">type</code> together?</h3>
-        <p><strong>A:</strong> Yes. An interface can extend a type alias, and a type can use an interface in an intersection.</p>
+        <ul>
+          <li><strong>A:</strong> Yes. An interface can extend a type alias, and a type can use an interface in an intersection.</li>
+        </ul>
         <h3>5.2. Which is better for React props?</h3>
-        <p><strong>A:</strong> Both work. <code class="inline">interface Props</code> is common; <code class="inline">type Props</code> is equally valid, especially with unions.</p>
+        <ul>
+          <li><strong>A:</strong> Both work. <code class="inline">interface Props</code> is common; <code class="inline">type Props</code> is equally valid, especially with unions.</li>
+        </ul>
         <h3>5.3. What does <code class="inline">?</code> mean on a property?</h3>
-        <p><strong>A:</strong> Optional — the property may be missing or explicitly <code class="inline">undefined</code> (with <code class="inline">strictNullChecks</code>).</p>
+        <ul>
+          <li><strong>A:</strong> Optional — the property may be missing or explicitly <code class="inline">undefined</code> (with <code class="inline">strictNullChecks</code>).</li>
+        </ul>
         <h3>5.4. Can interfaces describe functions?</h3>
-        <p><strong>A:</strong> Yes — via call signatures (<code class="inline">interface Fn { (x: number): number }</code>) or as a property type.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — via call signatures (<code class="inline">interface Fn { (x: number): number }</code>) or as a property type.</li>
+        </ul>
         <h3>5.5. What is an index signature?</h3>
-        <p><strong>A:</strong> Allows arbitrary keys of a given type — <code class="inline">[key: string]: number</code> for a string-keyed map.</p>
+        <ul>
+          <li><strong>A:</strong> Allows arbitrary keys of a given type — <code class="inline">[key: string]: number</code> for a string-keyed map.</li>
+        </ul>
         <h3>5.6. Do interfaces exist at runtime?</h3>
-        <p><strong>A:</strong> No. They are erased during compilation — zero runtime footprint.</p>
+        <ul>
+          <li><strong>A:</strong> No. They are erased during compilation — zero runtime footprint.</li>
+        </ul>
         <h3>5.7. When would I augment an interface?</h3>
-        <p><strong>A:</strong> Extending third-party types (e.g. adding fields to <code class="inline">Express.Request</code>) via declaration merging in a <code class="inline">.d.ts</code> file.</p>
+        <ul>
+          <li><strong>A:</strong> Extending third-party types (e.g. adding fields to <code class="inline">Express.Request</code>) via declaration merging in a <code class="inline">.d.ts</code> file.</li>
+        </ul>
         <h3>5.8. Interface vs type performance?</h3>
-        <p><strong>A:</strong> No runtime difference. Compile-time performance is similar; pick based on expressiveness and team style.</p>
+        <ul>
+          <li><strong>A:</strong> No runtime difference. Compile-time performance is similar; pick based on expressiveness and team style.</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 03. Open from the TypeScript index.</footer>
     </main>

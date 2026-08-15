@@ -42,11 +42,15 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Real TypeScript projects need consistent <strong>module settings</strong>, <strong>path resolution</strong>, and <strong>compiler strictness</strong> across files and packages.</p>
+        <ul>
+          <li>Real TypeScript projects need consistent <strong>module settings</strong>, <strong>path resolution</strong>, and <strong>compiler strictness</strong> across files and packages.</li>
+        </ul>
       </section>
       <section id="1-esm-vs-commonjs-in-ts">
         <h2>1. ESM vs CommonJS in TS</h2>
-        <p>JavaScript has two major module systems:</p>
+        <ul>
+          <li>JavaScript has two major module systems:</li>
+        </ul>
         <table>
         <thead>
         <tr><th></th><th>ESM</th><th>CommonJS</th></tr>
@@ -65,7 +69,9 @@
     &quot;target&quot;: &quot;ES2020&quot;
   }
 }</pre></div>
-        <p>Common combinations:</p>
+        <ul>
+          <li>Common combinations:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Project type</th><th>Typical <code class="inline">module</code></th><th><code class="inline">moduleResolution</code></th></tr>
@@ -90,17 +96,25 @@ export default class App {}
 import App from &quot;./App&quot;;
 import { PI, add } from &quot;./math&quot;;
 import type { User } from &quot;./types&quot;; // type-only import — erased at compile</pre></div>
-        <p><strong>Type-only imports</strong> (<code class="inline">import type</code>) ensure no runtime import is emitted — useful for types and circular dependency breaks.</p>
+        <ul>
+          <li><strong>Type-only imports</strong> (<code class="inline">import type</code>) ensure no runtime import is emitted — useful for types and circular dependency breaks.</li>
+        </ul>
         <h3>1.3. <code class="inline">package.json</code> and <code class="inline">&quot;type&quot;: &quot;module&quot;</code></h3>
-        <p>Node treats <code class="inline">.js</code> as ESM when:</p>
+        <ul>
+          <li>Node treats <code class="inline">.js</code> as ESM when:</li>
+        </ul>
         <div class="code"><pre>{
   &quot;type&quot;: &quot;module&quot;
 }</pre></div>
-        <p>Use <code class="inline">.mts</code> / <code class="inline">.cts</code> or explicit <code class="inline">&quot;module&quot;</code> in tsconfig when mixing systems.</p>
+        <ul>
+          <li>Use <code class="inline">.mts</code> / <code class="inline">.cts</code> or explicit <code class="inline">&quot;module&quot;</code> in tsconfig when mixing systems.</li>
+        </ul>
       </section>
       <section id="2-path-aliases">
         <h2>2. Path aliases</h2>
-        <p>Long relative imports are hard to maintain:</p>
+        <ul>
+          <li>Long relative imports are hard to maintain:</li>
+        </ul>
         <div class="code"><pre>import { Button } from &quot;../../../components/ui/Button&quot;;</pre></div>
         <h3>2.1. Configure in <code class="inline">tsconfig.json</code></h3>
         <div class="code"><pre>{
@@ -112,10 +126,14 @@ import type { User } from &quot;./types&quot;; // type-only import — erased at
     }
   }
 }</pre></div>
-        <p>Usage:</p>
+        <ul>
+          <li>Usage:</li>
+        </ul>
         <div class="code"><pre>import { Button } from &quot;@/components/ui/Button&quot;;</pre></div>
         <h3>2.2. Bundler must understand aliases too</h3>
-        <p>TypeScript paths affect <strong>type-checking only</strong>. Vite, webpack, or Next.js need matching alias config:</p>
+        <ul>
+          <li>TypeScript paths affect <strong>type-checking only</strong>. Vite, webpack, or Next.js need matching alias config:</li>
+        </ul>
         <div class="code"><pre>// vite.config.ts
 import path from &quot;path&quot;;
 export default {
@@ -128,7 +146,9 @@ export default {
       </section>
       <section id="3-strict-mode-flags">
         <h2>3. Strict mode flags</h2>
-        <p><code class="inline">&quot;strict&quot;: true</code> enables:</p>
+        <ul>
+          <li><code class="inline">&quot;strict&quot;: true</code> enables:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Flag</th><th>Effect</th></tr>
@@ -153,7 +173,9 @@ export default {
     &quot;exactOptionalPropertyTypes&quot;: true
   }
 }</pre></div>
-        <p><code class="inline">noUncheckedIndexedAccess</code> makes <code class="inline">arr[i]</code> return <code class="inline">T | undefined</code> — safer but noisier.</p>
+        <ul>
+          <li><code class="inline">noUncheckedIndexedAccess</code> makes <code class="inline">arr[i]</code> return <code class="inline">T | undefined</code> — safer but noisier.</li>
+        </ul>
         <h3>3.2. Incremental strict migration</h3>
         <div class="code"><pre>{
   &quot;compilerOptions&quot;: {
@@ -161,11 +183,15 @@ export default {
     &quot;strictNullChecks&quot;: true
   }
 }</pre></div>
-        <p>Enable flags one at a time on legacy codebases. Use <code class="inline">// @ts-expect-error</code> sparingly with a ticket to fix.</p>
+        <ul>
+          <li>Enable flags one at a time on legacy codebases. Use <code class="inline">// @ts-expect-error</code> sparingly with a ticket to fix.</li>
+        </ul>
       </section>
       <section id="4-monorepo-project-references-intro">
         <h2>4. Monorepo / project references (intro)</h2>
-        <p>Large repos split code into packages with <strong>project references</strong>:</p>
+        <ul>
+          <li>Large repos split code into packages with <strong>project references</strong>:</li>
+        </ul>
         <div class="code"><pre>packages/
   shared/     → tsconfig.json
   api/        → references shared
@@ -190,29 +216,49 @@ export default {
   },
   &quot;references&quot;: [{ &quot;path&quot;: &quot;../shared&quot; }]
 }</pre></div>
-        <p>Build order:</p>
+        <ul>
+          <li>Build order:</li>
+        </ul>
         <div class="code"><pre>tsc -b</pre></div>
-        <p>Benefits: faster incremental builds, clear dependency graph, shared types across packages.</p>
-        <p>Tools like <strong>pnpm workspaces</strong>, <strong>Turborepo</strong>, and <strong>Nx</strong> layer on top of this pattern.</p>
+        <ul>
+          <li>Benefits: faster incremental builds, clear dependency graph, shared types across packages.</li>
+          <li>Tools like <strong>pnpm workspaces</strong>, <strong>Turborepo</strong>, and <strong>Nx</strong> layer on top of this pattern.</li>
+        </ul>
       </section>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. What is <code class="inline">moduleResolution: &quot;bundler&quot;</code>?</h3>
-        <p><strong>A:</strong> TS 5+ mode for apps using bundlers — allows <code class="inline">import</code> without file extensions in types while matching Vite/webpack behavior.</p>
+        <ul>
+          <li><strong>A:</strong> TS 5+ mode for apps using bundlers — allows <code class="inline">import</code> without file extensions in types while matching Vite/webpack behavior.</li>
+        </ul>
         <h3>5.2. Do path aliases work at runtime?</h3>
-        <p><strong>A:</strong> Not automatically — the bundler or runtime (ts-node with config) must resolve them.</p>
+        <ul>
+          <li><strong>A:</strong> Not automatically — the bundler or runtime (ts-node with config) must resolve them.</li>
+        </ul>
         <h3>5.3. Should I use default or named exports?</h3>
-        <p><strong>A:</strong> Named exports scale better (refactor-friendly, tree-shaking clarity). Default exports are fine for single-purpose modules (pages, App root).</p>
+        <ul>
+          <li><strong>A:</strong> Named exports scale better (refactor-friendly, tree-shaking clarity). Default exports are fine for single-purpose modules (pages, App root).</li>
+        </ul>
         <h3>5.4. What is <code class="inline">import type</code> for?</h3>
-        <p><strong>A:</strong> Import types only — no runtime import. Avoids circular dependency issues and unnecessary JS output.</p>
+        <ul>
+          <li><strong>A:</strong> Import types only — no runtime import. Avoids circular dependency issues and unnecessary JS output.</li>
+        </ul>
         <h3>5.5. What does <code class="inline">composite: true</code> require?</h3>
-        <p><strong>A:</strong> <code class="inline">declaration</code> enabled, explicit <code class="inline">rootDir</code>, no mixed project files — needed for project references.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">declaration</code> enabled, explicit <code class="inline">rootDir</code>, no mixed project files — needed for project references.</li>
+        </ul>
         <h3>5.6. ESM vs CJS in Node today?</h3>
-        <p><strong>A:</strong> New Node projects prefer ESM (<code class="inline">&quot;type&quot;: &quot;module&quot;</code>) or dual packages. Match <code class="inline">module</code>/<code class="inline">moduleResolution</code> to your runtime.</p>
+        <ul>
+          <li><strong>A:</strong> New Node projects prefer ESM (<code class="inline">&quot;type&quot;: &quot;module&quot;</code>) or dual packages. Match <code class="inline">module</code>/<code class="inline">moduleResolution</code> to your runtime.</li>
+        </ul>
         <h3>5.7. Can I disable strict for one file?</h3>
-        <p><strong>A:</strong> <code class="inline">// @ts-nocheck</code> at top of file — last resort. Prefer fixing types or scoped <code class="inline">@ts-expect-error</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">// @ts-nocheck</code> at top of file — last resort. Prefer fixing types or scoped <code class="inline">@ts-expect-error</code>.</li>
+        </ul>
         <h3>5.8. What is <code class="inline">skipLibCheck</code>?</h3>
-        <p><strong>A:</strong> Skips type-checking of <code class="inline">.d.ts</code> in <code class="inline">node_modules</code> — faster builds; keep enabled unless debugging lib types.</p>
+        <ul>
+          <li><strong>A:</strong> Skips type-checking of <code class="inline">.d.ts</code> in <code class="inline">node_modules</code> — faster builds; keep enabled unless debugging lib types.</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 09. Open from the TypeScript index.</footer>
     </main>

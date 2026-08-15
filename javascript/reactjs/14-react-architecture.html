@@ -46,9 +46,11 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>As apps grow, <strong>structure</strong> matters as much as syntax. This chapter covers <strong>feature folders</strong>, <strong>separation of concerns</strong>, <strong>compound components</strong>, <strong>error boundaries</strong>, and patterns that keep React codebases maintainable.</p>
-        <p>Builds on composition (File 02), Context (File 08), routing (File 09), and testing (File 13).</p>
-        <p><strong>Default rule today:</strong> organize by <strong>feature</strong>, not file type; keep <strong>UI</strong>, <strong>hooks</strong>, and <strong>API</strong> colocated per feature; use <strong>error boundaries</strong> for unexpected failures; prefer <strong>composition</strong> over prop explosion.</p>
+        <ul>
+          <li>As apps grow, <strong>structure</strong> matters as much as syntax. This chapter covers <strong>feature folders</strong>, <strong>separation of concerns</strong>, <strong>compound components</strong>, <strong>error boundaries</strong>, and patterns that keep React codebases maintainable.</li>
+          <li>Builds on composition (File 02), Context (File 08), routing (File 09), and testing (File 13).</li>
+          <li><strong>Default rule today:</strong> organize by <strong>feature</strong>, not file type; keep <strong>UI</strong>, <strong>hooks</strong>, and <strong>API</strong> colocated per feature; use <strong>error boundaries</strong> for unexpected failures; prefer <strong>composition</strong> over prop explosion.</li>
+        </ul>
       </section>
       <section id="1-folder-structure">
         <h2>1. Folder structure</h2>
@@ -78,24 +80,32 @@
     App.jsx
     router.jsx
     providers.jsx</pre></div>
-        <p><strong>Feature folders</strong> group everything for one domain. <strong><code class="inline">components/</code></strong> at root holds <strong>design system</strong> pieces used everywhere.</p>
+        <ul>
+          <li><strong>Feature folders</strong> group everything for one domain. <strong><code class="inline">components/</code></strong> at root holds <strong>design system</strong> pieces used everywhere.</li>
+        </ul>
         <h3>1.2. Avoid type-only grouping at scale</h3>
         <div class="code"><pre># Hard to navigate in large apps
 components/
 hooks/
 services/</pre></div>
-        <p>Cross-cutting folders force jumping between directories for one feature. Hybrid works: shared <strong><code class="inline">components/</code></strong>, feature-local <strong><code class="inline">hooks/</code></strong>.</p>
+        <ul>
+          <li>Cross-cutting folders force jumping between directories for one feature. Hybrid works: shared <strong><code class="inline">components/</code></strong>, feature-local <strong><code class="inline">hooks/</code></strong>.</li>
+        </ul>
         <h3>1.3. Public API via index.js</h3>
         <div class="code"><pre>// features/cart/index.js
 export { CartProvider, useCart } from &quot;./CartContext&quot;;
 export { CartDrawer } from &quot;./components/CartDrawer&quot;;</pre></div>
-        <p>Import from <strong><code class="inline">@/features/cart</code></strong>, not deep paths into internals — freedom to refactor inside feature.</p>
+        <ul>
+          <li>Import from <strong><code class="inline">@/features/cart</code></strong>, not deep paths into internals — freedom to refactor inside feature.</li>
+        </ul>
         <h3>1.4. Colocate tests and styles</h3>
         <div class="code"><pre>ProductCard/
   ProductCard.jsx
   ProductCard.test.jsx
   ProductCard.module.css</pre></div>
-        <p>Tests next to source (File 13) — easier to find and maintain.</p>
+        <ul>
+          <li>Tests next to source (File 13) — easier to find and maintain.</li>
+        </ul>
       </section>
       <section id="2-separation-of-concerns">
         <h2>2. Separation of concerns</h2>
@@ -111,7 +121,9 @@ export { CartDrawer } from &quot;./components/CartDrawer&quot;;</pre></div>
         <tr><td><strong>API module</strong></td><td>fetch functions, no React</td></tr>
         </tbody>
         </table>
-        <p>Not a strict rule — avoid &quot;container&quot; files that only pass props through one level.</p>
+        <ul>
+          <li>Not a strict rule — avoid &quot;container&quot; files that only pass props through one level.</li>
+        </ul>
         <h3>2.2. Example split</h3>
         <div class="code"><pre>// features/products/hooks/useProduct.js
 export function useProduct(id) {
@@ -136,9 +148,13 @@ export function ProductDetails({ product }) {
     &lt;/article&gt;
   );
 }</pre></div>
-        <p>File 10 — data in hook; UI stays readable.</p>
+        <ul>
+          <li>File 10 — data in hook; UI stays readable.</li>
+        </ul>
         <h3>2.3. providers.jsx</h3>
-        <p>Centralize app-wide wrappers (File 08, File 10, File 09):</p>
+        <ul>
+          <li>Centralize app-wide wrappers (File 08, File 10, File 09):</li>
+        </ul>
         <div class="code"><pre>export function AppProviders({ children }) {
   return (
     &lt;QueryClientProvider client={queryClient}&gt;
@@ -154,10 +170,14 @@ export function ProductDetails({ product }) {
       <section id="3-compound-components">
         <h2>3. Compound components</h2>
         <h3>3.1. Flexible API without prop soup</h3>
-        <p>Instead of one mega-component with dozens of props:</p>
+        <ul>
+          <li>Instead of one mega-component with dozens of props:</li>
+        </ul>
         <div class="code"><pre>// Avoid
 &lt;Tabs tabs={items} activeIndex={0} onTabChange={...} renderPanel={...} /&gt;</pre></div>
-        <p>Use <strong>composition</strong> — parent shares state with children via Context <strong>inside the feature</strong>:</p>
+        <ul>
+          <li>Use <strong>composition</strong> — parent shares state with children via Context <strong>inside the feature</strong>:</li>
+        </ul>
         <div class="code"><pre>&lt;Tabs defaultIndex={0}&gt;
   &lt;Tabs.List&gt;
     &lt;Tabs.Tab index={0}&gt;Overview&lt;/Tabs.Tab&gt;
@@ -200,16 +220,19 @@ function Tab({ index, children }) {
 Tabs.Tab = Tab;
 Tabs.List = TabList;
 // attach subcomponents</pre></div>
-        <p>Consumers compose markup; library owns <strong>behavior</strong> and <strong>accessibility</strong> wiring.</p>
+        <ul>
+          <li>Consumers compose markup; library owns <strong>behavior</strong> and <strong>accessibility</strong> wiring.</li>
+        </ul>
         <h3>3.3. When to use</h3>
         <ul><li>Design systems (<code class="inline">Select</code>, <code class="inline">Menu</code>, <code class="inline">Accordion</code>)</li><li>Repeated layout patterns with slots</li><li>File 02 — <code class="inline">children</code> and composition extended</li></ul>
       </section>
       <section id="4-error-boundaries">
         <h2>4. Error boundaries</h2>
         <h3>4.1. What they catch</h3>
-        <p><strong>Error boundaries</strong> catch <strong>render errors</strong> in child tree — JavaScript exceptions during render, lifecycle, or constructors of child components.</p>
-        <p>They do <strong>not</strong> catch:</p>
-        <ul><li>Event handler errors (use try/catch)</li><li>Async errors inside <code class="inline">useEffect</code> (handle in promise)</li><li>Server-side rendering errors (framework-specific)</li></ul>
+        <ul>
+          <li><strong>Error boundaries</strong> catch <strong>render errors</strong> in child tree — JavaScript exceptions during render, lifecycle, or constructors of child components.</li>
+          <li>They do <strong>not</strong> catch:</li>
+          <li>Event handler errors (use try/catch)</li><li>Async errors inside <code class="inline">useEffect</code> (handle in promise)</li><li>Server-side rendering errors (framework-specific)</li></ul>
         <h3>4.2. Class component boundary (current API)</h3>
         <div class="code"><pre>class ErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
@@ -237,7 +260,9 @@ Tabs.List = TabList;
     return this.props.children;
   }
 }</pre></div>
-        <p>React may add <strong><code class="inline">use</code> / error boundary hooks</strong> — check your React version; class boundary remains widely used.</p>
+        <ul>
+          <li>React may add <strong><code class="inline">use</code> / error boundary hooks</strong> — check your React version; class boundary remains widely used.</li>
+        </ul>
         <h3>4.3. Granular placement</h3>
         <div class="code"><pre>&lt;AppProviders&gt;
   &lt;ErrorBoundary fallback={&lt;AppCrashScreen /&gt;}&gt;
@@ -248,29 +273,45 @@ Tabs.List = TabList;
     &lt;Footer /&gt;
   &lt;/ErrorBoundary&gt;
 &lt;/AppProviders&gt;</pre></div>
-        <p>Isolate failures — one broken widget should not white-screen the entire app.</p>
+        <ul>
+          <li>Isolate failures — one broken widget should not white-screen the entire app.</li>
+        </ul>
         <h3>4.4. React Router errorElement</h3>
-        <p>File 09 — route-level <strong><code class="inline">errorElement</code></strong> for loader/render failures in a section.</p>
+        <ul>
+          <li>File 09 — route-level <strong><code class="inline">errorElement</code></strong> for loader/render failures in a section.</li>
+        </ul>
       </section>
       <section id="5-boundaries-and-layers">
         <h2>5. Boundaries and layers</h2>
         <h3>5.1. Unidirectional data flow (recap)</h3>
-        <p>Props down, events up (File 03). Global client state via Context or store (Files 08, 11). Server state via query library (File 10).</p>
+        <ul>
+          <li>Props down, events up (File 03). Global client state via Context or store (Files 08, 11). Server state via query library (File 10).</li>
+        </ul>
         <h3>5.2. Avoid circular imports</h3>
-        <p>Features import from <strong><code class="inline">components/</code></strong> and <strong><code class="inline">lib/</code></strong>, not from each other. Shared types in <strong><code class="inline">lib/types</code></strong> or feature-agnostic module.</p>
+        <ul>
+          <li>Features import from <strong><code class="inline">components/</code></strong> and <strong><code class="inline">lib/</code></strong>, not from each other. Shared types in <strong><code class="inline">lib/types</code></strong> or feature-agnostic module.</li>
+        </ul>
         <h3>5.3. Environment and config</h3>
         <div class="code"><pre>// lib/config.js
 export const API_BASE = import.meta.env.VITE_API_URL;</pre></div>
-        <p>Never hardcode secrets in client bundle — env vars prefixed for exposure (Vite <code class="inline">VITE_</code>).</p>
+        <ul>
+          <li>Never hardcode secrets in client bundle — env vars prefixed for exposure (Vite <code class="inline">VITE_</code>).</li>
+        </ul>
       </section>
       <section id="6-scaling-patterns">
         <h2>6. Scaling patterns</h2>
         <h3>6.1. Route-based code splitting</h3>
-        <p>File 12 — lazy routes per feature folder reduce initial bundle.</p>
+        <ul>
+          <li>File 12 — lazy routes per feature folder reduce initial bundle.</li>
+        </ul>
         <h3>6.2. Design system layer</h3>
-        <p>Shared <strong><code class="inline">Button</code></strong>, <strong><code class="inline">Input</code></strong>, <strong><code class="inline">Modal</code></strong> — consistent a11y and styling. Feature components compose design system pieces.</p>
+        <ul>
+          <li>Shared <strong><code class="inline">Button</code></strong>, <strong><code class="inline">Input</code></strong>, <strong><code class="inline">Modal</code></strong> — consistent a11y and styling. Feature components compose design system pieces.</li>
+        </ul>
         <h3>6.3. Documentation and Storybook</h3>
-        <p>Optional <strong>Storybook</strong> for presentational components — visual catalog isolated from data fetching.</p>
+        <ul>
+          <li>Optional <strong>Storybook</strong> for presentational components — visual catalog isolated from data fetching.</li>
+        </ul>
       </section>
       <section id="7-anti-patterns-to-avoid">
         <h2>7. Anti-patterns to avoid</h2>
@@ -320,30 +361,52 @@ const router = createBrowserRouter([
     ],
   },
 ]);</pre></div>
-        <p>Each <strong><code class="inline">features/*</code></strong> owns routes segment, pages, hooks, and API for that domain.</p>
+        <ul>
+          <li>Each <strong><code class="inline">features/*</code></strong> owns routes segment, pages, hooks, and API for that domain.</li>
+        </ul>
       </section>
       <section id="9-common-questions">
         <h2>9. Common questions</h2>
         <h3>9.1. Feature folders vs pages folders?</h3>
-        <p><strong>A:</strong> <strong>Feature-first</strong> scales better — everything for &quot;products&quot; lives together. <strong><code class="inline">pages/</code></strong> can alias route entry components inside features.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Feature-first</strong> scales better — everything for &quot;products&quot; lives together. <strong><code class="inline">pages/</code></strong> can alias route entry components inside features.</li>
+        </ul>
         <h3>9.2. Where do shared hooks go?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">hooks/</code></strong> at root if truly generic; otherwise <strong>inside the feature</strong> that owns them.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">hooks/</code></strong> at root if truly generic; otherwise <strong>inside the feature</strong> that owns them.</li>
+        </ul>
         <h3>9.3. What are compound components?</h3>
-        <p><strong>A:</strong> A set of components (<strong><code class="inline">Tabs</code></strong>, <strong><code class="inline">Tabs.Tab</code></strong>) that <strong>share implicit state</strong> via internal Context for a flexible public API.</p>
+        <ul>
+          <li><strong>A:</strong> A set of components (<strong><code class="inline">Tabs</code></strong>, <strong><code class="inline">Tabs.Tab</code></strong>) that <strong>share implicit state</strong> via internal Context for a flexible public API.</li>
+        </ul>
         <h3>9.4. Do error boundaries catch useEffect errors?</h3>
-        <p><strong>A:</strong> <strong>Not async errors</strong> inside effects unless re-thrown during render. Handle fetch errors in UI state (File 10).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Not async errors</strong> inside effects unless re-thrown during render. Handle fetch errors in UI state (File 10).</li>
+        </ul>
         <h3>9.5. Can I use error boundary with function components?</h3>
-        <p><strong>A:</strong> Boundaries are <strong>class components</strong> today (or library wrappers). Handlers use <strong>try/catch</strong>.</p>
+        <ul>
+          <li><strong>A:</strong> Boundaries are <strong>class components</strong> today (or library wrappers). Handlers use <strong>try/catch</strong>.</li>
+        </ul>
         <h3>9.6. How many providers is too many?</h3>
-        <p><strong>A:</strong> Combine in <strong><code class="inline">AppProviders</code></strong>. Split contexts by concern (File 08) — not one mega-provider.</p>
+        <ul>
+          <li><strong>A:</strong> Combine in <strong><code class="inline">AppProviders</code></strong>. Split contexts by concern (File 08) — not one mega-provider.</li>
+        </ul>
         <h3>9.7. Monorepo?</h3>
-        <p><strong>A:</strong> Shared <strong><code class="inline">ui</code></strong> package + app packages per product — same feature principles at package level.</p>
+        <ul>
+          <li><strong>A:</strong> Shared <strong><code class="inline">ui</code></strong> package + app packages per product — same feature principles at package level.</li>
+        </ul>
         <h3>9.8. TypeScript?</h3>
-        <p><strong>A:</strong> Same structure — add <strong><code class="inline">types.ts</code></strong> per feature for API shapes and props.</p>
+        <ul>
+          <li><strong>A:</strong> Same structure — add <strong><code class="inline">types.ts</code></strong> per feature for API shapes and props.</li>
+        </ul>
         <h3>9.9. When to split a feature?</h3>
-        <p><strong>A:</strong> When folder grows hard to navigate (~15+ files) or two unrelated domains share a folder — extract sub-features.</p>
+        <ul>
+          <li><strong>A:</strong> When folder grows hard to navigate (~15+ files) or two unrelated domains share a folder — extract sub-features.</li>
+        </ul>
         <h3>9.10. End of React track — what next?</h3>
-        <p><strong>A:</strong> Build a small full-stack app applying Files 01–14. Deepen <strong>File 10</strong> (TanStack Query), <strong>File 12</strong> (perf), or explore <strong>Next.js</strong> for SSR/file routing.</p>
+        <ul>
+          <li><strong>A:</strong> Build a small full-stack app applying Files 01–14. Deepen <strong>File 10</strong> (TanStack Query), <strong>File 12</strong> (perf), or explore <strong>Next.js</strong> for SSR/file routing.</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 14. Open from the React.js index.</footer>
     </main>

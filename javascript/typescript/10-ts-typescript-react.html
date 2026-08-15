@@ -42,8 +42,10 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>React and TypeScript work together through <strong>typed props</strong>, <strong>generic hooks</strong>, and <strong>event types</strong> from <code class="inline">@types/react</code>.</p>
-        <p><strong>Prerequisite:</strong> <a href="../reactjs/">React.js notes</a> (files 01–06) before this chapter.</p>
+        <ul>
+          <li>React and TypeScript work together through <strong>typed props</strong>, <strong>generic hooks</strong>, and <strong>event types</strong> from <code class="inline">@types/react</code>.</li>
+          <li><strong>Prerequisite:</strong> <a href="../reactjs/">React.js notes</a> (files 01–06) before this chapter.</li>
+        </ul>
       </section>
       <section id="1-typing-components-and-props">
         <h2>1. Typing components and props</h2>
@@ -61,7 +63,9 @@ function Button({ label, onClick, disabled = false }: ButtonProps) {
     &lt;/button&gt;
   );
 }</pre></div>
-        <p>Or with <code class="inline">interface</code>:</p>
+        <ul>
+          <li>Or with <code class="inline">interface</code>:</li>
+        </ul>
         <div class="code"><pre>interface CardProps {
   title: string;
   children: React.ReactNode;
@@ -76,7 +80,9 @@ function Card({ title, children }: CardProps) {
   );
 }</pre></div>
         <h3>1.2. <code class="inline">React.FC</code> / <code class="inline">React.FunctionComponent</code></h3>
-        <p>Older style — optional <code class="inline">children</code> was implicit. Modern codebases prefer <strong>explicit props</strong>:</p>
+        <ul>
+          <li>Older style — optional <code class="inline">children</code> was implicit. Modern codebases prefer <strong>explicit props</strong>:</li>
+        </ul>
         <div class="code"><pre>// Avoid unless team standard
 const OldButton: React.FC&lt;ButtonProps&gt; = ({ label, onClick }) =&gt; (
   &lt;button onClick={onClick}&gt;{label}&lt;/button&gt;
@@ -94,12 +100,16 @@ function LabeledInput({ label, ...rest }: InputProps) {
     &lt;/label&gt;
   );
 }</pre></div>
-        <p>Use <code class="inline">ComponentPropsWithoutRef&lt;&quot;button&quot;&gt;</code> or <code class="inline">ComponentProps&lt;typeof SomeComponent&gt;</code> to inherit props.</p>
+        <ul>
+          <li>Use <code class="inline">ComponentPropsWithoutRef&lt;&quot;button&quot;&gt;</code> or <code class="inline">ComponentProps&lt;typeof SomeComponent&gt;</code> to inherit props.</li>
+        </ul>
         <h3>1.4. Typing <code class="inline">children</code></h3>
         <div class="code"><pre>type Props = {
   children: React.ReactNode; // string, number, element, fragment, null, array, etc.
 };</pre></div>
-        <p>Stricter alternatives: <code class="inline">React.ReactElement</code> (single element), <code class="inline">React.ReactNode</code> (most common).</p>
+        <ul>
+          <li>Stricter alternatives: <code class="inline">React.ReactElement</code> (single element), <code class="inline">React.ReactNode</code> (most common).</li>
+        </ul>
       </section>
       <section id="2-usestate-and-event-types">
         <h2>2. <code class="inline">useState</code> and event types</h2>
@@ -111,7 +121,9 @@ const [user, setUser] = useState&lt;User | null&gt;(null);
 const [ids, setIds] = useState&lt;string[]&gt;([]);
 // Prefer useState&lt;string[]&gt;([]) when initial value is []</pre></div>
         <h3>2.2. Event handlers</h3>
-        <p>React events are <strong>synthetic</strong> — use types from <code class="inline">@types/react</code>:</p>
+        <ul>
+          <li>React events are <strong>synthetic</strong> — use types from <code class="inline">@types/react</code>:</li>
+        </ul>
         <div class="code"><pre>function SearchForm() {
   const [query, setQuery] = useState(&quot;&quot;);
 
@@ -130,7 +142,9 @@ const [ids, setIds] = useState&lt;string[]&gt;([]);
     &lt;/form&gt;
   );
 }</pre></div>
-        <p>Common event types:</p>
+        <ul>
+          <li>Common event types:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Event</th><th>Type</th></tr>
@@ -151,7 +165,9 @@ const [ids, setIds] = useState&lt;string[]&gt;([]);
       <section id="3-typing-hooks-and-context">
         <h2>3. Typing hooks and context</h2>
         <h3>3.1. Custom hooks</h3>
-        <p>Return type is often inferred; annotate for public hooks:</p>
+        <ul>
+          <li>Return type is often inferred; annotate for public hooks:</li>
+        </ul>
         <div class="code"><pre>function useCounter(initial = 0) {
   const [count, setCount] = useState(initial);
   const increment = () =&gt; setCount((c) =&gt; c + 1);
@@ -159,7 +175,9 @@ const [ids, setIds] = useState&lt;string[]&gt;([]);
 }
 
 type UseCounterReturn = ReturnType&lt;typeof useCounter&gt;;</pre></div>
-        <p>Generic custom hook:</p>
+        <ul>
+          <li>Generic custom hook:</li>
+        </ul>
         <div class="code"><pre>function useLocalStorage&lt;T&gt;(key: string, initial: T) {
   const [value, setValue] = useState&lt;T&gt;(() =&gt; {
     const raw = localStorage.getItem(key);
@@ -225,25 +243,35 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
       </section>
       <section id="4-third-party-types-types">
         <h2>4. Third-party types (<code class="inline">@types/*</code>)</h2>
-        <p>Many JS libraries ship types. Others need <strong>DefinitelyTyped</strong> packages:</p>
+        <ul>
+          <li>Many JS libraries ship types. Others need <strong>DefinitelyTyped</strong> packages:</li>
+        </ul>
         <div class="code"><pre>npm install --save-dev @types/react @types/react-dom
 npm install --save-dev @types/node
 npm install --save-dev @types/lodash</pre></div>
         <h3>4.1. Library includes its own types</h3>
-        <p>Modern packages embed <code class="inline">.d.ts</code>:</p>
+        <ul>
+          <li>Modern packages embed <code class="inline">.d.ts</code>:</li>
+        </ul>
         <div class="code"><pre>// package.json of a typed library
 {
   &quot;name&quot;: &quot;some-lib&quot;,
   &quot;types&quot;: &quot;dist/index.d.ts&quot;
 }</pre></div>
-        <p>No <code class="inline">@types/some-lib</code> needed.</p>
+        <ul>
+          <li>No <code class="inline">@types/some-lib</code> needed.</li>
+        </ul>
         <h3>4.2. No types available</h3>
-        <p>Create a declaration file:</p>
+        <ul>
+          <li>Create a declaration file:</li>
+        </ul>
         <div class="code"><pre>// types/untyped-lib.d.ts
 declare module &quot;untyped-lib&quot; {
   export function doSomething(input: string): number;
 }</pre></div>
-        <p>Or use <code class="inline">// @ts-expect-error</code> temporarily — fix with proper types or wrapper.</p>
+        <ul>
+          <li>Or use <code class="inline">// @ts-expect-error</code> temporarily — fix with proper types or wrapper.</li>
+        </ul>
         <h3>4.3. <code class="inline">ref</code> typing</h3>
         <div class="code"><pre>const inputRef = useRef&lt;HTMLInputElement&gt;(null);
 
@@ -256,21 +284,37 @@ return &lt;input ref={inputRef} /&gt;;</pre></div>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. Should I use <code class="inline">interface</code> or <code class="inline">type</code> for props?</h3>
-        <p><strong>A:</strong> Either. <code class="inline">type</code> needed for unions (<code class="inline">Props | DisabledProps</code>). Teams often pick one and stay consistent.</p>
+        <ul>
+          <li><strong>A:</strong> Either. <code class="inline">type</code> needed for unions (<code class="inline">Props | DisabledProps</code>). Teams often pick one and stay consistent.</li>
+        </ul>
         <h3>5.2. Why <code class="inline">useState&lt;string[]&gt;([])</code> instead of <code class="inline">useState([])</code>?</h3>
-        <p><strong>A:</strong> Empty array infers <code class="inline">never[]</code> — explicit generic sets element type.</p>
+        <ul>
+          <li><strong>A:</strong> Empty array infers <code class="inline">never[]</code> — explicit generic sets element type.</li>
+        </ul>
         <h3>5.3. What is <code class="inline">React.ReactNode</code> vs <code class="inline">React.ReactElement</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">ReactNode</code> is anything renderable. <code class="inline">ReactElement</code> is a single JSX element — stricter.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">ReactNode</code> is anything renderable. <code class="inline">ReactElement</code> is a single JSX element — stricter.</li>
+        </ul>
         <h3>5.4. How do I type <code class="inline">forwardRef</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">const Input = forwardRef&lt;HTMLInputElement, InputProps&gt;((props, ref) =&gt; ...)</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">const Input = forwardRef&lt;HTMLInputElement, InputProps&gt;((props, ref) =&gt; ...)</code>.</li>
+        </ul>
         <h3>5.5. Do I need <code class="inline">@types/react</code> with React 18+?</h3>
-        <p><strong>A:</strong> Types are still published via <code class="inline">@types/react</code> — install as dev dependency.</p>
+        <ul>
+          <li><strong>A:</strong> Types are still published via <code class="inline">@types/react</code> — install as dev dependency.</li>
+        </ul>
         <h3>5.6. How to type generic table/list components?</h3>
-        <p><strong>A:</strong> <code class="inline">function List&lt;T&gt;({ items, render }: { items: T[]; render: (item: T) =&gt; React.ReactNode })</code>.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">function List&lt;T&gt;({ items, render }: { items: T[]; render: (item: T) =&gt; React.ReactNode })</code>.</li>
+        </ul>
         <h3>5.7. What about <code class="inline">propTypes</code>?</h3>
-        <p><strong>A:</strong> TypeScript replaces PropTypes for TS projects. PropTypes optional for JS interop.</p>
+        <ul>
+          <li><strong>A:</strong> TypeScript replaces PropTypes for TS projects. PropTypes optional for JS interop.</li>
+        </ul>
         <h3>5.8. Strict null and optional props?</h3>
-        <p><strong>A:</strong> <code class="inline">disabled?: boolean</code> allows <code class="inline">undefined</code>. With <code class="inline">exactOptionalPropertyTypes</code>, omitting vs passing <code class="inline">undefined</code> differs.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">disabled?: boolean</code> allows <code class="inline">undefined</code>. With <code class="inline">exactOptionalPropertyTypes</code>, omitting vs passing <code class="inline">undefined</code> differs.</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 10. Open from the TypeScript index.</footer>
     </main>

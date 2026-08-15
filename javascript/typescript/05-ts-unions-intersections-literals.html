@@ -42,11 +42,15 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>TypeScript combines types to express <strong>either/or</strong> (unions), <strong>and</strong> (intersections), and <strong>exact values</strong> (literals).</p>
+        <ul>
+          <li>TypeScript combines types to express <strong>either/or</strong> (unions), <strong>and</strong> (intersections), and <strong>exact values</strong> (literals).</li>
+        </ul>
       </section>
       <section id="1-union-types">
         <h2>1. Union types</h2>
-        <p>A <strong>union</strong> means a value can be one of several types:</p>
+        <ul>
+          <li>A <strong>union</strong> means a value can be one of several types:</li>
+        </ul>
         <div class="code"><pre>type Id = string | number;
 
 function printId(id: Id) {
@@ -55,7 +59,9 @@ function printId(id: Id) {
 
 printId(101);
 printId(&quot;abc-101&quot;);</pre></div>
-        <p>Union members share only operations valid for <strong>all</strong> members unless you narrow:</p>
+        <ul>
+          <li>Union members share only operations valid for <strong>all</strong> members unless you narrow:</li>
+        </ul>
         <div class="code"><pre>function padLeft(value: string | number) {
   // value.toUpperCase(); // Error — number has no toUpperCase
   if (typeof value === &quot;string&quot;) {
@@ -70,27 +76,37 @@ type Result&lt;T&gt; = { ok: true; value: T } | { ok: false; error: string };</p
       </section>
       <section id="2-intersection-types">
         <h2>2. Intersection types</h2>
-        <p>An <strong>intersection</strong> combines multiple types — value must satisfy <strong>all</strong>:</p>
+        <ul>
+          <li>An <strong>intersection</strong> combines multiple types — value must satisfy <strong>all</strong>:</li>
+        </ul>
         <div class="code"><pre>type Named = { name: string };
 type Aged = { age: number };
 type Person = Named &amp; Aged;
 
 const person: Person = { name: &quot;Bharat&quot;, age: 30 };</pre></div>
-        <p>Useful for mixing interfaces:</p>
+        <ul>
+          <li>Useful for mixing interfaces:</li>
+        </ul>
         <div class="code"><pre>type AdminUser = User &amp; { permissions: string[] };</pre></div>
-        <p>Conflicting property types produce <code class="inline">never</code> on that property:</p>
+        <ul>
+          <li>Conflicting property types produce <code class="inline">never</code> on that property:</li>
+        </ul>
         <div class="code"><pre>type Bad = { x: number } &amp; { x: string }; // x: never</pre></div>
       </section>
       <section id="3-literal-and-discriminated-unions">
         <h2>3. Literal and discriminated unions</h2>
         <h3>3.1. Literal types</h3>
-        <p>A <strong>literal type</strong> is an exact value:</p>
+        <ul>
+          <li>A <strong>literal type</strong> is an exact value:</li>
+        </ul>
         <div class="code"><pre>type Direction = &quot;north&quot; | &quot;south&quot; | &quot;east&quot; | &quot;west&quot;;
 type Answer = 42 | true | &quot;yes&quot;;</pre></div>
         <div class="code"><pre>let dir: Direction = &quot;north&quot;;
 // dir = &quot;up&quot;; // Error</pre></div>
         <h3>3.2. Discriminated unions (tagged unions)</h3>
-        <p>Add a common <strong>discriminant</strong> field so TypeScript narrows safely:</p>
+        <ul>
+          <li>Add a common <strong>discriminant</strong> field so TypeScript narrows safely:</li>
+        </ul>
         <div class="code"><pre>type Circle = { kind: &quot;circle&quot;; radius: number };
 type Square = { kind: &quot;square&quot;; side: number };
 type Shape = Circle | Square;
@@ -103,7 +119,9 @@ function area(shape: Shape): number {
       return shape.side ** 2;
   }
 }</pre></div>
-        <p>After checking <code class="inline">shape.kind</code>, TS knows which fields exist.</p>
+        <ul>
+          <li>After checking <code class="inline">shape.kind</code>, TS knows which fields exist.</li>
+        </ul>
         <h3>3.3. Real-world example — API states</h3>
         <div class="code"><pre>type RequestState&lt;T&gt; =
   | { status: &quot;idle&quot; }
@@ -126,7 +144,9 @@ function render&lt;T&gt;(state: RequestState&lt;T&gt;) {
       </section>
       <section id="4-exhaustiveness-checking">
         <h2>4. Exhaustiveness checking</h2>
-        <p>Ensure every union member is handled — use <code class="inline">never</code> in the default branch:</p>
+        <ul>
+          <li>Ensure every union member is handled — use <code class="inline">never</code> in the default branch:</li>
+        </ul>
         <div class="code"><pre>type Shape = Circle | Square | { kind: &quot;triangle&quot;; base: number; height: number };
 
 function area(shape: Shape): number {
@@ -143,7 +163,9 @@ function area(shape: Shape): number {
     }
   }
 }</pre></div>
-        <p>If you add a new variant to <code class="inline">Shape</code> but forget a <code class="inline">case</code>, assigning to <code class="inline">never</code> fails at compile time.</p>
+        <ul>
+          <li>If you add a new variant to <code class="inline">Shape</code> but forget a <code class="inline">case</code>, assigning to <code class="inline">never</code> fails at compile time.</li>
+        </ul>
         <h3>4.1. Helper: <code class="inline">assertNever</code></h3>
         <div class="code"><pre>function assertNever(x: never): never {
   throw new Error(`Unexpected value: ${JSON.stringify(x)}`);
@@ -171,26 +193,44 @@ function speak(pet: Pet) {
     pet.bark();
   }
 }</pre></div>
-        <p>More narrowing techniques in File 07.</p>
+        <ul>
+          <li>More narrowing techniques in File 07.</li>
+        </ul>
       </section>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. Union vs enum for status strings?</h3>
-        <p><strong>A:</strong> String literal unions are lightweight and idiomatic. Enums add a runtime object (File 02).</p>
+        <ul>
+          <li><strong>A:</strong> String literal unions are lightweight and idiomatic. Enums add a runtime object (File 02).</li>
+        </ul>
         <h3>5.2. What is the difference between <code class="inline">|</code> and <code class="inline">&amp;</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">|</code> is <strong>or</strong> (one of). <code class="inline">&amp;</code> is <strong>and</strong> (must satisfy all).</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">|</code> is <strong>or</strong> (one of). <code class="inline">&amp;</code> is <strong>and</strong> (must satisfy all).</li>
+        </ul>
         <h3>5.3. Why use a discriminant field?</h3>
-        <p><strong>A:</strong> Gives TypeScript a reliable switch/narrowing key — usually <code class="inline">kind</code>, <code class="inline">type</code>, or <code class="inline">status</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Gives TypeScript a reliable switch/narrowing key — usually <code class="inline">kind</code>, <code class="inline">type</code>, or <code class="inline">status</code>.</li>
+        </ul>
         <h3>5.4. Can unions include <code class="inline">null</code>?</h3>
-        <p><strong>A:</strong> Yes — <code class="inline">string | null</code>. With strict null checks, handle both explicitly.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — <code class="inline">string | null</code>. With strict null checks, handle both explicitly.</li>
+        </ul>
         <h3>5.5. What happens if intersection types conflict?</h3>
-        <p><strong>A:</strong> Overlapping incompatible properties become <code class="inline">never</code>, often surfacing as errors when you use them.</p>
+        <ul>
+          <li><strong>A:</strong> Overlapping incompatible properties become <code class="inline">never</code>, often surfacing as errors when you use them.</li>
+        </ul>
         <h3>5.6. How do I make exhaustiveness work with <code class="inline">if/else</code>?</h3>
-        <p><strong>A:</strong> Use <code class="inline">else</code> with <code class="inline">never</code> assignment, or a final <code class="inline">assertNever</code> call after all branches.</p>
+        <ul>
+          <li><strong>A:</strong> Use <code class="inline">else</code> with <code class="inline">never</code> assignment, or a final <code class="inline">assertNever</code> call after all branches.</li>
+        </ul>
         <h3>5.7. Are literal types widened?</h3>
-        <p><strong>A:</strong> Yes on <code class="inline">let</code> reassignment contexts. Use <code class="inline">as const</code> to preserve literals (File 08 / 11).</p>
+        <ul>
+          <li><strong>A:</strong> Yes on <code class="inline">let</code> reassignment contexts. Use <code class="inline">as const</code> to preserve literals (File 08 / 11).</li>
+        </ul>
         <h3>5.8. Union vs optional property?</h3>
-        <p><strong>A:</strong> <code class="inline">{ email?: string }</code> allows missing key. <code class="inline">{ email: string | undefined }</code> requires the key to exist (value may be undefined).</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">{ email?: string }</code> allows missing key. <code class="inline">{ email: string | undefined }</code> requires the key to exist (value may be undefined).</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 05. Open from the TypeScript index.</footer>
     </main>

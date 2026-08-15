@@ -42,12 +42,16 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>TypeScript ships <strong>built-in utility types</strong> and lets you build your own with <strong>mapped</strong> and <strong>conditional</strong> types.</p>
+        <ul>
+          <li>TypeScript ships <strong>built-in utility types</strong> and lets you build your own with <strong>mapped</strong> and <strong>conditional</strong> types.</li>
+        </ul>
       </section>
       <section id="1-partial-required-pick-omit">
         <h2>1. <code class="inline">Partial</code>, <code class="inline">Required</code>, <code class="inline">Pick</code>, <code class="inline">Omit</code></h2>
         <h3>1.1. <code class="inline">Partial&lt;T&gt;</code></h3>
-        <p>Makes all properties optional — useful for update payloads:</p>
+        <ul>
+          <li>Makes all properties optional — useful for update payloads:</li>
+        </ul>
         <div class="code"><pre>interface User {
   id: number;
   name: string;
@@ -60,23 +64,31 @@ function updateUser(id: number, changes: Partial&lt;User&gt;) {
 
 updateUser(1, { name: &quot;Alex&quot; }); // OK — only name required</pre></div>
         <h3>1.2. <code class="inline">Required&lt;T&gt;</code></h3>
-        <p>Opposite of <code class="inline">Partial</code> — all properties required:</p>
+        <ul>
+          <li>Opposite of <code class="inline">Partial</code> — all properties required:</li>
+        </ul>
         <div class="code"><pre>type RequiredUser = Required&lt;Partial&lt;User&gt;&gt;; // same as User if all keys were optional first</pre></div>
         <h3>1.3. <code class="inline">Pick&lt;T, K&gt;</code> and <code class="inline">Omit&lt;T, K&gt;</code></h3>
-        <p>Select or remove properties:</p>
+        <ul>
+          <li>Select or remove properties:</li>
+        </ul>
         <div class="code"><pre>type UserPreview = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;
 // { id: number; name: string }
 
 type UserWithoutEmail = Omit&lt;User, &quot;email&quot;&gt;;
 // { id: number; name: string }</pre></div>
-        <p>Common for DTOs and form state:</p>
+        <ul>
+          <li>Common for DTOs and form state:</li>
+        </ul>
         <div class="code"><pre>type CreateUserInput = Omit&lt;User, &quot;id&quot;&gt;;
 type UserListItem = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;</pre></div>
       </section>
       <section id="2-record-and-returntype">
         <h2>2. <code class="inline">Record</code> and <code class="inline">ReturnType</code></h2>
         <h3>2.1. <code class="inline">Record&lt;K, V&gt;</code></h3>
-        <p>Object type with keys <code class="inline">K</code> and values <code class="inline">V</code>:</p>
+        <ul>
+          <li>Object type with keys <code class="inline">K</code> and values <code class="inline">V</code>:</li>
+        </ul>
         <div class="code"><pre>type Role = &quot;admin&quot; | &quot;member&quot; | &quot;guest&quot;;
 type Permissions = Record&lt;Role, string[]&gt;;
 
@@ -85,23 +97,31 @@ const perms: Permissions = {
   member: [&quot;read&quot;, &quot;write&quot;],
   guest: [&quot;read&quot;],
 };</pre></div>
-        <p>String-keyed dictionaries:</p>
+        <ul>
+          <li>String-keyed dictionaries:</li>
+        </ul>
         <div class="code"><pre>type StringMap = Record&lt;string, number&gt;;</pre></div>
         <h3>2.2. <code class="inline">ReturnType&lt;T&gt;</code></h3>
-        <p>Extract function return type:</p>
+        <ul>
+          <li>Extract function return type:</li>
+        </ul>
         <div class="code"><pre>function createUser() {
   return { id: 1, name: &quot;Bharat&quot; };
 }
 
 type User = ReturnType&lt;typeof createUser&gt;;
 // { id: number; name: string }</pre></div>
-        <p>Related utilities:</p>
+        <ul>
+          <li>Related utilities:</li>
+        </ul>
         <div class="code"><pre>type Params = Parameters&lt;typeof createUser&gt;; // tuple of arg types
 type Constructor = ConstructorParameters&lt;typeof Date&gt;;</pre></div>
       </section>
       <section id="3-mapped-types">
         <h2>3. Mapped types</h2>
-        <p>A <strong>mapped type</strong> transforms each property of an existing type:</p>
+        <ul>
+          <li>A <strong>mapped type</strong> transforms each property of an existing type:</li>
+        </ul>
         <div class="code"><pre>type Readonly&lt;T&gt; = {
   readonly [K in keyof T]: T[K];
 };
@@ -131,13 +151,17 @@ type ConfigValues = typeof CONFIG[ConfigKey];</pre></div>
       </section>
       <section id="4-conditional-types-intro">
         <h2>4. Conditional types (intro)</h2>
-        <p><strong>Conditional types</strong> pick types based on a condition: <code class="inline">T extends U ? X : Y</code>.</p>
+        <ul>
+          <li><strong>Conditional types</strong> pick types based on a condition: <code class="inline">T extends U ? X : Y</code>.</li>
+        </ul>
         <div class="code"><pre>type IsString&lt;T&gt; = T extends string ? true : false;
 
 type A = IsString&lt;string&gt;;  // true
 type B = IsString&lt;number&gt;;  // false</pre></div>
         <h3>4.1. Distributive conditionals</h3>
-        <p>When <code class="inline">T</code> is a union, conditionals distribute:</p>
+        <ul>
+          <li>When <code class="inline">T</code> is a union, conditionals distribute:</li>
+        </ul>
         <div class="code"><pre>type ToArray&lt;T&gt; = T extends unknown ? T[] : never;
 
 type R = ToArray&lt;string | number&gt;;
@@ -147,30 +171,50 @@ type R = ToArray&lt;string | number&gt;;
 
 type Safe = NonNullable&lt;string | null&gt;; // string</pre></div>
         <h3>4.3. <code class="inline">infer</code> preview (File 11)</h3>
-        <p>Extract types inside conditionals:</p>
+        <ul>
+          <li>Extract types inside conditionals:</li>
+        </ul>
         <div class="code"><pre>type ElementType&lt;T&gt; = T extends (infer U)[] ? U : T;
 
 type Item = ElementType&lt;string[]&gt;; // string</pre></div>
-        <p>Conditional + mapped types power most advanced TS libraries (File 11).</p>
+        <ul>
+          <li>Conditional + mapped types power most advanced TS libraries (File 11).</li>
+        </ul>
       </section>
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. When use <code class="inline">Pick</code> vs <code class="inline">Omit</code>?</h3>
-        <p><strong>A:</strong> <code class="inline">Pick</code> when you need few fields; <code class="inline">Omit</code> when you need almost everything except a few.</p>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">Pick</code> when you need few fields; <code class="inline">Omit</code> when you need almost everything except a few.</li>
+        </ul>
         <h3>5.2. What does <code class="inline">keyof T</code> return?</h3>
-        <p><strong>A:</strong> Union of property names of <code class="inline">T</code> — <code class="inline">&quot;id&quot; | &quot;name&quot; | &quot;email&quot;</code> for <code class="inline">User</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Union of property names of <code class="inline">T</code> — <code class="inline">&quot;id&quot; | &quot;name&quot; | &quot;email&quot;</code> for <code class="inline">User</code>.</li>
+        </ul>
         <h3>5.3. Are utility types built into the compiler?</h3>
-        <p><strong>A:</strong> Yes — defined in <code class="inline">lib.es5.d.ts</code> and friends; no import needed.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — defined in <code class="inline">lib.es5.d.ts</code> and friends; no import needed.</li>
+        </ul>
         <h3>5.4. Can I combine utilities?</h3>
-        <p><strong>A:</strong> Yes — <code class="inline">Partial&lt;Pick&lt;User, &quot;name&quot; | &quot;email&quot;&gt;&gt;</code> is common.</p>
+        <ul>
+          <li><strong>A:</strong> Yes — <code class="inline">Partial&lt;Pick&lt;User, &quot;name&quot; | &quot;email&quot;&gt;&gt;</code> is common.</li>
+        </ul>
         <h3>5.5. What is the difference between mapped types and interfaces?</h3>
-        <p><strong>A:</strong> Mapped types <strong>transform</strong> existing types programmatically; interfaces declare shapes directly.</p>
+        <ul>
+          <li><strong>A:</strong> Mapped types <strong>transform</strong> existing types programmatically; interfaces declare shapes directly.</li>
+        </ul>
         <h3>5.6. What does <code class="inline">readonly [K in keyof T]</code> do?</h3>
-        <p><strong>A:</strong> Same keys as <code class="inline">T</code>, all marked readonly — like the built-in <code class="inline">Readonly&lt;T&gt;</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Same keys as <code class="inline">T</code>, all marked readonly — like the built-in <code class="inline">Readonly&lt;T&gt;</code>.</li>
+        </ul>
         <h3>5.7. When do conditional types run?</h3>
-        <p><strong>A:</strong> At <strong>compile time only</strong> — they emit no JavaScript.</p>
+        <ul>
+          <li><strong>A:</strong> At <strong>compile time only</strong> — they emit no JavaScript.</li>
+        </ul>
         <h3>5.8. How does <code class="inline">ReturnType</code> help with refactoring?</h3>
-        <p><strong>A:</strong> Derive types from implementation — change the function, derived types update automatically.</p>
+        <ul>
+          <li><strong>A:</strong> Derive types from implementation — change the function, derived types update automatically.</li>
+        </ul>
       </section>
       <footer>HTML note for TypeScript File 08. Open from the TypeScript index.</footer>
     </main>

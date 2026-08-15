@@ -47,14 +47,18 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>Single-page apps (SPAs) still need <strong>multiple screens</strong>. <strong>React Router</strong> maps <strong>URLs</strong> to <strong>components</strong>, supports <strong>nested layouts</strong>, <strong>dynamic segments</strong>, and (in v6.4+) <strong>loaders</strong> for data before render.</p>
-        <p>Builds on components and composition (File 02). File 10 covers fetching inside routes; File 14 covers app structure around routes.</p>
-        <p><strong>Default rule today:</strong> use <strong>React Router v6+</strong> with <strong><code class="inline">createBrowserRouter</code></strong> / <strong><code class="inline">&lt;RouterProvider&gt;</code></strong> or <strong><code class="inline">&lt;Routes&gt;</code> + <code class="inline">&lt;Route&gt;</code></strong>; prefer <strong>route-level data loading</strong> (loaders) over fetch-on-mount in every page when using the data APIs.</p>
+        <ul>
+          <li>Single-page apps (SPAs) still need <strong>multiple screens</strong>. <strong>React Router</strong> maps <strong>URLs</strong> to <strong>components</strong>, supports <strong>nested layouts</strong>, <strong>dynamic segments</strong>, and (in v6.4+) <strong>loaders</strong> for data before render.</li>
+          <li>Builds on components and composition (File 02). File 10 covers fetching inside routes; File 14 covers app structure around routes.</li>
+          <li><strong>Default rule today:</strong> use <strong>React Router v6+</strong> with <strong><code class="inline">createBrowserRouter</code></strong> / <strong><code class="inline">&lt;RouterProvider&gt;</code></strong> or <strong><code class="inline">&lt;Routes&gt;</code> + <code class="inline">&lt;Route&gt;</code></strong>; prefer <strong>route-level data loading</strong> (loaders) over fetch-on-mount in every page when using the data APIs.</li>
+        </ul>
       </section>
       <section id="1-why-client-side-routing">
         <h2>1. Why client-side routing</h2>
         <h3>1.1. URL as UI state</h3>
-        <p>The <strong>address bar</strong> should reflect where the user is:</p>
+        <ul>
+          <li>The <strong>address bar</strong> should reflect where the user is:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>URL</th><th>Screen</th></tr>
@@ -66,10 +70,13 @@
         <tr><td><code class="inline">/settings</code></td><td>Settings</td></tr>
         </tbody>
         </table>
-        <p>Users can bookmark, share links, and use back/forward. React Router syncs URL ↔ rendered components <strong>without</strong> full page reload.</p>
+        <ul>
+          <li>Users can bookmark, share links, and use back/forward. React Router syncs URL ↔ rendered components <strong>without</strong> full page reload.</li>
+        </ul>
         <h3>1.2. React Router role</h3>
-        <ul><li><strong>Match</strong> path to a route definition</li><li><strong>Render</strong> the matching component(s)</li><li>Provide <strong>navigation</strong> (<code class="inline">Link</code>, <code class="inline">useNavigate</code>)</li><li>Expose <strong>URL params</strong> and <strong>query strings</strong></li></ul>
-        <p>Install: <code class="inline">npm install react-router-dom</code></p>
+        <ul><li><strong>Match</strong> path to a route definition</li><li><strong>Render</strong> the matching component(s)</li><li>Provide <strong>navigation</strong> (<code class="inline">Link</code>, <code class="inline">useNavigate</code>)</li><li>Expose <strong>URL params</strong> and <strong>query strings</strong></li>
+          <li>Install: <code class="inline">npm install react-router-dom</code></li>
+        </ul>
       </section>
       <section id="2-basic-setup">
         <h2>2. Basic setup</h2>
@@ -91,7 +98,9 @@ function App() {
     &lt;/BrowserRouter&gt;
   );
 }</pre></div>
-        <p><strong><code class="inline">&lt;Link to=&quot;...&quot;&gt;</code></strong> — client navigation (no full reload). <strong><code class="inline">path=&quot;*&quot;</code></strong> — catch-all for 404.</p>
+        <ul>
+          <li><strong><code class="inline">&lt;Link to=&quot;...&quot;&gt;</code></strong> — client navigation (no full reload). <strong><code class="inline">path=&quot;*&quot;</code></strong> — catch-all for 404.</li>
+        </ul>
         <h3>2.2. createBrowserRouter (recommended for data APIs)</h3>
         <div class="code"><pre>import { createBrowserRouter, RouterProvider } from &quot;react-router-dom&quot;;
 
@@ -103,7 +112,9 @@ const router = createBrowserRouter([
 function App() {
   return &lt;RouterProvider router={router} /&gt;;
 }</pre></div>
-        <p>Data loaders and actions integrate cleanly with this style (9.5).</p>
+        <ul>
+          <li>Data loaders and actions integrate cleanly with this style (9.5).</li>
+        </ul>
       </section>
       <section id="3-navigation">
         <h2>3. Navigation</h2>
@@ -116,7 +127,9 @@ function App() {
 &gt;
   Products
 &lt;/NavLink&gt;</pre></div>
-        <p><strong><code class="inline">NavLink</code></strong> knows if its route is <strong>active</strong> — ideal for nav bars.</p>
+        <ul>
+          <li><strong><code class="inline">NavLink</code></strong> knows if its route is <strong>active</strong> — ideal for nav bars.</li>
+        </ul>
         <h3>3.2. useNavigate (programmatic)</h3>
         <div class="code"><pre>import { useNavigate } from &quot;react-router-dom&quot;;
 
@@ -128,9 +141,13 @@ function LoginForm() {
     navigate(&quot;/dashboard&quot;, { replace: true });
   }
 }</pre></div>
-        <p><strong><code class="inline">replace: true</code></strong> — no extra history entry (like redirect after login).</p>
+        <ul>
+          <li><strong><code class="inline">replace: true</code></strong> — no extra history entry (like redirect after login).</li>
+        </ul>
         <h3>3.3. Relative links</h3>
-        <p>Inside nested routes, <strong><code class="inline">to=&quot;details&quot;</code></strong> resolves relative to the current route path.</p>
+        <ul>
+          <li>Inside nested routes, <strong><code class="inline">to=&quot;details&quot;</code></strong> resolves relative to the current route path.</li>
+        </ul>
       </section>
       <section id="4-dynamic-routes-and-params">
         <h2>4. Dynamic routes and params</h2>
@@ -141,11 +158,15 @@ function ProductDetail() {
   const { productId } = useParams();
   return &lt;p&gt;Product {productId}&lt;/p&gt;;
 }</pre></div>
-        <p><strong><code class="inline">:productId</code></strong> is a <strong>dynamic segment</strong>. <code class="inline">useParams()</code> returns <code class="inline">{ productId: &quot;42&quot; }</code> for <code class="inline">/products/42</code>.</p>
+        <ul>
+          <li><strong><code class="inline">:productId</code></strong> is a <strong>dynamic segment</strong>. <code class="inline">useParams()</code> returns <code class="inline">{ productId: &quot;42&quot; }</code> for <code class="inline">/products/42</code>.</li>
+        </ul>
         <h3>4.2. Optional and splat segments</h3>
         <div class="code"><pre>&lt;Route path=&quot;/files/*&quot; element={&lt;Files /&gt;} /&gt;
 // useParams().[&quot;*&quot;] captures rest of path</pre></div>
-        <p>Consult React Router docs for optional params (<code class="inline">:id?</code>) in your version.</p>
+        <ul>
+          <li>Consult React Router docs for optional params (<code class="inline">:id?</code>) in your version.</li>
+        </ul>
         <h3>4.3. Search params (query string)</h3>
         <div class="code"><pre>import { useSearchParams } from &quot;react-router-dom&quot;;
 
@@ -160,7 +181,9 @@ function ProductList() {
     /&gt;
   );
 }</pre></div>
-        <p><code class="inline">/products?q=shirt</code> — <strong><code class="inline">useSearchParams</code></strong> reads and updates <strong><code class="inline">?q=</code></strong> without losing other params if you merge carefully.</p>
+        <ul>
+          <li><code class="inline">/products?q=shirt</code> — <strong><code class="inline">useSearchParams</code></strong> reads and updates <strong><code class="inline">?q=</code></strong> without losing other params if you merge carefully.</li>
+        </ul>
       </section>
       <section id="5-nested-routes-and-layouts">
         <h2>5. Nested routes and layouts</h2>
@@ -182,7 +205,9 @@ function DashboardLayout() {
     &lt;/div&gt;
   );
 }</pre></div>
-        <p>URLs:</p>
+        <ul>
+          <li>URLs:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Path</th><th>Renders</th></tr>
@@ -192,9 +217,13 @@ function DashboardLayout() {
         <tr><td><code class="inline">/dashboard/settings</code></td><td>Layout + Settings</td></tr>
         </tbody>
         </table>
-        <p><strong><code class="inline">index</code></strong> — default child when path matches parent exactly.</p>
+        <ul>
+          <li><strong><code class="inline">index</code></strong> — default child when path matches parent exactly.</li>
+        </ul>
         <h3>5.2. Shared chrome, independent pages</h3>
-        <p>Nested routes avoid duplicating sidebar/header in every page component (File 02 — composition).</p>
+        <ul>
+          <li>Nested routes avoid duplicating sidebar/header in every page component (File 02 — composition).</li>
+        </ul>
       </section>
       <section id="6-loaders-and-actions-data-router">
         <h2>6. Loaders and actions (data router)</h2>
@@ -216,7 +245,9 @@ function ProductDetail() {
   const product = useLoaderData();
   return &lt;h1&gt;{product.name}&lt;/h1&gt;;
 }</pre></div>
-        <p>Data is available on first render of the route — reduces loading flash vs <code class="inline">useEffect</code> fetch (File 05, File 10).</p>
+        <ul>
+          <li>Data is available on first render of the route — reduces loading flash vs <code class="inline">useEffect</code> fetch (File 05, File 10).</li>
+        </ul>
         <h3>6.2. Error boundaries on routes</h3>
         <div class="code"><pre>{
   path: &quot;/products/:productId&quot;,
@@ -224,7 +255,9 @@ function ProductDetail() {
   loader: productLoader,
   errorElement: &lt;ProductError /&gt;,
 }</pre></div>
-        <p>Loader throws → <strong><code class="inline">errorElement</code></strong> renders (File 14 — error boundaries).</p>
+        <ul>
+          <li>Loader throws → <strong><code class="inline">errorElement</code></strong> renders (File 14 — error boundaries).</li>
+        </ul>
         <h3>6.3. Actions — form mutations</h3>
         <div class="code"><pre>{
   path: &quot;/products/new&quot;,
@@ -235,7 +268,9 @@ function ProductDetail() {
     return redirect(&quot;/products&quot;);
   },
 }</pre></div>
-        <p>Use <strong><code class="inline">&lt;Form&gt;</code></strong> from React Router to POST to the route <strong>action</strong> (File 06 — forms).</p>
+        <ul>
+          <li>Use <strong><code class="inline">&lt;Form&gt;</code></strong> from React Router to POST to the route <strong>action</strong> (File 06 — forms).</li>
+        </ul>
       </section>
       <section id="7-protected-routes">
         <h2>7. Protected routes</h2>
@@ -259,9 +294,13 @@ function ProductDetail() {
     &lt;/ProtectedRoute&gt;
   }
 /&gt;</pre></div>
-        <p>After login, <strong><code class="inline">navigate(location.state?.from ?? &quot;/&quot;)</code></strong> sends user back.</p>
+        <ul>
+          <li>After login, <strong><code class="inline">navigate(location.state?.from ?? &quot;/&quot;)</code></strong> sends user back.</li>
+        </ul>
         <h3>7.2. Loader auth check</h3>
-        <p>In data routers, throw <strong><code class="inline">redirect(&quot;/login&quot;)</code></strong> from loader if session missing — centralizes gate before render.</p>
+        <ul>
+          <li>In data routers, throw <strong><code class="inline">redirect(&quot;/login&quot;)</code></strong> from loader if session missing — centralizes gate before render.</li>
+        </ul>
       </section>
       <section id="8-code-splitting-routes-preview">
         <h2>8. Code splitting routes (preview)</h2>
@@ -277,7 +316,9 @@ const Settings = lazy(() =&gt; import(&quot;./Settings&quot;));
     &lt;/Suspense&gt;
   }
 /&gt;</pre></div>
-        <p>File 12 expands <strong>lazy</strong> and <strong>Suspense</strong>.</p>
+        <ul>
+          <li>File 12 expands <strong>lazy</strong> and <strong>Suspense</strong>.</li>
+        </ul>
       </section>
       <section id="9-putting-it-together">
         <h2>9. Putting it together</h2>
@@ -307,25 +348,45 @@ const Settings = lazy(() =&gt; import(&quot;./Settings&quot;));
       <section id="10-common-questions">
         <h2>10. Common questions</h2>
         <h3>10.1. Link vs anchor <code class="inline">&lt;a href&gt;</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">&lt;Link&gt;</code></strong> navigates inside the SPA without reload. Use <strong><code class="inline">&lt;a href&gt;</code></strong> for external URLs or downloads.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">&lt;Link&gt;</code></strong> navigates inside the SPA without reload. Use <strong><code class="inline">&lt;a href&gt;</code></strong> for external URLs or downloads.</li>
+        </ul>
         <h3>10.2. How do I read URL params?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">useParams()</code></strong> for path segments (<code class="inline">:id</code>). <strong><code class="inline">useSearchParams()</code></strong> for query string.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">useParams()</code></strong> for path segments (<code class="inline">:id</code>). <strong><code class="inline">useSearchParams()</code></strong> for query string.</li>
+        </ul>
         <h3>10.3. What is Outlet?</h3>
-        <p><strong>A:</strong> Placeholder in a <strong>layout route</strong> where <strong>child routes</strong> render.</p>
+        <ul>
+          <li><strong>A:</strong> Placeholder in a <strong>layout route</strong> where <strong>child routes</strong> render.</li>
+        </ul>
         <h3>10.4. Loader vs useEffect fetch?</h3>
-        <p><strong>A:</strong> <strong>Loader</strong> runs as part of routing — data ready before route component paints. <strong>useEffect</strong> is fine for client-only or non-router apps (File 10).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Loader</strong> runs as part of routing — data ready before route component paints. <strong>useEffect</strong> is fine for client-only or non-router apps (File 10).</li>
+        </ul>
         <h3>10.5. How do nested routes build full paths?</h3>
-        <p><strong>A:</strong> Child paths <strong>append</strong> to parent unless they start with <code class="inline">/</code> (absolute).</p>
+        <ul>
+          <li><strong>A:</strong> Child paths <strong>append</strong> to parent unless they start with <code class="inline">/</code> (absolute).</li>
+        </ul>
         <h3>10.6. How do I redirect?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">&lt;Navigate to=&quot;...&quot; /&gt;</code></strong>, <strong><code class="inline">navigate()</code></strong>, or <strong><code class="inline">redirect()</code></strong> in loader/action.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">&lt;Navigate to=&quot;...&quot; /&gt;</code></strong>, <strong><code class="inline">navigate()</code></strong>, or <strong><code class="inline">redirect()</code></strong> in loader/action.</li>
+        </ul>
         <h3>10.7. Where does BrowserRouter go?</h3>
-        <p><strong>A:</strong> Near app root (or use <strong><code class="inline">RouterProvider</code></strong> with <strong><code class="inline">createBrowserRouter</code></strong>). Only one router per app.</p>
+        <ul>
+          <li><strong>A:</strong> Near app root (or use <strong><code class="inline">RouterProvider</code></strong> with <strong><code class="inline">createBrowserRouter</code></strong>). Only one router per app.</li>
+        </ul>
         <h3>10.8. How do I pass state between routes?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">navigate(&quot;/path&quot;, { state: { ... } })</code></strong> and <strong><code class="inline">useLocation().state</code></strong> — not in URL; lost on refresh.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">navigate(&quot;/path&quot;, { state: { ... } })</code></strong> and <strong><code class="inline">useLocation().state</code></strong> — not in URL; lost on refresh.</li>
+        </ul>
         <h3>10.9. React Router vs Next.js routing?</h3>
-        <p><strong>A:</strong> <strong>React Router</strong> — client SPA in Vite/CRA. <strong>Next.js</strong> — file-based routing with server components. Concepts overlap; APIs differ.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>React Router</strong> — client SPA in Vite/CRA. <strong>Next.js</strong> — file-based routing with server components. Concepts overlap; APIs differ.</li>
+        </ul>
         <h3>10.10. What should I read next?</h3>
-        <p><strong>A:</strong> File 10 (data fetching, TanStack Query), File 12 (lazy routes), File 14 (app folder structure).</p>
+        <ul>
+          <li><strong>A:</strong> File 10 (data fetching, TanStack Query), File 12 (lazy routes), File 14 (app folder structure).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 09. Open from the React.js index.</footer>
     </main>

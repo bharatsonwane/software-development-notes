@@ -43,14 +43,18 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>JavaScript in the browser adds APIs beyond the language core. React apps abstract much of this (see React notes), but interviews still test the underlying model.</p>
-        <p><strong>Default rule today:</strong> default listeners run on the <strong>bubble</strong> phase; use <strong>delegation</strong> on stable parents for dynamic lists; call <strong><code class="inline">preventDefault</code></strong> / <strong><code class="inline">stopPropagation</code></strong> only when you mean to block default behavior or further propagation.</p>
-        <p>Interactive visualizer: open <a href="./15-js-browser-events-animation.html">15-js-browser-events-animation.html</a> in a browser — capture/target/bubble, stopPropagation, preventDefault, delegation, once/remove (Run / Step).</p>
+        <ul>
+          <li>JavaScript in the browser adds APIs beyond the language core. React apps abstract much of this (see React notes), but interviews still test the underlying model.</li>
+          <li><strong>Default rule today:</strong> default listeners run on the <strong>bubble</strong> phase; use <strong>delegation</strong> on stable parents for dynamic lists; call <strong><code class="inline">preventDefault</code></strong> / <strong><code class="inline">stopPropagation</code></strong> only when you mean to block default behavior or further propagation.</li>
+          <li>Interactive visualizer: open <a href="./15-js-browser-events-animation.html">15-js-browser-events-animation.html</a> in a browser — capture/target/bubble, stopPropagation, preventDefault, delegation, once/remove (Run / Step).</li>
+        </ul>
       </section>
       <section id="1-dom-and-bom">
         <h2>1. DOM and BOM</h2>
         <h3>1.1. DOM (Document Object Model)</h3>
-        <p>Tree of nodes representing HTML:</p>
+        <ul>
+          <li>Tree of nodes representing HTML:</li>
+        </ul>
         <div class="code"><pre>document.getElementById(&quot;app&quot;);
 document.querySelector(&quot;.btn&quot;);
 document.querySelectorAll(&quot;li&quot;);
@@ -60,7 +64,9 @@ el.setAttribute(&quot;data-id&quot;, &quot;42&quot;);
 document.createElement(&quot;div&quot;);
 parent.appendChild(el);</pre></div>
         <h3>1.2. BOM (Browser Object Model)</h3>
-        <p>Browser globals outside the document tree:</p>
+        <ul>
+          <li>Browser globals outside the document tree:</li>
+        </ul>
         <div class="code"><pre>window.location.href;
 window.history.back();
 window.navigator.userAgent;
@@ -76,9 +82,13 @@ localStorage.removeItem(&quot;theme&quot;);
 localStorage.clear();
 
 sessionStorage.setItem(&quot;tab&quot;, &quot;1&quot;);  // cleared when tab closes</pre></div>
-        <p>Values are <strong>strings</strong> — <code class="inline">JSON.stringify</code> / <code class="inline">parse</code> for objects. <strong>Same-origin</strong> only.</p>
+        <ul>
+          <li>Values are <strong>strings</strong> — <code class="inline">JSON.stringify</code> / <code class="inline">parse</code> for objects. <strong>Same-origin</strong> only.</li>
+        </ul>
         <h3>2.2. Cookies</h3>
-        <p>Small key-value strings sent with HTTP requests — set via <strong><code class="inline">document.cookie</code></strong> or server <strong><code class="inline">Set-Cookie</code></strong>. Prefer <strong>httpOnly</strong> cookies for auth tokens (not accessible from JS).</p>
+        <ul>
+          <li>Small key-value strings sent with HTTP requests — set via <strong><code class="inline">document.cookie</code></strong> or server <strong><code class="inline">Set-Cookie</code></strong>. Prefer <strong>httpOnly</strong> cookies for auth tokens (not accessible from JS).</li>
+        </ul>
       </section>
       <section id="3-fetch-abortcontroller">
         <h2>3. Fetch &amp; AbortController</h2>
@@ -90,9 +100,13 @@ sessionStorage.setItem(&quot;tab&quot;, &quot;1&quot;);  // cleared when tab clo
 });
 if (!res.ok) throw new Error(`HTTP ${res.status}`);
 const data = await res.json();</pre></div>
-        <p>File 10 — async patterns; React File 10 — TanStack Query.</p>
+        <ul>
+          <li>File 10 — async patterns; React File 10 — TanStack Query.</li>
+        </ul>
         <h3>3.2. AbortController</h3>
-        <p>Cancel in-flight fetch:</p>
+        <ul>
+          <li>Cancel in-flight fetch:</li>
+        </ul>
         <div class="code"><pre>const controller = new AbortController();
 fetch(&quot;/api/slow&quot;, { signal: controller.signal });
 controller.abort();  // rejects with AbortError</pre></div>
@@ -103,28 +117,38 @@ history.replaceState({}, &quot;&quot;, &quot;/other&quot;);
 const url = new URL(&quot;https://example.com/path?q=1&quot;);
 url.searchParams.get(&quot;q&quot;);
 url.pathname;</pre></div>
-        <p>React Router wraps History API (React File 09).</p>
+        <ul>
+          <li>React Router wraps History API (React File 09).</li>
+        </ul>
       </section>
       <section id="4-event-handling">
         <h2>4. Event handling</h2>
         <h3>4.1. Bubbling and capturing</h3>
-        <p>Events flow <strong>capture</strong> (window → target) then <strong>bubble</strong> (target → window). Default listeners run on <strong>bubble</strong> phase.</p>
+        <ul>
+          <li>Events flow <strong>capture</strong> (window → target) then <strong>bubble</strong> (target → window). Default listeners run on <strong>bubble</strong> phase.</li>
+        </ul>
         <div class="code"><pre>el.addEventListener(&quot;click&quot;, handler);                    // bubble (default)
 el.addEventListener(&quot;click&quot;, handler, { capture: true }); // capture</pre></div>
         <h3>4.2. Event delegation</h3>
-        <p>One listener on <strong>parent</strong> handles events from <strong>children</strong>:</p>
+        <ul>
+          <li>One listener on <strong>parent</strong> handles events from <strong>children</strong>:</li>
+        </ul>
         <div class="code"><pre>document.querySelector(&quot;#list&quot;).addEventListener(&quot;click&quot;, (e) =&gt; {
   if (e.target.matches(&quot;li.item&quot;)) {
     console.log(&quot;Clicked&quot;, e.target.dataset.id);
   }
 });</pre></div>
-        <p>Efficient for dynamic lists — fewer listeners.</p>
+        <ul>
+          <li>Efficient for dynamic lists — fewer listeners.</li>
+        </ul>
         <h3>4.3. stopPropagation and preventDefault</h3>
         <div class="code"><pre>function onClick(e) {
   e.stopPropagation();  // don&#x27;t bubble further
   e.preventDefault();   // don&#x27;t default action (e.g. form submit, link nav)
 }</pre></div>
-        <p>React: <strong><code class="inline">e.stopPropagation()</code></strong>, <strong><code class="inline">e.preventDefault()</code></strong> on synthetic events (React File 03).</p>
+        <ul>
+          <li>React: <strong><code class="inline">e.stopPropagation()</code></strong>, <strong><code class="inline">e.preventDefault()</code></strong> on synthetic events (React File 03).</li>
+        </ul>
         <h3>4.4. Custom events</h3>
         <div class="code"><pre>const event = new CustomEvent(&quot;user-login&quot;, { detail: { id: 1 } });
 window.dispatchEvent(event);
@@ -136,17 +160,29 @@ window.addEventListener(&quot;user-login&quot;, (e) =&gt; {
       <section id="5-common-questions">
         <h2>5. Common questions</h2>
         <h3>5.1. What is event bubbling?</h3>
-        <p><strong>A:</strong> Event propagates from <strong>target up</strong> through ancestors after the target handler runs.</p>
+        <ul>
+          <li><strong>A:</strong> Event propagates from <strong>target up</strong> through ancestors after the target handler runs.</li>
+        </ul>
         <h3>5.2. What is event delegation?</h3>
-        <p><strong>A:</strong> Attach one handler to a <strong>parent</strong> and use <strong><code class="inline">event.target</code></strong> to handle child events — good for dynamic lists.</p>
+        <ul>
+          <li><strong>A:</strong> Attach one handler to a <strong>parent</strong> and use <strong><code class="inline">event.target</code></strong> to handle child events — good for dynamic lists.</li>
+        </ul>
         <h3>5.3. localStorage vs sessionStorage?</h3>
-        <p><strong>A:</strong> <strong>localStorage</strong> persists until cleared. <strong>sessionStorage</strong> clears when the <strong>tab</strong> closes.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>localStorage</strong> persists until cleared. <strong>sessionStorage</strong> clears when the <strong>tab</strong> closes.</li>
+        </ul>
         <h3>5.4. What does preventDefault do?</h3>
-        <p><strong>A:</strong> Cancels the browser&#x27;s <strong>default action</strong> (submit form, follow link).</p>
+        <ul>
+          <li><strong>A:</strong> Cancels the browser&#x27;s <strong>default action</strong> (submit form, follow link).</li>
+        </ul>
         <h3>5.5. What is AbortController for?</h3>
-        <p><strong>A:</strong> <strong>Cancel</strong> fetch or other abortable APIs — avoids race conditions when user navigates away.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Cancel</strong> fetch or other abortable APIs — avoids race conditions when user navigates away.</li>
+        </ul>
         <h3>5.6. DOM vs BOM?</h3>
-        <p><strong>A:</strong> <strong>DOM</strong> — document tree (elements). <strong>BOM</strong> — browser chrome (<code class="inline">window</code>, <code class="inline">location</code>, <code class="inline">history</code>, <code class="inline">navigator</code>).</p>
+        <ul>
+          <li><strong>A:</strong> <strong>DOM</strong> — document tree (elements). <strong>BOM</strong> — browser chrome (<code class="inline">window</code>, <code class="inline">location</code>, <code class="inline">history</code>, <code class="inline">navigator</code>).</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 15. Open from the JS Language index.</footer>
     </main>

@@ -44,19 +44,25 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>JavaScript runs on a <strong>single thread</strong> — one call stack executes one piece of code at a time. <strong>Asynchronous</strong> work (timers, network, I/O) is handled by the <strong>host environment</strong> (browser, Node.js), which queues <strong>callbacks</strong> for later. The <strong>event loop</strong> decides when those callbacks run.</p>
-        <p>Modern async code uses <strong>Promises</strong> and <strong><code class="inline">async</code>/<code class="inline">await</code></strong>. Callbacks remain in older APIs and under the hood.</p>
-        <p><strong>Default rule today:</strong> prefer <strong><code class="inline">async</code>/<code class="inline">await</code></strong> with <strong><code class="inline">try/catch</code></strong>; use <strong><code class="inline">Promise.all</code></strong> for parallel independent tasks; understand <strong>microtasks vs macrotasks</strong> for debugging order bugs.</p>
+        <ul>
+          <li>JavaScript runs on a <strong>single thread</strong> — one call stack executes one piece of code at a time. <strong>Asynchronous</strong> work (timers, network, I/O) is handled by the <strong>host environment</strong> (browser, Node.js), which queues <strong>callbacks</strong> for later. The <strong>event loop</strong> decides when those callbacks run.</li>
+          <li>Modern async code uses <strong>Promises</strong> and <strong><code class="inline">async</code>/<code class="inline">await</code></strong>. Callbacks remain in older APIs and under the hood.</li>
+          <li><strong>Default rule today:</strong> prefer <strong><code class="inline">async</code>/<code class="inline">await</code></strong> with <strong><code class="inline">try/catch</code></strong>; use <strong><code class="inline">Promise.all</code></strong> for parallel independent tasks; understand <strong>microtasks vs macrotasks</strong> for debugging order bugs.</li>
+        </ul>
       </section>
       <section id="1-sync-vs-async">
         <h2>1. Sync vs async</h2>
         <h3>1.1. Synchronous execution</h3>
-        <p><strong>Synchronous</strong> code runs line by line. Each line <strong>blocks</strong> until the current operation finishes:</p>
+        <ul>
+          <li><strong>Synchronous</strong> code runs line by line. Each line <strong>blocks</strong> until the current operation finishes:</li>
+        </ul>
         <div class="code"><pre>console.log(&quot;A&quot;);
 console.log(&quot;B&quot;);
 console.log(&quot;C&quot;);
 // A, B, C — in order</pre></div>
-        <p>Long-running sync work <strong>freezes</strong> the thread — no other JS runs (bad for UI):</p>
+        <ul>
+          <li>Long-running sync work <strong>freezes</strong> the thread — no other JS runs (bad for UI):</li>
+        </ul>
         <div class="code"><pre>// Don&#x27;t do this in the browser main thread
 function block(ms) {
   const start = Date.now();
@@ -67,7 +73,9 @@ console.log(&quot;start&quot;);
 block(3000);
 console.log(&quot;end&quot;);  // 3 seconds later — page frozen</pre></div>
         <h3>1.2. Asynchronous execution</h3>
-        <p><strong>Asynchronous</strong> code <strong>starts</strong> an operation and continues without waiting for it to finish. A <strong>callback</strong> or <strong>Promise</strong> handles the result later:</p>
+        <ul>
+          <li><strong>Asynchronous</strong> code <strong>starts</strong> an operation and continues without waiting for it to finish. A <strong>callback</strong> or <strong>Promise</strong> handles the result later:</li>
+        </ul>
         <div class="code"><pre>console.log(&quot;A&quot;);
 
 setTimeout(() =&gt; {
@@ -76,7 +84,9 @@ setTimeout(() =&gt; {
 
 console.log(&quot;C&quot;);
 // A, C, B — B runs after sync code finishes</pre></div>
-        <p>Async does not mean <strong>parallel threads</strong> in JS itself — it means <strong>deferring</strong> work and resuming via the event loop.</p>
+        <ul>
+          <li>Async does not mean <strong>parallel threads</strong> in JS itself — it means <strong>deferring</strong> work and resuming via the event loop.</li>
+        </ul>
         <h3>1.3. When async is used</h3>
         <table>
         <thead>
@@ -98,7 +108,9 @@ console.log(&quot;request sent&quot;);  // runs before response arrives</pre></d
       </section>
       <section id="2-callbacks">
         <h2>2. Callbacks</h2>
-        <p>A <strong>callback</strong> is a function passed to another function to run <strong>later</strong> (File 05).</p>
+        <ul>
+          <li>A <strong>callback</strong> is a function passed to another function to run <strong>later</strong> (File 05).</li>
+        </ul>
         <h3>2.1. Basic callback pattern</h3>
         <div class="code"><pre>function loadData(callback) {
   setTimeout(() =&gt; {
@@ -114,7 +126,9 @@ loadData((err, data) =&gt; {
   console.log(data.name);
 });</pre></div>
         <h3>2.2. Error-first callbacks (Node style)</h3>
-        <p>Convention: first argument is <strong><code class="inline">err</code></strong>, second is <strong>result</strong>:</p>
+        <ul>
+          <li>Convention: first argument is <strong><code class="inline">err</code></strong>, second is <strong>result</strong>:</li>
+        </ul>
         <div class="code"><pre>function divide(a, b, callback) {
   if (b === 0) {
     callback(new Error(&quot;Division by zero&quot;));
@@ -127,9 +141,13 @@ divide(10, 2, (err, result) =&gt; {
   if (err) throw err;
   console.log(result);  // 5
 });</pre></div>
-        <p>Always check <strong><code class="inline">err</code></strong> before using <code class="inline">result</code>.</p>
+        <ul>
+          <li>Always check <strong><code class="inline">err</code></strong> before using <code class="inline">result</code>.</li>
+        </ul>
         <h3>2.3. Callback hell</h3>
-        <p>Nested callbacks become hard to read and error-prone:</p>
+        <ul>
+          <li>Nested callbacks become hard to read and error-prone:</li>
+        </ul>
         <div class="code"><pre>getUser(1, (err, user) =&gt; {
   if (err) return handle(err);
   getOrders(user.id, (err, orders) =&gt; {
@@ -140,17 +158,23 @@ divide(10, 2, (err, result) =&gt; {
     });
   });
 });</pre></div>
-        <p>Problems:</p>
-        <ul><li>Deep nesting (&quot;pyramid of doom&quot;)</li><li>Duplicate error handling</li><li>Hard to compose sequential steps</li></ul>
-        <p><strong>Promises</strong> and <strong><code class="inline">async</code>/<code class="inline">await</code></strong> flatten this structure.</p>
+        <ul>
+          <li>Problems:</li>
+          <li>Deep nesting (&quot;pyramid of doom&quot;)</li><li>Duplicate error handling</li><li>Hard to compose sequential steps</li>
+          <li><strong>Promises</strong> and <strong><code class="inline">async</code>/<code class="inline">await</code></strong> flatten this structure.</li>
+        </ul>
         <h3>2.4. Callbacks today</h3>
-        <p>Still used in:</p>
-        <ul><li>Legacy Node APIs (<code class="inline">fs.readFile(path, cb)</code>)</li><li>Event listeners (<code class="inline">button.addEventListener(&quot;click&quot;, handler)</code>)</li><li>Third-party libraries</li></ul>
-        <p>Prefer <strong>Promise-based</strong> APIs or <strong><code class="inline">util.promisify</code></strong> (Node) / wrappers when available.</p>
+        <ul>
+          <li>Still used in:</li>
+          <li>Legacy Node APIs (<code class="inline">fs.readFile(path, cb)</code>)</li><li>Event listeners (<code class="inline">button.addEventListener(&quot;click&quot;, handler)</code>)</li><li>Third-party libraries</li>
+          <li>Prefer <strong>Promise-based</strong> APIs or <strong><code class="inline">util.promisify</code></strong> (Node) / wrappers when available.</li>
+        </ul>
       </section>
       <section id="3-promises">
         <h2>3. Promises</h2>
-        <p>A <strong>Promise</strong> represents a value that may be available <strong>now</strong>, <strong>later</strong>, or <strong>never</strong> (error).</p>
+        <ul>
+          <li>A <strong>Promise</strong> represents a value that may be available <strong>now</strong>, <strong>later</strong>, or <strong>never</strong> (error).</li>
+        </ul>
         <h3>3.1. Promise states</h3>
         <table>
         <thead>
@@ -162,7 +186,9 @@ divide(10, 2, (err, result) =&gt; {
         <tr><td><strong>rejected</strong></td><td>Operation failed — has a reason (error)</td></tr>
         </tbody>
         </table>
-        <p>Once settled (fulfilled or rejected), a Promise <strong>cannot change</strong> state.</p>
+        <ul>
+          <li>Once settled (fulfilled or rejected), a Promise <strong>cannot change</strong> state.</li>
+        </ul>
         <div class="code"><pre>const p = new Promise((resolve, reject) =&gt; {
   setTimeout(() =&gt; resolve(&quot;done&quot;), 100);
 });
@@ -184,7 +210,9 @@ function fetchUser(id) {
     resolve({ id, name: &quot;Bharat&quot; });
   });
 }</pre></div>
-        <p>Wrap callback APIs:</p>
+        <ul>
+          <li>Wrap callback APIs:</li>
+        </ul>
         <div class="code"><pre>function readFileAsync(path) {
   return new Promise((resolve, reject) =&gt; {
     fs.readFile(path, (err, data) =&gt; {
@@ -206,14 +234,17 @@ function fetchUser(id) {
   .finally(() =&gt; {
     console.log(&quot;Cleanup — runs either way&quot;);
   });</pre></div>
-        <ul><li><strong><code class="inline">then</code></strong> — on fulfillment; can return value or new Promise (chained).</li><li><strong><code class="inline">catch</code></strong> — on rejection anywhere in chain.</li><li><strong><code class="inline">finally</code></strong> — always runs; does not receive result (use for cleanup).</li></ul>
-        <p>Returning inside <code class="inline">then</code> passes to next <code class="inline">then</code>:</p>
+        <ul><li><strong><code class="inline">then</code></strong> — on fulfillment; can return value or new Promise (chained).</li><li><strong><code class="inline">catch</code></strong> — on rejection anywhere in chain.</li><li><strong><code class="inline">finally</code></strong> — always runs; does not receive result (use for cleanup).</li>
+          <li>Returning inside <code class="inline">then</code> passes to next <code class="inline">then</code>:</li>
+        </ul>
         <div class="code"><pre>Promise.resolve(2)
   .then((n) =&gt; n * 2)
   .then((n) =&gt; n + 1)
   .then(console.log);  // 5</pre></div>
         <h3>3.4. Promise chaining and errors</h3>
-        <p>Rejected Promise skips to nearest <strong><code class="inline">catch</code></strong>:</p>
+        <ul>
+          <li>Rejected Promise skips to nearest <strong><code class="inline">catch</code></strong>:</li>
+        </ul>
         <div class="code"><pre>Promise.resolve()
   .then(() =&gt; {
     throw new Error(&quot;oops&quot;);
@@ -222,9 +253,13 @@ function fetchUser(id) {
     console.log(&quot;skipped&quot;);
   })
   .catch((err) =&gt; console.log(err.message));  // &quot;oops&quot;</pre></div>
-        <p>Return <strong><code class="inline">Promise.reject(err)</code></strong> or <strong>throw</strong> inside <code class="inline">then</code> to reject.</p>
+        <ul>
+          <li>Return <strong><code class="inline">Promise.reject(err)</code></strong> or <strong>throw</strong> inside <code class="inline">then</code> to reject.</li>
+        </ul>
         <h3>3.5. Static helpers</h3>
-        <p><strong><code class="inline">Promise.all</code></strong> — wait for <strong>all</strong>; fails fast on <strong>first rejection</strong>:</p>
+        <ul>
+          <li><strong><code class="inline">Promise.all</code></strong> — wait for <strong>all</strong>; fails fast on <strong>first rejection</strong>:</li>
+        </ul>
         <div class="code"><pre>const p1 = Promise.resolve(1);
 const p2 = Promise.resolve(2);
 
@@ -233,7 +268,9 @@ Promise.all([p1, p2]).then(([a, b]) =&gt; {
 });
 
 Promise.all([p1, Promise.reject(&quot;fail&quot;)]).catch(console.log);  // &quot;fail&quot;</pre></div>
-        <p><strong><code class="inline">Promise.allSettled</code></strong> — wait for all; never short-circuits:</p>
+        <ul>
+          <li><strong><code class="inline">Promise.allSettled</code></strong> — wait for all; never short-circuits:</li>
+        </ul>
         <div class="code"><pre>Promise.allSettled([
   Promise.resolve(&quot;ok&quot;),
   Promise.reject(&quot;err&quot;),
@@ -243,25 +280,35 @@ Promise.all([p1, Promise.reject(&quot;fail&quot;)]).catch(console.log);  // &quo
   //   { status: &quot;rejected&quot;, reason: &quot;err&quot; }
   // ]
 });</pre></div>
-        <p><strong><code class="inline">Promise.race</code></strong> — first settled (fulfill or reject) wins:</p>
+        <ul>
+          <li><strong><code class="inline">Promise.race</code></strong> — first settled (fulfill or reject) wins:</li>
+        </ul>
         <div class="code"><pre>Promise.race([
   delay(200).then(() =&gt; &quot;slow&quot;),
   delay(50).then(() =&gt; &quot;fast&quot;),
 ]).then(console.log);  // &quot;fast&quot;</pre></div>
-        <p><strong><code class="inline">Promise.any</code></strong> — first <strong>fulfillment</strong> wins; rejects only if <strong>all</strong> reject:</p>
+        <ul>
+          <li><strong><code class="inline">Promise.any</code></strong> — first <strong>fulfillment</strong> wins; rejects only if <strong>all</strong> reject:</li>
+        </ul>
         <div class="code"><pre>Promise.any([
   Promise.reject(&quot;a&quot;),
   Promise.resolve(&quot;b&quot;),
 ]).then(console.log);  // &quot;b&quot;</pre></div>
-        <p><strong><code class="inline">Promise.resolve</code> / <code class="inline">Promise.reject</code></strong> — wrap values:</p>
+        <ul>
+          <li><strong><code class="inline">Promise.resolve</code> / <code class="inline">Promise.reject</code></strong> — wrap values:</li>
+        </ul>
         <div class="code"><pre>Promise.resolve(42);
 Promise.reject(new Error(&quot;fail&quot;));</pre></div>
       </section>
       <section id="4-async-await">
         <h2>4. async / await</h2>
-        <p><strong><code class="inline">async</code>/<code class="inline">await</code></strong> is syntactic sugar over Promises — write async code that <strong>looks</strong> synchronous.</p>
+        <ul>
+          <li><strong><code class="inline">async</code>/<code class="inline">await</code></strong> is syntactic sugar over Promises — write async code that <strong>looks</strong> synchronous.</li>
+        </ul>
         <h3>4.1. async functions</h3>
-        <p>An <strong><code class="inline">async</code> function</strong> always returns a <strong>Promise</strong>:</p>
+        <ul>
+          <li>An <strong><code class="inline">async</code> function</strong> always returns a <strong>Promise</strong>:</li>
+        </ul>
         <div class="code"><pre>async function greet() {
   return &quot;Hello&quot;;
 }
@@ -274,20 +321,26 @@ async function fail() {
 
 fail().catch((err) =&gt; console.log(err.message));  // &quot;bad&quot;</pre></div>
         <h3>4.2. await</h3>
-        <p><strong><code class="inline">await</code></strong> pauses <strong>inside the async function</strong> until the Promise settles, then gives the value (or throws on reject):</p>
+        <ul>
+          <li><strong><code class="inline">await</code></strong> pauses <strong>inside the async function</strong> until the Promise settles, then gives the value (or throws on reject):</li>
+        </ul>
         <div class="code"><pre>async function loadUser() {
   const user = await fetchUser(1);
   console.log(user.name);
 }
 
 loadUser();</pre></div>
-        <p><code class="inline">await</code> only works inside <strong><code class="inline">async</code></strong> functions (or top-level in modules).</p>
+        <ul>
+          <li><code class="inline">await</code> only works inside <strong><code class="inline">async</code></strong> functions (or top-level in modules).</li>
+        </ul>
         <div class="code"><pre>async function example() {
   const result = await delay(100).then(() =&gt; &quot;ready&quot;);
   return result;
 }</pre></div>
         <h3>4.3. Error handling</h3>
-        <p><strong>try/catch</strong> with await:</p>
+        <ul>
+          <li><strong>try/catch</strong> with await:</li>
+        </ul>
         <div class="code"><pre>async function loadUser(id) {
   try {
     const user = await fetchUser(id);
@@ -297,53 +350,71 @@ loadUser();</pre></div>
     throw err;  // rethrow if caller should handle
   }
 }</pre></div>
-        <p>Unhandled rejection if async function throws without catch:</p>
+        <ul>
+          <li>Unhandled rejection if async function throws without catch:</li>
+        </ul>
         <div class="code"><pre>async function oops() {
   await Promise.reject(new Error(&quot;fail&quot;));
 }
 
 oops();  // UnhandledPromiseRejection — always catch at boundary</pre></div>
         <h3>4.4. Sequential vs parallel</h3>
-        <p><strong>Sequential</strong> — one after another (slower when independent):</p>
+        <ul>
+          <li><strong>Sequential</strong> — one after another (slower when independent):</li>
+        </ul>
         <div class="code"><pre>async function sequential() {
   const a = await fetchA();  // wait
   const b = await fetchB();  // then wait
   return [a, b];
 }</pre></div>
-        <p><strong>Parallel</strong> — start together, await all:</p>
+        <ul>
+          <li><strong>Parallel</strong> — start together, await all:</li>
+        </ul>
         <div class="code"><pre>async function parallel() {
   const [a, b] = await Promise.all([fetchA(), fetchB()]);
   return [a, b];
 }</pre></div>
-        <p>Common mistake — sequential when parallel was intended:</p>
+        <ul>
+          <li>Common mistake — sequential when parallel was intended:</li>
+        </ul>
         <div class="code"><pre>// Slow — B waits for A even if independent
 const a = await fetchA();
 const b = await fetchB();
 
 // Fast — both start immediately
 const [a, b] = await Promise.all([fetchA(), fetchB()]);</pre></div>
-        <p>Start promises <strong>before</strong> await when batching:</p>
+        <ul>
+          <li>Start promises <strong>before</strong> await when batching:</li>
+        </ul>
         <div class="code"><pre>const pA = fetchA();
 const pB = fetchB();
 const a = await pA;
 const b = await pB;
 // Both already in flight</pre></div>
         <h3>4.5. await in loops</h3>
-        <p><strong>Sequential loop:</strong></p>
+        <ul>
+          <li><strong>Sequential loop:</strong></li>
+        </ul>
         <div class="code"><pre>async function processAll(items) {
   for (const item of items) {
     await processItem(item);  // one at a time
   }
 }</pre></div>
-        <p><strong>Parallel loop</strong> (careful with load):</p>
+        <ul>
+          <li><strong>Parallel loop</strong> (careful with load):</li>
+        </ul>
         <div class="code"><pre>async function processAllParallel(items) {
   await Promise.all(items.map((item) =&gt; processItem(item)));
 }</pre></div>
-        <p>Choose based on rate limits and whether order matters.</p>
+        <ul>
+          <li>Choose based on rate limits and whether order matters.</li>
+        </ul>
       </section>
       <section id="5-event-loop">
         <h2>5. Event loop</h2>
-        <p>The <strong>event loop</strong> coordinates the <strong>call stack</strong>, <strong>Web APIs</strong> (or Node libuv), and <strong>task queues</strong>.</p>
+        <ul>
+          <li>The <strong>event loop</strong> coordinates the <strong>call stack</strong>, <strong>Web APIs</strong> (or Node libuv), and <strong>task queues</strong>.</li>
+        </ul>
         <div class="code"><pre>┌──────────────┐     async APIs      ┌─────────────────┐
 │  Call Stack  │ ──────────────────► │    Web APIs     │
 │  (sync JS)   │                     │ setTimeout,     │
@@ -366,21 +437,29 @@ const b = await pB;
 Order (simplified):
 
   sync code → drain ALL microtasks → ONE macrotask → drain microtasks → …</pre></div>
-        <p>Interactive visualizer (like <a href="https://event-loop-visualizer-ruby.vercel.app/">event-loop-visualizer-ruby</a>): open <a href="./10-js-event-loop-animation.html">10-js-event-loop-animation.html</a> in a browser — editable script, queues, Run/Step, output prediction.</p>
+        <ul>
+          <li>Interactive visualizer (like <a href="https://event-loop-visualizer-ruby.vercel.app/">event-loop-visualizer-ruby</a>): open <a href="./10-js-event-loop-animation.html">10-js-event-loop-animation.html</a> in a browser — editable script, queues, Run/Step, output prediction.</li>
+        </ul>
         <h3>5.1. Call stack</h3>
-        <p>The <strong>call stack</strong> runs synchronous function calls — LIFO (last in, first out):</p>
+        <ul>
+          <li>The <strong>call stack</strong> runs synchronous function calls — LIFO (last in, first out):</li>
+        </ul>
         <div class="code"><pre>function c() { console.log(&quot;c&quot;); }
 function b() { c(); }
 function a() { b(); }
 
 a();  // stack: a → b → c → pop c → pop b → pop a</pre></div>
-        <p>Stack overflow — too many nested calls:</p>
+        <ul>
+          <li>Stack overflow — too many nested calls:</li>
+        </ul>
         <div class="code"><pre>function recurse() {
   recurse();
 }
 // recurse();  // RangeError: Maximum call stack size exceeded</pre></div>
         <h3>5.2. Macrotasks vs microtasks</h3>
-        <p>When async work completes, callbacks enter <strong>queues</strong>:</p>
+        <ul>
+          <li>When async work completes, callbacks enter <strong>queues</strong>:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Queue</th><th>Examples</th><th>Runs</th></tr>
@@ -390,7 +469,9 @@ a();  // stack: a → b → c → pop c → pop b → pop a</pre></div>
         <tr><td><strong>Macrotask</strong> (task)</td><td><code class="inline">setTimeout</code>, <code class="inline">setInterval</code>, I/O, UI events</td><td>One per event loop turn (simplified)</td></tr>
         </tbody>
         </table>
-        <p><strong>Order rule (simplified):</strong></p>
+        <ul>
+          <li><strong>Order rule (simplified):</strong></li>
+        </ul>
         <ol><li>Run sync code until call stack is empty.</li><li>Drain <strong>all</strong> microtasks.</li><li>Run <strong>one</strong> macrotask.</li><li>Repeat from step 2.</li></ol>
         <div class="code"><pre>console.log(&quot;1&quot;);
 
@@ -401,8 +482,9 @@ Promise.resolve().then(() =&gt; console.log(&quot;3&quot;));
 console.log(&quot;4&quot;);
 
 // 1, 4, 3, 2</pre></div>
-        <p>Walkthrough:</p>
-        <ul><li><code class="inline">1</code>, <code class="inline">4</code> — sync</li><li>Microtask: <code class="inline">3</code> — Promise <code class="inline">then</code></li><li>Macrotask: <code class="inline">2</code> — <code class="inline">setTimeout</code></li></ul>
+        <ul>
+          <li>Walkthrough:</li>
+          <li><code class="inline">1</code>, <code class="inline">4</code> — sync</li><li>Microtask: <code class="inline">3</code> — Promise <code class="inline">then</code></li><li>Macrotask: <code class="inline">2</code> — <code class="inline">setTimeout</code></li></ul>
         <h3>5.3. Classic interview example</h3>
         <div class="code"><pre>console.log(&quot;start&quot;);
 
@@ -415,7 +497,9 @@ Promise.resolve()
 console.log(&quot;end&quot;);
 
 // start, end, promise1, promise2, timeout</pre></div>
-        <p>Nested microtasks run before the next macrotask:</p>
+        <ul>
+          <li>Nested microtasks run before the next macrotask:</li>
+        </ul>
         <div class="code"><pre>setTimeout(() =&gt; console.log(&quot;timeout&quot;), 0);
 
 Promise.resolve().then(() =&gt; {
@@ -425,7 +509,9 @@ Promise.resolve().then(() =&gt; {
 
 // p1, p2, timeout</pre></div>
         <h3>5.4. async/await and microtasks</h3>
-        <p><strong><code class="inline">await</code></strong> splits function execution — code after <code class="inline">await</code> runs as a <strong>microtask</strong>:</p>
+        <ul>
+          <li><strong><code class="inline">await</code></strong> splits function execution — code after <code class="inline">await</code> runs as a <strong>microtask</strong>:</li>
+        </ul>
         <div class="code"><pre>async function async1() {
   console.log(&quot;A&quot;);
   await async2();
@@ -441,34 +527,58 @@ async1();
 console.log(&quot;E&quot;);
 
 // D, A, C, E, B</pre></div>
-        <p><code class="inline">await async2()</code> runs until <code class="inline">async2</code> hits its end, then yields; <code class="inline">E</code> runs; then <code class="inline">B</code> as microtask.</p>
+        <ul>
+          <li><code class="inline">await async2()</code> runs until <code class="inline">async2</code> hits its end, then yields; <code class="inline">E</code> runs; then <code class="inline">B</code> as microtask.</li>
+        </ul>
         <h3>5.5. Node vs browser (brief)</h3>
-        <p>Same core model; differences in details:</p>
-        <ul><li>Node has <strong><code class="inline">process.nextTick</code></strong> — runs <strong>before</strong> other microtasks (Node-specific).</li><li>Browser has <strong>rendering</strong> between frames — long microtask chains can block paint.</li><li><strong><code class="inline">setImmediate</code></strong> (Node) vs <strong><code class="inline">setTimeout(0)</code></strong> ordering differs in Node.</li></ul>
-        <p>For interviews and app code, <strong>sync → microtasks → macrotask</strong> is the essential model.</p>
+        <ul>
+          <li>Same core model; differences in details:</li>
+          <li>Node has <strong><code class="inline">process.nextTick</code></strong> — runs <strong>before</strong> other microtasks (Node-specific).</li><li>Browser has <strong>rendering</strong> between frames — long microtask chains can block paint.</li><li><strong><code class="inline">setImmediate</code></strong> (Node) vs <strong><code class="inline">setTimeout(0)</code></strong> ordering differs in Node.</li>
+          <li>For interviews and app code, <strong>sync → microtasks → macrotask</strong> is the essential model.</li>
+        </ul>
       </section>
       <section id="6-common-questions">
         <h2>6. Common questions</h2>
         <h3>6.1. Is JavaScript multithreaded?</h3>
-        <p><strong>A:</strong> <strong>No</strong> for your JS code on one thread — one call stack. Async uses the <strong>event loop</strong> and host APIs. <strong>Web Workers</strong> / <strong>Worker threads</strong> (Node) are separate threads with message passing.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>No</strong> for your JS code on one thread — one call stack. Async uses the <strong>event loop</strong> and host APIs. <strong>Web Workers</strong> / <strong>Worker threads</strong> (Node) are separate threads with message passing.</li>
+        </ul>
         <h3>6.2. What is the difference between sync and async?</h3>
-        <p><strong>A:</strong> <strong>Sync</strong> blocks until done. <strong>Async</strong> starts work and continues; a callback or Promise delivers the result later via the event loop.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Sync</strong> blocks until done. <strong>Async</strong> starts work and continues; a callback or Promise delivers the result later via the event loop.</li>
+        </ul>
         <h3>6.3. What is callback hell?</h3>
-        <p><strong>A:</strong> Deeply nested callbacks for sequential async steps — hard to read and error-handle. Fixed with Promises and <code class="inline">async</code>/<code class="inline">await</code>.</p>
+        <ul>
+          <li><strong>A:</strong> Deeply nested callbacks for sequential async steps — hard to read and error-handle. Fixed with Promises and <code class="inline">async</code>/<code class="inline">await</code>.</li>
+        </ul>
         <h3>6.4. What are the three Promise states?</h3>
-        <p><strong>A:</strong> <strong>pending</strong>, <strong>fulfilled</strong>, and <strong>rejected</strong>. Settled means fulfilled or rejected — no further change.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>pending</strong>, <strong>fulfilled</strong>, and <strong>rejected</strong>. Settled means fulfilled or rejected — no further change.</li>
+        </ul>
         <h3>6.5. What does <code class="inline">async</code> function return?</h3>
-        <p><strong>A:</strong> Always a <strong>Promise</strong>. Returning a value wraps it in <code class="inline">Promise.resolve</code>; throwing rejects the Promise.</p>
+        <ul>
+          <li><strong>A:</strong> Always a <strong>Promise</strong>. Returning a value wraps it in <code class="inline">Promise.resolve</code>; throwing rejects the Promise.</li>
+        </ul>
         <h3>6.6. What is the difference between <code class="inline">Promise.all</code> and <code class="inline">Promise.race</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">all</code></strong> waits for every Promise to fulfill (or fails on first reject). <strong><code class="inline">race</code></strong> settles when the <strong>first</strong> Promise settles (fulfill or reject).</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">all</code></strong> waits for every Promise to fulfill (or fails on first reject). <strong><code class="inline">race</code></strong> settles when the <strong>first</strong> Promise settles (fulfill or reject).</li>
+        </ul>
         <h3>6.7. Why does <code class="inline">setTimeout(fn, 0)</code> not run immediately?</h3>
-        <p><strong>A:</strong> It schedules a <strong>macrotask</strong>. Sync code and <strong>microtasks</strong> (e.g. Promise callbacks) run first.</p>
+        <ul>
+          <li><strong>A:</strong> It schedules a <strong>macrotask</strong>. Sync code and <strong>microtasks</strong> (e.g. Promise callbacks) run first.</li>
+        </ul>
         <h3>6.8. What runs first — <code class="inline">Promise.then</code> or <code class="inline">setTimeout</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">Promise.then</code></strong> (microtask) runs before <strong><code class="inline">setTimeout</code></strong> (macrotask) after the current synchronous code completes.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">Promise.then</code></strong> (microtask) runs before <strong><code class="inline">setTimeout</code></strong> (macrotask) after the current synchronous code completes.</li>
+        </ul>
         <h3>6.9. How do you run two independent async operations in parallel?</h3>
-        <p><strong>A:</strong> Start both without awaiting immediately, then <code class="inline">await Promise.all([p1, p2])</code>, or assign both to promises first then await each.</p>
+        <ul>
+          <li><strong>A:</strong> Start both without awaiting immediately, then <code class="inline">await Promise.all([p1, p2])</code>, or assign both to promises first then await each.</li>
+        </ul>
         <h3>6.10. What is the event loop?</h3>
-        <p><strong>A:</strong> The mechanism that takes callbacks from task queues and pushes them onto the call stack when the stack is empty — interleaving async work with synchronous JS execution.</p>
+        <ul>
+          <li><strong>A:</strong> The mechanism that takes callbacks from task queues and pushes them onto the call stack when the stack is empty — interleaving async work with synchronous JS execution.</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 10. Open from the JS Language index.</footer>
     </main>

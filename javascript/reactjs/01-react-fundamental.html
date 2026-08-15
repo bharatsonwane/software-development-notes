@@ -43,23 +43,31 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p><strong>React</strong> is a JavaScript library for building user interfaces. You describe <strong>what the UI should look like</strong> for a given state; React updates the DOM when state changes.</p>
-        <p>React apps are built from <strong>components</strong> — reusable pieces of UI. Modern React uses <strong>function components</strong> and <strong>hooks</strong> (Files 03, 05, 07 go deeper).</p>
-        <p><strong>Default rule today:</strong> use <strong>function components</strong>, create projects with <strong>Vite</strong>, keep components <strong>small and focused</strong>, and pass data down with <strong>props</strong> (one-way data flow).</p>
+        <ul>
+          <li><strong>React</strong> is a JavaScript library for building user interfaces. You describe <strong>what the UI should look like</strong> for a given state; React updates the DOM when state changes.</li>
+          <li>React apps are built from <strong>components</strong> — reusable pieces of UI. Modern React uses <strong>function components</strong> and <strong>hooks</strong> (Files 03, 05, 07 go deeper).</li>
+          <li><strong>Default rule today:</strong> use <strong>function components</strong>, create projects with <strong>Vite</strong>, keep components <strong>small and focused</strong>, and pass data down with <strong>props</strong> (one-way data flow).</li>
+        </ul>
       </section>
       <section id="1-what-is-react-setup">
         <h2>1. What is React &amp; setup</h2>
         <h3>1.1. What React does</h3>
-        <p>React handles:</p>
-        <ul><li><strong>UI as a function of state</strong> — when data changes, UI re-renders.</li><li><strong>Efficient DOM updates</strong> — compares virtual tree and patches only what changed (reconciliation).</li><li><strong>Component composition</strong> — nest small components into larger screens.</li></ul>
-        <p>React is <strong>only the view layer</strong> — routing, global state, and API calls are added with libraries (Files 09–11).</p>
+        <ul>
+          <li>React handles:</li>
+          <li><strong>UI as a function of state</strong> — when data changes, UI re-renders.</li><li><strong>Efficient DOM updates</strong> — compares virtual tree and patches only what changed (reconciliation).</li><li><strong>Component composition</strong> — nest small components into larger screens.</li>
+          <li>React is <strong>only the view layer</strong> — routing, global state, and API calls are added with libraries (Files 09–11).</li>
+        </ul>
         <h3>1.2. Create a project (Vite)</h3>
-        <p>Recommended starter for new apps:</p>
+        <ul>
+          <li>Recommended starter for new apps:</li>
+        </ul>
         <div class="code"><pre>npm create vite@latest my-app -- --template react
 cd my-app
 npm install
 npm run dev</pre></div>
-        <p>Project layout (typical):</p>
+        <ul>
+          <li>Project layout (typical):</li>
+        </ul>
         <div class="code"><pre>my-app/
   src/
     main.jsx      # entry — mounts root component
@@ -67,7 +75,9 @@ npm run dev</pre></div>
     index.css
   index.html
   package.json</pre></div>
-        <p>Entry point:</p>
+        <ul>
+          <li>Entry point:</li>
+        </ul>
         <div class="code"><pre>// main.jsx
 import { StrictMode } from &quot;react&quot;;
 import { createRoot } from &quot;react-dom/client&quot;;
@@ -78,15 +88,21 @@ createRoot(document.getElementById(&quot;root&quot;)).render(
     &lt;App /&gt;
   &lt;/StrictMode&gt;
 );</pre></div>
-        <p><strong><code class="inline">StrictMode</code></strong> runs extra checks in development (double-invokes some effects — File 05).</p>
+        <ul>
+          <li><strong><code class="inline">StrictMode</code></strong> runs extra checks in development (double-invokes some effects — File 05).</li>
+        </ul>
         <h3>1.3. First component</h3>
-        <p>A component is a <strong>function that returns JSX</strong>:</p>
+        <ul>
+          <li>A component is a <strong>function that returns JSX</strong>:</li>
+        </ul>
         <div class="code"><pre>function Welcome() {
   return &lt;h1&gt;Hello, React!&lt;/h1&gt;;
 }
 
 export default Welcome;</pre></div>
-        <p>Use it like a custom HTML tag:</p>
+        <ul>
+          <li>Use it like a custom HTML tag:</li>
+        </ul>
         <div class="code"><pre>function App() {
   return (
     &lt;div&gt;
@@ -95,18 +111,23 @@ export default Welcome;</pre></div>
     &lt;/div&gt;
   );
 }</pre></div>
-        <p>Rules:</p>
-        <ul><li>Component names <strong>PascalCase</strong> (<code class="inline">Welcome</code>, not <code class="inline">welcome</code>).</li><li>Return <strong>one root element</strong> (or use a <strong>Fragment</strong> — File 04).</li></ul>
+        <ul>
+          <li>Rules:</li>
+          <li>Component names <strong>PascalCase</strong> (<code class="inline">Welcome</code>, not <code class="inline">welcome</code>).</li><li>Return <strong>one root element</strong> (or use a <strong>Fragment</strong> — File 04).</li></ul>
       </section>
       <section id="2-jsx">
         <h2>2. JSX</h2>
         <h3>2.1. What is JSX</h3>
-        <p><strong>JSX</strong> looks like HTML inside JavaScript. It compiles to <code class="inline">React.createElement(...)</code> calls:</p>
+        <ul>
+          <li><strong>JSX</strong> looks like HTML inside JavaScript. It compiles to <code class="inline">React.createElement(...)</code> calls:</li>
+        </ul>
         <div class="code"><pre>const element = &lt;h1 className=&quot;title&quot;&gt;Hello&lt;/h1&gt;;
 
 // roughly compiles to:
 // React.createElement(&quot;h1&quot;, { className: &quot;title&quot; }, &quot;Hello&quot;);</pre></div>
-        <p>JSX is <strong>expressions</strong> — wrap in <code class="inline">{}</code> for JavaScript:</p>
+        <ul>
+          <li>JSX is <strong>expressions</strong> — wrap in <code class="inline">{}</code> for JavaScript:</li>
+        </ul>
         <div class="code"><pre>const name = &quot;Bharat&quot;;
 const element = &lt;p&gt;Hello, {name}!&lt;/p&gt;;
 
@@ -137,7 +158,9 @@ return (
   &lt;/div&gt;
 );</pre></div>
         <h3>2.3. JavaScript in JSX</h3>
-        <p><strong>Conditionals</strong> (full detail in File 04):</p>
+        <ul>
+          <li><strong>Conditionals</strong> (full detail in File 04):</li>
+        </ul>
         <div class="code"><pre>function Greeting({ isLoggedIn }) {
   return (
     &lt;div&gt;
@@ -145,16 +168,22 @@ return (
     &lt;/div&gt;
   );
 }</pre></div>
-        <p><strong>Attributes</strong> — use <code class="inline">{}</code> for dynamic values:</p>
+        <ul>
+          <li><strong>Attributes</strong> — use <code class="inline">{}</code> for dynamic values:</li>
+        </ul>
         <div class="code"><pre>&lt;img src={user.avatarUrl} alt={user.name} /&gt;
 &lt;button disabled={!isValid}&gt;Submit&lt;/button&gt;</pre></div>
-        <p><strong>Style</strong> — object, camelCase properties:</p>
+        <ul>
+          <li><strong>Style</strong> — object, camelCase properties:</li>
+        </ul>
         <div class="code"><pre>&lt;div style={{ color: &quot;navy&quot;, fontSize: &quot;1.2rem&quot; }}&gt;Styled&lt;/div&gt;</pre></div>
       </section>
       <section id="3-components">
         <h2>3. Components</h2>
         <h3>3.1. Function components</h3>
-        <p>Standard way to define UI (class components are legacy):</p>
+        <ul>
+          <li>Standard way to define UI (class components are legacy):</li>
+        </ul>
         <div class="code"><pre>function UserCard({ name, role }) {
   return (
     &lt;article&gt;
@@ -163,18 +192,24 @@ return (
     &lt;/article&gt;
   );
 }</pre></div>
-        <p>Export for use in other files:</p>
+        <ul>
+          <li>Export for use in other files:</li>
+        </ul>
         <div class="code"><pre>// UserCard.jsx
 export function UserCard({ name, role }) { /* ... */ }
 
 // App.jsx
 import { UserCard } from &quot;./UserCard.jsx&quot;;</pre></div>
-        <p>Default export (one main component per file is common):</p>
+        <ul>
+          <li>Default export (one main component per file is common):</li>
+        </ul>
         <div class="code"><pre>export default function App() {
   return &lt;UserCard name=&quot;Bharat&quot; role=&quot;Developer&quot; /&gt;;
 }</pre></div>
         <h3>3.2. Component tree</h3>
-        <p>React apps form a <strong>tree</strong> — parent components render children:</p>
+        <ul>
+          <li>React apps form a <strong>tree</strong> — parent components render children:</li>
+        </ul>
         <div class="code"><pre>function App() {
   return (
     &lt;Layout&gt;
@@ -186,9 +221,13 @@ import { UserCard } from &quot;./UserCard.jsx&quot;;</pre></div>
     &lt;/Layout&gt;
   );
 }</pre></div>
-        <p>Each component <strong>encapsulates</strong> its own markup and logic. Split when a section is reused or gets too large (File 02 — composition).</p>
+        <ul>
+          <li>Each component <strong>encapsulates</strong> its own markup and logic. Split when a section is reused or gets too large (File 02 — composition).</li>
+        </ul>
         <h3>3.3. Pure components (concept)</h3>
-        <p>Given the same <strong>props</strong>, a component should return the same UI. Avoid side effects in the render body (File 12 — <code class="inline">memo</code>):</p>
+        <ul>
+          <li>Given the same <strong>props</strong>, a component should return the same UI. Avoid side effects in the render body (File 12 — <code class="inline">memo</code>):</li>
+        </ul>
         <div class="code"><pre>// Good — render is a pure function of props
 function Badge({ label, color }) {
   return &lt;span style={{ background: color }}&gt;{label}&lt;/span&gt;;
@@ -199,7 +238,9 @@ function Badge({ label, color }) {
       </section>
       <section id="4-props">
         <h2>4. Props</h2>
-        <p><strong>Props</strong> (properties) pass data <strong>from parent to child</strong>. Props are <strong>read-only</strong> — children must not mutate them.</p>
+        <ul>
+          <li><strong>Props</strong> (properties) pass data <strong>from parent to child</strong>. Props are <strong>read-only</strong> — children must not mutate them.</li>
+        </ul>
         <h3>4.1. Passing and reading props</h3>
         <div class="code"><pre>function UserCard({ name, age, isActive }) {
   return (
@@ -216,7 +257,9 @@ function App() {
     &lt;UserCard name=&quot;Bharat&quot; age={30} isActive={true} /&gt;
   );
 }</pre></div>
-        <p>Props destructuring in the parameter list is idiomatic. Alternative:</p>
+        <ul>
+          <li>Props destructuring in the parameter list is idiomatic. Alternative:</li>
+        </ul>
         <div class="code"><pre>function UserCard(props) {
   return &lt;h2&gt;{props.name}&lt;/h2&gt;;
 }</pre></div>
@@ -228,7 +271,9 @@ function App() {
 &lt;Button /&gt;                    // &quot;Click me&quot;
 &lt;Button label=&quot;Save&quot; /&gt;       // &quot;Save&quot;</pre></div>
         <h3>4.3. Children prop</h3>
-        <p>Content between opening and closing tags becomes <strong><code class="inline">props.children</code></strong>:</p>
+        <ul>
+          <li>Content between opening and closing tags becomes <strong><code class="inline">props.children</code></strong>:</li>
+        </ul>
         <div class="code"><pre>function Card({ title, children }) {
   return (
     &lt;section&gt;
@@ -246,9 +291,13 @@ function App() {
     &lt;/Card&gt;
   );
 }</pre></div>
-        <p><code class="inline">children</code> can be text, elements, or multiple nodes (File 02 — composition patterns).</p>
+        <ul>
+          <li><code class="inline">children</code> can be text, elements, or multiple nodes (File 02 — composition patterns).</li>
+        </ul>
         <h3>4.4. One-way data flow</h3>
-        <p>Data flows <strong>down</strong> the tree via props. Siblings do not share props directly — lift shared state to a <strong>common parent</strong> (File 03).</p>
+        <ul>
+          <li>Data flows <strong>down</strong> the tree via props. Siblings do not share props directly — lift shared state to a <strong>common parent</strong> (File 03).</li>
+        </ul>
         <div class="code"><pre>function Parent() {
   const name = &quot;Bharat&quot;;
   return (
@@ -261,7 +310,9 @@ function App() {
       </section>
       <section id="5-state-intro">
         <h2>5. State intro</h2>
-        <p><strong>State</strong> is data that <strong>changes over time</strong> and affects what the UI shows. When state updates, React <strong>re-renders</strong> the component.</p>
+        <ul>
+          <li><strong>State</strong> is data that <strong>changes over time</strong> and affects what the UI shows. When state updates, React <strong>re-renders</strong> the component.</li>
+        </ul>
         <h3>5.1. Why not plain variables?</h3>
         <div class="code"><pre>// This does NOT work — changing message does not re-render
 function Broken() {
@@ -272,7 +323,9 @@ function Broken() {
     &lt;/button&gt;
   );
 }</pre></div>
-        <p>React needs <strong><code class="inline">useState</code></strong> (or similar) to schedule a re-render (File 03).</p>
+        <ul>
+          <li>React needs <strong><code class="inline">useState</code></strong> (or similar) to schedule a re-render (File 03).</li>
+        </ul>
         <h3>5.2. useState basics</h3>
         <div class="code"><pre>import { useState } from &quot;react&quot;;
 
@@ -286,8 +339,9 @@ function Counter() {
     &lt;/div&gt;
   );
 }</pre></div>
-        <ul><li><strong><code class="inline">useState(initial)</code></strong> returns <code class="inline">[value, setter]</code>.</li><li>Call <strong><code class="inline">setCount(newValue)</code></strong> to update — React re-renders.</li><li>State is <strong>local</strong> to the component instance — two <code class="inline">&lt;Counter /&gt;</code> on screen have independent state.</li></ul>
-        <p>Functional update when next state depends on previous:</p>
+        <ul><li><strong><code class="inline">useState(initial)</code></strong> returns <code class="inline">[value, setter]</code>.</li><li>Call <strong><code class="inline">setCount(newValue)</code></strong> to update — React re-renders.</li><li>State is <strong>local</strong> to the component instance — two <code class="inline">&lt;Counter /&gt;</code> on screen have independent state.</li>
+          <li>Functional update when next state depends on previous:</li>
+        </ul>
         <div class="code"><pre>setCount((prev) =&gt; prev + 1);</pre></div>
         <h3>5.3. State vs props</h3>
         <table>
@@ -305,7 +359,9 @@ function Counter() {
 
   return &lt;p&gt;{userId}: {name}&lt;/p&gt;;
 }</pre></div>
-        <p>Deep dive: File 03 (state &amp; events), File 05 (effects), File 07 (hooks patterns).</p>
+        <ul>
+          <li>Deep dive: File 03 (state &amp; events), File 05 (effects), File 07 (hooks patterns).</li>
+        </ul>
         <h3>5.4. Minimal interactive example</h3>
         <div class="code"><pre>import { useState } from &quot;react&quot;;
 
@@ -318,30 +374,52 @@ function LikeButton() {
     &lt;/button&gt;
   );
 }</pre></div>
-        <p>Event handlers use <strong>camelCase</strong> (<code class="inline">onClick</code>, <code class="inline">onChange</code>). Details in File 03.</p>
+        <ul>
+          <li>Event handlers use <strong>camelCase</strong> (<code class="inline">onClick</code>, <code class="inline">onChange</code>). Details in File 03.</li>
+        </ul>
       </section>
       <section id="6-common-questions">
         <h2>6. Common questions</h2>
         <h3>6.1. What is React?</h3>
-        <p><strong>A:</strong> A JavaScript <strong>UI library</strong> for building interfaces with <strong>components</strong>. It updates the DOM efficiently when application state changes.</p>
+        <ul>
+          <li><strong>A:</strong> A JavaScript <strong>UI library</strong> for building interfaces with <strong>components</strong>. It updates the DOM efficiently when application state changes.</li>
+        </ul>
         <h3>6.2. What is JSX?</h3>
-        <p><strong>A:</strong> Syntax extension that lets you write <strong>HTML-like markup</strong> in JavaScript. It compiles to <code class="inline">React.createElement</code> and must follow JSX rules (<code class="inline">className</code>, one root, closed tags).</p>
+        <ul>
+          <li><strong>A:</strong> Syntax extension that lets you write <strong>HTML-like markup</strong> in JavaScript. It compiles to <code class="inline">React.createElement</code> and must follow JSX rules (<code class="inline">className</code>, one root, closed tags).</li>
+        </ul>
         <h3>6.3. What is the difference between a component and an element?</h3>
-        <p><strong>A:</strong> An <strong>element</strong> is a plain object describing UI (e.g. <code class="inline">&lt;div /&gt;</code>). A <strong>component</strong> is a function or class that <strong>returns</strong> elements (or other components).</p>
+        <ul>
+          <li><strong>A:</strong> An <strong>element</strong> is a plain object describing UI (e.g. <code class="inline">&lt;div /&gt;</code>). A <strong>component</strong> is a function or class that <strong>returns</strong> elements (or other components).</li>
+        </ul>
         <h3>6.4. What are props?</h3>
-        <p><strong>A:</strong> <strong>Inputs</strong> passed from parent to child. They are <strong>read-only</strong> and enable one-way data flow down the tree.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Inputs</strong> passed from parent to child. They are <strong>read-only</strong> and enable one-way data flow down the tree.</li>
+        </ul>
         <h3>6.5. What is state?</h3>
-        <p><strong>A:</strong> <strong>Internal data</strong> owned by a component that can change over time. Updating state triggers a <strong>re-render</strong>. Use <code class="inline">useState</code> in function components.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Internal data</strong> owned by a component that can change over time. Updating state triggers a <strong>re-render</strong>. Use <code class="inline">useState</code> in function components.</li>
+        </ul>
         <h3>6.6. What is the difference between props and state?</h3>
-        <p><strong>A:</strong> <strong>Props</strong> come from outside and are immutable in the child. <strong>State</strong> is managed inside the component and updated with a setter function.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Props</strong> come from outside and are immutable in the child. <strong>State</strong> is managed inside the component and updated with a setter function.</li>
+        </ul>
         <h3>6.7. Why must component names be capitalized?</h3>
-        <p><strong>A:</strong> React treats <strong>lowercase</strong> tags as built-in HTML (<code class="inline">&lt;div&gt;</code>) and <strong>PascalCase</strong> as custom components (<code class="inline">&lt;UserCard&gt;</code>).</p>
+        <ul>
+          <li><strong>A:</strong> React treats <strong>lowercase</strong> tags as built-in HTML (<code class="inline">&lt;div&gt;</code>) and <strong>PascalCase</strong> as custom components (<code class="inline">&lt;UserCard&gt;</code>).</li>
+        </ul>
         <h3>6.8. Do I need to learn class components?</h3>
-        <p><strong>A:</strong> For new code, <strong>no</strong> — use function components and hooks. You may see classes in older codebases.</p>
+        <ul>
+          <li><strong>A:</strong> For new code, <strong>no</strong> — use function components and hooks. You may see classes in older codebases.</li>
+        </ul>
         <h3>6.9. What is <code class="inline">children</code> in props?</h3>
-        <p><strong>A:</strong> Special prop for <strong>nested content</strong> between a component&#x27;s JSX tags. Used for wrappers, layouts, and composition.</p>
+        <ul>
+          <li><strong>A:</strong> Special prop for <strong>nested content</strong> between a component&#x27;s JSX tags. Used for wrappers, layouts, and composition.</li>
+        </ul>
         <h3>6.10. What should I learn next after this file?</h3>
-        <p><strong>A:</strong> File 02 (components &amp; props depth), File 03 (state &amp; events), then File 04 (lists &amp; conditional rendering).</p>
+        <ul>
+          <li><strong>A:</strong> File 02 (components &amp; props depth), File 03 (state &amp; events), then File 04 (lists &amp; conditional rendering).</li>
+        </ul>
       </section>
       <footer>HTML note for React.js File 01. Open from the React.js index.</footer>
     </main>

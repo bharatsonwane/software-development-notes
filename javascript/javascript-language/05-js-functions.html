@@ -42,15 +42,19 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <p>A <strong>function</strong> is a reusable block of code that can take <strong>inputs</strong> (parameters), perform work, and optionally <strong>return</strong> a value. In JavaScript, functions are <strong>first-class</strong> — you can assign them to variables, pass them as arguments, and return them from other functions.</p>
-        <p>Functions create their own <strong>scope</strong> (File 02). How you define a function affects <strong>hoisting</strong> and, for arrow functions, <strong><code class="inline">this</code></strong> binding (File 08).</p>
-        <p><strong>Default rule today:</strong> use <strong>function declarations</strong> for top-level named helpers, <strong>arrow functions</strong> for short callbacks and when you want lexical <code class="inline">this</code>, and <strong>default/rest parameters</strong> instead of the legacy <code class="inline">arguments</code> object.</p>
-        <p>Interactive visualizer: open <a href="./05-js-functions-animation.html">05-js-functions-animation.html</a> in a browser — call stack, params/defaults, rest, return, callbacks, hoisting (Run / Step).</p>
+        <ul>
+          <li>A <strong>function</strong> is a reusable block of code that can take <strong>inputs</strong> (parameters), perform work, and optionally <strong>return</strong> a value. In JavaScript, functions are <strong>first-class</strong> — you can assign them to variables, pass them as arguments, and return them from other functions.</li>
+          <li>Functions create their own <strong>scope</strong> (File 02). How you define a function affects <strong>hoisting</strong> and, for arrow functions, <strong><code class="inline">this</code></strong> binding (File 08).</li>
+          <li><strong>Default rule today:</strong> use <strong>function declarations</strong> for top-level named helpers, <strong>arrow functions</strong> for short callbacks and when you want lexical <code class="inline">this</code>, and <strong>default/rest parameters</strong> instead of the legacy <code class="inline">arguments</code> object.</li>
+          <li>Interactive visualizer: open <a href="./05-js-functions-animation.html">05-js-functions-animation.html</a> in a browser — call stack, params/defaults, rest, return, callbacks, hoisting (Run / Step).</li>
+        </ul>
       </section>
       <section id="1-function-forms">
         <h2>1. Function forms</h2>
         <h3>1.1. Function declarations</h3>
-        <p>Defined with the <code class="inline">function</code> keyword at the top level of a scope. <strong>Hoisted</strong> — you can call it before its line in the source (File 02, section 3.3).</p>
+        <ul>
+          <li>Defined with the <code class="inline">function</code> keyword at the top level of a scope. <strong>Hoisted</strong> — you can call it before its line in the source (File 02, section 3.3).</li>
+        </ul>
         <div class="code"><pre>greet(&quot;Bharat&quot;);  // works — hoisted
 
 function greet(name) {
@@ -58,9 +62,13 @@ function greet(name) {
 }
 
 console.log(greet(&quot;Dev&quot;));  // &quot;Hello, Dev!&quot;</pre></div>
-        <p>Creates a <strong>named binding</strong> in the current scope (<code class="inline">greet</code> above).</p>
+        <ul>
+          <li>Creates a <strong>named binding</strong> in the current scope (<code class="inline">greet</code> above).</li>
+        </ul>
         <h3>1.2. Function expressions</h3>
-        <p>A function assigned to a variable (or passed inline). The <strong>variable</strong> is hoisted, not the function value — same rules as <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code> (File 02).</p>
+        <ul>
+          <li>A function assigned to a variable (or passed inline). The <strong>variable</strong> is hoisted, not the function value — same rules as <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code> (File 02).</li>
+        </ul>
         <div class="code"><pre>// greet();  // ReferenceError or TypeError — depends on var vs const
 
 const greet = function (name) {
@@ -68,7 +76,9 @@ const greet = function (name) {
 };
 
 console.log(greet(&quot;Bharat&quot;));</pre></div>
-        <p><strong>Named function expression</strong> — useful for stack traces and recursion inside the function:</p>
+        <ul>
+          <li><strong>Named function expression</strong> — useful for stack traces and recursion inside the function:</li>
+        </ul>
         <div class="code"><pre>const factorial = function fact(n) {
   return n &lt;= 1 ? 1 : n * fact(n - 1);
 };
@@ -86,7 +96,9 @@ factorial(5);  // 120
         </tbody>
         </table>
         <h3>1.3. Arrow functions</h3>
-        <p>Shorter syntax, introduced in ES6. <strong>No own <code class="inline">this</code></strong>, <code class="inline">arguments</code>, or <code class="inline">prototype</code>. Cannot be used as constructors (<code class="inline">new</code>).</p>
+        <ul>
+          <li>Shorter syntax, introduced in ES6. <strong>No own <code class="inline">this</code></strong>, <code class="inline">arguments</code>, or <code class="inline">prototype</code>. Cannot be used as constructors (<code class="inline">new</code>).</li>
+        </ul>
         <div class="code"><pre>const add = (a, b) =&gt; a + b;
 
 const double = x =&gt; x * 2;           // one param — parens optional
@@ -96,10 +108,14 @@ const log = () =&gt; console.log(&quot;hi&quot;); // no params
 const buildUser = (name, age) =&gt; {
   return { name, age };              // block body needs explicit return
 };</pre></div>
-        <p>Implicit return with expression body:</p>
+        <ul>
+          <li>Implicit return with expression body:</li>
+        </ul>
         <div class="code"><pre>const sum = (a, b) =&gt; a + b;
 const makePoint = (x, y) =&gt; ({ x, y });  // parens around object literal</pre></div>
-        <p>Arrow vs regular — quick comparison:</p>
+        <ul>
+          <li>Arrow vs regular — quick comparison:</li>
+        </ul>
         <table>
         <thead>
         <tr><th>Feature</th><th>Regular function</th><th>Arrow function</th></tr>
@@ -125,9 +141,13 @@ const makePoint = (x, y) =&gt; ({ x, y });  // parens around object literal</pre
 
 obj.regular();  // &quot;Bharat&quot;
 obj.arrow();    // undefined (in strict module/script)</pre></div>
-        <p>See File 08 for <code class="inline">this</code> in depth.</p>
+        <ul>
+          <li>See File 08 for <code class="inline">this</code> in depth.</li>
+        </ul>
         <h3>1.4. Methods (object and class shorthand)</h3>
-        <p>When a function is a property of an object, it is often called a <strong>method</strong>:</p>
+        <ul>
+          <li>When a function is a property of an object, it is often called a <strong>method</strong>:</li>
+        </ul>
         <div class="code"><pre>const calculator = {
   add(a, b) {
     return a + b;
@@ -138,7 +158,9 @@ obj.arrow();    // undefined (in strict module/script)</pre></div>
 };
 
 calculator.add(5, 3);  // 8</pre></div>
-        <p>ES6 <strong>method shorthand</strong> — same as <code class="inline">add: function(a, b) { }</code> but cleaner. <code class="inline">this</code> inside refers to the object (when called as <code class="inline">obj.add()</code>).</p>
+        <ul>
+          <li>ES6 <strong>method shorthand</strong> — same as <code class="inline">add: function(a, b) { }</code> but cleaner. <code class="inline">this</code> inside refers to the object (when called as <code class="inline">obj.add()</code>).</li>
+        </ul>
         <h3>1.5. When to use which</h3>
         <table>
         <thead>
@@ -162,16 +184,22 @@ calculator.add(5, 3);  // 8</pre></div>
 }
 
 multiply(3, 4);             // 3 and 4 are arguments</pre></div>
-        <p>JavaScript does <strong>not</strong> enforce arity — you can pass fewer or more arguments than parameters:</p>
+        <ul>
+          <li>JavaScript does <strong>not</strong> enforce arity — you can pass fewer or more arguments than parameters:</li>
+        </ul>
         <div class="code"><pre>function log(a, b, c) {
   console.log(a, b, c);
 }
 
 log(1);           // 1, undefined, undefined
 log(1, 2, 3, 4);  // 4 is ignored — no error</pre></div>
-        <p>Extra arguments are available via <strong>rest</strong> or (legacy) <strong><code class="inline">arguments</code></strong>.</p>
+        <ul>
+          <li>Extra arguments are available via <strong>rest</strong> or (legacy) <strong><code class="inline">arguments</code></strong>.</li>
+        </ul>
         <h3>2.2. Default parameters</h3>
-        <p>Default values apply when the argument is <strong><code class="inline">undefined</code></strong> (not when it is <code class="inline">null</code> or <code class="inline">0</code> unless you want that).</p>
+        <ul>
+          <li>Default values apply when the argument is <strong><code class="inline">undefined</code></strong> (not when it is <code class="inline">null</code> or <code class="inline">0</code> unless you want that).</li>
+        </ul>
         <div class="code"><pre>function greet(name = &quot;Guest&quot;) {
   return `Hello, ${name}!`;
 }
@@ -180,34 +208,48 @@ greet();              // &quot;Hello, Guest!&quot;
 greet(&quot;Bharat&quot;);      // &quot;Hello, Bharat!&quot;
 greet(undefined);     // &quot;Hello, Guest!&quot;
 greet(null);          // &quot;Hello, null!&quot; — null is not undefined</pre></div>
-        <p>Defaults can be <strong>expressions</strong> evaluated at call time:</p>
+        <ul>
+          <li>Defaults can be <strong>expressions</strong> evaluated at call time:</li>
+        </ul>
         <div class="code"><pre>function createId(prefix = &quot;id&quot;, suffix = Date.now()) {
   return `${prefix}-${suffix}`;
 }</pre></div>
-        <p>Later defaults can reference earlier parameters:</p>
+        <ul>
+          <li>Later defaults can reference earlier parameters:</li>
+        </ul>
         <div class="code"><pre>function range(start, end = start + 10) {
   return { start, end };
 }
 
 range(5);  // { start: 5, end: 15 }</pre></div>
         <h3>2.3. Rest parameters</h3>
-        <p><strong>Rest</strong> (<code class="inline">...name</code>) collects <strong>remaining arguments</strong> into a <strong>real array</strong>:</p>
+        <ul>
+          <li><strong>Rest</strong> (<code class="inline">...name</code>) collects <strong>remaining arguments</strong> into a <strong>real array</strong>:</li>
+        </ul>
         <div class="code"><pre>function sum(...nums) {
   return nums.reduce((total, n) =&gt; total + n, 0);
 }
 
 sum(1, 2, 3, 4);  // 10</pre></div>
-        <p>Combine fixed params with rest:</p>
+        <ul>
+          <li>Combine fixed params with rest:</li>
+        </ul>
         <div class="code"><pre>function log(level, ...messages) {
   console.log(`[${level}]`, ...messages);
 }
 
 log(&quot;ERROR&quot;, &quot;failed&quot;, &quot;timeout&quot;);</pre></div>
-        <p>Rest must be the <strong>last</strong> parameter:</p>
+        <ul>
+          <li>Rest must be the <strong>last</strong> parameter:</li>
+        </ul>
         <div class="code"><pre>// function bad(a, ...rest, b) { }  // SyntaxError</pre></div>
-        <p>Use rest instead of <strong><code class="inline">arguments</code></strong> in modern code.</p>
+        <ul>
+          <li>Use rest instead of <strong><code class="inline">arguments</code></strong> in modern code.</li>
+        </ul>
         <h3>2.4. The <code class="inline">arguments</code> object (legacy)</h3>
-        <p>Non-arrow functions have an array-like <strong><code class="inline">arguments</code></strong> object with all passed values:</p>
+        <ul>
+          <li>Non-arrow functions have an array-like <strong><code class="inline">arguments</code></strong> object with all passed values:</li>
+        </ul>
         <div class="code"><pre>function oldSum() {
   let total = 0;
   for (let i = 0; i &lt; arguments.length; i++) {
@@ -217,36 +259,48 @@ log(&quot;ERROR&quot;, &quot;failed&quot;, &quot;timeout&quot;);</pre></div>
 }
 
 oldSum(1, 2, 3);  // 6</pre></div>
-        <p>Limitations:</p>
-        <ul><li>Not a real array (no <code class="inline">map</code>/<code class="inline">filter</code> without converting)</li><li>Not available in <strong>arrow functions</strong></li><li>Confusing with rest parameters</li></ul>
-        <p>Prefer <strong><code class="inline">...rest</code></strong>:</p>
+        <ul>
+          <li>Limitations:</li>
+          <li>Not a real array (no <code class="inline">map</code>/<code class="inline">filter</code> without converting)</li><li>Not available in <strong>arrow functions</strong></li><li>Confusing with rest parameters</li>
+          <li>Prefer <strong><code class="inline">...rest</code></strong>:</li>
+        </ul>
         <div class="code"><pre>function sum(...nums) {
   return nums.reduce((a, b) =&gt; a + b, 0);
 }</pre></div>
         <h3>2.5. Destructuring parameters</h3>
-        <p>Unpack properties or array elements directly in the parameter list:</p>
+        <ul>
+          <li>Unpack properties or array elements directly in the parameter list:</li>
+        </ul>
         <div class="code"><pre>function printUser({ name, age }) {
   console.log(name, age);
 }
 
 printUser({ name: &quot;Bharat&quot;, age: 30 });</pre></div>
-        <p>With defaults:</p>
+        <ul>
+          <li>With defaults:</li>
+        </ul>
         <div class="code"><pre>function connect({ host = &quot;localhost&quot;, port = 3000 } = {}) {
   console.log(`${host}:${port}`);
 }
 
 connect();                    // localhost:3000
 connect({ port: 8080 });      // localhost:8080</pre></div>
-        <p>Array destructuring:</p>
+        <ul>
+          <li>Array destructuring:</li>
+        </ul>
         <div class="code"><pre>function firstAndSecond([a, b]) {
   return a + b;
 }
 
 firstAndSecond([10, 20]);  // 30</pre></div>
-        <p>File 07 covers destructuring in more detail.</p>
+        <ul>
+          <li>File 07 covers destructuring in more detail.</li>
+        </ul>
         <h3>2.6. Function overloading (patterns)</h3>
-        <p>JavaScript has <strong>no native overloading</strong> — same name cannot have multiple signatures. Common patterns:</p>
-        <p><strong>Single function + typeof / length check:</strong></p>
+        <ul>
+          <li>JavaScript has <strong>no native overloading</strong> — same name cannot have multiple signatures. Common patterns:</li>
+          <li><strong>Single function + typeof / length check:</strong></li>
+        </ul>
         <div class="code"><pre>function greet(nameOrOptions, maybeAge) {
   if (typeof nameOrOptions === &quot;object&quot;) {
     const { name, age } = nameOrOptions;
@@ -254,23 +308,33 @@ firstAndSecond([10, 20]);  // 30</pre></div>
   }
   return `Hello ${nameOrOptions}, age ${maybeAge}`;
 }</pre></div>
-        <p><strong>Default parameters instead of overloads:</strong></p>
+        <ul>
+          <li><strong>Default parameters instead of overloads:</strong></li>
+        </ul>
         <div class="code"><pre>function connect(host = &quot;localhost&quot;, port = 3000) { /* ... */ }</pre></div>
-        <p><strong>Separate named functions</strong> — clearest API:</p>
+        <ul>
+          <li><strong>Separate named functions</strong> — clearest API:</li>
+        </ul>
         <div class="code"><pre>function createUser(name) { /* ... */ }
 function createUserFromDto(dto) { /* ... */ }</pre></div>
-        <p>TypeScript adds compile-time overload signatures; runtime still uses one implementation.</p>
+        <ul>
+          <li>TypeScript adds compile-time overload signatures; runtime still uses one implementation.</li>
+        </ul>
       </section>
       <section id="3-return-first-class-functions">
         <h2>3. Return &amp; first-class functions</h2>
         <h3>3.1. return</h3>
-        <p><strong><code class="inline">return</code></strong> sends a value back to the caller and <strong>stops</strong> the function.</p>
+        <ul>
+          <li><strong><code class="inline">return</code></strong> sends a value back to the caller and <strong>stops</strong> the function.</li>
+        </ul>
         <div class="code"><pre>function double(n) {
   return n * 2;
 }
 
 const result = double(5);  // 10</pre></div>
-        <p>Without <code class="inline">return</code>, or with bare <code class="inline">return;</code>, the function returns <strong><code class="inline">undefined</code></strong>:</p>
+        <ul>
+          <li>Without <code class="inline">return</code>, or with bare <code class="inline">return;</code>, the function returns <strong><code class="inline">undefined</code></strong>:</li>
+        </ul>
         <div class="code"><pre>function noop() {
   // implicit return undefined
 }
@@ -279,21 +343,27 @@ function early() {
   return;
   console.log(&quot;never runs&quot;);
 }</pre></div>
-        <p><strong>Early return</strong> — guard clauses keep logic flat:</p>
+        <ul>
+          <li><strong>Early return</strong> — guard clauses keep logic flat:</li>
+        </ul>
         <div class="code"><pre>function processUser(user) {
   if (!user) return null;
   if (!user.isActive) return null;
 
   return { id: user.id, name: user.name };
 }</pre></div>
-        <p>Only one value per <code class="inline">return</code> — return multiple values with an <strong>object</strong> or <strong>array</strong>:</p>
+        <ul>
+          <li>Only one value per <code class="inline">return</code> — return multiple values with an <strong>object</strong> or <strong>array</strong>:</li>
+        </ul>
         <div class="code"><pre>function minMax(nums) {
   return { min: Math.min(...nums), max: Math.max(...nums) };
 }
 
 const { min, max } = minMax([3, 1, 4, 1, 5]);</pre></div>
         <h3>3.2. Functions as values</h3>
-        <p>Assign, store, and pass functions like any other value:</p>
+        <ul>
+          <li>Assign, store, and pass functions like any other value:</li>
+        </ul>
         <div class="code"><pre>const fn = function (x) { return x * 2; };
 
 const ops = {
@@ -306,7 +376,9 @@ function apply(op, a, b) {
 }
 
 apply(ops.add, 5, 3);  // 8</pre></div>
-        <p>Functions passed as arguments are <strong>callbacks</strong>:</p>
+        <ul>
+          <li>Functions passed as arguments are <strong>callbacks</strong>:</li>
+        </ul>
         <div class="code"><pre>function repeat(n, action) {
   for (let i = 0; i &lt; n; i++) {
     action(i);
@@ -314,9 +386,13 @@ apply(ops.add, 5, 3);  // 8</pre></div>
 }
 
 repeat(3, (i) =&gt; console.log(i));  // 0, 1, 2</pre></div>
-        <p>File 10 covers async callbacks, Promises, and event handlers.</p>
+        <ul>
+          <li>File 10 covers async callbacks, Promises, and event handlers.</li>
+        </ul>
         <h3>3.3. Higher-order functions</h3>
-        <p>A <strong>higher-order function</strong> either <strong>takes</strong> a function as an argument or <strong>returns</strong> a function (or both).</p>
+        <ul>
+          <li>A <strong>higher-order function</strong> either <strong>takes</strong> a function as an argument or <strong>returns</strong> a function (or both).</li>
+        </ul>
         <div class="code"><pre>// Takes a function
 function filter(arr, predicate) {
   const result = [];
@@ -336,9 +412,13 @@ function multiplyBy(factor) {
 
 const triple = multiplyBy(3);
 triple(5);  // 15</pre></div>
-        <p>Built-in higher-order array methods (<code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">reduce</code>) are covered in File 06.</p>
+        <ul>
+          <li>Built-in higher-order array methods (<code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">reduce</code>) are covered in File 06.</li>
+        </ul>
         <h3>3.4. Returning functions and closures (intro)</h3>
-        <p>Inner functions <strong>close over</strong> variables from the outer scope — a <strong>closure</strong>:</p>
+        <ul>
+          <li>Inner functions <strong>close over</strong> variables from the outer scope — a <strong>closure</strong>:</li>
+        </ul>
         <div class="code"><pre>function makeCounter(start = 0) {
   let count = start;
 
@@ -351,7 +431,9 @@ triple(5);  // 15</pre></div>
 const counter = makeCounter(10);
 counter();  // 11
 counter();  // 12</pre></div>
-        <p>The returned function keeps access to <code class="inline">count</code> even after <code class="inline">makeCounter</code> finishes. File 08 covers closures, IIFEs, and common patterns in depth.</p>
+        <ul>
+          <li>The returned function keeps access to <code class="inline">count</code> even after <code class="inline">makeCounter</code> finishes. File 08 covers closures, IIFEs, and common patterns in depth.</li>
+        </ul>
         <h3>3.5. Pure vs impure functions (brief)</h3>
         <table>
         <thead>
@@ -373,26 +455,44 @@ function pushItem(arr, item) {
   arr.push(item);
   return arr;
 }</pre></div>
-        <p>Prefer pure functions where practical; isolate side effects at boundaries (API calls, UI updates).</p>
+        <ul>
+          <li>Prefer pure functions where practical; isolate side effects at boundaries (API calls, UI updates).</li>
+        </ul>
       </section>
       <section id="4-common-questions">
         <h2>4. Common questions</h2>
         <h3>4.1. What is the difference between a function declaration and a function expression?</h3>
-        <p><strong>A:</strong> Declarations are hoisted and create a named binding you can call before the line. Expressions assign a function to a variable — the variable follows <code class="inline">let</code>/<code class="inline">const</code>/<code class="inline">var</code> hoisting rules, not full function hoisting.</p>
+        <ul>
+          <li><strong>A:</strong> Declarations are hoisted and create a named binding you can call before the line. Expressions assign a function to a variable — the variable follows <code class="inline">let</code>/<code class="inline">const</code>/<code class="inline">var</code> hoisting rules, not full function hoisting.</li>
+        </ul>
         <h3>4.2. When should I use arrow functions?</h3>
-        <p><strong>A:</strong> Short callbacks, when you want lexical <code class="inline">this</code>, and when you do not need <code class="inline">arguments</code>, <code class="inline">new</code>, or a <code class="inline">prototype</code>. Use regular functions or method shorthand when <code class="inline">this</code> must refer to the call site or object.</p>
+        <ul>
+          <li><strong>A:</strong> Short callbacks, when you want lexical <code class="inline">this</code>, and when you do not need <code class="inline">arguments</code>, <code class="inline">new</code>, or a <code class="inline">prototype</code>. Use regular functions or method shorthand when <code class="inline">this</code> must refer to the call site or object.</li>
+        </ul>
         <h3>4.3. What is the difference between parameters and arguments?</h3>
-        <p><strong>A:</strong> <strong>Parameters</strong> are in the function definition; <strong>arguments</strong> are the values passed when calling. JS allows any number of arguments regardless of parameter count.</p>
+        <ul>
+          <li><strong>A:</strong> <strong>Parameters</strong> are in the function definition; <strong>arguments</strong> are the values passed when calling. JS allows any number of arguments regardless of parameter count.</li>
+        </ul>
         <h3>4.4. How do default parameters work with <code class="inline">null</code>?</h3>
-        <p><strong>A:</strong> Defaults apply only when the argument is <strong><code class="inline">undefined</code></strong>, not <code class="inline">null</code>. <code class="inline">fn(null)</code> uses <code class="inline">null</code>, not the default.</p>
+        <ul>
+          <li><strong>A:</strong> Defaults apply only when the argument is <strong><code class="inline">undefined</code></strong>, not <code class="inline">null</code>. <code class="inline">fn(null)</code> uses <code class="inline">null</code>, not the default.</li>
+        </ul>
         <h3>4.5. What is the rest parameter and how is it different from <code class="inline">arguments</code>?</h3>
-        <p><strong>A:</strong> Rest (<code class="inline">...args</code>) collects remaining arguments into a <strong>real array</strong> and works in all modern function forms. <code class="inline">arguments</code> is array-like, legacy, and unavailable in arrow functions.</p>
+        <ul>
+          <li><strong>A:</strong> Rest (<code class="inline">...args</code>) collects remaining arguments into a <strong>real array</strong> and works in all modern function forms. <code class="inline">arguments</code> is array-like, legacy, and unavailable in arrow functions.</li>
+        </ul>
         <h3>4.6. What does a function return if there is no <code class="inline">return</code>?</h3>
-        <p><strong>A:</strong> <strong><code class="inline">undefined</code></strong>.</p>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">undefined</code></strong>.</li>
+        </ul>
         <h3>4.7. What is a first-class function?</h3>
-        <p><strong>A:</strong> Functions are values — you can assign them to variables, pass them as arguments, return them, and store them in data structures.</p>
+        <ul>
+          <li><strong>A:</strong> Functions are values — you can assign them to variables, pass them as arguments, return them, and store them in data structures.</li>
+        </ul>
         <h3>4.8. What is a higher-order function?</h3>
-        <p><strong>A:</strong> A function that takes another function as an argument, returns a function, or both. Examples: <code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">setTimeout</code>, and custom helpers like <code class="inline">multiplyBy(factor)</code>.</p>
+        <ul>
+          <li><strong>A:</strong> A function that takes another function as an argument, returns a function, or both. Examples: <code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">setTimeout</code>, and custom helpers like <code class="inline">multiplyBy(factor)</code>.</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 05. Open from the JS Language index.</footer>
     </main>
