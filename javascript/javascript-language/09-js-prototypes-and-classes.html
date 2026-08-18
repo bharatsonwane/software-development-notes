@@ -43,15 +43,27 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>JavaScript uses <strong>prototypal inheritance</strong>: objects can delegate property lookups to another object called their <strong>prototype</strong>. <strong><code class="inline">class</code></strong> syntax (ES6) is <strong>syntactic sugar</strong> over this prototype system — understanding prototypes explains how <code class="inline">new</code>, <code class="inline">extends</code>, and <code class="inline">instanceof</code> actually work.</li>
           <li>Every object (except <code class="inline">Object.create(null)</code>) has an internal link to a prototype. Functions have an extra <strong><code class="inline">prototype</code></strong> property used when the function is called with <strong><code class="inline">new</code></strong>.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
           <li><strong>Default rule today:</strong> use <strong><code class="inline">class</code></strong> for constructors and inheritance in application code; know <strong>prototypes</strong> for debugging, interviews, and reading legacy code.</li>
           <li>Interactive visualizer: open <a href="./09-js-prototypes-classes-animation.html">09-js-prototypes-classes-animation.html</a> in a browser — chain lookup, <code class="inline">new</code>, <code class="inline">instanceof</code>, manual inheritance, <code class="inline">class extends</code> (Run / Step).</li>
         </ul>
       </section>
       <section id="1-prototype-chain">
-        <h2>1. Prototype chain</h2>
+        <div class="heading-with-levels">
+          <h2>1. Prototype chain</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="1-prototype-chain-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. What is a prototype?</h3>
         <ul>
           <li>When you read <code class="inline">obj.key</code>, JavaScript:</li>
@@ -77,30 +89,8 @@ rabbit.walk();  // &quot;walking&quot; — method on animal</pre></div>
         <ul>
           <li>This linked list is the <strong>prototype chain</strong>.</li>
         </ul>
-        <h3>1.2. <code class="inline">[[Prototype]]</code>, <code class="inline">__proto__</code>, and <code class="inline">Object.getPrototypeOf</code></h3>
-        <ul>
-          <li>The spec uses internal slot <strong><code class="inline">[[Prototype]]</code></strong>. In practice:</li>
-        </ul>
-        <div class="code"><pre>// Modern — preferred
-Object.getPrototypeOf(rabbit);   // animal
-Object.setPrototypeOf(rabbit, animal);
-
-// Legacy — avoid in new code
-rabbit.__proto__;  // animal (deprecated accessor)</pre></div>
-        <ul>
-          <li>Object literal <code class="inline">{}</code> inherits from <strong><code class="inline">Object.prototype</code></strong>:</li>
-        </ul>
-        <div class="code"><pre>const obj = {};
-Object.getPrototypeOf(obj) === Object.prototype;  // true
-
-obj.toString();  // &quot;[object Object]&quot; — from Object.prototype</pre></div>
-        <ul>
-          <li><strong><code class="inline">Object.create(null)</code></strong> — object with <strong>no</strong> prototype (useful for pure dictionaries):</li>
-        </ul>
-        <div class="code"><pre>const dict = Object.create(null);
-dict.name = &quot;Bharat&quot;;
-dict.toString;  // undefined — no inherited methods</pre></div>
-        <h3>1.3. The <code class="inline">prototype</code> property on functions</h3>
+        <h3 id="1-prototype-chain-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>1.2. The <code class="inline">prototype</code> property on functions</h3>
         <ul>
           <li><strong>Functions</strong> (except arrows) have a <strong><code class="inline">prototype</code></strong> object. When you call the function with <strong><code class="inline">new</code></strong>, the new object&#x27;s <code class="inline">[[Prototype]]</code> is set to that <code class="inline">prototype</code>:</li>
         </ul>
@@ -129,7 +119,7 @@ u.greet();  // &quot;Hi, Bharat&quot;</pre></div>
         <ul>
           <li>Arrow functions have <strong>no</strong> <code class="inline">prototype</code> property — they cannot be constructors.</li>
         </ul>
-        <h3>1.4. Own properties vs inherited</h3>
+        <h3>1.3. Own properties vs inherited</h3>
         <div class="code"><pre>const parent = { shared: 1, unique: &quot;parent&quot; };
 const child = Object.create(parent);
 child.unique = &quot;child&quot;;
@@ -145,7 +135,7 @@ Object.hasOwn(child, &quot;unique&quot;);  // true</pre></div>
         <div class="code"><pre>User.prototype.name = &quot;default&quot;;
 const u = new User(&quot;Bharat&quot;);
 u.name;  // &quot;Bharat&quot; — own property wins</pre></div>
-        <h3>1.5. <code class="inline">instanceof</code> and the prototype chain</h3>
+        <h3>1.4. <code class="inline">instanceof</code> and the prototype chain</h3>
         <ul>
           <li><strong><code class="inline">instanceof</code></strong> checks if <strong><code class="inline">Constructor.prototype</code></strong> appears anywhere in the object&#x27;s prototype chain:</li>
         </ul>
@@ -162,14 +152,47 @@ checkInstance(u, User);  // true</pre></div>
         <ul>
           <li><code class="inline">instanceof</code> is unreliable across realms (iframes) — use <code class="inline">Object.prototype.toString</code> or feature checks for libraries.</li>
         </ul>
+        <h3 id="1-prototype-chain-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>1.5. <code class="inline">[[Prototype]]</code>, <code class="inline">__proto__</code>, and <code class="inline">Object.getPrototypeOf</code></h3>
+        <ul>
+          <li>The spec uses internal slot <strong><code class="inline">[[Prototype]]</code></strong>. In practice:</li>
+        </ul>
+        <div class="code"><pre>// Modern — preferred
+Object.getPrototypeOf(rabbit);   // animal
+Object.setPrototypeOf(rabbit, animal);
+
+// Legacy — avoid in new code
+rabbit.__proto__;  // animal (deprecated accessor)</pre></div>
+        <ul>
+          <li>Object literal <code class="inline">{}</code> inherits from <strong><code class="inline">Object.prototype</code></strong>:</li>
+        </ul>
+        <div class="code"><pre>const obj = {};
+Object.getPrototypeOf(obj) === Object.prototype;  // true
+
+obj.toString();  // &quot;[object Object]&quot; — from Object.prototype</pre></div>
+        <ul>
+          <li><strong><code class="inline">Object.create(null)</code></strong> — object with <strong>no</strong> prototype (useful for pure dictionaries):</li>
+        </ul>
+        <div class="code"><pre>const dict = Object.create(null);
+dict.name = &quot;Bharat&quot;;
+dict.toString;  // undefined — no inherited methods</pre></div>
       </section>
       <section id="2-object-creation">
-        <h2>2. Object creation</h2>
+        <div class="heading-with-levels">
+          <h2>2. Object creation</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="2-object-creation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Object literals</h3>
         <div class="code"><pre>const user = { name: &quot;Bharat&quot;, age: 30 };</pre></div>
         <ul>
           <li>Prototype is <strong><code class="inline">Object.prototype</code></strong> automatically. Methods on the literal are <strong>own</strong> properties unless added to a shared prototype (unusual for literals).</li>
         </ul>
+        <h3 id="2-object-creation-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>2.2. <code class="inline">Object.create</code></h3>
         <ul>
           <li>Create an object with an explicit prototype:</li>
@@ -218,6 +241,7 @@ function Bad(name) {
   this.name = name;
   this.greet = function () { return this.name; };
 }</pre></div>
+        <h3 id="2-object-creation-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>2.4. The <code class="inline">new</code> keyword</h3>
         <ul>
           <li>What <code class="inline">new User(&quot;Bharat&quot;)</code> roughly does (File 08 — <code class="inline">new</code> binding):</li>
@@ -237,7 +261,14 @@ const u = new User(&quot;Bharat&quot;);
         <div class="code"><pre>const broken = User(&quot;Bharat&quot;);  // avoid — pollutes global or fails strict</pre></div>
       </section>
       <section id="3-inheritance">
-        <h2>3. Inheritance</h2>
+        <div class="heading-with-levels">
+          <h2>3. Inheritance</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="3-inheritance-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>3.1. Prototypal inheritance</h3>
         <ul>
           <li><strong>Inheritance</strong> in JS means one object&#x27;s prototype chain includes another object&#x27;s methods/properties.</li>
@@ -282,6 +313,7 @@ function Child(a, b) {
         <ul>
           <li>Methods still need prototype linking (<code class="inline">Object.create</code> or <code class="inline">class extends</code>).</li>
         </ul>
+        <h3 id="3-inheritance-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
         <h3>3.3. Classes vs manual prototype setup</h3>
         <ul>
           <li><code class="inline">class Dog extends Animal</code> does the prototype wiring for you (section 4). Manual pattern above is what happens under the hood — useful for debugging and interviews.</li>
@@ -294,7 +326,15 @@ function Child(a, b) {
 const user = Object.assign(Object.create(null), canWalk, { name: &quot;Bharat&quot; });</pre></div>
       </section>
       <section id="4-classes">
-        <h2>4. Classes</h2>
+        <div class="heading-with-levels">
+          <h2>4. Classes</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="4-classes-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
           <li>ES6 <strong><code class="inline">class</code></strong> syntax is clearer but compiles to prototype + constructor mechanics.</li>
         </ul>
@@ -319,39 +359,7 @@ u.greet();  // &quot;Hi, Bharat!&quot;</pre></div>
         <ul><li>Methods are on <strong><code class="inline">User.prototype</code></strong> (non-enumerable).</li><li><strong><code class="inline">constructor</code></strong> is the initialization function called by <code class="inline">new</code>.</li><li><strong>No hoisting</strong> like function declarations — TDZ until class line (File 02).</li></ul>
         <div class="code"><pre>typeof User;  // &quot;function&quot; — classes are functions
 User.prototype.greet === u.greet;  // false — bound method, but same prototype fn</pre></div>
-        <h3>4.2. <code class="inline">extends</code> and <code class="inline">super</code></h3>
-        <div class="code"><pre>class Animal {
-  constructor(name) {
-    this.name = name;
-  }
-
-  speak() {
-    return `${this.name} makes a sound`;
-  }
-}
-
-class Dog extends Animal {
-  constructor(name, breed) {
-    super(name);  // must call before using `this` in subclass constructor
-    this.breed = breed;
-  }
-
-  speak() {
-    return `${this.name} barks`;
-  }
-}
-
-const d = new Dog(&quot;Rex&quot;, &quot;Lab&quot;);
-d.speak();  // &quot;Rex barks&quot;</pre></div>
-        <ul>
-          <li>Rules:</li>
-          <li><strong><code class="inline">super(...)</code></strong> in subclass <strong><code class="inline">constructor</code></strong> must run before <strong><code class="inline">this</code></strong> is used.</li><li><strong><code class="inline">super.method()</code></strong> calls parent prototype method.</li></ul>
-        <div class="code"><pre>class Dog extends Animal {
-  speak() {
-    return super.speak() + &quot; (loudly)&quot;;
-  }
-}</pre></div>
-        <h3>4.3. Static methods and fields</h3>
+        <h3>4.2. Static methods and fields</h3>
         <ul>
           <li><strong>Static</strong> — on the <strong>constructor</strong>, not instances:</li>
         </ul>
@@ -387,7 +395,7 @@ Config.apiUrl;</pre></div>
     this.count++;
   }
 }</pre></div>
-        <h3>4.4. Getters and setters</h3>
+        <h3>4.3. Getters and setters</h3>
         <div class="code"><pre>class Rectangle {
   constructor(width, height) {
     this.width = width;
@@ -417,6 +425,39 @@ rect.area = 25;  // uses setter</pre></div>
   get name() { return this._name; },
   set name(v) { this._name = v.trim(); },
 };</pre></div>
+        <h3 id="4-classes-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.4. <code class="inline">extends</code> and <code class="inline">super</code></h3>
+        <div class="code"><pre>class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+
+  speak() {
+    return `${this.name} makes a sound`;
+  }
+}
+
+class Dog extends Animal {
+  constructor(name, breed) {
+    super(name);  // must call before using `this` in subclass constructor
+    this.breed = breed;
+  }
+
+  speak() {
+    return `${this.name} barks`;
+  }
+}
+
+const d = new Dog(&quot;Rex&quot;, &quot;Lab&quot;);
+d.speak();  // &quot;Rex barks&quot;</pre></div>
+        <ul>
+          <li>Rules:</li>
+          <li><strong><code class="inline">super(...)</code></strong> in subclass <strong><code class="inline">constructor</code></strong> must run before <strong><code class="inline">this</code></strong> is used.</li><li><strong><code class="inline">super.method()</code></strong> calls parent prototype method.</li></ul>
+        <div class="code"><pre>class Dog extends Animal {
+  speak() {
+    return super.speak() + &quot; (loudly)&quot;;
+  }
+}</pre></div>
         <h3>4.5. Class vs constructor function</h3>
         <table>
         <thead>
@@ -433,6 +474,7 @@ rect.area = 25;  // uses setter</pre></div>
         <ul>
           <li>Use <strong><code class="inline">class</code></strong> in modern codebases unless maintaining legacy constructor patterns.</li>
         </ul>
+        <h3 id="4-classes-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
         <h3>4.6. Private fields and methods (ES2022+)</h3>
         <ul>
           <li>True instance privacy with <code class="inline">#</code>:</li>
@@ -457,38 +499,50 @@ acct.deposit(100);
         </ul>
       </section>
       <section id="5-common-questions">
-        <h2>5. Common questions</h2>
+        <div class="heading-with-levels">
+          <h2>5. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="5-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. What is the prototype chain?</h3>
         <ul>
           <li><strong>A:</strong> The linked list of objects JavaScript walks when a property is not found on the object itself. Lookup goes <strong>own properties → prototype → prototype&#x27;s prototype → … → null</strong>.</li>
         </ul>
-        <h3>5.2. What is the difference between <code class="inline">__proto__</code> and <code class="inline">prototype</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">__proto__</code></strong> (legacy) is an object&#x27;s link to its parent prototype. <strong><code class="inline">prototype</code></strong> is a property on <strong>constructor functions</strong> — the object assigned as <code class="inline">[[Prototype]]</code> to instances created with <code class="inline">new</code>.</li>
-        </ul>
-        <h3>5.3. What does <code class="inline">new</code> do?</h3>
-        <ul>
-          <li><strong>A:</strong> Creates an object, sets its prototype to <code class="inline">Constructor.prototype</code>, runs the constructor with <code class="inline">this</code> bound to that object, and returns the object (unless the constructor returns another object).</li>
-        </ul>
-        <h3>5.4. Is JavaScript class-based or prototype-based?</h3>
+        <h3>5.2. Is JavaScript class-based or prototype-based?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Prototype-based</strong> at runtime. <strong><code class="inline">class</code></strong> is syntactic sugar over constructor functions and prototype delegation.</li>
         </ul>
-        <h3>5.5. What does <code class="inline">instanceof</code> check?</h3>
+        <h3>5.3. What is the difference between own and inherited properties?</h3>
         <ul>
-          <li><strong>A:</strong> Whether <strong><code class="inline">Constructor.prototype</code></strong> exists anywhere in the object&#x27;s prototype chain. Not a check of own properties or &quot;type&quot; in the OOP class sense alone.</li>
+          <li><strong>A:</strong> <strong>Own</strong> properties exist directly on the object. <strong>Inherited</strong> properties come from the prototype chain. Use <strong><code class="inline">Object.hasOwn(obj, key)</code></strong> to test own properties only.</li>
         </ul>
-        <h3>5.6. Why call <code class="inline">Animal.call(this, name)</code> in subclass constructors?</h3>
-        <ul>
-          <li><strong>A:</strong> To run the <strong>parent constructor</strong> with the <strong>child instance</strong> as <code class="inline">this</code>, initializing inherited own properties. In classes, <strong><code class="inline">super(...)</code></strong> does this.</li>
-        </ul>
-        <h3>5.7. Can arrow functions be used as constructors?</h3>
+        <h3 id="5-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>5.4. Can arrow functions be used as constructors?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No.</strong> They have no <code class="inline">prototype</code> and cannot be used with <code class="inline">new</code>.</li>
         </ul>
-        <h3>5.8. What is the difference between own and inherited properties?</h3>
+        <h3 id="5-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>5.5. What does <code class="inline">new</code> do?</h3>
         <ul>
-          <li><strong>A:</strong> <strong>Own</strong> properties exist directly on the object. <strong>Inherited</strong> properties come from the prototype chain. Use <strong><code class="inline">Object.hasOwn(obj, key)</code></strong> to test own properties only.</li>
+          <li><strong>A:</strong> Creates an object, sets its prototype to <code class="inline">Constructor.prototype</code>, runs the constructor with <code class="inline">this</code> bound to that object, and returns the object (unless the constructor returns another object).</li>
+        </ul>
+        <h3>5.6. What does <code class="inline">instanceof</code> check?</h3>
+        <ul>
+          <li><strong>A:</strong> Whether <strong><code class="inline">Constructor.prototype</code></strong> exists anywhere in the object&#x27;s prototype chain. Not a check of own properties or &quot;type&quot; in the OOP class sense alone.</li>
+        </ul>
+        <h3 id="5-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>5.7. What is the difference between <code class="inline">__proto__</code> and <code class="inline">prototype</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">__proto__</code></strong> (legacy) is an object&#x27;s link to its parent prototype. <strong><code class="inline">prototype</code></strong> is a property on <strong>constructor functions</strong> — the object assigned as <code class="inline">[[Prototype]]</code> to instances created with <code class="inline">new</code>.</li>
+        </ul>
+        <h3>5.8. Why call <code class="inline">Animal.call(this, name)</code> in subclass constructors?</h3>
+        <ul>
+          <li><strong>A:</strong> To run the <strong>parent constructor</strong> with the <strong>child instance</strong> as <code class="inline">this</code>, initializing inherited own properties. In classes, <strong><code class="inline">super(...)</code></strong> does this.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 09. Open from the JS Language index.</footer>
