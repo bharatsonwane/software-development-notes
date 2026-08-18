@@ -44,16 +44,18 @@
       <header class="hero" id="intro">
         <h1>01. Data Types and Values</h1>
         <p class="subtitle">Primitives, objects, and how values work in memory.</p>
-        <div class="chip-row">
-          <span class="chip prim">Primitives</span>
-          <span class="chip obj">Objects</span>
-          <span class="chip ref">References</span>
-          <span class="chip type">Type Checks</span>
-        </div>
       </header>
 
       <section id="theory">
-        <h2>0. Theory (Foundation)</h2>
+        <div class="heading-with-levels">
+          <h2>0. Theory (Foundation)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+
+        <h3 id="theory-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>JavaScript is a <em>dynamic, interpreted (compiled at runtime) and weakly typed</em> programming language. It can run inside a browser as part of a webpage or directly on a machine through a host environment (for example, Node.js).</li>
           <li>JavaScript was created to make webpages dynamic, such as updating page content directly in the browser without a full page reload. It was originally called LiveScript, but it was later renamed to JavaScript during the rise in Java's popularity.</li>
@@ -62,6 +64,8 @@
         <div class="code"><pre>let x = 10;      // number
 x = "hello";     // now string — totally valid</pre></div>
         <div class="callout">Two broad categories: <strong>primitives</strong> and <strong>objects</strong> (everything else).</div>
+
+        <h3 id="theory-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
           <li><strong>Default rule today:</strong> use <code class="inline">typeof</code> for primitives, <code class="inline">=== null</code> for null, <code class="inline">Number.isNaN()</code> for NaN, <code class="inline">Array.isArray()</code> for arrays; use <code class="inline">Object.prototype.toString.call(x)</code> when you need a precise internal type tag; remember objects are copied by <strong>reference</strong>.</li>
           <li>Interactive visualizer: open <a href="./01-js-data-types-animation.html">01-js-data-types-animation.html</a> in a browser — typeof, copy vs reference, null/undefined, NaN, boxing, Symbol (Run / Step).</li>
@@ -69,7 +73,16 @@ x = "hello";     // now string — totally valid</pre></div>
       </section>
 
       <section id="primitives">
-        <h2>1. Primitives</h2>
+        <div class="heading-with-levels">
+          <h2>1. Primitives</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="primitives-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>A <strong>primitive</strong> is a single, immutable value stored directly. JavaScript has <strong>7 primitive types</strong>:</li>
         </ul>
@@ -108,7 +121,23 @@ console.log(b);  // null</pre></div>
           <li><strong>null</strong> — you set this when you mean "no value on purpose".</li>
         </ul>
 
-        <h3>1.3. NaN and Infinity</h3>
+        <h3 id="primitives-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>1.3. symbol</h3>
+        <ul>
+          <li>Used for unique property keys, often to avoid name collisions:</li>
+        </ul>
+        <div class="code"><pre>const id = Symbol("id");
+const user = { [id]: 123, name: "Bharat" };</pre></div>
+
+        <h3>1.4. bigint</h3>
+        <ul>
+          <li>For integers larger than <code class="inline">Number.MAX_SAFE_INTEGER</code> (<code class="inline">2^53 - 1</code>):</li>
+        </ul>
+        <div class="code"><pre>const big = 9007199254740991n;
+typeof big;        // "bigint"</pre></div>
+
+        <h3 id="primitives-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>1.5. NaN and Infinity</h3>
         <div class="code"><pre>typeof NaN;        // "number" (quirk!)
 Number("abc");     // NaN
 1 / 0;             // Infinity</pre></div>
@@ -118,27 +147,16 @@ Number("abc");     // NaN
         <div class="code"><pre>NaN === NaN;       // false
 Number.isNaN(NaN); // true — prefer this over global isNaN()</pre></div>
 
-        <h3>1.4. symbol</h3>
-        <ul>
-          <li>Used for unique property keys, often to avoid name collisions:</li>
-        </ul>
-        <div class="code"><pre>const id = Symbol("id");
-const user = { [id]: 123, name: "Bharat" };</pre></div>
+        <h3>1.6. symbol uniqueness</h3>
         <ul>
           <li>Every <code class="inline">Symbol()</code> call creates a <strong>new</strong> unique value, even with the same description.</li>
         </ul>
 
-        <h3>1.5. bigint</h3>
-        <ul>
-          <li>For integers larger than <code class="inline">Number.MAX_SAFE_INTEGER</code> (<code class="inline">2^53 - 1</code>):</li>
-        </ul>
-        <div class="code"><pre>const big = 9007199254740991n;
-typeof big;        // "bigint"
-
-// Cannot mix bigint and number without conversion
+        <h3>1.7. bigint mixing</h3>
+        <div class="code"><pre>// Cannot mix bigint and number without conversion
 // 1n + 1  → TypeError</pre></div>
 
-        <h3>1.6. Primitives are immutable</h3>
+        <h3>1.8. Primitives are immutable</h3>
         <ul>
           <li>You cannot change a primitive in place — operations return <strong>new</strong> values:</li>
         </ul>
@@ -148,7 +166,15 @@ console.log(s);    // still "hello"</pre></div>
       </section>
 
       <section id="objects">
-        <h2>2. Object data type</h2>
+        <div class="heading-with-levels">
+          <h2>2. Object data type</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+
+        <h3 id="objects-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>An <strong>object</strong> is a collection of key–value pairs. In JS, <strong>arrays</strong>, <strong>functions</strong>, <strong>Date</strong>, <strong>Map</strong>, <strong>Set</strong>, and <strong>RegExp</strong> are also objects.</li>
         </ul>
@@ -168,6 +194,7 @@ typeof tags;    // "object"
 typeof cache;   // "object"
 typeof pattern; // "object"</pre></div>
 
+        <h3 id="objects-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>2.1. Arrays are objects</h3>
         <div class="code"><pre>const arr = [1, 2, 3];
 arr.push(4);
@@ -176,7 +203,14 @@ Array.isArray(arr); // true — use this to check for arrays</pre></div>
       </section>
 
       <section id="compare">
-        <h2>3. Primitive vs non-primitive (differences)</h2>
+        <div class="heading-with-levels">
+          <h2>3. Primitive vs non-primitive (differences)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+
+        <h3 id="compare-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <table>
           <thead>
             <tr><th>Aspect</th><th>Primitive</th><th>Non-primitive</th></tr>
@@ -194,8 +228,16 @@ Array.isArray(arr); // true — use this to check for arrays</pre></div>
       </section>
 
       <section id="references">
-        <h2>4. Values and references</h2>
+        <div class="heading-with-levels">
+          <h2>4. Values and references</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
 
+        <h3 id="references-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Values (primitive copy)</h3>
         <ul>
           <li><strong>Primitives</strong> are copied <strong>by value</strong>:</li>
@@ -215,35 +257,8 @@ const obj2 = obj1;   // both point to the same object
 obj2.x = 99;
 console.log(obj1.x); // 99 — obj1 changed too!</pre></div>
 
-        <h3>4.3. Reassignment vs mutability</h3>
-        <ul>
-          <li>Reassignment changes what a variable points to. Mutability changes the value itself.</li>
-        </ul>
-        <div class="code"><pre>let n = 10;
-n = 20; // reassignment: n now points to a different primitive value
-
-const user = { name: "Bharat" };
-user.name = "B"; // mutation: same object, internal data changed
-// user = { name: "New" }; // TypeError with const: reassignment not allowed</pre></div>
-
-        <h3>4.4. Shallow copy</h3>
-        <ul>
-          <li>Spread and <code class="inline">Object.assign</code> create a <strong>shallow</strong> copy — top-level keys are copied, nested objects are still shared:</li>
-        </ul>
-        <div class="code"><pre>const original = { a: 1, nested: { b: 2 } };
-const copy = { ...original };
-
-copy.a = 100;
-copy.nested.b = 200;
-
-console.log(original.a);        // 1
-console.log(original.nested.b); // 200 — nested object is shared!</pre></div>
-        <ul>
-          <li>For a deep copy of plain data, <code class="inline">structuredClone()</code> works in modern environments:</li>
-        </ul>
-        <div class="code"><pre>const deep = structuredClone(original);</pre></div>
-
-        <h3>4.5. Passing to functions</h3>
+        <h3 id="references-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.3. Passing to functions</h3>
         <ul>
           <li>Primitives are passed by value; objects are passed by reference (the reference is copied):</li>
         </ul>
@@ -260,11 +275,49 @@ function changeObject(obj) {
 const o = { x: 1 };
 changeObject(o);
 console.log(o.x);  // 100</pre></div>
+
+        <h3 id="references-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.4. Reassignment vs mutability</h3>
+        <ul>
+          <li>Reassignment changes what a variable points to. Mutability changes the value itself.</li>
+        </ul>
+        <div class="code"><pre>let n = 10;
+n = 20; // reassignment: n now points to a different primitive value
+
+const user = { name: "Bharat" };
+user.name = "B"; // mutation: same object, internal data changed
+// user = { name: "New" }; // TypeError with const: reassignment not allowed</pre></div>
+
+        <h3>4.5. Shallow copy</h3>
+        <ul>
+          <li>Spread and <code class="inline">Object.assign</code> create a <strong>shallow</strong> copy — top-level keys are copied, nested objects are still shared:</li>
+        </ul>
+        <div class="code"><pre>const original = { a: 1, nested: { b: 2 } };
+const copy = { ...original };
+
+copy.a = 100;
+copy.nested.b = 200;
+
+console.log(original.a);        // 1
+console.log(original.nested.b); // 200 — nested object is shared!</pre></div>
+        <ul>
+          <li>For a deep copy of plain data, <code class="inline">structuredClone()</code> works in modern environments:</li>
+        </ul>
+        <div class="code"><pre>const deep = structuredClone(original);</pre></div>
       </section>
 
       <section id="type-checks">
-        <h2>5. typeof, instanceof, and Object.prototype.toString.call</h2>
+        <div class="heading-with-levels">
+          <h2>5. typeof, instanceof, and Object.prototype.toString.call</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
 
+        <h3 id="type-checks-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. typeof operator</h3>
         <ul>
           <li>Returns a <strong>string</strong> naming the type:</li>
@@ -283,6 +336,7 @@ typeof new Map();   // "object"
 typeof new Set();   // "object"
 typeof null;        // "object"  ← famous bug, historical reason</pre></div>
 
+        <h3 id="type-checks-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>5.2. Checking for null</h3>
         <ul>
           <li><code class="inline">typeof null === "object"</code> is misleading. Use strict equality:</li>
@@ -300,7 +354,23 @@ value === null;  // true</pre></div>
 
 "hello" instanceof String;  // false — primitive, not String object</pre></div>
 
-        <h3>5.4. Object.prototype.toString.call(value)</h3>
+        <h3>5.4. Recommended checks</h3>
+        <table>
+          <thead>
+            <tr><th>Goal</th><th>How</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Internal type tag for any value?</td><td><code class="inline">Object.prototype.toString.call(x)</code></td></tr>
+            <tr><td>Is it an array?</td><td><code class="inline">Array.isArray(x)</code></td></tr>
+            <tr><td>Is it NaN?</td><td><code class="inline">Number.isNaN(x)</code></td></tr>
+            <tr><td>Is it a finite number?</td><td><code class="inline">Number.isFinite(x)</code></td></tr>
+            <tr><td>Is it null or undefined?</td><td><code class="inline">x == null</code> or <code class="inline">x === null || x === undefined</code></td></tr>
+            <tr><td>Safe integer?</td><td><code class="inline">Number.isSafeInteger(x)</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="type-checks-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>5.5. Object.prototype.toString.call(value)</h3>
         <ul>
           <li>Every value has an internal type tag. <code class="inline">Object.prototype.toString.call(x)</code> reads that tag for <strong>any</strong> datatype — primitive or object — and returns a string like <code class="inline">[object Type]</code>.</li>
           <li>Use <code class="inline">.call(x)</code> so you run <strong>Object</strong>'s <code class="inline">toString</code>, not the value's own (arrays, dates, and many objects override <code class="inline">toString</code>).</li>
@@ -350,7 +420,7 @@ typeTag([]);    // "Array"</pre></div>
           <li><strong>When to use it:</strong> distinguishing objects that all look like <code class="inline">typeof === "object"</code> (array vs date vs map vs null). Prefer dedicated checks when they exist (<code class="inline">Array.isArray</code>, <code class="inline">x === null</code>).</li>
         </ul>
 
-        <h3>5.5. typeof vs instanceof vs toString.call (quick table)</h3>
+        <h3>5.6. typeof vs instanceof vs toString.call</h3>
         <table>
           <thead>
             <tr><th>Check</th><th>typeof</th><th>instanceof</th><th>Object.prototype.toString.call</th></tr>
@@ -365,7 +435,7 @@ typeTag([]);    // "Array"</pre></div>
           </tbody>
         </table>
 
-        <h3>5.6. Data types: primitive vs non-primitive</h3>
+        <h3>5.7. Data types: primitive vs non-primitive</h3>
         <table>
           <thead>
             <tr><th>Data type</th><th>Category</th><th>typeof result</th><th>instanceof result</th><th>toString.call result</th><th>Recommended check</th></tr>
@@ -391,21 +461,8 @@ typeTag([]);    // "Array"</pre></div>
           </tbody>
         </table>
 
-        <table>
-          <thead>
-            <tr><th>Goal</th><th>How</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Internal type tag for any value?</td><td><code class="inline">Object.prototype.toString.call(x)</code></td></tr>
-            <tr><td>Is it an array?</td><td><code class="inline">Array.isArray(x)</code></td></tr>
-            <tr><td>Is it NaN?</td><td><code class="inline">Number.isNaN(x)</code></td></tr>
-            <tr><td>Is it a finite number?</td><td><code class="inline">Number.isFinite(x)</code></td></tr>
-            <tr><td>Is it null or undefined?</td><td><code class="inline">x == null</code> or <code class="inline">x === null || x === undefined</code></td></tr>
-            <tr><td>Safe integer?</td><td><code class="inline">Number.isSafeInteger(x)</code></td></tr>
-          </tbody>
-        </table>
-
-        <h3>5.7. Boxing (brief)</h3>
+        <h3 id="type-checks-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>5.8. Boxing</h3>
         <ul>
           <li>Primitives can be temporarily wrapped as objects when you access methods:</li>
         </ul>
@@ -416,8 +473,16 @@ typeTag([]);    // "Array"</pre></div>
       </section>
 
       <section id="language-basics">
-        <h2>6. Language basics</h2>
+        <div class="heading-with-levels">
+          <h2>6. Language basics</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
 
+        <h3 id="language-basics-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Comments</h3>
         <div class="code"><pre>// Single-line comment
 
@@ -431,22 +496,7 @@ const x = 1; // trailing comment</pre></div>
           <li>Use comments for <strong>why</strong>, not <strong>what</strong> obvious code already shows.</li>
         </ul>
 
-        <h3>6.2. Semicolons</h3>
-        <ul>
-          <li>JavaScript has <strong>Automatic Semicolon Insertion (ASI)</strong> — the engine inserts semicolons when you omit them at line breaks in certain cases.</li>
-        </ul>
-        <div class="code"><pre>// Both valid
-const a = 1;
-const b = 2
-
-// ASI can surprise you — return on its own line
-function bad() {
-  return   // ASI inserts ; here — returns undefined
-    { value: 1 };
-}</pre></div>
-        <div class="callout warn"><strong>Default rule:</strong> use semicolons consistently, or follow a project style guide (Prettier).</div>
-
-        <h3>6.3. Literals</h3>
+        <h3>6.2. Literals</h3>
         <ul>
           <li>A <strong>literal</strong> is syntax that creates a value directly:</li>
         </ul>
@@ -466,6 +516,23 @@ function bad() {
           </tbody>
         </table>
 
+        <h3 id="language-basics-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>6.3. Semicolons</h3>
+        <ul>
+          <li>JavaScript has <strong>Automatic Semicolon Insertion (ASI)</strong> — the engine inserts semicolons when you omit them at line breaks in certain cases.</li>
+        </ul>
+        <div class="code"><pre>// Both valid
+const a = 1;
+const b = 2
+
+// ASI can surprise you — return on its own line
+function bad() {
+  return   // ASI inserts ; here — returns undefined
+    { value: 1 };
+}</pre></div>
+        <div class="callout warn"><strong>Default rule:</strong> use semicolons consistently, or follow a project style guide (Prettier).</div>
+
+        <h3 id="language-basics-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>6.4. Expressions vs statements</h3>
         <table>
           <thead>
@@ -488,8 +555,16 @@ const x = 1 + 2;  // 1 + 2 is expression; whole line is statement</pre></div>
       </section>
 
       <section id="common-questions">
-        <h2>7. Common questions</h2>
+        <div class="heading-with-levels">
+          <h2>7. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
 
+        <h3 id="common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>7.1. How many data types does JavaScript have?</h3>
         <ul>
           <li><strong>A:</strong> <strong>7 primitives</strong> + <strong>objects</strong> (which includes arrays, functions, dates, etc.).</li>
@@ -500,22 +575,18 @@ const x = 1 + 2;  // 1 + 2 is expression; whole line is statement</pre></div>
           <li><strong>A:</strong> <code class="inline">undefined</code> means "not assigned / missing". <code class="inline">null</code> means "intentionally empty".</li>
         </ul>
 
-        <h3>7.3. Why does typeof null return "object"?</h3>
-        <ul>
-          <li><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null. <code class="inline">Object.prototype.toString.call(null)</code> returns <code class="inline">"[object Null]"</code>.</li>
-        </ul>
-
-        <h3>7.4. What does Object.prototype.toString.call(value) do?</h3>
-        <ul>
-          <li><strong>A:</strong> It returns the internal type tag as <code class="inline">"[object Type]"</code> for any value. Use <code class="inline">.call(value)</code> so you do not use the value's own <code class="inline">toString</code>. Useful when <code class="inline">typeof</code> only says <code class="inline">"object"</code> (arrays, dates, maps, null).</li>
-        </ul>
-
-        <h3>7.5. Primitive vs object — what is the key difference?</h3>
+        <h3>7.3. Primitive vs object — what is the key difference?</h3>
         <ul>
           <li><strong>A:</strong> Primitives are immutable single values, stored and copied by value. Objects are mutable collections, copied by reference.</li>
         </ul>
 
-        <h3>7.6. Does const make objects immutable?</h3>
+        <h3>7.4. What is a literal?</h3>
+        <ul>
+          <li><strong>A:</strong> Syntax that creates a value directly — <code class="inline">42</code>, <code class="inline">"hi"</code>, <code class="inline">{ a: 1 }</code>, <code class="inline">[1, 2]</code>.</li>
+        </ul>
+
+        <h3 id="common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>7.5. Does const make objects immutable?</h3>
         <ul>
           <li><strong>A:</strong> No. <code class="inline">const</code> prevents <strong>reassigning</strong> the variable. The object itself can still be mutated:</li>
         </ul>
@@ -523,24 +594,30 @@ const x = 1 + 2;  // 1 + 2 is expression; whole line is statement</pre></div>
 obj.a = 2;       // OK
 obj = { a: 3 };  // TypeError — cannot reassign</pre></div>
 
-        <h3>7.7. What is NaN and how do you check for it?</h3>
+        <h3>7.6. What is NaN and how do you check for it?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">NaN</code> means "Not a Number" (result of invalid math). Use <code class="inline">Number.isNaN(value)</code>, not <code class="inline">value === NaN</code>.</li>
         </ul>
 
-        <h3>7.8. Are semicolons required in JavaScript?</h3>
+        <h3>7.7. Are semicolons required in JavaScript?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No</strong> — ASI inserts them in many cases. Use them consistently to avoid ASI edge cases.</li>
         </ul>
 
-        <h3>7.9. What is the difference between an expression and a statement?</h3>
+        <h3 id="common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>7.8. Why does typeof null return "object"?</h3>
         <ul>
-          <li><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</li>
+          <li><strong>A:</strong> A long-standing language bug kept for backward compatibility. Always use <code class="inline">value === null</code> to check for null. <code class="inline">Object.prototype.toString.call(null)</code> returns <code class="inline">"[object Null]"</code>.</li>
         </ul>
 
-        <h3>7.10. What is a literal?</h3>
+        <h3>7.9. What does Object.prototype.toString.call(value) do?</h3>
         <ul>
-          <li><strong>A:</strong> Syntax that creates a value directly — <code class="inline">42</code>, <code class="inline">"hi"</code>, <code class="inline">{ a: 1 }</code>, <code class="inline">[1, 2]</code>.</li>
+          <li><strong>A:</strong> It returns the internal type tag as <code class="inline">"[object Type]"</code> for any value. Use <code class="inline">.call(value)</code> so you do not use the value's own <code class="inline">toString</code>. Useful when <code class="inline">typeof</code> only says <code class="inline">"object"</code> (arrays, dates, maps, null).</li>
+        </ul>
+
+        <h3>7.10. What is the difference between an expression and a statement?</h3>
+        <ul>
+          <li><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</li>
         </ul>
       </section>
 
