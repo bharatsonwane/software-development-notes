@@ -42,15 +42,27 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>A <strong>function</strong> is a reusable block of code that can take <strong>inputs</strong> (parameters), perform work, and optionally <strong>return</strong> a value. In JavaScript, functions are <strong>first-class</strong> — you can assign them to variables, pass them as arguments, and return them from other functions.</li>
           <li>Functions create their own <strong>scope</strong> (File 02). How you define a function affects <strong>hoisting</strong> and, for arrow functions, <strong><code class="inline">this</code></strong> binding (File 08).</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
           <li><strong>Default rule today:</strong> use <strong>function declarations</strong> for top-level named helpers, <strong>arrow functions</strong> for short callbacks and when you want lexical <code class="inline">this</code>, and <strong>default/rest parameters</strong> instead of the legacy <code class="inline">arguments</code> object.</li>
           <li>Interactive visualizer: open <a href="./05-js-functions-animation.html">05-js-functions-animation.html</a> in a browser — call stack, params/defaults, rest, return, callbacks, hoisting (Run / Step).</li>
         </ul>
       </section>
       <section id="1-function-forms">
-        <h2>1. Function forms</h2>
+        <div class="heading-with-levels">
+          <h2>1. Function forms</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="1-function-forms-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Function declarations</h3>
         <ul>
           <li>Defined with the <code class="inline">function</code> keyword at the top level of a scope. <strong>Hoisted</strong> — you can call it before its line in the source (File 02, section 3.3).</li>
@@ -65,37 +77,8 @@ console.log(greet(&quot;Dev&quot;));  // &quot;Hello, Dev!&quot;</pre></div>
         <ul>
           <li>Creates a <strong>named binding</strong> in the current scope (<code class="inline">greet</code> above).</li>
         </ul>
-        <h3>1.2. Function expressions</h3>
-        <ul>
-          <li>A function assigned to a variable (or passed inline). The <strong>variable</strong> is hoisted, not the function value — same rules as <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code> (File 02).</li>
-        </ul>
-        <div class="code"><pre>// greet();  // ReferenceError or TypeError — depends on var vs const
-
-const greet = function (name) {
-  return `Hello, ${name}!`;
-};
-
-console.log(greet(&quot;Bharat&quot;));</pre></div>
-        <ul>
-          <li><strong>Named function expression</strong> — useful for stack traces and recursion inside the function:</li>
-        </ul>
-        <div class="code"><pre>const factorial = function fact(n) {
-  return n &lt;= 1 ? 1 : n * fact(n - 1);
-};
-
-factorial(5);  // 120
-// fact(5);    // ReferenceError — name only visible inside</pre></div>
-        <table>
-        <thead>
-        <tr><th>Declaration</th><th>Hoisted as callable?</th><th>Typical use</th></tr>
-        </thead>
-        <tbody>
-        <tr><td>Function declaration</td><td>Yes</td><td>Top-level utilities, hoisting needed</td></tr>
-        <tr><td><code class="inline">const</code> expression</td><td>No (TDZ until line)</td><td>Most assignments</td></tr>
-        <tr><td><code class="inline">var</code> expression</td><td>No (<code class="inline">undefined</code> until line)</td><td>Legacy — avoid</td></tr>
-        </tbody>
-        </table>
-        <h3>1.3. Arrow functions</h3>
+        <h3 id="1-function-forms-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>1.2. Arrow functions</h3>
         <ul>
           <li>Shorter syntax, introduced in ES6. <strong>No own <code class="inline">this</code></strong>, <code class="inline">arguments</code>, or <code class="inline">prototype</code>. Cannot be used as constructors (<code class="inline">new</code>).</li>
         </ul>
@@ -144,7 +127,7 @@ obj.arrow();    // undefined (in strict module/script)</pre></div>
         <ul>
           <li>See File 08 for <code class="inline">this</code> in depth.</li>
         </ul>
-        <h3>1.4. Methods (object and class shorthand)</h3>
+        <h3>1.3. Methods (object and class shorthand)</h3>
         <ul>
           <li>When a function is a property of an object, it is often called a <strong>method</strong>:</li>
         </ul>
@@ -161,7 +144,7 @@ calculator.add(5, 3);  // 8</pre></div>
         <ul>
           <li>ES6 <strong>method shorthand</strong> — same as <code class="inline">add: function(a, b) { }</code> but cleaner. <code class="inline">this</code> inside refers to the object (when called as <code class="inline">obj.add()</code>).</li>
         </ul>
-        <h3>1.5. When to use which</h3>
+        <h3>1.4. When to use which</h3>
         <table>
         <thead>
         <tr><th>Situation</th><th>Prefer</th></tr>
@@ -174,9 +157,48 @@ calculator.add(5, 3);  // 8</pre></div>
         <tr><td>Constructor / class</td><td><code class="inline">class</code> or <code class="inline">function</code> + <code class="inline">new</code> (File 09)</td></tr>
         </tbody>
         </table>
+        <h3 id="1-function-forms-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>1.5. Function expressions</h3>
+        <ul>
+          <li>A function assigned to a variable (or passed inline). The <strong>variable</strong> is hoisted, not the function value — same rules as <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code> (File 02).</li>
+        </ul>
+        <div class="code"><pre>// greet();  // ReferenceError or TypeError — depends on var vs const
+
+const greet = function (name) {
+  return `Hello, ${name}!`;
+};
+
+console.log(greet(&quot;Bharat&quot;));</pre></div>
+        <ul>
+          <li><strong>Named function expression</strong> — useful for stack traces and recursion inside the function:</li>
+        </ul>
+        <div class="code"><pre>const factorial = function fact(n) {
+  return n &lt;= 1 ? 1 : n * fact(n - 1);
+};
+
+factorial(5);  // 120
+// fact(5);    // ReferenceError — name only visible inside</pre></div>
+        <table>
+        <thead>
+        <tr><th>Declaration</th><th>Hoisted as callable?</th><th>Typical use</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Function declaration</td><td>Yes</td><td>Top-level utilities, hoisting needed</td></tr>
+        <tr><td><code class="inline">const</code> expression</td><td>No (TDZ until line)</td><td>Most assignments</td></tr>
+        <tr><td><code class="inline">var</code> expression</td><td>No (<code class="inline">undefined</code> until line)</td><td>Legacy — avoid</td></tr>
+        </tbody>
+        </table>
       </section>
       <section id="2-parameters-arguments">
-        <h2>2. Parameters &amp; arguments</h2>
+        <div class="heading-with-levels">
+          <h2>2. Parameters &amp; arguments</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="2-parameters-arguments-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Parameters vs arguments</h3>
         <ul><li><strong>Parameters</strong> — names listed in the function <strong>definition</strong>.</li><li><strong>Arguments</strong> — actual <strong>values</strong> passed at <strong>call time</strong>.</li></ul>
         <div class="code"><pre>function multiply(a, b) {   // a, b are parameters
@@ -196,6 +218,7 @@ log(1, 2, 3, 4);  // 4 is ignored — no error</pre></div>
         <ul>
           <li>Extra arguments are available via <strong>rest</strong> or (legacy) <strong><code class="inline">arguments</code></strong>.</li>
         </ul>
+        <h3 id="2-parameters-arguments-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>2.2. Default parameters</h3>
         <ul>
           <li>Default values apply when the argument is <strong><code class="inline">undefined</code></strong> (not when it is <code class="inline">null</code> or <code class="inline">0</code> unless you want that).</li>
@@ -246,28 +269,7 @@ log(&quot;ERROR&quot;, &quot;failed&quot;, &quot;timeout&quot;);</pre></div>
         <ul>
           <li>Use rest instead of <strong><code class="inline">arguments</code></strong> in modern code.</li>
         </ul>
-        <h3>2.4. The <code class="inline">arguments</code> object (legacy)</h3>
-        <ul>
-          <li>Non-arrow functions have an array-like <strong><code class="inline">arguments</code></strong> object with all passed values:</li>
-        </ul>
-        <div class="code"><pre>function oldSum() {
-  let total = 0;
-  for (let i = 0; i &lt; arguments.length; i++) {
-    total += arguments[i];
-  }
-  return total;
-}
-
-oldSum(1, 2, 3);  // 6</pre></div>
-        <ul>
-          <li>Limitations:</li>
-          <li>Not a real array (no <code class="inline">map</code>/<code class="inline">filter</code> without converting)</li><li>Not available in <strong>arrow functions</strong></li><li>Confusing with rest parameters</li>
-          <li>Prefer <strong><code class="inline">...rest</code></strong>:</li>
-        </ul>
-        <div class="code"><pre>function sum(...nums) {
-  return nums.reduce((a, b) =&gt; a + b, 0);
-}</pre></div>
-        <h3>2.5. Destructuring parameters</h3>
+        <h3>2.4. Destructuring parameters</h3>
         <ul>
           <li>Unpack properties or array elements directly in the parameter list:</li>
         </ul>
@@ -296,6 +298,28 @@ firstAndSecond([10, 20]);  // 30</pre></div>
         <ul>
           <li>File 07 covers destructuring in more detail.</li>
         </ul>
+        <h3 id="2-parameters-arguments-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.5. The <code class="inline">arguments</code> object (legacy)</h3>
+        <ul>
+          <li>Non-arrow functions have an array-like <strong><code class="inline">arguments</code></strong> object with all passed values:</li>
+        </ul>
+        <div class="code"><pre>function oldSum() {
+  let total = 0;
+  for (let i = 0; i &lt; arguments.length; i++) {
+    total += arguments[i];
+  }
+  return total;
+}
+
+oldSum(1, 2, 3);  // 6</pre></div>
+        <ul>
+          <li>Limitations:</li>
+          <li>Not a real array (no <code class="inline">map</code>/<code class="inline">filter</code> without converting)</li><li>Not available in <strong>arrow functions</strong></li><li>Confusing with rest parameters</li>
+          <li>Prefer <strong><code class="inline">...rest</code></strong>:</li>
+        </ul>
+        <div class="code"><pre>function sum(...nums) {
+  return nums.reduce((a, b) =&gt; a + b, 0);
+}</pre></div>
         <h3>2.6. Function overloading (patterns)</h3>
         <ul>
           <li>JavaScript has <strong>no native overloading</strong> — same name cannot have multiple signatures. Common patterns:</li>
@@ -322,7 +346,15 @@ function createUserFromDto(dto) { /* ... */ }</pre></div>
         </ul>
       </section>
       <section id="3-return-first-class-functions">
-        <h2>3. Return &amp; first-class functions</h2>
+        <div class="heading-with-levels">
+          <h2>3. Return &amp; first-class functions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="3-return-first-class-functions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. return</h3>
         <ul>
           <li><strong><code class="inline">return</code></strong> sends a value back to the caller and <strong>stops</strong> the function.</li>
@@ -389,6 +421,7 @@ repeat(3, (i) =&gt; console.log(i));  // 0, 1, 2</pre></div>
         <ul>
           <li>File 10 covers async callbacks, Promises, and event handlers.</li>
         </ul>
+        <h3 id="3-return-first-class-functions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>3.3. Higher-order functions</h3>
         <ul>
           <li>A <strong>higher-order function</strong> either <strong>takes</strong> a function as an argument or <strong>returns</strong> a function (or both).</li>
@@ -415,26 +448,7 @@ triple(5);  // 15</pre></div>
         <ul>
           <li>Built-in higher-order array methods (<code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">reduce</code>) are covered in File 06.</li>
         </ul>
-        <h3>3.4. Returning functions and closures (intro)</h3>
-        <ul>
-          <li>Inner functions <strong>close over</strong> variables from the outer scope — a <strong>closure</strong>:</li>
-        </ul>
-        <div class="code"><pre>function makeCounter(start = 0) {
-  let count = start;
-
-  return function () {
-    count++;
-    return count;
-  };
-}
-
-const counter = makeCounter(10);
-counter();  // 11
-counter();  // 12</pre></div>
-        <ul>
-          <li>The returned function keeps access to <code class="inline">count</code> even after <code class="inline">makeCounter</code> finishes. File 08 covers closures, IIFEs, and common patterns in depth.</li>
-        </ul>
-        <h3>3.5. Pure vs impure functions (brief)</h3>
+        <h3>3.4. Pure vs impure functions (brief)</h3>
         <table>
         <thead>
         <tr><th>Pure function</th><th>Impure function</th></tr>
@@ -458,40 +472,70 @@ function pushItem(arr, item) {
         <ul>
           <li>Prefer pure functions where practical; isolate side effects at boundaries (API calls, UI updates).</li>
         </ul>
+        <h3 id="3-return-first-class-functions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>3.5. Returning functions and closures (intro)</h3>
+        <ul>
+          <li>Inner functions <strong>close over</strong> variables from the outer scope — a <strong>closure</strong>:</li>
+        </ul>
+        <div class="code"><pre>function makeCounter(start = 0) {
+  let count = start;
+
+  return function () {
+    count++;
+    return count;
+  };
+}
+
+const counter = makeCounter(10);
+counter();  // 11
+counter();  // 12</pre></div>
+        <ul>
+          <li>The returned function keeps access to <code class="inline">count</code> even after <code class="inline">makeCounter</code> finishes. File 08 covers closures, IIFEs, and common patterns in depth.</li>
+        </ul>
       </section>
       <section id="4-common-questions">
-        <h2>4. Common questions</h2>
+        <div class="heading-with-levels">
+          <h2>4. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="4-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. What is the difference between a function declaration and a function expression?</h3>
         <ul>
           <li><strong>A:</strong> Declarations are hoisted and create a named binding you can call before the line. Expressions assign a function to a variable — the variable follows <code class="inline">let</code>/<code class="inline">const</code>/<code class="inline">var</code> hoisting rules, not full function hoisting.</li>
         </ul>
-        <h3>4.2. When should I use arrow functions?</h3>
-        <ul>
-          <li><strong>A:</strong> Short callbacks, when you want lexical <code class="inline">this</code>, and when you do not need <code class="inline">arguments</code>, <code class="inline">new</code>, or a <code class="inline">prototype</code>. Use regular functions or method shorthand when <code class="inline">this</code> must refer to the call site or object.</li>
-        </ul>
-        <h3>4.3. What is the difference between parameters and arguments?</h3>
+        <h3>4.2. What is the difference between parameters and arguments?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Parameters</strong> are in the function definition; <strong>arguments</strong> are the values passed when calling. JS allows any number of arguments regardless of parameter count.</li>
         </ul>
-        <h3>4.4. How do default parameters work with <code class="inline">null</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Defaults apply only when the argument is <strong><code class="inline">undefined</code></strong>, not <code class="inline">null</code>. <code class="inline">fn(null)</code> uses <code class="inline">null</code>, not the default.</li>
-        </ul>
-        <h3>4.5. What is the rest parameter and how is it different from <code class="inline">arguments</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Rest (<code class="inline">...args</code>) collects remaining arguments into a <strong>real array</strong> and works in all modern function forms. <code class="inline">arguments</code> is array-like, legacy, and unavailable in arrow functions.</li>
-        </ul>
-        <h3>4.6. What does a function return if there is no <code class="inline">return</code>?</h3>
+        <h3>4.3. What does a function return if there is no <code class="inline">return</code>?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">undefined</code></strong>.</li>
         </ul>
-        <h3>4.7. What is a first-class function?</h3>
+        <h3>4.4. What is a first-class function?</h3>
         <ul>
           <li><strong>A:</strong> Functions are values — you can assign them to variables, pass them as arguments, return them, and store them in data structures.</li>
         </ul>
-        <h3>4.8. What is a higher-order function?</h3>
+        <h3 id="4-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.5. When should I use arrow functions?</h3>
+        <ul>
+          <li><strong>A:</strong> Short callbacks, when you want lexical <code class="inline">this</code>, and when you do not need <code class="inline">arguments</code>, <code class="inline">new</code>, or a <code class="inline">prototype</code>. Use regular functions or method shorthand when <code class="inline">this</code> must refer to the call site or object.</li>
+        </ul>
+        <h3>4.6. What is the rest parameter and how is it different from <code class="inline">arguments</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Rest (<code class="inline">...args</code>) collects remaining arguments into a <strong>real array</strong> and works in all modern function forms. <code class="inline">arguments</code> is array-like, legacy, and unavailable in arrow functions.</li>
+        </ul>
+        <h3>4.7. What is a higher-order function?</h3>
         <ul>
           <li><strong>A:</strong> A function that takes another function as an argument, returns a function, or both. Examples: <code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">setTimeout</code>, and custom helpers like <code class="inline">multiplyBy(factor)</code>.</li>
+        </ul>
+        <h3 id="4-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.8. How do default parameters work with <code class="inline">null</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Defaults apply only when the argument is <strong><code class="inline">undefined</code></strong>, not <code class="inline">null</code>. <code class="inline">fn(null)</code> uses <code class="inline">null</code>, not the default.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 05. Open from the JS Language index.</footer>

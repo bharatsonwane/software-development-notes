@@ -42,14 +42,36 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Builds on types (File 01) and operators (File 03).</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
           <li>Interactive visualizer: open <a href="./13-js-strings-numbers-dates-animation.html">13-js-strings-numbers-dates-animation.html</a> in a browser — string index/length, slice vs substring, includes/indexOf, Number parsing, Math.round/floor, Date getTime/ISO, padStart (Run / Step).</li>
         </ul>
       </section>
       <section id="1-strings">
-        <h2>1. Strings</h2>
-        <h3>1.1. Common string methods</h3>
+        <div class="heading-with-levels">
+          <h2>1. Strings</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="1-strings-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Template literals</h3>
+        <div class="code"><pre>const name = &quot;Ada&quot;;
+const msg = `Hello, ${name}!`;
+const multiline = `
+  line 1
+  line 2
+`;</pre></div>
+
+        <h3 id="1-strings-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>1.2. Common string methods</h3>
         <div class="code"><pre>const s = &quot;  Hello, World  &quot;;
 
 s.length;                    // 17
@@ -69,13 +91,6 @@ s.split(&quot;, &quot;);               // [&quot;  Hello&quot;, &quot;World  &qu
 s.concat(&quot;!&quot;);               // prefer + or template literals
 &quot;abc&quot;.repeat(3);             // &quot;abcabcabc&quot;
 &quot;5&quot;.padStart(3, &quot;0&quot;);        // &quot;005&quot;</pre></div>
-        <h3>1.2. Template literals</h3>
-        <div class="code"><pre>const name = &quot;Ada&quot;;
-const msg = `Hello, ${name}!`;
-const multiline = `
-  line 1
-  line 2
-`;</pre></div>
         <h3>1.3. Tagged templates</h3>
         <div class="code"><pre>function highlight(strings, ...values) {
   return strings.reduce((acc, str, i) =&gt; {
@@ -88,6 +103,8 @@ highlight`User: ${user}`;  // &quot;User: &lt;b&gt;Ada&lt;/b&gt;&quot;</pre></di
         <ul>
           <li>File 11 covers tagged templates in ES6+ context.</li>
         </ul>
+
+        <h3 id="1-strings-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>1.4. Unicode</h3>
         <div class="code"><pre>&quot;😀&quot;.length;                    // 2 — surrogate pair
 [...&quot;😀&quot;].length;                // 1 — code points
@@ -105,8 +122,26 @@ s.toUpperCase();  // &quot;HELLO&quot;
 console.log(s);     // still &quot;hello&quot;</pre></div>
       </section>
       <section id="2-numbers-math">
-        <h2>2. Numbers &amp; Math</h2>
-        <h3>2.1. Number object and methods</h3>
+        <div class="heading-with-levels">
+          <h2>2. Numbers &amp; Math</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="2-numbers-math-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. BigInt</h3>
+        <div class="code"><pre>const big = 9007199254740991n;
+big + 1n;  // 9007199254740992n
+// big + 1;  // TypeError — cannot mix BigInt and Number</pre></div>
+        <ul>
+          <li>File 01 — primitive intro.</li>
+        </ul>
+
+        <h3 id="2-numbers-math-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>2.2. Number object and methods</h3>
         <div class="code"><pre>Number.isNaN(NaN);        // true
 Number.isFinite(42);      // true
 Number.isInteger(3.0);    // true
@@ -117,30 +152,7 @@ Number.parseFloat(&quot;3.14&quot;);
         <ul>
           <li>Prefer <strong><code class="inline">Number.isNaN</code></strong> over global <strong><code class="inline">isNaN</code></strong> (coerces first).</li>
         </ul>
-        <h3>2.2. BigInt</h3>
-        <div class="code"><pre>const big = 9007199254740991n;
-big + 1n;  // 9007199254740992n
-// big + 1;  // TypeError — cannot mix BigInt and Number</pre></div>
-        <ul>
-          <li>File 01 — primitive intro.</li>
-        </ul>
-        <h3>2.3. NaN and Infinity</h3>
-        <div class="code"><pre>0 / 0;           // NaN
-Number(&quot;abc&quot;);   // NaN
-1 / 0;           // Infinity
--1 / 0;          // -Infinity</pre></div>
-        <h3>2.4. Floating point precision</h3>
-        <ul>
-          <li>All JS numbers are <strong>IEEE 754 doubles</strong>:</li>
-        </ul>
-        <div class="code"><pre>0.1 + 0.2;                    // 0.30000000000000004
-0.1 + 0.2 === 0.3;            // false
-(0.1 + 0.2).toFixed(1);       // &quot;0.3&quot;
-Number((0.1 + 0.2).toFixed(2)); // 0.3</pre></div>
-        <ul>
-          <li>For money, store <strong>cents as integers</strong> or use a decimal library.</li>
-        </ul>
-        <h3>2.5. Math object</h3>
+        <h3>2.3. Math object</h3>
         <div class="code"><pre>Math.abs(-5);       // 5
 Math.ceil(4.2);     // 5
 Math.floor(4.8);    // 4
@@ -157,9 +169,36 @@ Math.trunc(4.9);    // 4</pre></div>
         <div class="code"><pre>function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }</pre></div>
+
+        <h3 id="2-numbers-math-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.4. NaN and Infinity</h3>
+        <div class="code"><pre>0 / 0;           // NaN
+Number(&quot;abc&quot;);   // NaN
+1 / 0;           // Infinity
+-1 / 0;          // -Infinity</pre></div>
+        <h3>2.5. Floating point precision</h3>
+        <ul>
+          <li>All JS numbers are <strong>IEEE 754 doubles</strong>:</li>
+        </ul>
+        <div class="code"><pre>0.1 + 0.2;                    // 0.30000000000000004
+0.1 + 0.2 === 0.3;            // false
+(0.1 + 0.2).toFixed(1);       // &quot;0.3&quot;
+Number((0.1 + 0.2).toFixed(2)); // 0.3</pre></div>
+        <ul>
+          <li>For money, store <strong>cents as integers</strong> or use a decimal library.</li>
+        </ul>
       </section>
       <section id="3-dates">
-        <h2>3. Dates</h2>
+        <div class="heading-with-levels">
+          <h2>3. Dates</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="3-dates-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Date object</h3>
         <div class="code"><pre>const now = new Date();
 const specific = new Date(&quot;2026-06-25T10:00:00Z&quot;);
@@ -169,6 +208,8 @@ now.getTime();           // timestamp ms since epoch
 Date.now();              // same, static
 now.toISOString();       // &quot;2026-06-25T...&quot;
 now.toLocaleDateString();</pre></div>
+
+        <h3 id="3-dates-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>3.2. Timestamp and UTC</h3>
         <div class="code"><pre>const d = new Date();
 d.getUTCHours();
@@ -177,11 +218,7 @@ Date.UTC(2026, 5, 25);   // ms at UTC midnight</pre></div>
         <ul>
           <li>Store dates as <strong>ISO strings</strong> or <strong>epoch ms</strong> in JSON/APIs.</li>
         </ul>
-        <h3>3.3. Timezones</h3>
-        <ul>
-          <li><code class="inline">Date</code> internally is UTC; display methods use <strong>local timezone</strong>. For robust timezone logic use <strong><code class="inline">Temporal</code></strong> (stage 4+) or libraries (<strong>date-fns</strong>, <strong>Luxon</strong>, <strong>Day.js</strong>).</li>
-        </ul>
-        <h3>3.4. Intl API</h3>
+        <h3>3.3. Intl API</h3>
         <div class="code"><pre>new Intl.DateTimeFormat(&quot;en-IN&quot;, {
   dateStyle: &quot;medium&quot;,
   timeStyle: &quot;short&quot;,
@@ -191,32 +228,51 @@ new Intl.NumberFormat(&quot;en-IN&quot;, {
   style: &quot;currency&quot;,
   currency: &quot;INR&quot;,
 }).format(1234.5);  // &quot;₹1,234.50&quot;</pre></div>
+
+        <h3 id="3-dates-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>3.4. Timezones</h3>
+        <ul>
+          <li><code class="inline">Date</code> internally is UTC; display methods use <strong>local timezone</strong>. For robust timezone logic use <strong><code class="inline">Temporal</code></strong> (stage 4+) or libraries (<strong>date-fns</strong>, <strong>Luxon</strong>, <strong>Day.js</strong>).</li>
+        </ul>
       </section>
       <section id="4-common-questions">
-        <h2>4. Common questions</h2>
-        <h3>4.1. Why is <code class="inline">0.1 + 0.2 !== 0.3</code>?</h3>
+        <div class="heading-with-levels">
+          <h2>4. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="4-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Are strings mutable?</h3>
         <ul>
-          <li><strong>A:</strong> Binary floating point cannot represent some decimals exactly. Use rounding or integer cents for money.</li>
+          <li><strong>A:</strong> <strong>No</strong> — methods return new strings.</li>
         </ul>
+
+        <h3 id="4-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>4.2. How do you check for NaN?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">Number.isNaN(value)</code></strong> — not <code class="inline">value === NaN</code> or global <code class="inline">isNaN</code>.</li>
         </ul>
-        <h3>4.3. Are strings mutable?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>No</strong> — methods return new strings.</li>
-        </ul>
-        <h3>4.4. Why does <code class="inline">&quot;😀&quot;.length</code> equal 2?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">.length</code> counts UTF-16 code units; emoji use surrogate pairs. Use spread or <code class="inline">for...of</code> for code points.</li>
-        </ul>
-        <h3>4.5. What is the difference between <code class="inline">slice</code> and <code class="inline">substring</code>?</h3>
+        <h3>4.3. What is the difference between <code class="inline">slice</code> and <code class="inline">substring</code>?</h3>
         <ul>
           <li><strong>A:</strong> Both extract substrings. <strong><code class="inline">slice</code></strong> accepts negative indices; <strong><code class="inline">substring</code></strong> swaps negative to 0.</li>
         </ul>
-        <h3>4.6. How should I store dates in APIs?</h3>
+        <h3>4.4. How should I store dates in APIs?</h3>
         <ul>
           <li><strong>A:</strong> <strong>ISO 8601 strings</strong> (<code class="inline">toISOString()</code>) or <strong>epoch milliseconds</strong> — avoid locale-specific strings.</li>
+        </ul>
+
+        <h3 id="4-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.5. Why is <code class="inline">0.1 + 0.2 !== 0.3</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Binary floating point cannot represent some decimals exactly. Use rounding or integer cents for money.</li>
+        </ul>
+        <h3>4.6. Why does <code class="inline">&quot;😀&quot;.length</code> equal 2?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">.length</code> counts UTF-16 code units; emoji use surrogate pairs. Use spread or <code class="inline">for...of</code> for code points.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 13. Open from the JS Language index.</footer>
