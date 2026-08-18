@@ -48,6 +48,7 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
+        <h3 id="intro-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <ul>
           <li>React is fast by default. Optimize when <strong>profiling</strong> shows a problem — not preemptively everywhere. This chapter covers <strong><code class="inline">React.memo</code></strong>, <strong><code class="inline">useMemo</code></strong>, <strong><code class="inline">useCallback</code></strong>, <strong>lazy loading</strong>, and <strong>Suspense</strong> for splitting work and skipping unnecessary renders.</li>
           <li>Builds on rendering (File 04), hooks (File 07), routing (File 09), and data fetching (File 10).</li>
@@ -55,7 +56,13 @@
         </ul>
       </section>
       <section id="1-when-to-optimize">
-        <h2>1. When to optimize</h2>
+        <div class="heading-with-levels">
+          <h2>1. When to optimize</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="1-when-to-optimize-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>1.1. React is already efficient</h3>
         <ul>
           <li>Reconciliation updates only changed DOM nodes. Most slowness comes from:</li>
@@ -66,7 +73,13 @@
         </ul>
       </section>
       <section id="2-re-renders-recap">
-        <h2>2. Re-renders recap</h2>
+        <div class="heading-with-levels">
+          <h2>2. Re-renders recap</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="2-re-renders-recap-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>2.1. What triggers re-render?</h3>
         <ul><li><strong>State</strong> change in this component</li><li><strong>Context</strong> value change (if consumer)</li><li><strong>Parent</strong> re-rendered (child re-renders too, unless optimized)</li>
           <li>Props <strong>equal by reference</strong> for objects/functions — new reference every parent render → child thinks props changed.</li>
@@ -86,7 +99,14 @@
         </ul>
       </section>
       <section id="3-react-memo">
-        <h2>3. React.memo</h2>
+        <div class="heading-with-levels">
+          <h2>3. React.memo</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="3-react-memo-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>3.1. Skip re-render if props unchanged</h3>
         <div class="code"><pre>const ExpensiveList = memo(function ExpensiveList({ items }) {
   console.log(&quot;ExpensiveList render&quot;);
@@ -101,7 +121,12 @@
         <ul>
           <li>Shallow-compares <strong>props</strong> — if each prop is <code class="inline">===</code> previous, skip render.</li>
         </ul>
-        <h3>3.2. Custom comparison</h3>
+        <h3>3.2. When memo helps</h3>
+        <ul><li>Component is <strong>expensive</strong> to render</li><li>Same props <strong>often</strong> across parent re-renders</li><li>Props are <strong>stable</strong> or primitives</li>
+          <li>Memo <strong>does not help</strong> if props are new objects/functions every time — pair with <code class="inline">useCallback</code> / <code class="inline">useMemo</code> or restructure.</li>
+        </ul>
+        <h3 id="3-react-memo-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>3.3. Custom comparison</h3>
         <div class="code"><pre>const UserRow = memo(
   function UserRow({ user }) {
     return &lt;div&gt;{user.name}&lt;/div&gt;;
@@ -111,13 +136,15 @@
         <ul>
           <li>Return <strong><code class="inline">true</code></strong> if props are <strong>equal</strong> (skip re-render).</li>
         </ul>
-        <h3>3.3. When memo helps</h3>
-        <ul><li>Component is <strong>expensive</strong> to render</li><li>Same props <strong>often</strong> across parent re-renders</li><li>Props are <strong>stable</strong> or primitives</li>
-          <li>Memo <strong>does not help</strong> if props are new objects/functions every time — pair with <code class="inline">useCallback</code> / <code class="inline">useMemo</code> or restructure.</li>
-        </ul>
       </section>
       <section id="4-usecallback">
-        <h2>4. useCallback</h2>
+        <div class="heading-with-levels">
+          <h2>4. useCallback</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="4-usecallback-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>4.1. Stable function reference</h3>
         <div class="code"><pre>function Parent() {
   const [count, setCount] = useState(0);
@@ -146,7 +173,13 @@
         <ul><li>Child is not memoized</li><li>Handler passed to native DOM (<code class="inline">onClick</code>) — usually fine without</li><li>Premature optimization on cheap trees</li></ul>
       </section>
       <section id="5-usememo">
-        <h2>5. useMemo</h2>
+        <div class="heading-with-levels">
+          <h2>5. useMemo</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="5-usememo-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>5.1. Cache expensive computation</h3>
         <div class="code"><pre>function ProductTable({ products, filter }) {
   const filtered = useMemo(() =&gt; {
@@ -182,7 +215,13 @@ return (
         </table>
       </section>
       <section id="6-code-splitting-and-lazy">
-        <h2>6. Code splitting and lazy</h2>
+        <div class="heading-with-levels">
+          <h2>6. Code splitting and lazy</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="6-code-splitting-and-lazy-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>6.1. dynamic import()</h3>
         <ul>
           <li>Split heavy modules into separate <strong>chunks</strong> loaded on demand:</li>
@@ -210,11 +249,19 @@ const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre
         <ul><li>Admin / settings routes (rare visits)</li><li>Rich editors, charts, maps</li><li>Not tiny components — overhead of async boundary</li></ul>
       </section>
       <section id="7-suspense-and-data-overview">
-        <h2>7. Suspense and data (overview)</h2>
+        <div class="heading-with-levels">
+          <h2>7. Suspense and data (overview)</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="7-suspense-and-data-overview-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>7.1. Suspense for lazy components</h3>
         <ul>
           <li>Primary use today: <strong>waiting for JS bundle</strong>, not yet universal for all data fetching.</li>
         </ul>
+        <h3 id="7-suspense-and-data-overview-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
         <h3>7.2. Suspense with TanStack Query / React 19</h3>
         <ul>
           <li>Frameworks increasingly support <strong>Suspense boundaries</strong> for queries — <code class="inline">useSuspenseQuery</code> throws promise until data ready; nearest Suspense shows fallback.</li>
@@ -225,26 +272,46 @@ const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre
         </ul>
       </section>
       <section id="8-list-performance">
-        <h2>8. List performance</h2>
-        <h3>8.1. Virtualization</h3>
+        <div class="heading-with-levels">
+          <h2>8. List performance</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="8-list-performance-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>8.1. Keys and stable item components</h3>
+        <ul>
+          <li>Stable <strong><code class="inline">key={item.id}</code></strong> (File 04). <strong><code class="inline">memo</code></strong> on row component when parent state changes often.</li>
+        </ul>
+        <h3 id="8-list-performance-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>8.2. Virtualization</h3>
         <ul>
           <li>Long lists (1000+ rows) — render only <strong>visible</strong> rows:</li>
           <li><strong><code class="inline">@tanstack/react-virtual</code></strong></li><li><strong><code class="inline">react-window</code></strong></li>
           <li>Mapping 10k <code class="inline">&lt;li&gt;</code> elements slows DOM and reconciliation.</li>
         </ul>
-        <h3>8.2. Keys and stable item components</h3>
-        <ul>
-          <li>Stable <strong><code class="inline">key={item.id}</code></strong> (File 04). <strong><code class="inline">memo</code></strong> on row component when parent state changes often.</li>
-        </ul>
       </section>
       <section id="9-uselayouteffect-brief">
-        <h2>9. useLayoutEffect (brief)</h2>
+        <div class="heading-with-levels">
+          <h2>9. useLayoutEffect (brief)</h2>
+          <div class="h2-levels">
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="9-uselayouteffect-brief-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
         <ul>
           <li>Runs <strong>after DOM update, before paint</strong> — use for measuring layout or synchronous DOM writes that must happen before user sees frame. Rare; default to <strong><code class="inline">useEffect</code></strong> (File 05).</li>
         </ul>
       </section>
       <section id="10-putting-it-together">
-        <h2>10. Putting it together</h2>
+        <div class="heading-with-levels">
+          <h2>10. Putting it together</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="10-putting-it-together-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>10.1. Optimized list row</h3>
         <div class="code"><pre>const ProductRow = memo(function ProductRow({ product, onSelect }) {
   return (
@@ -283,7 +350,14 @@ function ProductList({ products }) {
 }</pre></div>
       </section>
       <section id="11-common-questions">
-        <h2>11. Common questions</h2>
+        <div class="heading-with-levels">
+          <h2>11. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+        <h3 id="11-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>11.1. Should I wrap every component in memo?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No.</strong> Only when Profiler shows <strong>expensive</strong> wasted renders and props can be stable.</li>
@@ -292,37 +366,38 @@ function ProductList({ products }) {
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">useMemo</code></strong> when computation is <strong>measurably expensive</strong> or you need <strong>referential stability</strong> for deps/memo children.</li>
         </ul>
-        <h3>11.3. Why does memo not work with inline objects?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">{ foo: 1 }</code></strong> is a <strong>new reference</strong> each render — shallow compare fails. Memoize the object or pass primitives.</li>
-        </ul>
-        <h3>11.4. useCallback vs defining function in render?</h3>
+        <h3>11.3. useCallback vs defining function in render?</h3>
         <ul>
           <li><strong>A:</strong> Inline is fine unless a <strong>memoized child</strong> or <strong>effect dep</strong> needs stable identity.</li>
         </ul>
-        <h3>11.5. What is code splitting?</h3>
+        <h3>11.4. What is code splitting?</h3>
         <ul>
           <li><strong>A:</strong> Loading parts of the app <strong>on demand</strong> via dynamic <code class="inline">import()</code> — smaller initial bundle.</li>
         </ul>
-        <h3>11.6. What does Suspense do?</h3>
+        <h3>11.5. What does Suspense do?</h3>
         <ul>
           <li><strong>A:</strong> Catches <strong>lazy components</strong> (and some async data patterns) while waiting — shows <strong>fallback</strong> UI.</li>
         </ul>
-        <h3>11.7. How do I speed up a 10,000 item list?</h3>
+        <h3>11.6. What should I read next?</h3>
+        <ul>
+          <li><strong>A:</strong> File 13 (testing memoized components), File 14 (architecture boundaries), File 10 (query suspense).</li>
+        </ul>
+        <h3 id="11-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>11.7. Why does memo not work with inline objects?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">{ foo: 1 }</code></strong> is a <strong>new reference</strong> each render — shallow compare fails. Memoize the object or pass primitives.</li>
+        </ul>
+        <h3>11.8. How do I speed up a 10,000 item list?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Virtualize</strong> — do not render all DOM nodes. Consider pagination.</li>
         </ul>
-        <h3>11.8. Does Context hurt performance?</h3>
+        <h3>11.9. Does Context hurt performance?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Any consumer</strong> re-renders when value changes. Split contexts, memoize value, or use <strong>Zustand selectors</strong> (File 11).</li>
         </ul>
-        <h3>11.9. React Compiler / automatic memoization?</h3>
+        <h3>11.10. React Compiler / automatic memoization?</h3>
         <ul>
           <li><strong>A:</strong> Emerging tooling may reduce manual memo — still understand concepts for debugging.</li>
-        </ul>
-        <h3>11.10. What should I read next?</h3>
-        <ul>
-          <li><strong>A:</strong> File 13 (testing memoized components), File 14 (architecture boundaries), File 10 (query suspense).</li>
         </ul>
       </section>
       <footer>HTML note for React.js File 12. Open from the React.js index.</footer>

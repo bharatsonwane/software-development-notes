@@ -43,20 +43,32 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>React</strong> is a JavaScript library for building user interfaces. You describe <strong>what the UI should look like</strong> for a given state; React updates the DOM when state changes.</li>
           <li>React apps are built from <strong>components</strong> — reusable pieces of UI. Modern React uses <strong>function components</strong> and <strong>hooks</strong> (Files 03, 05, 07 go deeper).</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
           <li><strong>Default rule today:</strong> use <strong>function components</strong>, create projects with <strong>Vite</strong>, keep components <strong>small and focused</strong>, and pass data down with <strong>props</strong> (one-way data flow).</li>
         </ul>
       </section>
       <section id="1-what-is-react-setup">
-        <h2>1. What is React &amp; setup</h2>
+        <div class="heading-with-levels">
+          <h2>1. What is React &amp; setup</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="1-what-is-react-setup-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. What React does</h3>
         <ul>
           <li>React handles:</li>
           <li><strong>UI as a function of state</strong> — when data changes, UI re-renders.</li><li><strong>Efficient DOM updates</strong> — compares virtual tree and patches only what changed (reconciliation).</li><li><strong>Component composition</strong> — nest small components into larger screens.</li>
           <li>React is <strong>only the view layer</strong> — routing, global state, and API calls are added with libraries (Files 09–11).</li>
         </ul>
+        <h3 id="1-what-is-react-setup-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>1.2. Create a project (Vite)</h3>
         <ul>
           <li>Recommended starter for new apps:</li>
@@ -116,7 +128,14 @@ export default Welcome;</pre></div>
           <li>Component names <strong>PascalCase</strong> (<code class="inline">Welcome</code>, not <code class="inline">welcome</code>).</li><li>Return <strong>one root element</strong> (or use a <strong>Fragment</strong> — File 04).</li></ul>
       </section>
       <section id="2-jsx">
-        <h2>2. JSX</h2>
+        <div class="heading-with-levels">
+          <h2>2. JSX</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="2-jsx-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. What is JSX</h3>
         <ul>
           <li><strong>JSX</strong> looks like HTML inside JavaScript. It compiles to <code class="inline">React.createElement(...)</code> calls:</li>
@@ -132,6 +151,7 @@ export default Welcome;</pre></div>
 const element = &lt;p&gt;Hello, {name}!&lt;/p&gt;;
 
 const sum = &lt;p&gt;{1 + 2}&lt;/p&gt;;  // 3</pre></div>
+        <h3 id="2-jsx-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>2.2. JSX rules</h3>
         <table>
         <thead>
@@ -179,7 +199,14 @@ return (
         <div class="code"><pre>&lt;div style={{ color: &quot;navy&quot;, fontSize: &quot;1.2rem&quot; }}&gt;Styled&lt;/div&gt;</pre></div>
       </section>
       <section id="3-components">
-        <h2>3. Components</h2>
+        <div class="heading-with-levels">
+          <h2>3. Components</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="3-components-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Function components</h3>
         <ul>
           <li>Standard way to define UI (class components are legacy):</li>
@@ -224,6 +251,7 @@ import { UserCard } from &quot;./UserCard.jsx&quot;;</pre></div>
         <ul>
           <li>Each component <strong>encapsulates</strong> its own markup and logic. Split when a section is reused or gets too large (File 02 — composition).</li>
         </ul>
+        <h3 id="3-components-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>3.3. Pure components (concept)</h3>
         <ul>
           <li>Given the same <strong>props</strong>, a component should return the same UI. Avoid side effects in the render body (File 12 — <code class="inline">memo</code>):</li>
@@ -237,11 +265,33 @@ function Badge({ label, color }) {
 // fetch(&quot;/api/user&quot;);  // side effect in render</pre></div>
       </section>
       <section id="4-props">
-        <h2>4. Props</h2>
+        <div class="heading-with-levels">
+          <h2>4. Props</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-props-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>Props</strong> (properties) pass data <strong>from parent to child</strong>. Props are <strong>read-only</strong> — children must not mutate them.</li>
         </ul>
-        <h3>4.1. Passing and reading props</h3>
+
+        <h3>4.1. One-way data flow</h3>
+        <ul>
+          <li>Data flows <strong>down</strong> the tree via props. Siblings do not share props directly — lift shared state to a <strong>common parent</strong> (File 03).</li>
+        </ul>
+        <div class="code"><pre>function Parent() {
+  const name = &quot;Bharat&quot;;
+  return (
+    &lt;&gt;
+      &lt;ChildA name={name} /&gt;
+      &lt;ChildB name={name} /&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <h3 id="4-props-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.2. Passing and reading props</h3>
         <div class="code"><pre>function UserCard({ name, age, isActive }) {
   return (
     &lt;div&gt;
@@ -263,14 +313,14 @@ function App() {
         <div class="code"><pre>function UserCard(props) {
   return &lt;h2&gt;{props.name}&lt;/h2&gt;;
 }</pre></div>
-        <h3>4.2. Default props</h3>
+        <h3>4.3. Default props</h3>
         <div class="code"><pre>function Button({ label = &quot;Click me&quot;, variant = &quot;primary&quot; }) {
   return &lt;button className={variant}&gt;{label}&lt;/button&gt;;
 }
 
 &lt;Button /&gt;                    // &quot;Click me&quot;
 &lt;Button label=&quot;Save&quot; /&gt;       // &quot;Save&quot;</pre></div>
-        <h3>4.3. Children prop</h3>
+        <h3>4.4. Children prop</h3>
         <ul>
           <li>Content between opening and closing tags becomes <strong><code class="inline">props.children</code></strong>:</li>
         </ul>
@@ -294,25 +344,20 @@ function App() {
         <ul>
           <li><code class="inline">children</code> can be text, elements, or multiple nodes (File 02 — composition patterns).</li>
         </ul>
-        <h3>4.4. One-way data flow</h3>
-        <ul>
-          <li>Data flows <strong>down</strong> the tree via props. Siblings do not share props directly — lift shared state to a <strong>common parent</strong> (File 03).</li>
-        </ul>
-        <div class="code"><pre>function Parent() {
-  const name = &quot;Bharat&quot;;
-  return (
-    &lt;&gt;
-      &lt;ChildA name={name} /&gt;
-      &lt;ChildB name={name} /&gt;
-    &lt;/&gt;
-  );
-}</pre></div>
       </section>
       <section id="5-state-intro">
-        <h2>5. State intro</h2>
+        <div class="heading-with-levels">
+          <h2>5. State intro</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-state-intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>State</strong> is data that <strong>changes over time</strong> and affects what the UI shows. When state updates, React <strong>re-renders</strong> the component.</li>
         </ul>
+
         <h3>5.1. Why not plain variables?</h3>
         <div class="code"><pre>// This does NOT work — changing message does not re-render
 function Broken() {
@@ -326,24 +371,7 @@ function Broken() {
         <ul>
           <li>React needs <strong><code class="inline">useState</code></strong> (or similar) to schedule a re-render (File 03).</li>
         </ul>
-        <h3>5.2. useState basics</h3>
-        <div class="code"><pre>import { useState } from &quot;react&quot;;
-
-function Counter() {
-  const [count, setCount] = useState(0);
-
-  return (
-    &lt;div&gt;
-      &lt;p&gt;Count: {count}&lt;/p&gt;
-      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;+1&lt;/button&gt;
-    &lt;/div&gt;
-  );
-}</pre></div>
-        <ul><li><strong><code class="inline">useState(initial)</code></strong> returns <code class="inline">[value, setter]</code>.</li><li>Call <strong><code class="inline">setCount(newValue)</code></strong> to update — React re-renders.</li><li>State is <strong>local</strong> to the component instance — two <code class="inline">&lt;Counter /&gt;</code> on screen have independent state.</li>
-          <li>Functional update when next state depends on previous:</li>
-        </ul>
-        <div class="code"><pre>setCount((prev) =&gt; prev + 1);</pre></div>
-        <h3>5.3. State vs props</h3>
+        <h3>5.2. State vs props</h3>
         <table>
         <thead>
         <tr><th></th><th>Props</th><th>State</th></tr>
@@ -362,6 +390,24 @@ function Counter() {
         <ul>
           <li>Deep dive: File 03 (state &amp; events), File 05 (effects), File 07 (hooks patterns).</li>
         </ul>
+        <h3 id="5-state-intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>5.3. useState basics</h3>
+        <div class="code"><pre>import { useState } from &quot;react&quot;;
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)}&gt;+1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+        <ul><li><strong><code class="inline">useState(initial)</code></strong> returns <code class="inline">[value, setter]</code>.</li><li>Call <strong><code class="inline">setCount(newValue)</code></strong> to update — React re-renders.</li><li>State is <strong>local</strong> to the component instance — two <code class="inline">&lt;Counter /&gt;</code> on screen have independent state.</li>
+          <li>Functional update when next state depends on previous:</li>
+        </ul>
+        <div class="code"><pre>setCount((prev) =&gt; prev + 1);</pre></div>
         <h3>5.4. Minimal interactive example</h3>
         <div class="code"><pre>import { useState } from &quot;react&quot;;
 
@@ -379,7 +425,15 @@ function LikeButton() {
         </ul>
       </section>
       <section id="6-common-questions">
-        <h2>6. Common questions</h2>
+        <div class="heading-with-levels">
+          <h2>6. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. What is React?</h3>
         <ul>
           <li><strong>A:</strong> A JavaScript <strong>UI library</strong> for building interfaces with <strong>components</strong>. It updates the DOM efficiently when application state changes.</li>
@@ -388,37 +442,39 @@ function LikeButton() {
         <ul>
           <li><strong>A:</strong> Syntax extension that lets you write <strong>HTML-like markup</strong> in JavaScript. It compiles to <code class="inline">React.createElement</code> and must follow JSX rules (<code class="inline">className</code>, one root, closed tags).</li>
         </ul>
-        <h3>6.3. What is the difference between a component and an element?</h3>
-        <ul>
-          <li><strong>A:</strong> An <strong>element</strong> is a plain object describing UI (e.g. <code class="inline">&lt;div /&gt;</code>). A <strong>component</strong> is a function or class that <strong>returns</strong> elements (or other components).</li>
-        </ul>
-        <h3>6.4. What are props?</h3>
+        <h3>6.3. What are props?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Inputs</strong> passed from parent to child. They are <strong>read-only</strong> and enable one-way data flow down the tree.</li>
         </ul>
-        <h3>6.5. What is state?</h3>
+        <h3>6.4. What is state?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Internal data</strong> owned by a component that can change over time. Updating state triggers a <strong>re-render</strong>. Use <code class="inline">useState</code> in function components.</li>
         </ul>
-        <h3>6.6. What is the difference between props and state?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>Props</strong> come from outside and are immutable in the child. <strong>State</strong> is managed inside the component and updated with a setter function.</li>
-        </ul>
-        <h3>6.7. Why must component names be capitalized?</h3>
-        <ul>
-          <li><strong>A:</strong> React treats <strong>lowercase</strong> tags as built-in HTML (<code class="inline">&lt;div&gt;</code>) and <strong>PascalCase</strong> as custom components (<code class="inline">&lt;UserCard&gt;</code>).</li>
-        </ul>
-        <h3>6.8. Do I need to learn class components?</h3>
-        <ul>
-          <li><strong>A:</strong> For new code, <strong>no</strong> — use function components and hooks. You may see classes in older codebases.</li>
-        </ul>
-        <h3>6.9. What is <code class="inline">children</code> in props?</h3>
+        <h3>6.5. What is <code class="inline">children</code> in props?</h3>
         <ul>
           <li><strong>A:</strong> Special prop for <strong>nested content</strong> between a component&#x27;s JSX tags. Used for wrappers, layouts, and composition.</li>
         </ul>
-        <h3>6.10. What should I learn next after this file?</h3>
+        <h3 id="6-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>6.6. Why must component names be capitalized?</h3>
+        <ul>
+          <li><strong>A:</strong> React treats <strong>lowercase</strong> tags as built-in HTML (<code class="inline">&lt;div&gt;</code>) and <strong>PascalCase</strong> as custom components (<code class="inline">&lt;UserCard&gt;</code>).</li>
+        </ul>
+        <h3>6.7. Do I need to learn class components?</h3>
+        <ul>
+          <li><strong>A:</strong> For new code, <strong>no</strong> — use function components and hooks. You may see classes in older codebases.</li>
+        </ul>
+        <h3>6.8. What should I learn next after this file?</h3>
         <ul>
           <li><strong>A:</strong> File 02 (components &amp; props depth), File 03 (state &amp; events), then File 04 (lists &amp; conditional rendering).</li>
+        </ul>
+        <h3 id="6-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>6.9. What is the difference between a component and an element?</h3>
+        <ul>
+          <li><strong>A:</strong> An <strong>element</strong> is a plain object describing UI (e.g. <code class="inline">&lt;div /&gt;</code>). A <strong>component</strong> is a function or class that <strong>returns</strong> elements (or other components).</li>
+        </ul>
+        <h3>6.10. What is the difference between props and state?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>Props</strong> come from outside and are immutable in the child. <strong>State</strong> is managed inside the component and updated with a setter function.</li>
         </ul>
       </section>
       <footer>HTML note for React.js File 01. Open from the React.js index.</footer>

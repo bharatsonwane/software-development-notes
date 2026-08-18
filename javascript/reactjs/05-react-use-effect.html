@@ -47,14 +47,25 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>React components should be <strong>pure during render</strong>: given the same props and state, they return the same UI. Anything that <strong>touches the outside world</strong> — fetching data, subscribing to events, updating <code class="inline">document.title</code>, starting timers — is a <strong>side effect</strong>. <strong><code class="inline">useEffect</code></strong> runs that work <strong>after</strong> React paints the screen, and lets you <strong>sync</strong> component state with external systems.</li>
           <li>Builds on state and events (File 03) and rendering patterns (File 04). File 10 goes deeper on <strong>data fetching</strong>; File 07 covers <strong>custom hooks</strong> that wrap effects.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
           <li><strong>Default rule today:</strong> put side effects in <strong><code class="inline">useEffect</code></strong>, not in the render body; list every value from the component that the effect <strong>reads</strong> in the <strong>dependency array</strong>; return a <strong>cleanup</strong> function when you subscribe, listen, or create resources that must be torn down.</li>
         </ul>
       </section>
       <section id="1-side-effects-vs-render">
-        <h2>1. Side effects vs render</h2>
+        <div class="heading-with-levels">
+          <h2>1. Side effects vs render</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="1-side-effects-vs-render-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. What belongs outside render</h3>
         <ul>
           <li><strong>Render</strong> should compute UI from props and state only:</li>
@@ -83,6 +94,7 @@
         <ul>
           <li>Running these <strong>during render</strong> causes bugs: they may run on every render, race with each other, and break React&#x27;s predictable model (File 01 — pure components).</li>
         </ul>
+        <h3 id="1-side-effects-vs-render-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>1.2. Where useEffect runs</h3>
         <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
 
@@ -105,7 +117,14 @@ function Page({ userId }) {
         </ul>
       </section>
       <section id="2-basic-useeffect-syntax">
-        <h2>2. Basic useEffect syntax</h2>
+        <div class="heading-with-levels">
+          <h2>2. Basic useEffect syntax</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="2-basic-useeffect-syntax-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Effect function</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   // effect body — side effect code here
@@ -113,6 +132,7 @@ function Page({ userId }) {
         <ul>
           <li>The function you pass to <code class="inline">useEffect</code> is the <strong>effect</strong>. React calls it after render.</li>
         </ul>
+        <h3 id="2-basic-useeffect-syntax-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>2.2. Optional cleanup return</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const id = setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
@@ -140,7 +160,14 @@ function Page({ userId }) {
         </table>
       </section>
       <section id="3-dependency-array-in-depth">
-        <h2>3. Dependency array in depth</h2>
+        <div class="heading-with-levels">
+          <h2>3. Dependency array in depth</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="3-dependency-array-in-depth-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>3.1. Include what you read</h3>
         <ul>
           <li>If the effect <strong>uses</strong> a value from the component, include it in deps:</li>
@@ -155,7 +182,12 @@ function Page({ userId }) {
         <ul>
           <li>When <code class="inline">roomId</code> changes, React runs <strong>cleanup</strong> for the old room, then runs the effect for the new room.</li>
         </ul>
-        <h3>3.2. Stale closures</h3>
+        <h3>3.2. ESLint <code class="inline">react-hooks/exhaustive-deps</code></h3>
+        <ul>
+          <li>The <strong><code class="inline">eslint-plugin-react-hooks</code></strong> rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.</li>
+        </ul>
+        <h3 id="3-dependency-array-in-depth-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>3.3. Stale closures</h3>
         <ul>
           <li>Missing deps causes <strong>stale</strong> values inside the effect:</li>
         </ul>
@@ -182,7 +214,7 @@ useEffect(() =&gt; {
 
 // Option B — functional update in event handler, not in interval (often better design)
 // Option C — useRef for latest value without re-running effect (File 07)</pre></div>
-        <h3>3.3. Stable functions and deps</h3>
+        <h3>3.4. Stable functions and deps</h3>
         <ul>
           <li>Functions defined in the component are <strong>new references</strong> every render:</li>
         </ul>
@@ -207,34 +239,24 @@ useEffect(() =&gt; {
         <ul>
           <li><strong>Setters from <code class="inline">useState</code></strong> and <strong><code class="inline">dispatch</code> from <code class="inline">useReducer</code></strong> are stable — safe to omit from deps (React guarantees identity).</li>
         </ul>
-        <h3>3.4. Objects and arrays as deps</h3>
+        <h3>3.5. Objects and arrays as deps</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   saveSettings(settings);
 }, [settings]);  // new object reference every render → effect runs every time</pre></div>
         <ul>
           <li>If <code class="inline">settings</code> is recreated each render, the effect fires too often. <strong>Derive</strong> stable deps (primitives) or <strong>memoize</strong> the object (File 12).</li>
         </ul>
-        <h3>3.5. ESLint <code class="inline">react-hooks/exhaustive-deps</code></h3>
-        <ul>
-          <li>The <strong><code class="inline">eslint-plugin-react-hooks</code></strong> rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.</li>
-        </ul>
       </section>
       <section id="4-cleanup">
-        <h2>4. Cleanup</h2>
-        <h3>4.1. When cleanup runs</h3>
-        <ul>
-          <li>Cleanup runs:</li>
-        </ul>
-        <ol><li><strong>Before</strong> the effect runs again (when deps change).</li><li>When the component <strong>unmounts</strong>.</li></ol>
-        <div class="code"><pre>useEffect(() =&gt; {
-  console.log(&quot;subscribe&quot;, roomId);
-  return () =&gt; console.log(&quot;unsubscribe&quot;, roomId);
-}, [roomId]);
-
-// Mount room A:  subscribe A
-// Change to B:   unsubscribe A → subscribe B
-// Unmount:       unsubscribe B</pre></div>
-        <h3>4.2. Subscriptions and listeners</h3>
+        <div class="heading-with-levels">
+          <h2>4. Cleanup</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="4-cleanup-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.1. Subscriptions and listeners</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   function onResize() {
     setWidth(window.innerWidth);
@@ -246,7 +268,7 @@ useEffect(() =&gt; {
         <ul>
           <li>Always remove listeners, close connections, and abort fetches in cleanup.</li>
         </ul>
-        <h3>4.3. Aborting fetch</h3>
+        <h3>4.2. Aborting fetch</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const controller = new AbortController();
 
@@ -268,14 +290,34 @@ useEffect(() =&gt; {
         <ul>
           <li>Without abort, a slow response for <strong>old</strong> <code class="inline">id</code> can overwrite state after <strong>new</strong> <code class="inline">id</code> loaded (<strong>race condition</strong>). File 10 expands on loading/error UI.</li>
         </ul>
-        <h3>4.4. Timers</h3>
+        <h3>4.3. Timers</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const id = setTimeout(() =&gt; setVisible(true), 300);
   return () =&gt; clearTimeout(id);
 }, []);</pre></div>
+        <h3 id="4-cleanup-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.4. When cleanup runs</h3>
+        <ul>
+          <li>Cleanup runs:</li>
+        </ul>
+        <ol><li><strong>Before</strong> the effect runs again (when deps change).</li><li>When the component <strong>unmounts</strong>.</li></ol>
+        <div class="code"><pre>useEffect(() =&gt; {
+  console.log(&quot;subscribe&quot;, roomId);
+  return () =&gt; console.log(&quot;unsubscribe&quot;, roomId);
+}, [roomId]);
+
+// Mount room A:  subscribe A
+// Change to B:   unsubscribe A → subscribe B
+// Unmount:       unsubscribe B</pre></div>
       </section>
       <section id="5-common-effect-patterns">
-        <h2>5. Common effect patterns</h2>
+        <div class="heading-with-levels">
+          <h2>5. Common effect patterns</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-common-effect-patterns-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>5.1. Syncing document title</h3>
         <div class="code"><pre>function ProductPage({ product }) {
   useEffect(() =&gt; {
@@ -350,8 +392,20 @@ useEffect(() =&gt; {
         </ul>
       </section>
       <section id="6-when-not-to-use-useeffect">
-        <h2>6. When not to use useEffect</h2>
-        <h3>6.1. Deriving state during render</h3>
+        <div class="heading-with-levels">
+          <h2>6. When not to use useEffect</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="6-when-not-to-use-useeffect-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>6.1. Initial data that could be server-provided</h3>
+        <ul>
+          <li>In frameworks with <strong>server components</strong> or <strong>loaders</strong> (File 09), fetch on the server or in the route loader instead of <code class="inline">useEffect</code> on mount when possible.</li>
+        </ul>
+        <h3 id="6-when-not-to-use-useeffect-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>6.2. Deriving state during render</h3>
         <ul>
           <li>Don&#x27;t sync state with props via effect when you can <strong>compute during render</strong>:</li>
         </ul>
@@ -371,7 +425,7 @@ function FullName({ first, last }) {
         <ul>
           <li>Use <strong><code class="inline">useMemo</code></strong> only when the computation is expensive (File 12).</li>
         </ul>
-        <h3>6.2. User events belong in handlers</h3>
+        <h3>6.3. User events belong in handlers</h3>
         <div class="code"><pre>// Avoid — effect on every query change to POST analytics
 useEffect(() =&gt; {
   trackSearch(query);
@@ -386,10 +440,6 @@ function onSubmit(e) {
         <ul>
           <li>Effects are for <strong>syncing with external systems</strong>, not for chaining <strong>event → state → event</strong>.</li>
         </ul>
-        <h3>6.3. Initial data that could be server-provided</h3>
-        <ul>
-          <li>In frameworks with <strong>server components</strong> or <strong>loaders</strong> (File 09), fetch on the server or in the route loader instead of <code class="inline">useEffect</code> on mount when possible.</li>
-        </ul>
         <h3>6.4. Resetting state when a prop changes</h3>
         <div class="code"><pre>// Avoid extra effect + flash
 useEffect(() =&gt; {
@@ -403,7 +453,13 @@ useEffect(() =&gt; {
         </ul>
       </section>
       <section id="7-strict-mode-and-development-behavior">
-        <h2>7. Strict Mode and development behavior</h2>
+        <div class="heading-with-levels">
+          <h2>7. Strict Mode and development behavior</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="7-strict-mode-and-development-behavior-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <ul>
           <li>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts → unmounts → remounts</strong> components to surface missing cleanup:</li>
         </ul>
@@ -418,7 +474,13 @@ useEffect(() =&gt; {
           <li>Effects must be <strong>idempotent</strong> — safe to run twice in dev.</li><li>Cleanup must fully undo the effect — subscriptions must not leak.</li><li>Do not rely on &quot;run once ever&quot; in dev without understanding Strict Mode.</li></ul>
       </section>
       <section id="8-multiple-effects">
-        <h2>8. Multiple effects</h2>
+        <div class="heading-with-levels">
+          <h2>8. Multiple effects</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="8-multiple-effects-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
           <li>Split unrelated side effects into <strong>separate</strong> <code class="inline">useEffect</code> calls:</li>
         </ul>
@@ -443,7 +505,13 @@ useEffect(() =&gt; {
         </ul>
       </section>
       <section id="9-putting-it-together">
-        <h2>9. Putting it together</h2>
+        <div class="heading-with-levels">
+          <h2>9. Putting it together</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="9-putting-it-together-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>9.1. Online status hook (preview of File 07)</h3>
         <div class="code"><pre>function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(
@@ -505,46 +573,56 @@ function StatusBar() {
         </ul>
       </section>
       <section id="10-common-questions">
-        <h2>10. Common questions</h2>
+        <div class="heading-with-levels">
+          <h2>10. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="10-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>10.1. What is a side effect in React?</h3>
         <ul>
           <li><strong>A:</strong> Anything that touches <strong>outside</strong> the render result — network, DOM APIs, timers, subscriptions, storage. Run these in <strong><code class="inline">useEffect</code></strong>, not during render.</li>
         </ul>
-        <h3>10.2. When does useEffect run?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>After</strong> React commits the update to the DOM and the browser paints. On mount and after re-renders where <strong>dependencies</strong> changed (if you pass a dependency array).</li>
-        </ul>
-        <h3>10.3. What does an empty dependency array <code class="inline">[]</code> mean?</h3>
+        <h3 id="10-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>10.2. What does an empty dependency array <code class="inline">[]</code> mean?</h3>
         <ul>
           <li><strong>A:</strong> Run the effect <strong>once after mount</strong> (and run cleanup on unmount). In Strict Mode dev, mount/cleanup/mount runs once extra to test cleanup.</li>
         </ul>
-        <h3>10.4. What happens if I omit the dependency array?</h3>
-        <ul>
-          <li><strong>A:</strong> The effect runs after <strong>every</strong> render. Rarely correct — almost always specify <code class="inline">[]</code> or <code class="inline">[deps]</code>.</li>
-        </ul>
-        <h3>10.5. Why do I need a cleanup function?</h3>
-        <ul>
-          <li><strong>A:</strong> To <strong>undo</strong> subscriptions, listeners, timers, and in-flight requests when deps change or the component unmounts. Prevents leaks and stale updates.</li>
-        </ul>
-        <h3>10.6. How do I fix stale closure bugs in effects?</h3>
-        <ul>
-          <li><strong>A:</strong> Add missing values to the <strong>dependency array</strong>, use <strong>functional state updates</strong>, or store latest values in <strong><code class="inline">useRef</code></strong> (File 07). Follow <strong><code class="inline">exhaustive-deps</code></strong> lint warnings.</li>
-        </ul>
-        <h3>10.7. Can I fetch data in useEffect?</h3>
+        <h3>10.3. Can I fetch data in useEffect?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> for client-only loading. Use <strong>abort/cancel</strong> on cleanup to avoid races. For real apps, prefer <strong>TanStack Query</strong> or route <strong>loaders</strong> (Files 09–10).</li>
         </ul>
-        <h3>10.8. Should I use useEffect to update state when props change?</h3>
+        <h3>10.4. What should I read next?</h3>
+        <ul>
+          <li><strong>A:</strong> File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).</li>
+        </ul>
+        <h3 id="10-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>10.5. When does useEffect run?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>After</strong> React commits the update to the DOM and the browser paints. On mount and after re-renders where <strong>dependencies</strong> changed (if you pass a dependency array).</li>
+        </ul>
+        <h3>10.6. What happens if I omit the dependency array?</h3>
+        <ul>
+          <li><strong>A:</strong> The effect runs after <strong>every</strong> render. Rarely correct — almost always specify <code class="inline">[]</code> or <code class="inline">[deps]</code>.</li>
+        </ul>
+        <h3>10.7. Why do I need a cleanup function?</h3>
+        <ul>
+          <li><strong>A:</strong> To <strong>undo</strong> subscriptions, listeners, timers, and in-flight requests when deps change or the component unmounts. Prevents leaks and stale updates.</li>
+        </ul>
+        <h3>10.8. How do I fix stale closure bugs in effects?</h3>
+        <ul>
+          <li><strong>A:</strong> Add missing values to the <strong>dependency array</strong>, use <strong>functional state updates</strong>, or store latest values in <strong><code class="inline">useRef</code></strong> (File 07). Follow <strong><code class="inline">exhaustive-deps</code></strong> lint warnings.</li>
+        </ul>
+        <h3>10.9. Should I use useEffect to update state when props change?</h3>
         <ul>
           <li><strong>A:</strong> Usually <strong>no</strong> — compute derived values during <strong>render</strong>, reset with <strong><code class="inline">key</code></strong>, or adjust design. Effects that only mirror props into state often cause extra renders.</li>
         </ul>
-        <h3>10.9. Why does my effect run twice in development?</h3>
+        <h3>10.10. Why does my effect run twice in development?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Strict Mode</strong> intentionally double-invokes effects in dev to verify cleanup. Production runs once per dependency change.</li>
-        </ul>
-        <h3>10.10. What should I read next?</h3>
-        <ul>
-          <li><strong>A:</strong> File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).</li>
         </ul>
       </section>
       <footer>HTML note for React.js File 05. Open from the React.js index.</footer>
