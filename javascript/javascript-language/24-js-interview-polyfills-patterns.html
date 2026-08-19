@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>24. Interview Patterns &amp; Polyfills - JavaScript Notes</title>
+  </head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-object-oriented-concepts">1. Object-oriented concepts</a>
+        <a href="#2-design-patterns">2. Design patterns</a>
+        <a href="#3-polyfill-implementations">3. Polyfill implementations</a>
+        <a href="#4-coding-interview-problems">4. Coding interview problems</a>
+        <a href="#5-security-basics">5. Security basics</a>
+        <a href="#6-engine-performance-interview">6. Engine &amp; performance (interview)</a>
+        <a href="#7-common-questions">7. Common questions</a>
+        <a href="./24-js-interview-polyfills-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">24. Interview Patterns &amp; Polyfills</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>24. Interview Patterns &amp; Polyfills</h1>
+        <p class="subtitle">File 24 — design patterns, polyfill implementations, coding problems, security, engine topics.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Capstone for interview prep — polyfills and patterns. OOP is File 18.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li>Interactive visualizer: open <a href="./24-js-interview-polyfills-animation.html">24-js-interview-polyfills-animation.html</a> in a browser — bind/map/filter polyfills, Promise resolve/then, debounce, flat/reduce (Run / Step).</li>
+        </ul>
+      </section>
+            <section id="1-object-oriented-concepts">
+        <div class="heading-with-levels">
+          <h2>1. Object-oriented concepts</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-object-oriented-concepts-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>OOP pillars and <code class="inline">class</code>/<code class="inline">extends</code>/<code class="inline">super</code> are File 18. Prototypes (how JS implements them) are File 19.</li>
+        </ul>
+      </section>
+      <section id="2-design-patterns">
+        <div class="heading-with-levels">
+          <h2>2. Design patterns</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="2-design-patterns-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.1. Module pattern</h3>
+        <ul>
+          <li>IIFE or ES modules with private scope (File 17, 12).</li>
+        </ul>
+        <h3>2.2. Revealing module</h3>
+        <ul>
+          <li>Return public object from closure (File 17).</li>
+        </ul>
+        <h3>2.3. Singleton</h3>
+        <ul>
+          <li>One shared instance:</li>
+        </ul>
+        <div class="code"><pre>const Database = (function () {
+  let instance;
+  return {
+    getInstance() {
+      if (!instance) instance = { connect() {} };
+      return instance;
+    },
+  };
+})();</pre></div>
+        <h3>2.4. Factory</h3>
+        <ul>
+          <li>Function that creates objects:</li>
+        </ul>
+        <div class="code"><pre>function createUser(role) {
+  return role === &quot;admin&quot;
+    ? { role, canDelete: true }
+    : { role, canDelete: false };
+}</pre></div>
+        <h3>2.5. Strategy</h3>
+        <ul>
+          <li>Swap algorithms at runtime:</li>
+        </ul>
+        <div class="code"><pre>const strategies = {
+  json: (d) =&gt; JSON.stringify(d),
+  csv: (d) =&gt; d.map((r) =&gt; r.join(&quot;,&quot;)).join(&quot;\n&quot;),
+};
+function exportData(format, data) {
+  return strategies[format](data);
+}</pre></div>
+
+        <h3 id="2-design-patterns-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>2.6. Observer / Pub-Sub</h3>
+        <div class="code"><pre>class EventEmitter {
+  #listeners = {};
+  on(event, fn) {
+    (this.#listeners[event] ??= []).push(fn);
+  }
+  emit(event, data) {
+    (this.#listeners[event] ?? []).forEach((fn) =&gt; fn(data));
+  }
+}</pre></div>
+        <h3>2.7. Adapter &amp; Decorator</h3>
+        <ul>
+          <li><strong>Adapter</strong> — wrap foreign API to match your interface. <strong>Decorator</strong> — add behavior without changing core (stage-3 <code class="inline">@</code> decorators in File 22).</li>
+        </ul>
+      </section>
+      <section id="3-polyfill-implementations">
+        <div class="heading-with-levels">
+          <h2>3. Polyfill implementations</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="3-polyfill-implementations-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>3.1. Array.prototype.map</h3>
+        <div class="code"><pre>function map(arr, fn) {
+  const result = [];
+  for (let i = 0; i &lt; arr.length; i++) {
+    if (i in arr) result[i] = fn(arr[i], i, arr);
+  }
+  return result;
+}</pre></div>
+        <h3>3.2. Array.prototype.filter</h3>
+        <div class="code"><pre>function filter(arr, fn) {
+  const result = [];
+  for (let i = 0; i &lt; arr.length; i++) {
+    if (i in arr &amp;&amp; fn(arr[i], i, arr)) result.push(arr[i]);
+  }
+  return result;
+}</pre></div>
+        <h3>3.3. Array.prototype.reduce</h3>
+        <div class="code"><pre>function reduce(arr, fn, initial) {
+  let acc = initial;
+  let start = 0;
+  if (initial === undefined) {
+    if (arr.length === 0) throw new TypeError(&quot;Reduce of empty array&quot;);
+    acc = arr[0];
+    start = 1;
+  }
+  for (let i = start; i &lt; arr.length; i++) {
+    if (i in arr) acc = fn(acc, arr[i], i, arr);
+  }
+  return acc;
+}</pre></div>
+        <h3>3.4. call and apply</h3>
+        <div class="code"><pre>function call(fn, thisArg, ...args) {
+  return fn.apply(thisArg, args);
+}
+// apply same with args array</pre></div>
+        <h3>3.5. flatten array</h3>
+        <div class="code"><pre>function flatten(arr, depth = 1) {
+  return depth &gt; 0
+    ? arr.reduce((acc, v) =&gt; acc.concat(Array.isArray(v) ? flatten(v, depth - 1) : v), [])
+    : arr.slice();
+}</pre></div>
+        <ul>
+          <li>Debounce, throttle, curry, once, memoize — full implementations in File 22.</li>
+        </ul>
+
+        <h3 id="3-polyfill-implementations-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>3.6. Function.prototype.bind</h3>
+        <div class="code"><pre>function bind(fn, thisArg, ...boundArgs) {
+  return function (...args) {
+    return fn.apply(thisArg, [...boundArgs, ...args]);
+  };
+}</pre></div>
+        <h3>3.7. Promise (minimal)</h3>
+        <div class="code"><pre>class MyPromise {
+  constructor(executor) {
+    this.state = &quot;pending&quot;;
+    this.value = undefined;
+    this.handlers = [];
+    const resolve = (val) =&gt; {
+      if (this.state !== &quot;pending&quot;) return;
+      this.state = &quot;fulfilled&quot;;
+      this.value = val;
+      this.handlers.forEach((h) =&gt; h.onFulfilled?.(val));
+    };
+    const reject = (err) =&gt; {
+      if (this.state !== &quot;pending&quot;) return;
+      this.state = &quot;rejected&quot;;
+      this.value = err;
+      this.handlers.forEach((h) =&gt; h.onRejected?.(err));
+    };
+    try { executor(resolve, reject); } catch (e) { reject(e); }
+  }
+  then(onFulfilled, onRejected) {
+    return new MyPromise((resolve, reject) =&gt; {
+      const handle = () =&gt; {
+        try {
+          const next = this.state === &quot;fulfilled&quot;
+            ? onFulfilled?.(this.value) ?? this.value
+            : onRejected?.(this.value);
+          resolve(next);
+        } catch (e) { reject(e); }
+      };
+      if (this.state === &quot;pending&quot;) this.handlers.push({ onFulfilled: handle, onRejected: handle });
+      else handle();
+    });
+  }
+}</pre></div>
+        <h3>3.8. Promise.all and Promise.race</h3>
+        <div class="code"><pre>function promiseAll(promises) {
+  return new Promise((resolve, reject) =&gt; {
+    const results = [];
+    let done = 0;
+    promises.forEach((p, i) =&gt; {
+      Promise.resolve(p).then(
+        (val) =&gt; { results[i] = val; if (++done === promises.length) resolve(results); },
+        reject
+      );
+    });
+  });
+}</pre></div>
+      </section>
+      <section id="4-coding-interview-problems">
+        <div class="heading-with-levels">
+          <h2>4. Coding interview problems</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="4-coding-interview-problems-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.1. Sleep / delay</h3>
+        <div class="code"><pre>const sleep = (ms) =&gt; new Promise((r) =&gt; setTimeout(r, ms));
+await sleep(1000);</pre></div>
+        <h3>4.2. Group by</h3>
+        <div class="code"><pre>function groupBy(arr, keyFn) {
+  return arr.reduce((acc, item) =&gt; {
+    const key = keyFn(item);
+    (acc[key] ??= []).push(item);
+    return acc;
+  }, {});
+}</pre></div>
+        <h3>4.3. Remove duplicates</h3>
+        <div class="code"><pre>[...new Set(arr)];
+// or filter + indexOf for objects by id</pre></div>
+        <h3>4.4. Frequency counter</h3>
+        <div class="code"><pre>function frequency(arr) {
+  return arr.reduce((acc, v) =&gt; { acc[v] = (acc[v] ?? 0) + 1; return acc; }, {});
+}</pre></div>
+        <h3>4.5. Array chunking</h3>
+        <div class="code"><pre>function chunk(arr, size) {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =&gt;
+    arr.slice(i * size, i * size + size)
+  );
+}</pre></div>
+
+        <h3 id="4-coding-interview-problems-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.6. Deep clone</h3>
+        <div class="code"><pre>function deepClone(val) {
+  if (val === null || typeof val !== &quot;object&quot;) return val;
+  if (Array.isArray(val)) return val.map(deepClone);
+  return Object.fromEntries(
+    Object.entries(val).map(([k, v]) =&gt; [k, deepClone(v)])
+  );
+}
+// Production: structuredClone(val) — File 02, 07</pre></div>
+        <h3>4.7. Retry logic</h3>
+        <div class="code"><pre>async function retry(fn, times = 3, delayMs = 500) {
+  for (let i = 0; i &lt; times; i++) {
+    try { return await fn(); }
+    catch (e) { if (i === times - 1) throw e; await sleep(delayMs); }
+  }
+}</pre></div>
+        <h3>4.8. Object flattening</h3>
+        <div class="code"><pre>function flattenObject(obj, prefix = &quot;&quot;, out = {}) {
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (v &amp;&amp; typeof v === &quot;object&quot; &amp;&amp; !Array.isArray(v)) flattenObject(v, key, out);
+    else out[key] = v;
+  }
+  return out;
+}</pre></div>
+        <h3>4.9. Nested object traversal</h3>
+        <div class="code"><pre>function walk(obj, fn, path = &quot;&quot;) {
+  for (const [k, v] of Object.entries(obj)) {
+    const p = path ? `${path}.${k}` : k;
+    if (v &amp;&amp; typeof v === &quot;object&quot; &amp;&amp; !Array.isArray(v)) walk(v, fn, p);
+    else fn(p, v);
+  }
+}</pre></div>
+
+        <h3 id="4-coding-interview-problems-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>4.10. Promise pool (concurrency limit)</h3>
+        <div class="code"><pre>async function promisePool(tasks, limit) {
+  const results = [];
+  const executing = [];
+  for (const [i, task] of tasks.entries()) {
+    const p = Promise.resolve().then(task).then((r) =&gt; { results[i] = r; });
+    results[i] = p;
+    if (tasks.length &gt;= limit) {
+      executing.push(p);
+      if (executing.length &gt;= limit) await Promise.race(executing);
+      executing.splice(executing.findIndex((x) =&gt; x === p), 1);
+    }
+  }
+  await Promise.all(results);
+  return results;
+}</pre></div>
+        <h3>4.11. LRU Cache (sketch)</h3>
+        <ul>
+          <li>Use <strong>Map</strong> (insertion order) — on get, delete and re-set key to mark recent; evict first key when over capacity.</li>
+        </ul>
+      </section>
+      <section id="5-security-basics">
+        <div class="heading-with-levels">
+          <h2>5. Security basics</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="5-security-basics-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>5.1. XSS (Cross-Site Scripting)</h3>
+        <ul>
+          <li>Injected script runs in victim&#x27;s browser. <strong>Prevent:</strong> escape output, <strong><code class="inline">textContent</code></strong> not <code class="inline">innerHTML</code>, CSP, sanitize HTML (DOMPurify).</li>
+        </ul>
+        <h3>5.2. Sanitization</h3>
+        <ul>
+          <li>Never trust user HTML. Validate on server; encode on output.</li>
+        </ul>
+
+        <h3 id="5-security-basics-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>5.3. CSRF (Cross-Site Request Forgery)</h3>
+        <ul>
+          <li>Tricks browser into sending authenticated request. <strong>Prevent:</strong> CSRF tokens, <strong>SameSite</strong> cookies.</li>
+        </ul>
+        <h3>5.4. CORS</h3>
+        <ul>
+          <li>Browser blocks cross-origin responses unless server sends <strong><code class="inline">Access-Control-Allow-Origin</code></strong>. Preflight for non-simple requests.</li>
+        </ul>
+        <h3>5.5. CSP (Content Security Policy)</h3>
+        <ul>
+          <li>HTTP header restricting script/style sources — mitigates XSS.</li>
+        </ul>
+      </section>
+      <section id="6-engine-performance-interview">
+        <div class="heading-with-levels">
+          <h2>6. Engine &amp; performance (interview)</h2>
+          <div class="h2-levels">
+            <span class="tier l4">L4</span>
+            <span class="tier l5">L5</span>
+          </div>
+        </div>
+
+        <h3 id="6-engine-performance-interview-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>6.1. Virtualization</h3>
+        <ul>
+          <li>Render only visible list rows (<strong>react-window</strong>, <strong>@tanstack/react-virtual</strong>) — React File 12.</li>
+        </ul>
+        <h3>6.2. Function chaining</h3>
+        <div class="code"><pre>class Chain {
+  constructor(v) { this.v = v; }
+  add(n) { this.v += n; return this; }
+  mul(n) { this.v *= n; return this; }
+  val() { return this.v; }
+}
+new Chain(2).add(3).mul(4).val();  // 20</pre></div>
+        <ul>
+          <li>Pipe/compose — File 22.</li>
+        </ul>
+
+        <h3 id="6-engine-performance-interview-l5"><span class="chip tier-l5">L5 Deep Dive</span></h3>
+        <h3>6.3. De-optimization</h3>
+        <ul>
+          <li>V8 may <strong>bail out</strong> of optimized code when types change unpredictably (e.g. adding properties to objects in hot loops with varying shapes). Keep object shapes stable (File 22 — hidden classes).</li>
+        </ul>
+      </section>
+      <section id="7-common-questions">
+        <div class="heading-with-levels">
+          <h2>7. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="7-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>7.1. What is event delegation?</h3>
+        <ul>
+          <li><strong>A:</strong> File 23 — single parent listener for many children.</li>
+        </ul>
+        <h3>7.2. How does debounce differ from throttle?</h3>
+        <ul>
+          <li><strong>A:</strong> File 22 — debounce waits for pause; throttle limits rate.</li>
+        </ul>
+
+        <h3 id="7-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>7.3. XSS vs CSRF?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>XSS</strong> — run attacker script in your page. <strong>CSRF</strong> — forge request using victim&#x27;s cookies.</li>
+        </ul>
+        <h3>7.4. Shallow vs deep copy?</h3>
+        <ul>
+          <li><strong>A:</strong> File 02, 07 — spread/<code class="inline">Object.assign</code> shallow; <strong><code class="inline">structuredClone</code></strong> or recursive clone deep.</li>
+        </ul>
+        <h3>7.5. What is the revealing module pattern?</h3>
+        <ul>
+          <li><strong>A:</strong> File 17 — IIFE returns public API, keeps private vars in closure.</li>
+        </ul>
+        <h3>7.6. Flatten nested array?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">flat(Infinity)</code></strong> or recursive reduce (section 3.5).</li>
+        </ul>
+
+        <h3 id="7-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>7.7. Implement bind from scratch?</h3>
+        <ul>
+          <li><strong>A:</strong> Return function that calls original with fixed <strong><code class="inline">this</code></strong> and partial args (section 3.6).</li>
+        </ul>
+        <h3>7.8. Implement Promise.all?</h3>
+        <ul>
+          <li><strong>A:</strong> Wrap in Promise; resolve array when all fulfill; reject on first rejection (section 3.8).</li>
+        </ul>
+      </section>
+      <footer>HTML note for JavaScript File 24. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

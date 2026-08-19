@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>23. Browser &amp; Events - JavaScript Notes</title>
+  </head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-dom-and-bom">1. DOM and BOM</a>
+        <a href="#2-storage-apis">2. Storage APIs</a>
+        <a href="#3-fetch-abortcontroller">3. Fetch &amp; AbortController</a>
+        <a href="#4-event-handling">4. Event handling</a>
+        <a href="#5-common-questions">5. Common questions</a>
+        <a href="./23-js-browser-events-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">23. Browser &amp; Events</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>23. Browser &amp; Events</h1>
+        <p class="subtitle">File 23 — DOM/BOM basics, storage, fetch, event bubbling/delegation.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>JavaScript in the browser adds APIs beyond the language core. React apps abstract much of this (see React notes), but interviews still test the underlying model.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li><strong>Default rule today:</strong> default listeners run on the <strong>bubble</strong> phase; use <strong>delegation</strong> on stable parents for dynamic lists; call <strong><code class="inline">preventDefault</code></strong> / <strong><code class="inline">stopPropagation</code></strong> only when you mean to block default behavior or further propagation.</li>
+          <li>Interactive visualizer: open <a href="./23-js-browser-events-animation.html">23-js-browser-events-animation.html</a> in a browser — capture/target/bubble, stopPropagation, preventDefault, delegation, once/remove (Run / Step).</li>
+        </ul>
+      </section>
+      <section id="1-dom-and-bom">
+        <div class="heading-with-levels">
+          <h2>1. DOM and BOM</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+
+        <h3 id="1-dom-and-bom-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. DOM (Document Object Model)</h3>
+        <ul>
+          <li>Tree of nodes representing HTML:</li>
+        </ul>
+        <div class="code"><pre>document.getElementById(&quot;app&quot;);
+document.querySelector(&quot;.btn&quot;);
+document.querySelectorAll(&quot;li&quot;);
+el.textContent = &quot;Hello&quot;;
+el.classList.add(&quot;active&quot;);
+el.setAttribute(&quot;data-id&quot;, &quot;42&quot;);
+document.createElement(&quot;div&quot;);
+parent.appendChild(el);</pre></div>
+
+        <h3 id="1-dom-and-bom-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>1.2. BOM (Browser Object Model)</h3>
+        <ul>
+          <li>Browser globals outside the document tree:</li>
+        </ul>
+        <div class="code"><pre>window.location.href;
+window.history.back();
+window.navigator.userAgent;
+window.innerWidth;
+window.open(url);</pre></div>
+      </section>
+      <section id="2-storage-apis">
+        <div class="heading-with-levels">
+          <h2>2. Storage APIs</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="2-storage-apis-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. localStorage and sessionStorage</h3>
+        <div class="code"><pre>localStorage.setItem(&quot;theme&quot;, &quot;dark&quot;);
+localStorage.getItem(&quot;theme&quot;);
+localStorage.removeItem(&quot;theme&quot;);
+localStorage.clear();
+
+sessionStorage.setItem(&quot;tab&quot;, &quot;1&quot;);  // cleared when tab closes</pre></div>
+
+        <h3 id="2-storage-apis-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li>Values are <strong>strings</strong> — <code class="inline">JSON.stringify</code> / <code class="inline">parse</code> for objects. <strong>Same-origin</strong> only.</li>
+        </ul>
+
+        <h3 id="2-storage-apis-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.2. Cookies</h3>
+        <ul>
+          <li>Small key-value strings sent with HTTP requests — set via <strong><code class="inline">document.cookie</code></strong> or server <strong><code class="inline">Set-Cookie</code></strong>. Prefer <strong>httpOnly</strong> cookies for auth tokens (not accessible from JS).</li>
+        </ul>
+      </section>
+      <section id="3-fetch-abortcontroller">
+        <div class="heading-with-levels">
+          <h2>3. Fetch &amp; AbortController</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="3-fetch-abortcontroller-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>3.1. Fetch API</h3>
+        <div class="code"><pre>const res = await fetch(&quot;/api/users&quot;, {
+  method: &quot;POST&quot;,
+  headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+  body: JSON.stringify({ name: &quot;Ada&quot; }),
+});
+if (!res.ok) throw new Error(`HTTP ${res.status}`);
+const data = await res.json();</pre></div>
+        <ul>
+          <li>File 20 — async patterns; React File 10 — TanStack Query.</li>
+        </ul>
+        <h3>3.2. History and URL APIs</h3>
+        <div class="code"><pre>history.pushState({}, &quot;&quot;, &quot;/new-path&quot;);
+history.replaceState({}, &quot;&quot;, &quot;/other&quot;);
+
+const url = new URL(&quot;https://example.com/path?q=1&quot;);
+url.searchParams.get(&quot;q&quot;);
+url.pathname;</pre></div>
+        <ul>
+          <li>React Router wraps History API (React File 09).</li>
+        </ul>
+
+        <h3 id="3-fetch-abortcontroller-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>3.3. AbortController</h3>
+        <ul>
+          <li>Cancel in-flight fetch:</li>
+        </ul>
+        <div class="code"><pre>const controller = new AbortController();
+fetch(&quot;/api/slow&quot;, { signal: controller.signal });
+controller.abort();  // rejects with AbortError</pre></div>
+      </section>
+      <section id="4-event-handling">
+        <div class="heading-with-levels">
+          <h2>4. Event handling</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="4-event-handling-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.1. Event delegation</h3>
+        <ul>
+          <li>One listener on <strong>parent</strong> handles events from <strong>children</strong>:</li>
+        </ul>
+        <div class="code"><pre>document.querySelector(&quot;#list&quot;).addEventListener(&quot;click&quot;, (e) =&gt; {
+  if (e.target.matches(&quot;li.item&quot;)) {
+    console.log(&quot;Clicked&quot;, e.target.dataset.id);
+  }
+});</pre></div>
+        <ul>
+          <li>Efficient for dynamic lists — fewer listeners.</li>
+        </ul>
+        <h3>4.2. stopPropagation and preventDefault</h3>
+        <div class="code"><pre>function onClick(e) {
+  e.stopPropagation();  // don&#x27;t bubble further
+  e.preventDefault();   // don&#x27;t default action (e.g. form submit, link nav)
+}</pre></div>
+        <ul>
+          <li>React: <strong><code class="inline">e.stopPropagation()</code></strong>, <strong><code class="inline">e.preventDefault()</code></strong> on synthetic events (React File 03).</li>
+        </ul>
+        <h3>4.3. Custom events</h3>
+        <div class="code"><pre>const event = new CustomEvent(&quot;user-login&quot;, { detail: { id: 1 } });
+window.dispatchEvent(event);
+
+window.addEventListener(&quot;user-login&quot;, (e) =&gt; {
+  console.log(e.detail.id);
+});</pre></div>
+
+        <h3 id="4-event-handling-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.4. Bubbling and capturing</h3>
+        <ul>
+          <li>Events flow <strong>capture</strong> (window → target) then <strong>bubble</strong> (target → window). Default listeners run on <strong>bubble</strong> phase.</li>
+        </ul>
+        <div class="code"><pre>el.addEventListener(&quot;click&quot;, handler);                    // bubble (default)
+el.addEventListener(&quot;click&quot;, handler, { capture: true }); // capture</pre></div>
+      </section>
+      <section id="5-common-questions">
+        <div class="heading-with-levels">
+          <h2>5. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="5-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. localStorage vs sessionStorage?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>localStorage</strong> persists until cleared. <strong>sessionStorage</strong> clears when the <strong>tab</strong> closes.</li>
+        </ul>
+        <h3>5.2. DOM vs BOM?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>DOM</strong> — document tree (elements). <strong>BOM</strong> — browser chrome (<code class="inline">window</code>, <code class="inline">location</code>, <code class="inline">history</code>, <code class="inline">navigator</code>).</li>
+        </ul>
+
+        <h3 id="5-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>5.3. What is event delegation?</h3>
+        <ul>
+          <li><strong>A:</strong> Attach one handler to a <strong>parent</strong> and use <strong><code class="inline">event.target</code></strong> to handle child events — good for dynamic lists.</li>
+        </ul>
+        <h3>5.4. What does preventDefault do?</h3>
+        <ul>
+          <li><strong>A:</strong> Cancels the browser&#x27;s <strong>default action</strong> (submit form, follow link).</li>
+        </ul>
+        <h3>5.5. What is AbortController for?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>Cancel</strong> fetch or other abortable APIs — avoids race conditions when user navigates away.</li>
+        </ul>
+
+        <h3 id="5-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>5.6. What is event bubbling?</h3>
+        <ul>
+          <li><strong>A:</strong> Event propagates from <strong>target up</strong> through ancestors after the target handler runs.</li>
+        </ul>
+      </section>
+      <footer>HTML note for JavaScript File 23. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

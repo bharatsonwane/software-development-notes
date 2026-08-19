@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>10. Numbers - JavaScript Notes</title>
+  </head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-numbers">1. Numbers</a>
+        <a href="#2-common-questions">2. Common questions</a>
+        <a href="./10-js-numbers-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">10. Numbers</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>10. Numbers</h1>
+        <p class="subtitle">File 10 — Number, NaN, Infinity, floating point, BigInt. Math is File 11.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>JavaScript <strong>number</strong> is a 64-bit float (File 02). There is no separate integer type except <code class="inline">bigint</code>. File 03 covers numeric operators and coercion.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li>Interactive visualizer: open <a href="./10-js-numbers-animation.html">10-js-numbers-animation.html</a> in a browser — Number parsing, NaN/Infinity (Run / Step). Math APIs are File 11. Shared scenarios also cover strings and dates.</li>
+        </ul>
+      </section>
+      <section id="1-numbers">
+        <div class="heading-with-levels">
+          <h2>1. Numbers</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="1-numbers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. BigInt</h3>
+        <div class="code"><pre>const big = 9007199254740991n;
+big + 1n;  // 9007199254740992n
+// big + 1;  // TypeError — cannot mix BigInt and Number</pre></div>
+        <ul>
+          <li>File 02 — primitive intro.</li>
+        </ul>
+
+        <h3 id="1-numbers-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>1.2. Number object and methods</h3>
+        <div class="code"><pre>Number.isNaN(NaN);        // true
+Number.isFinite(42);      // true
+Number.isInteger(3.0);    // true
+Number.parseInt(&quot;42px&quot;);  // 42
+Number.parseFloat(&quot;3.14&quot;);
+(3.14159).toFixed(2);     // &quot;3.14&quot;
+(3.14159).toPrecision(3); // &quot;3.14&quot;</pre></div>
+        <ul>
+          <li>Prefer <strong><code class="inline">Number.isNaN</code></strong> over global <strong><code class="inline">isNaN</code></strong> (coerces first).</li>
+        </ul>
+        <ul>
+          <li><strong><code class="inline">Math</code></strong> helpers (round, random, trig) are File 11.</li>
+        </ul>
+
+        <h3 id="1-numbers-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>1.3. NaN and Infinity</h3>
+        <div class="code"><pre>0 / 0;           // NaN
+Number(&quot;abc&quot;);   // NaN
+1 / 0;           // Infinity
+-1 / 0;          // -Infinity</pre></div>
+        <h3>1.4. Floating point precision</h3>
+        <ul>
+          <li>All JS numbers are <strong>IEEE 754 doubles</strong>:</li>
+        </ul>
+        <div class="code"><pre>0.1 + 0.2;                    // 0.30000000000000004
+0.1 + 0.2 === 0.3;            // false
+(0.1 + 0.2).toFixed(1);       // &quot;0.3&quot;
+Number((0.1 + 0.2).toFixed(2)); // 0.3</pre></div>
+        <ul>
+          <li>For money, store <strong>cents as integers</strong> or use a decimal library.</li>
+        </ul>
+      </section>
+      <section id="2-common-questions">
+        <div class="heading-with-levels">
+          <h2>2. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="2-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. How do you check for NaN?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong><code class="inline">Number.isNaN(value)</code></strong> — not <code class="inline">value === NaN</code> or global <code class="inline">isNaN</code>.</li>
+        </ul>
+        <h3 id="2-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.2. Why is <code class="inline">0.1 + 0.2 !== 0.3</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Binary floating point cannot represent some decimals exactly. Use rounding or integer cents for money.</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for JavaScript File 10. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>22. Advanced Patterns - JavaScript Notes</title>
+  </head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-execution-context">1. Execution context</a>
+        <a href="#2-memory-garbage-collection">2. Memory &amp; garbage collection</a>
+        <a href="#3-proxy-reflect">3. Proxy &amp; Reflect</a>
+        <a href="#4-functional-patterns">4. Functional patterns</a>
+        <a href="#5-utility-patterns">5. Utility patterns</a>
+        <a href="#6-performance">6. Performance</a>
+        <a href="#7-strict-mode">7. Strict mode</a>
+        <a href="#8-common-questions">8. Common questions</a>
+        <a href="./22-js-advanced-patterns-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">22. Advanced Patterns</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>22. Advanced Patterns</h1>
+        <p class="subtitle">File 22 — internals, patterns, and performance.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+      <section id="intro-notes">
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li>This chapter covers <strong>how JS runs code in memory</strong>, <strong>advanced object APIs</strong>, <strong>functional utilities</strong>, and <strong>practical performance habits</strong>. It builds on scope (File 08), closures (File 17), and modern syntax (File 21).</li>
+          <li>You do not need to micro-optimize every line — but understanding <strong>execution context</strong>, <strong>GC</strong>, and patterns like <strong>debounce</strong> helps you write reliable production code and debug hard issues.</li>
+          <li><strong>Default rule today:</strong> modules and <strong>strict mode</strong> by default; prefer <strong>immutability</strong> for predictable state; use <strong>Proxy</strong> sparingly (frameworks/libraries); <strong>measure</strong> before optimizing hot paths.</li>
+          <li>Interactive visualizer: open <a href="./22-js-advanced-patterns-animation.html">22-js-advanced-patterns-animation.html</a> in a browser — debounce/throttle timelines, currying, memoization, revealing module, compose/pipe (Run / Step).</li>
+        </ul>
+      </section>
+      <section id="1-execution-context">
+        <div class="heading-with-levels">
+          <h2>1. Execution context</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="1-execution-context-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <ul>
+          <li>An <strong>execution context</strong> is the environment in which JS code runs. Each function call and global/module script gets a context.</li>
+        </ul>
+        <h3>1.1. Types of execution context</h3>
+        <table>
+        <thead>
+        <tr><th>Type</th><th>When created</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><strong>Global</strong></td><td>Program / module start</td></tr>
+        <tr><td><strong>Function</strong></td><td>Each function invocation</td></tr>
+        <tr><td><strong>Eval</strong></td><td><code class="inline">eval()</code> (avoid)</td></tr>
+        <tr><td><strong>Module</strong></td><td>ES module top level</td></tr>
+        </tbody>
+        </table>
+        <ul>
+          <li>Each context has:</li>
+          <li><strong>Variable environment</strong> — <code class="inline">var</code>, function declarations, <code class="inline">let</code>/<code class="inline">const</code> bindings (in modern spec: lexical environment).</li><li><strong><code class="inline">this</code> binding</strong> — depends on call type (File 17).</li><li><strong>Outer reference</strong> — link to parent lexical environment (scope chain).</li></ul>
+        <h3>1.2. Call stack</h3>
+        <ul>
+          <li>Contexts are managed on the <strong>call stack</strong> (File 20):</li>
+        </ul>
+        <div class="code"><pre>function first() {
+  second();
+}
+
+function second() {
+  third();
+}
+
+function third() {
+  console.log(&quot;deep&quot;);
+}
+
+first();
+// Stack: first → second → third → pop...</pre></div>
+        <ul>
+          <li>Each push is a new function execution context. Stack overflow = too much synchronous recursion.</li>
+        </ul>
+
+        <h3 id="1-execution-context-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>1.3. Creation vs execution phase</h3>
+        <ul>
+          <li>When a context is created, JS runs two phases:</li>
+          <li><strong>1. Creation (compile) phase</strong></li>
+          <li>Create variable bindings (hoisting — File 08).</li><li>Set up scope chain.</li><li>Determine <code class="inline">this</code>.</li>
+          <li><strong>2. Execution phase</strong></li>
+          <li>Run code line by line.</li><li>Assign values.</li><li>Execute function bodies on call.</li></ul>
+        <div class="code"><pre>console.log(a);  // undefined — var hoisted
+var a = 10;
+
+// let b; — TDZ
+console.log(b);  // ReferenceError
+let b = 5;</pre></div>
+        <h3>1.4. Lexical environment</h3>
+        <ul>
+          <li><strong>Lexical environment</strong> = record of identifiers + reference to <strong>outer</strong> environment. Closures keep outer environments alive (File 17):</li>
+        </ul>
+        <div class="code"><pre>function outer() {
+  const x = 10;
+
+  return function inner() {
+    console.log(x);  // inner&#x27;s environment references outer&#x27;s
+  };
+}</pre></div>
+        <ul>
+          <li>Module scope and block scope (<code class="inline">let</code>/<code class="inline">const</code>) each get their own lexical environment.</li>
+        </ul>
+      </section>
+      <section id="2-memory-garbage-collection">
+        <div class="heading-with-levels">
+          <h2>2. Memory &amp; garbage collection</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+            <span class="tier l5">L5</span>
+          </div>
+        </div>
+
+        <h3 id="2-memory-garbage-collection-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.1. Stack vs heap</h3>
+        <table>
+        <thead>
+        <tr><th>Stack</th><th>Heap</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Fixed-size, fast</td><td>Larger, dynamic</td></tr>
+        <tr><td>Stores execution context frames, primitives (often)</td><td>Stores <strong>objects</strong>, functions, closures</td></tr>
+        <tr><td>LIFO — call stack</td><td>GC-managed</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>let n = 42;              // primitive — often stack-like
+const user = { name: &quot;Bharat&quot; };  // object — heap; user holds reference</pre></div>
+        <ul>
+          <li>Variables hold <strong>references</strong> to heap values (File 02).</li>
+        </ul>
+        <h3>2.2. Memory leaks (common causes)</h3>
+        <ul>
+          <li><strong>Accidental globals:</strong></li>
+        </ul>
+        <div class="code"><pre>function leak() {
+  accidental = { data: [] };  // no var/let/const — global in sloppy mode
+}</pre></div>
+        <ul>
+          <li><strong>Forgotten timers / listeners:</strong></li>
+        </ul>
+        <div class="code"><pre>setInterval(() =&gt; { /* holds closure over bigData */ }, 1000);
+// clearInterval(id) when done
+
+element.addEventListener(&quot;click&quot;, handler);
+// removeEventListener when component unmounts</pre></div>
+        <ul>
+          <li><strong>Closures holding large objects</strong> longer than needed:</li>
+        </ul>
+        <div class="code"><pre>function setup() {
+  const huge = loadHugeCache();
+
+  return function onClick() {
+    // only needs huge.id but closes over entire huge
+    console.log(huge.id);
+  };
+}</pre></div>
+        <ul>
+          <li><strong>Detached DOM nodes</strong> — JS still references removed DOM elements.</li>
+          <li><strong>WeakMap / WeakSet</strong> (File 21) — attach metadata without preventing GC.</li>
+        </ul>
+
+        <h3 id="2-memory-garbage-collection-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>2.3. Garbage collection (GC)</h3>
+        <ul>
+          <li>JS engines <strong>automatically reclaim</strong> memory when values are <strong>no longer reachable</strong> from roots (global, call stack, registers).</li>
+          <li><strong>Mark-and-sweep</strong> (simplified):</li>
+        </ul>
+        <ol><li>Start from roots — mark reachable objects.</li><li>Unmarked objects are collected.</li></ol>
+        <div class="code"><pre>function makeUser() {
+  const temp = { huge: new Array(1_000_000) };
+  return { name: &quot;Bharat&quot; };
+  // temp becomes unreachable after return — eligible for GC
+}</pre></div>
+        <ul>
+          <li>You cannot manually free memory in JS (<code class="inline">delete</code> only removes object <strong>properties</strong>, not GC).</li>
+        </ul>
+
+        <h3 id="2-memory-garbage-collection-l5"><span class="chip tier-l5">L5 Deep Dive</span></h3>
+        <h3>2.4. Weak references (brief)</h3>
+        <ul>
+          <li><strong><code class="inline">WeakRef</code></strong> and <strong><code class="inline">FinalizationRegistry</code></strong> — advanced, rare in app code — allow observing when objects are collected. Use when building caches with size limits in libraries.</li>
+        </ul>
+      </section>
+      <section id="3-proxy-reflect">
+        <div class="heading-with-levels">
+          <h2>3. Proxy &amp; Reflect</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="3-proxy-reflect-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <ul>
+          <li><strong><code class="inline">Proxy</code></strong> wraps an object and <strong>intercepts</strong> operations (get, set, delete, etc.). <strong><code class="inline">Reflect</code></strong> provides methods matching proxy traps — default forwarding behavior.</li>
+        </ul>
+        <h3>3.1. Basic Proxy</h3>
+        <div class="code"><pre>const target = { name: &quot;Bharat&quot;, age: 30 };
+
+const proxy = new Proxy(target, {
+  get(obj, prop, receiver) {
+    console.log(`GET ${String(prop)}`);
+    return Reflect.get(obj, prop, receiver);
+  },
+  set(obj, prop, value, receiver) {
+    console.log(`SET ${String(prop)} = ${value}`);
+    return Reflect.set(obj, prop, value, receiver);
+  },
+});
+
+proxy.name;       // logs GET name → &quot;Bharat&quot;
+proxy.age = 31;   // logs SET age = 31</pre></div>
+        <h3>3.2. Common traps</h3>
+        <table>
+        <thead>
+        <tr><th>Trap</th><th>Intercepts</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">get</code></td><td>Property read</td></tr>
+        <tr><td><code class="inline">set</code></td><td>Property write</td></tr>
+        <tr><td><code class="inline">has</code></td><td><code class="inline">in</code> operator</td></tr>
+        <tr><td><code class="inline">deleteProperty</code></td><td><code class="inline">delete</code></td></tr>
+        <tr><td><code class="inline">apply</code></td><td>Function call</td></tr>
+        <tr><td><code class="inline">construct</code></td><td><code class="inline">new</code></td></tr>
+        </tbody>
+        </table>
+        <ul>
+          <li><strong>Validation example:</strong></li>
+        </ul>
+        <div class="code"><pre>const user = new Proxy({}, {
+  set(obj, prop, value) {
+    if (prop === &quot;age&quot; &amp;&amp; typeof value !== &quot;number&quot;) {
+      throw new TypeError(&quot;age must be number&quot;);
+    }
+    obj[prop] = value;
+    return true;
+  },
+});
+
+user.age = 30;   // OK
+// user.age = &quot;30&quot;;  // TypeError</pre></div>
+
+        <h3 id="3-proxy-reflect-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>3.3. Reflect</h3>
+        <ul>
+          <li><code class="inline">Reflect</code> methods mirror proxy traps and return sensible results:</li>
+        </ul>
+        <div class="code"><pre>Reflect.get(user, &quot;name&quot;);
+Reflect.set(user, &quot;name&quot;, &quot;Dev&quot;);
+Reflect.has(user, &quot;name&quot;);
+Reflect.deleteProperty(user, &quot;temp&quot;);</pre></div>
+        <ul>
+          <li>Use <strong><code class="inline">Reflect</code></strong> inside traps instead of direct <code class="inline">obj[prop]</code> to avoid recursion and handle receiver/<code class="inline">this</code> correctly.</li>
+        </ul>
+        <h3>3.4. When to use Proxy</h3>
+        <table>
+        <thead>
+        <tr><th>Good use</th><th>Avoid</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Library/framework internals (Vue 3 reactivity)</td><td>Everyday app objects</td></tr>
+        <tr><td>Validation / logging layers</td><td>Hot loops without profiling</td></tr>
+        <tr><td>Immutable-style wrappers</td><td>Replacing simple classes</td></tr>
+        </tbody>
+        </table>
+        <ul>
+          <li>Proxies add overhead — powerful but not free.</li>
+        </ul>
+      </section>
+      <section id="4-functional-patterns">
+        <div class="heading-with-levels">
+          <h2>4. Functional patterns</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="4-functional-patterns-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>4.1. Pure functions &amp; immutability</h3>
+        <ul>
+          <li><strong>Pure function</strong> — same inputs → same output, no side effects (File 05):</li>
+        </ul>
+        <div class="code"><pre>function add(a, b) {
+  return a + b;
+}
+
+// Impure — mutates external state
+let total = 0;
+function addToTotal(n) {
+  total += n;
+}</pre></div>
+        <ul>
+          <li><strong>Immutability</strong> — return new data instead of mutating:</li>
+        </ul>
+        <div class="code"><pre>function addItem(cart, item) {
+  return [...cart, item];  // new array
+}
+
+function updateUser(user, name) {
+  return { ...user, name };  // new object
+}</pre></div>
+        <ul>
+          <li>React and Redux-style state rely on immutability for change detection.</li>
+        </ul>
+
+        <h3 id="4-functional-patterns-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>4.2. Currying</h3>
+        <ul>
+          <li>Transform <strong><code class="inline">f(a, b, c)</code></strong> into <strong><code class="inline">f(a)(b)(c)</code></strong> — partial application one arg at a time:</li>
+        </ul>
+        <div class="code"><pre>function curry(fn) {
+  return function curried(...args) {
+    if (args.length &gt;= fn.length) {
+      return fn.apply(this, args);
+    }
+    return (...next) =&gt; curried(...args, ...next);
+  };
+}
+
+function multiply(a, b, c) {
+  return a * b * c;
+}
+
+const curriedMultiply = curry(multiply);
+curriedMultiply(2)(3)(4);  // 24
+curriedMultiply(2, 3)(4);  // 24</pre></div>
+        <ul>
+          <li>Useful for config presets and reusable handlers.</li>
+        </ul>
+        <h3>4.3. Function composition</h3>
+        <ul>
+          <li>Pipe output of one function into the next:</li>
+        </ul>
+        <div class="code"><pre>const compose = (f, g) =&gt; (x) =&gt; f(g(x));
+const pipe = (...fns) =&gt; (x) =&gt; fns.reduce((v, fn) =&gt; fn(v), x);
+
+const double = (n) =&gt; n * 2;
+const increment = (n) =&gt; n + 1;
+
+const doubleThenInc = compose(increment, double);
+doubleThenInc(5);  // 11
+
+pipe(double, increment)(5);  // 11</pre></div>
+        <ul>
+          <li>Libraries: <strong>Ramda</strong>, <strong>lodash/fp</strong>.</li>
+        </ul>
+
+        <h3 id="4-functional-patterns-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>4.4. Higher-order patterns recap</h3>
+        <table>
+        <thead>
+        <tr><th>Pattern</th><th>Idea</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Map/filter/reduce</td><td>Transform collections (File 13)</td></tr>
+        <tr><td>Factory functions</td><td>Return configured objects (File 17)</td></tr>
+        <tr><td>Middleware</td><td><code class="inline">(next) =&gt; (action) =&gt; ...</code></td></tr>
+        <tr><td>Decorators</td><td>Wrap behavior (stage 3 decorators in TS/legacy Babel)</td></tr>
+        </tbody>
+        </table>
+      </section>
+      <section id="5-utility-patterns">
+        <div class="heading-with-levels">
+          <h2>5. Utility patterns</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="5-utility-patterns-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>5.1. Debounce</h3>
+        <ul>
+          <li>Run function <strong>only after</strong> calls <strong>stop</strong> for a delay — search input, resize:</li>
+        </ul>
+        <div class="code"><pre>function debounce(fn, delayMs) {
+  let timerId;
+
+  return function (...args) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() =&gt; {
+      fn.apply(this, args);
+    }, delayMs);
+  };
+}
+
+const onSearch = debounce((query) =&gt; {
+  fetchResults(query);
+}, 300);
+
+input.addEventListener(&quot;input&quot;, (e) =&gt; onSearch(e.target.value));</pre></div>
+        <ul>
+          <li>User types → wait 300ms idle → one API call.</li>
+        </ul>
+        <h3>5.2. Throttle</h3>
+        <ul>
+          <li>Run at most <strong>once per interval</strong> — scroll, mousemove:</li>
+        </ul>
+        <div class="code"><pre>function throttle(fn, intervalMs) {
+  let last = 0;
+
+  return function (...args) {
+    const now = Date.now();
+    if (now - last &gt;= intervalMs) {
+      last = now;
+      fn.apply(this, args);
+    }
+  };
+}
+
+const onScroll = throttle(() =&gt; {
+  updateScrollIndicator();
+}, 100);
+
+window.addEventListener(&quot;scroll&quot;, onScroll);</pre></div>
+        <table>
+        <thead>
+        <tr><th>Debounce</th><th>Throttle</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Wait for pause</td><td>Cap frequency</td></tr>
+        <tr><td>Search typing</td><td>Scroll / resize firehose</td></tr>
+        </tbody>
+        </table>
+        <h3>5.3. once</h3>
+        <ul>
+          <li>Run function only one time:</li>
+        </ul>
+        <div class="code"><pre>function once(fn) {
+  let called = false;
+  let result;
+
+  return function (...args) {
+    if (!called) {
+      called = true;
+      result = fn.apply(this, args);
+    }
+    return result;
+  };
+}
+
+const init = once(() =&gt; {
+  console.log(&quot;init&quot;);
+  return { ready: true };
+});
+
+init();  // logs
+init();  // silent — returns same result</pre></div>
+
+        <h3 id="5-utility-patterns-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>5.4. Memoization</h3>
+        <ul>
+          <li>Cache function results by arguments (File 17):</li>
+        </ul>
+        <div class="code"><pre>function memoize(fn) {
+  const cache = new Map();
+
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+const slowSquare = memoize((n) =&gt; {
+  // imagine expensive work
+  return n * n;
+});
+
+slowSquare(5);  // computes
+slowSquare(5);  // cached</pre></div>
+        <ul>
+          <li>Use <strong><code class="inline">Map</code></strong> when args are objects; consider cache size limits for production.</li>
+        </ul>
+      </section>
+      <section id="6-performance">
+        <div class="heading-with-levels">
+          <h2>6. Performance</h2>
+          <div class="h2-levels">
+            <span class="tier l4">L4</span>
+            <span class="tier l5">L5</span>
+          </div>
+        </div>
+
+        <h3 id="6-performance-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>6.1. When to optimize</h3>
+        <ol><li><strong>Make it work</strong> — correct, readable code.</li><li><strong>Measure</strong> — DevTools Performance, <code class="inline">console.time</code>, benchmarks.</li><li><strong>Optimize hot paths</strong> — loops over huge arrays, render-critical UI.</li><li><strong>Avoid premature optimization.</strong></li></ol>
+        <h3>6.2. Common pitfalls</h3>
+        <table>
+        <thead>
+        <tr><th>Pitfall</th><th>Better approach</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>DOM thrashing — read/write layout in loop</td><td>Batch reads, then writes</td></tr>
+        <tr><td>Creating functions in hot loops</td><td>Define outside or reuse</td></tr>
+        <tr><td><code class="inline">+=</code> on strings in tight loop</td><td>Array + <code class="inline">join</code> for many parts</td></tr>
+        <tr><td>Deep clone everywhere</td><td>Shallow copy + targeted updates</td></tr>
+        <tr><td>Sync JSON parse of huge payload</td><td>Stream, chunk, or Web Worker</td></tr>
+        <tr><td>Blocking main thread</td><td><code class="inline">async</code>, Workers, <code class="inline">requestIdleCallback</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>// String building
+let s = &quot;&quot;;
+for (let i = 0; i &lt; 10000; i++) s += i;  // slow — many allocations
+
+const parts = [];
+for (let i = 0; i &lt; 10000; i++) parts.push(i);
+const fast = parts.join(&quot;&quot;);</pre></div>
+        <h3>6.3. Micro-optimizations that rarely matter</h3>
+        <ul><li><code class="inline">for</code> vs <code class="inline">forEach</code> vs <code class="inline">for...of</code> on small arrays — readability first.</li><li>Manual loop unrolling — engine often does it.</li><li>Avoiding <code class="inline">try/catch</code> in inner loops — optimize only if profiler shows cost.</li>
+          <li>Focus on <strong>algorithm choice</strong> (O(n²) → O(n)), <strong>network</strong>, and <strong>bundle size</strong> before micro-tuning.</li>
+        </ul>
+
+        <h3 id="6-performance-l5"><span class="chip tier-l5">L5 Deep Dive</span></h3>
+        <h3>6.4. How engines optimize (V8 basics)</h3>
+        <ul>
+          <li>Modern engines (V8 in Chrome/Node) use:</li>
+          <li><strong>Parsing</strong> → <strong>AST</strong> → <strong>bytecode</strong> (Ignition) → <strong>optimized machine code</strong> (TurboFan) for hot functions.</li><li><strong>Inline caching</strong> — speed up repeated property access shapes.</li><li><strong>Hidden classes</strong> — objects with same property order/layout optimize better.</li></ul>
+        <div class="code"><pre>// Good — consistent shape
+function Point(x, y) {
+  this.x = x;
+  this.y = y;
+}
+
+// Bad for IC — adding properties in random order on different objects
+const a = { x: 1 };
+const b = { y: 2, x: 1 };</pre></div>
+        <ul>
+          <li>Details are engine-specific — <strong>measure</strong>, don&#x27;t guess.</li>
+        </ul>
+      </section>
+      <section id="7-strict-mode">
+        <div class="heading-with-levels">
+          <h2>7. Strict mode</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+
+        <h3 id="7-strict-mode-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li><strong><code class="inline">&quot;use strict&quot;</code></strong> enables stricter parsing and runtime errors — catches silent bugs.</li>
+        </ul>
+        <h3>7.1. How to enable</h3>
+        <div class="code"><pre>&quot;use strict&quot;;
+
+function strictFn() {
+  // whole function strict
+}
+
+// ES modules are strict by default</pre></div>
+        <h3>7.2. Why use strict</h3>
+        <ul><li>Safer refactoring — typos throw instead of creating globals.</li><li>Required baseline for <strong>classes</strong> and <strong>modules</strong>.</li><li>Matches modern tooling defaults (bundlers, TypeScript emit).</li>
+          <li>Always write new code in <strong>strict</strong> contexts (modules or <code class="inline">&quot;use strict&quot;</code>).</li>
+        </ul>
+
+        <h3 id="7-strict-mode-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>7.3. Behavior changes</h3>
+        <table>
+        <thead>
+        <tr><th>Sloppy</th><th>Strict</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Assign to undeclared variable → global</td><td><code class="inline">ReferenceError</code></td></tr>
+        <tr><td>Duplicate param names allowed</td><td><code class="inline">SyntaxError</code></td></tr>
+        <tr><td><code class="inline">delete</code> undeletable prop → silent false</td><td><code class="inline">TypeError</code> in some cases</td></tr>
+        <tr><td><code class="inline">this</code> in plain call → <code class="inline">window</code></td><td><code class="inline">undefined</code></td></tr>
+        <tr><td><code class="inline">with</code> statement</td><td>SyntaxError</td></tr>
+        <tr><td>Octal literals <code class="inline">012</code></td><td>SyntaxError (use <code class="inline">0o12</code>)</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>&quot;use strict&quot;;
+
+function show() {
+  console.log(this);  // undefined — not window
+}
+
+show();
+
+// mistype = 1;  // ReferenceError</pre></div>
+      </section>
+      <section id="8-common-questions">
+        <div class="heading-with-levels">
+          <h2>8. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+            <span class="tier l4">L4</span>
+          </div>
+        </div>
+
+        <h3 id="8-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>8.1. What is the difference between debounce and throttle?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>Debounce</strong> waits for a <strong>pause</strong> in events then runs once. <strong>Throttle</strong> runs at most <strong>once per time window</strong> during continuous events.</li>
+        </ul>
+        <h3>8.2. What does strict mode do?</h3>
+        <ul>
+          <li><strong>A:</strong> Turns silent errors into <strong>exceptions</strong>, disables some unsafe features (<code class="inline">with</code>, implicit globals), and makes <code class="inline">this</code> <strong><code class="inline">undefined</code></strong> in plain function calls.</li>
+        </ul>
+        <h3>8.3. What is memoization?</h3>
+        <ul>
+          <li><strong>A:</strong> Caching a function&#x27;s <strong>return values</strong> by input arguments to avoid recomputing expensive work. Trade memory for speed.</li>
+        </ul>
+
+        <h3 id="8-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>8.4. What is an execution context?</h3>
+        <ul>
+          <li><strong>A:</strong> The environment for running a piece of JS — includes variable bindings, <code class="inline">this</code>, and the outer scope link. Created for global/module code and each function call.</li>
+        </ul>
+        <h3>8.5. What is the difference between the call stack and the heap?</h3>
+        <ul>
+          <li><strong>A:</strong> The <strong>call stack</strong> tracks active function contexts (LIFO). The <strong>heap</strong> stores objects and other dynamic data referenced from the stack.</li>
+        </ul>
+        <h3>8.6. What causes memory leaks in JS?</h3>
+        <ul>
+          <li><strong>A:</strong> Common causes: accidental globals, uncleared timers/listeners, closures holding large unused data, and detached DOM nodes still referenced from JS.</li>
+        </ul>
+        <h3>8.7. What is a Proxy?</h3>
+        <ul>
+          <li><strong>A:</strong> A wrapper that intercepts operations on an object (get, set, etc.) via <strong>traps</strong>. Used in frameworks for reactivity and validation.</li>
+        </ul>
+        <h3>8.8. What is currying?</h3>
+        <ul>
+          <li><strong>A:</strong> Transforming a multi-argument function into a chain of functions each taking one (or fewer) arguments — enables partial application.</li>
+        </ul>
+
+        <h3 id="8-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3>8.9. How does garbage collection work in JavaScript?</h3>
+        <ul>
+          <li><strong>A:</strong> Engines trace <strong>reachable</strong> objects from roots and reclaim unreachable memory. You do not manually free memory.</li>
+        </ul>
+        <h3>8.10. When should you optimize JavaScript performance?</h3>
+        <ul>
+          <li><strong>A:</strong> After <strong>measuring</strong> a real bottleneck — hot loops, large data, UI jank, or slow API paths. Prefer better algorithms and architecture before micro-optimizations.</li>
+        </ul>
+      </section>
+      <footer>HTML note for JavaScript File 22. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

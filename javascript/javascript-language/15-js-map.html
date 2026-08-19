@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>15. Map - JavaScript Notes</title>
+  </head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-map">1. Map</a>
+        <a href="#2-common-questions">2. Common questions</a>
+        <a href="./21-js-es6-plus-animation.html">Animation visualizer</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">15. Map</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>15. Map</h1>
+        <p class="subtitle">File 15 — any-value keys, vs object, WeakMap.</p>
+        <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
+      </header>
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>A <strong><code class="inline">Map</code></strong> is a key/value collection. Unlike objects (File 12), keys can be <strong>any value</strong> (objects, functions, numbers), not only strings/symbols.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <ul>
+          <li>Interactive visualizer: <a href="./21-js-es6-plus-animation.html">21-js-es6-plus-animation.html</a> (Map/Set scenarios).</li>
+        </ul>
+      </section>
+      <section id="1-map">
+        <div class="heading-with-levels">
+          <h2>1. Map</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="1-map-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Any value</strong> as key, <strong>insertion order</strong>, <strong><code class="inline">size</code></strong> property:</li>
+        </ul>
+        <div class="code"><pre>const map = new Map();
+
+map.set("name", "Bharat");
+map.set(42, "number key");
+map.set({ id: 1 }, "object key");
+
+map.get("name");     // "Bharat"
+map.has(42);         // true
+map.size;            // 3
+
+map.delete(42);
+map.clear();         // remove all</pre></div>
+        <h3 id="1-map-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>1.1. Iterate</h3>
+        <div class="code"><pre>const userMap = new Map([["a", 1], ["b", 2]]);
+
+for (const [key, value] of userMap) {
+  console.log(key, value);
+}
+
+userMap.keys();
+userMap.values();
+userMap.entries();</pre></div>
+        <table>
+        <thead>
+        <tr><th>Use <code class="inline">Map</code></th><th>Use object</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Non-string keys</td><td>JSON-serializable string keys</td></tr>
+        <tr><td>Frequent add/delete</td><td>Record / DTO shape</td></tr>
+        <tr><td>Need <code class="inline">.size</code></td><td>Prototype methods OK (<code class="inline">toString</code>)</td></tr>
+        </tbody>
+        </table>
+        <ul>
+          <li>Convert:</li>
+        </ul>
+        <div class="code"><pre>const obj = Object.fromEntries(map);
+const map2 = new Map(Object.entries(obj));</pre></div>
+        <h3 id="1-map-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>1.2. WeakMap</h3>
+        <ul>
+          <li>Keys must be <strong>objects</strong>. Entries can be <strong>garbage-collected</strong> when no other references exist. Not iterable; no <code class="inline">size</code>.</li>
+        </ul>
+        <div class="code"><pre>const wm = new WeakMap();
+const obj = { id: 1 };
+
+wm.set(obj, "metadata");
+wm.get(obj);  // "metadata"
+
+// When obj is dropped, entry may disappear</pre></div>
+        <table>
+        <thead>
+        <tr><th></th><th>Map / Set</th><th>WeakMap / WeakSet</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Keys / values</td><td>Any / any</td><td>Objects only</td></tr>
+        <tr><td>Iterable</td><td>Yes</td><td>No</td></tr>
+        <tr><td><code class="inline">size</code></td><td>Yes (Map/Set)</td><td>No</td></tr>
+        <tr><td>GC</td><td>Holds strongly</td><td>Weak — good for caches attached to DOM nodes</td></tr>
+        </tbody>
+        </table>
+        <ul>
+          <li>Use <strong>WeakMap</strong> for private metadata on objects without preventing GC (File 22). <strong>WeakSet</strong> is File 14.</li>
+        </ul>
+      </section>
+      <section id="2-common-questions">
+        <div class="heading-with-levels">
+          <h2>2. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="2-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>2.1. When should I use Map instead of a plain object?</h3>
+        <ul>
+          <li><strong>A:</strong> When keys are <strong>not strings</strong>, you need <strong>insertion order</strong> with non-integer keys, frequent <strong>size</strong> checks, or frequent add/delete without prototype noise.</li>
+        </ul>
+        <h3 id="2-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.2. What is the difference between WeakMap and Map?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>WeakMap</strong> keys must be objects, holds <strong>weak</strong> references (GC-friendly), is <strong>not iterable</strong>, and has <strong>no <code class="inline">size</code></strong>. <strong>Map</strong> holds keys strongly and supports full iteration.</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for JavaScript File 15. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>
