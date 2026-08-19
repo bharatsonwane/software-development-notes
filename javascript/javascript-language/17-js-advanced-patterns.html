@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>16. Advanced Patterns - JavaScript Notes</title>
+  <title>17. Advanced Patterns - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -25,7 +25,7 @@
         <a href="#6-performance">6. Performance</a>
         <a href="#7-strict-mode">7. Strict mode</a>
         <a href="#8-common-questions">8. Common questions</a>
-        <a href="./16-js-advanced-patterns-animation.html">Animation visualizer</a>
+        <a href="./17-js-advanced-patterns-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -38,20 +38,20 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">16. Advanced Patterns</span>
+        <span aria-current="page">17. Advanced Patterns</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>16. Advanced Patterns</h1>
-        <p class="subtitle">File 16 — internals, patterns, and performance.</p>
+        <h1>17. Advanced Patterns</h1>
+        <p class="subtitle">File 17 — internals, patterns, and performance.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li>This chapter covers <strong>how JS runs code in memory</strong>, <strong>advanced object APIs</strong>, <strong>functional utilities</strong>, and <strong>practical performance habits</strong>. It builds on scope (File 06), closures (File 12), and modern syntax (File 15).</li>
+          <li>This chapter covers <strong>how JS runs code in memory</strong>, <strong>advanced object APIs</strong>, <strong>functional utilities</strong>, and <strong>practical performance habits</strong>. It builds on scope (File 07), closures (File 13), and modern syntax (File 16).</li>
           <li>You do not need to micro-optimize every line — but understanding <strong>execution context</strong>, <strong>GC</strong>, and patterns like <strong>debounce</strong> helps you write reliable production code and debug hard issues.</li>
           <li><strong>Default rule today:</strong> modules and <strong>strict mode</strong> by default; prefer <strong>immutability</strong> for predictable state; use <strong>Proxy</strong> sparingly (frameworks/libraries); <strong>measure</strong> before optimizing hot paths.</li>
-          <li>Interactive visualizer: open <a href="./16-js-advanced-patterns-animation.html">16-js-advanced-patterns-animation.html</a> in a browser — debounce/throttle timelines, currying, memoization, revealing module, compose/pipe (Run / Step).</li>
+          <li>Interactive visualizer: open <a href="./17-js-advanced-patterns-animation.html">17-js-advanced-patterns-animation.html</a> in a browser — debounce/throttle timelines, currying, memoization, revealing module, compose/pipe (Run / Step).</li>
         </ul>
       </section>
       <section id="1-execution-context">
@@ -81,10 +81,10 @@
         </table>
         <ul>
           <li>Each context has:</li>
-          <li><strong>Variable environment</strong> — <code class="inline">var</code>, function declarations, <code class="inline">let</code>/<code class="inline">const</code> bindings (in modern spec: lexical environment).</li><li><strong><code class="inline">this</code> binding</strong> — depends on call type (File 12).</li><li><strong>Outer reference</strong> — link to parent lexical environment (scope chain).</li></ul>
+          <li><strong>Variable environment</strong> — <code class="inline">var</code>, function declarations, <code class="inline">let</code>/<code class="inline">const</code> bindings (in modern spec: lexical environment).</li><li><strong><code class="inline">this</code> binding</strong> — depends on call type (File 13).</li><li><strong>Outer reference</strong> — link to parent lexical environment (scope chain).</li></ul>
         <h3>1.2. Call stack</h3>
         <ul>
-          <li>Contexts are managed on the <strong>call stack</strong> (File 14):</li>
+          <li>Contexts are managed on the <strong>call stack</strong> (File 15):</li>
         </ul>
         <div class="code"><pre>function first() {
   second();
@@ -109,7 +109,7 @@ first();
         <ul>
           <li>When a context is created, JS runs two phases:</li>
           <li><strong>1. Creation (compile) phase</strong></li>
-          <li>Create variable bindings (hoisting — File 06).</li><li>Set up scope chain.</li><li>Determine <code class="inline">this</code>.</li>
+          <li>Create variable bindings (hoisting — File 07).</li><li>Set up scope chain.</li><li>Determine <code class="inline">this</code>.</li>
           <li><strong>2. Execution phase</strong></li>
           <li>Run code line by line.</li><li>Assign values.</li><li>Execute function bodies on call.</li></ul>
         <div class="code"><pre>console.log(a);  // undefined — var hoisted
@@ -120,7 +120,7 @@ console.log(b);  // ReferenceError
 let b = 5;</pre></div>
         <h3>1.4. Lexical environment</h3>
         <ul>
-          <li><strong>Lexical environment</strong> = record of identifiers + reference to <strong>outer</strong> environment. Closures keep outer environments alive (File 12):</li>
+          <li><strong>Lexical environment</strong> = record of identifiers + reference to <strong>outer</strong> environment. Closures keep outer environments alive (File 13):</li>
         </ul>
         <div class="code"><pre>function outer() {
   const x = 10;
@@ -188,7 +188,7 @@ element.addEventListener(&quot;click&quot;, handler);
 }</pre></div>
         <ul>
           <li><strong>Detached DOM nodes</strong> — JS still references removed DOM elements.</li>
-          <li><strong>WeakMap / WeakSet</strong> (File 15) — attach metadata without preventing GC.</li>
+          <li><strong>WeakMap / WeakSet</strong> (File 16) — attach metadata without preventing GC.</li>
         </ul>
 
         <h3 id="2-memory-garbage-collection-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
@@ -386,8 +386,8 @@ pipe(double, increment)(5);  // 11</pre></div>
         <tr><th>Pattern</th><th>Idea</th></tr>
         </thead>
         <tbody>
-        <tr><td>Map/filter/reduce</td><td>Transform collections (File 10)</td></tr>
-        <tr><td>Factory functions</td><td>Return configured objects (File 12)</td></tr>
+        <tr><td>Map/filter/reduce</td><td>Transform collections (File 11)</td></tr>
+        <tr><td>Factory functions</td><td>Return configured objects (File 13)</td></tr>
         <tr><td>Middleware</td><td><code class="inline">(next) =&gt; (action) =&gt; ...</code></td></tr>
         <tr><td>Decorators</td><td>Wrap behavior (stage 3 decorators in TS/legacy Babel)</td></tr>
         </tbody>
@@ -484,7 +484,7 @@ init();  // silent — returns same result</pre></div>
         <h3 id="5-utility-patterns-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>5.4. Memoization</h3>
         <ul>
-          <li>Cache function results by arguments (File 12):</li>
+          <li>Cache function results by arguments (File 13):</li>
         </ul>
         <div class="code"><pre>function memoize(fn) {
   const cache = new Map();
@@ -673,7 +673,7 @@ show();
           <li><strong>A:</strong> After <strong>measuring</strong> a real bottleneck — hot loops, large data, UI jank, or slow API paths. Prefer better algorithms and architecture before micro-optimizations.</li>
         </ul>
       </section>
-      <footer>HTML note for JavaScript File 16. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 17. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

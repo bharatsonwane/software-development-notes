@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>14. Error Handling &amp; Timers - JavaScript Notes</title>
+  <title>18. Error Handling - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -18,9 +18,8 @@
         <a href="./javascript-language.html">← JS Language</a>
         <a href="#intro">Intro</a>
         <a href="#1-error-handling">1. Error handling</a>
-        <a href="#2-timers">2. Timers</a>
-        <a href="#3-common-questions">3. Common questions</a>
-        <a href="./17-js-error-timers-animation.html">Animation visualizer</a>
+        <a href="#2-common-questions">2. Common questions</a>
+        <a href="./18-js-error-handling-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -33,21 +32,21 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">14. Error Handling &amp; Timers</span>
+        <span aria-current="page">18. Error Handling</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>14. Error Handling &amp; Timers</h1>
-        <p class="subtitle">File 17 — try/catch/finally, custom errors, setTimeout, setInterval, rAF.</p>
+        <h1>18. Error Handling</h1>
+        <p class="subtitle">File 18 — try/catch/finally, throw, custom errors.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
         <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
-          <li>Builds on async (File 14) and control flow (File 04).</li>
+          <li>Builds on control flow (File 04) and async (File 15). Timers are File 06.</li>
         </ul>
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li>Interactive visualizer: open <a href="./17-js-error-timers-animation.html">17-js-error-timers-animation.html</a> in a browser — try/catch/finally, throw, nested rethrow, Error object, setTimeout/setInterval, clearTimeout (Run / Step).</li>
+          <li>Interactive visualizer: open <a href="./18-js-error-handling-animation.html">18-js-error-handling-animation.html</a> in a browser — try/catch/finally, throw, nested rethrow, Error object (Run / Step).</li>
         </ul>
       </section>
       <section id="1-error-handling">
@@ -96,7 +95,7 @@ function saveUser(user) {
   if (!user.email) throw new ValidationError(&quot;Email required&quot;, &quot;email&quot;);
 }</pre></div>
         <ul>
-          <li>Async errors use <strong><code class="inline">try/catch</code> with <code class="inline">await</code></strong> or <strong><code class="inline">.catch()</code> on Promises</strong> (File 14).</li>
+          <li>Async errors use <strong><code class="inline">try/catch</code> with <code class="inline">await</code></strong> or <strong><code class="inline">.catch()</code> on Promises</strong> (File 15).</li>
         </ul>
 
         <h3 id="1-error-handling-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
@@ -114,9 +113,9 @@ function saveUser(user) {
           <li>Built-in types: <strong><code class="inline">Error</code></strong>, <strong><code class="inline">TypeError</code></strong>, <strong><code class="inline">ReferenceError</code></strong>, <strong><code class="inline">SyntaxError</code></strong>, <strong><code class="inline">RangeError</code></strong>.</li>
         </ul>
       </section>
-      <section id="2-timers">
+      <section id="2-common-questions">
         <div class="heading-with-levels">
-          <h2>2. Timers</h2>
+          <h2>2. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
@@ -124,86 +123,29 @@ function saveUser(user) {
           </div>
         </div>
 
-        <h3 id="2-timers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. setTimeout and clearTimeout</h3>
-        <div class="code"><pre>const id = setTimeout(() =&gt; {
-  console.log(&quot;After 1 second&quot;);
-}, 1000);
-
-clearTimeout(id);  // cancel before it runs</pre></div>
-        <ul>
-          <li><code class="inline">setTimeout(fn, 0)</code> schedules after current stack + microtasks (File 14 — event loop).</li>
-        </ul>
-
-        <h3 id="2-timers-l2"><span class="chip tier-l2">L2 Practical</span></h3>
-        <h3>2.2. setInterval and clearInterval</h3>
-        <div class="code"><pre>let count = 0;
-const id = setInterval(() =&gt; {
-  count++;
-  console.log(count);
-  if (count &gt;= 5) clearInterval(id);
-}, 500);</pre></div>
-        <ul>
-          <li>Always <strong><code class="inline">clearInterval</code></strong> on unmount or when done — prevents leaks (File 16).</li>
-        </ul>
-
-        <h3 id="2-timers-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
-        <h3>2.3. requestAnimationFrame</h3>
-        <ul>
-          <li>For <strong>smooth animation</strong> synced to display refresh (~60fps):</li>
-        </ul>
-        <div class="code"><pre>function animate() {
-  // update positions
-  requestAnimationFrame(animate);
-}
-requestAnimationFrame(animate);
-
-// cancel: cancelAnimationFrame(id);</pre></div>
-        <ul>
-          <li>Prefer rAF over <code class="inline">setInterval</code> for visual updates.</li>
-        </ul>
-      </section>
-      <section id="3-common-questions">
-        <div class="heading-with-levels">
-          <h2>3. Common questions</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
-          </div>
-        </div>
-
-        <h3 id="3-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. What is the difference between throw and return?</h3>
+        <h3 id="2-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. What is the difference between throw and return?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">throw</code></strong> signals <strong>exceptional failure</strong> — jumps to nearest <strong><code class="inline">catch</code></strong>. <strong><code class="inline">return</code></strong> exits normally with a value.</li>
         </ul>
-        <h3>3.2. What is the difference between setTimeout and setInterval?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">setTimeout</code></strong> runs <strong>once</strong> after delay. <strong><code class="inline">setInterval</code></strong> repeats until cleared.</li>
-        </ul>
 
-        <h3 id="3-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
-        <h3>3.3. Should I throw strings or Error objects?</h3>
+        <h3 id="2-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3>2.2. Should I throw strings or Error objects?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">Error</code> objects</strong> (or subclasses) — better debugging with <code class="inline">.stack</code>.</li>
         </ul>
-        <h3>3.4. Why use requestAnimationFrame?</h3>
+        <h3>2.3. How do Promises handle errors vs try/catch?</h3>
         <ul>
-          <li><strong>A:</strong> Batches visual updates with the browser <strong>repaint cycle</strong> — smoother than fixed <code class="inline">setInterval</code>.</li>
-        </ul>
-        <h3>3.5. How do Promises handle errors vs try/catch?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">async/await</code></strong> uses <strong><code class="inline">try/catch</code></strong>. Promises use <strong><code class="inline">.catch()</code></strong> or second argument to <strong><code class="inline">.then()</code></strong> (File 14).</li>
+          <li><strong>A:</strong> <strong><code class="inline">async/await</code></strong> uses <strong><code class="inline">try/catch</code></strong>. Promises use <strong><code class="inline">.catch()</code></strong> or second argument to <strong><code class="inline">.then()</code></strong> (File 15).</li>
         </ul>
 
-        <h3 id="3-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
-        <h3>3.6. Does finally run if try returns?</h3>
+        <h3 id="2-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>2.4. Does finally run if try returns?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> — <code class="inline">finally</code> runs before the return completes.</li>
         </ul>
       </section>
-      <footer>HTML note for JavaScript File 17. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 18. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
