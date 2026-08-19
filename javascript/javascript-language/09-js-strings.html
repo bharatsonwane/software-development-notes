@@ -46,7 +46,7 @@
         </ul>
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li>Interactive visualizer: open <a href="./09-js-strings-animation.html">09-js-strings-animation.html</a> in a browser — string index/length, slice vs substring, includes/indexOf, padStart (Run / Step). The same visualizer also has Number and Date scenarios (Files 10, 16).</li>
+          <li>Interactive visualizer: open <a href="./09-js-strings-animation.html">09-js-strings-animation.html</a> in a browser — string index/length, slice vs substring, includes/indexOf, padStart (Run / Step). The same visualizer also has Number and Date scenarios (Files 11, 17).</li>
         </ul>
       </section>
       <section id="1-strings">
@@ -99,7 +99,7 @@ s.concat(&quot;!&quot;);               // prefer + or template literals
 const user = &quot;Ada&quot;;
 highlight`User: ${user}`;  // &quot;User: &lt;b&gt;Ada&lt;/b&gt;&quot;</pre></div>
         <ul>
-          <li>File 21 covers tagged templates in ES6+ context.</li>
+          <li>File 22 covers tagged templates in ES6+ context.</li>
         </ul>
 
         <h3 id="1-strings-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
@@ -118,6 +118,18 @@ String.fromCodePoint(128512);   // &quot;😀&quot;</pre></div>
         <div class="code"><pre>let s = &quot;hello&quot;;
 s.toUpperCase();  // &quot;HELLO&quot;
 console.log(s);     // still &quot;hello&quot;</pre></div>
+        <h3>1.6. Locale, normalize, well-formed</h3>
+        <div class="code"><pre>&quot;a&quot;.localeCompare(&quot;b&quot;);           // negative — a before b
+&quot;ä&quot;.localeCompare(&quot;z&quot;, &quot;de&quot;);
+
+&quot;é&quot;.normalize(&quot;NFC&quot;) === &quot;\u00e9&quot;;  // composed
+&quot;e\u0301&quot;.normalize(&quot;NFC&quot;);         // &quot;é&quot; — same after NFC
+
+&quot;\uD800&quot;.isWellFormed();            // false — lone surrogate
+&quot;hi&quot;.toWellFormed();                // replaces unpaired surrogates</pre></div>
+        <ul>
+          <li>Pattern matching with <strong>regular expressions</strong> is File 10.</li>
+        </ul>
       </section>
       <section id="2-common-questions">
         <div class="heading-with-levels">
@@ -142,6 +154,10 @@ console.log(s);     // still &quot;hello&quot;</pre></div>
         <h3>2.3. Why does <code class="inline">&quot;😀&quot;.length</code> equal 2?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">.length</code> counts UTF-16 code units; emoji use surrogate pairs. Use spread or <code class="inline">for...of</code> for code points.</li>
+        </ul>
+        <h3>2.4. How do I search or replace with a pattern?</h3>
+        <ul>
+          <li><strong>A:</strong> File 10 — <code class="inline">RegExp</code>, flags, <code class="inline">match</code>/<code class="inline">matchAll</code>/<code class="inline">replace</code>.</li>
         </ul>
       </section>
 

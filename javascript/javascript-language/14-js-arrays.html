@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>13. Arrays - JavaScript Notes</title>
+  <title>14. Arrays - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -22,7 +22,7 @@
         <a href="#3-iteration-transformation">3. Iteration &amp; transformation</a>
         <a href="#4-spread-copy">4. Spread &amp; copy</a>
         <a href="#5-common-questions">5. Common questions</a>
-        <a href="./13-js-arrays-animation.html">Animation visualizer</a>
+        <a href="./14-js-arrays-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -35,11 +35,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">13. Arrays</span>
+        <span aria-current="page">14. Arrays</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>13. Arrays</h1>
-        <p class="subtitle">File 13 — working with lists of values.</p>
+        <h1>14. Arrays</h1>
+        <p class="subtitle">File 14 — working with lists of values.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
@@ -51,7 +51,7 @@
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
           <li><strong>Default rule today:</strong> use <strong><code class="inline">for...of</code></strong> or <strong><code class="inline">map</code>/<code class="inline">filter</code>/<code class="inline">reduce</code></strong> instead of manual index loops when possible; use <strong><code class="inline">spread</code></strong> or <strong><code class="inline">slice()</code></strong> to copy before mutating shared data; prefer <strong><code class="inline">find</code>/<code class="inline">some</code>/<code class="inline">every</code></strong> over manual search loops.</li>
-          <li>Interactive visualizer: open <a href="./13-js-arrays-animation.html">13-js-arrays-animation.html</a> in a browser — index/length, push/pop/shift/unshift, map/filter, splice vs slice, spread copy (Run / Step).</li>
+          <li>Interactive visualizer: open <a href="./14-js-arrays-animation.html">14-js-arrays-animation.html</a> in a browser — index/length, push/pop/shift/unshift, map/filter, splice vs slice, spread copy (Run / Step).</li>
         </ul>
       </section>
       <section id="1-creating-accessing">
@@ -215,9 +215,11 @@ arr.splice(2, 1, 99);       // arr is [1, 2, 99, 4, 5]</pre></div>
         </tbody>
         </table>
         <div class="code"><pre>const original = [3, 1, 2];
-const sorted = [...original].sort((a, b) =&gt; a - b);
-console.log(original);  // [3, 1, 2] — unchanged
-console.log(sorted);    // [1, 2, 3]</pre></div>
+const sorted = original.toSorted((a, b) =&gt; a - b);
+const reversed = original.toReversed();
+const spliced = original.toSpliced(1, 1, 9);  // copy with splice
+const replaced = original.with(0, 99);        // copy with index 0 = 99
+console.log(original);  // [3, 1, 2] — unchanged</pre></div>
       </section>
       <section id="3-iteration-transformation">
         <div class="heading-with-levels">
@@ -335,6 +337,8 @@ users.findLast((u) =&gt; u.active);   // { id: 3, active: true }</pre></div>
         <tr><td><code class="inline">flat(depth?)</code></td><td>Flatten nested arrays</td></tr>
         <tr><td><code class="inline">flatMap(fn)</code></td><td><code class="inline">map</code> then <code class="inline">flat(1)</code></td></tr>
         <tr><td><code class="inline">join(separator?)</code></td><td>String from elements</td></tr>
+        <tr><td><code class="inline">with(index, value)</code></td><td>Copy with one index changed (ES2023+)</td></tr>
+        <tr><td><code class="inline">toSorted</code> / <code class="inline">toReversed</code> / <code class="inline">toSpliced</code></td><td>Non-mutating sort / reverse / splice</td></tr>
         </tbody>
         </table>
         <div class="code"><pre>[1, 2, 3].includes(2);           // true
@@ -344,7 +348,22 @@ users.findLast((u) =&gt; u.active);   // { id: 3, active: true }</pre></div>
 [1, 2, 3, 4].slice(1, 3);        // [2, 3]
 [1, [2, 3]].flat();              // [1, 2, 3]
 
-[1, 2, 3].join(&quot;-&quot;);             // &quot;1-2-3&quot;</pre></div>
+[1, 2, 3].join(&quot;-&quot;);             // &quot;1-2-3&quot;
+[1, 2, 3].with(1, 9);            // [1, 9, 3]</pre></div>
+        <h3>3.9. groupBy and fromAsync</h3>
+        <div class="code"><pre>const rows = [
+  { type: &quot;a&quot;, n: 1 },
+  { type: &quot;b&quot;, n: 2 },
+  { type: &quot;a&quot;, n: 3 },
+];
+Object.groupBy(rows, (r) =&gt; r.type);
+// { a: [{type:&quot;a&quot;,n:1}, {type:&quot;a&quot;,n:3}], b: [{type:&quot;b&quot;,n:2}] }
+
+const ids = [1, 2, 3];
+const users = await Array.fromAsync(ids, (id) =&gt; fetchUser(id));</pre></div>
+        <ul>
+          <li><code class="inline">Map.groupBy</code> is the same idea with <strong>any</strong> key type (File 16).</li>
+        </ul>
       </section>
       <section id="4-spread-copy">
         <div class="heading-with-levels">
@@ -388,7 +407,7 @@ const withMid = [...arr, 4, 5];    // [2, 3, 4, 5]</pre></div>
         </ul>
         <h3>4.3. Destructuring arrays (brief)</h3>
         <ul>
-          <li>Pull elements into variables (File 12 goes deeper):</li>
+          <li>Pull elements into variables (File 13 goes deeper):</li>
         </ul>
         <div class="code"><pre>const [first, second, ...rest] = [1, 2, 3, 4];
 // first=1, second=2, rest=[3, 4]
@@ -465,7 +484,7 @@ console.log(original[1].x); // 99 — nested object shared!</pre></div>
           <li><strong>A:</strong> An <strong>initial accumulator</strong> value. Always provide one for empty arrays and when the result type differs from elements (e.g. summing to <code class="inline">0</code>, building <code class="inline">{}</code>).</li>
         </ul>
       </section>
-      <footer>HTML note for JavaScript File 13. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 14. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

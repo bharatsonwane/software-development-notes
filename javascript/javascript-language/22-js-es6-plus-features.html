@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>21. ES6+ Features - JavaScript Notes</title>
+  <title>22. ES6+ Features - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -23,7 +23,7 @@
         <a href="#4-generators">4. Generators</a>
         <a href="#5-modern-syntax">5. Modern syntax</a>
         <a href="#6-common-questions">6. Common questions</a>
-        <a href="./21-js-es6-plus-animation.html">Animation visualizer</a>
+        <a href="./22-js-es6-plus-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -36,22 +36,22 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">21. ES6+ Features</span>
+        <span aria-current="page">22. ES6+ Features</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>21. ES6+ Features</h1>
-        <p class="subtitle">File 21 — modern JavaScript language features.</p>
+        <h1>22. ES6+ Features</h1>
+        <p class="subtitle">File 22 — modern JavaScript language features.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
         <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
-          <li>ES6 (2015) and later releases added <strong>modules</strong>, <strong><code class="inline">Symbol</code></strong>, <strong>iterators/generators</strong>, and syntax sugar that is now standard in modern codebases. <strong><code class="inline">Set</code></strong> is File 14; <strong><code class="inline">Map</code></strong> is File 15.</li>
+          <li>ES6 (2015) and later releases added <strong>modules</strong>, <strong><code class="inline">Symbol</code></strong>, <strong>iterators/generators</strong>, and syntax sugar that is now standard in modern codebases. <strong><code class="inline">Set</code></strong> is File 15; <strong><code class="inline">Map</code></strong> is File 16.</li>
         </ul>
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li><strong>Default rule today:</strong> use <strong>ES modules</strong> (<code class="inline">import</code>/<code class="inline">export</code>), <strong><code class="inline">Map</code>/<code class="inline">Set</code></strong> (Files 14, 15) when keys or uniqueness matter, <strong><code class="inline">for...of</code></strong> on iterables, <strong><code class="inline">?.</code></strong> and <strong><code class="inline">??</code></strong> for safe access, and <strong>generators</strong> only when lazy sequences or custom iteration pay off.</li>
-          <li>Interactive visualizer: open <a href="./21-js-es6-plus-animation.html">21-js-es6-plus-animation.html</a> in a browser — destructuring, rest/spread, template literals, optional chaining, nullish coalescing, modules, Map/Set (Run / Step).</li>
+          <li><strong>Default rule today:</strong> use <strong>ES modules</strong> (<code class="inline">import</code>/<code class="inline">export</code>), <strong><code class="inline">Map</code></strong> (File 16) and <strong><code class="inline">Set</code></strong> (File 15) when keys or uniqueness matter, <strong><code class="inline">for...of</code></strong> on iterables, <strong><code class="inline">?.</code></strong> and <strong><code class="inline">??</code></strong> for safe access, and <strong>generators</strong> only when lazy sequences or custom iteration pay off.</li>
+          <li>Interactive visualizer: open <a href="./22-js-es6-plus-animation.html">22-js-es6-plus-animation.html</a> in a browser — destructuring, rest/spread, template literals, optional chaining, nullish coalescing, modules, Map/Set (Run / Step).</li>
         </ul>
       </section>
       <section id="1-modules-esm">
@@ -163,7 +163,7 @@ export { default as User } from &quot;./user.js&quot;;</pre></div>
   module.renderChart();
 });</pre></div>
         <ul>
-          <li>Use for <strong>code splitting</strong>, lazy routes, conditional features (File 20):</li>
+          <li>Use for <strong>code splitting</strong>, lazy routes, conditional features (File 21):</li>
         </ul>
         <div class="code"><pre>if (featureFlags.newEditor) {
   const { Editor } = await import(&quot;./Editor.js&quot;);
@@ -172,6 +172,25 @@ export { default as User } from &quot;./user.js&quot;;</pre></div>
         <ul>
           <li><code class="inline">import()</code> does not hoist — runs when called.</li>
         </ul>
+        <h3>1.6. Live bindings, cycles, <code class="inline">import.meta</code></h3>
+        <ul>
+          <li>ESM exports are <strong>live bindings</strong> — the importer sees later assignments to the export, not a snapshot.</li>
+        </ul>
+        <div class="code"><pre>// counter.js
+export let n = 0;
+export function inc() { n += 1; }
+
+// app.js
+import { n, inc } from &quot;./counter.js&quot;;
+inc();
+console.log(n);  // 1 — not a copied 0</pre></div>
+        <ul>
+          <li><strong>Circular imports</strong> — A imports B while B imports A. ESM can work if you only <strong>use</strong> the other module inside functions (after both finish init). Using a binding at top level during the cycle hits TDZ.</li>
+        </ul>
+        <div class="code"><pre>console.log(import.meta.url);  // this module&#x27;s URL
+import.meta.env;               // bundler-specific (Vite)</pre></div>
+        <h3>1.7. Import attributes (JSON modules)</h3>
+        <div class="code"><pre>import data from &quot;./config.json&quot; with { type: &quot;json&quot; };</pre></div>
       </section>
             <section id="2-collections">
         <div class="heading-with-levels">
@@ -182,7 +201,7 @@ export { default as User } from &quot;./user.js&quot;;</pre></div>
         </div>
         <h3 id="2-collections-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li><strong><code class="inline">Set</code></strong> (unique values) is File 14. <strong><code class="inline">Map</code></strong> (any-value keys) is File 15. <strong>WeakSet</strong> / <strong>WeakMap</strong> are L3 in those files.</li>
+          <li><strong><code class="inline">Set</code></strong> (unique values) is File 15. <strong><code class="inline">Map</code></strong> (any-value keys) is File 16. <strong>WeakSet</strong> / <strong>WeakMap</strong> are L3 in those files.</li>
         </ul>
       </section>
       <section id="3-symbol-iterators">
@@ -278,6 +297,12 @@ const iterator = str[Symbol.iterator]();
 iterator.next();  // { value: &quot;h&quot;, done: false }
 iterator.next();  // { value: &quot;i&quot;, done: false }
 iterator.next();  // { done: true }</pre></div>
+        <h3>3.4. Iterator helpers</h3>
+        <ul>
+          <li>Iterators gain chainable <code class="inline">map</code>/<code class="inline">filter</code>/<code class="inline">take</code> (ES2025) — lazy, unlike Array methods that allocate immediately:</li>
+        </ul>
+        <div class="code"><pre>const it = [1, 2, 3, 4, 5].values();
+[...it.filter((n) =&gt; n % 2 === 1).map((n) =&gt; n * 10)];  // [10, 30, 50]</pre></div>
       </section>
       <section id="4-generators">
         <div class="heading-with-levels">
@@ -326,7 +351,7 @@ for (const n of range(1, 1_000_000)) {
 }</pre></div>
         <ul>
           <li><strong>Custom iteration</strong> — complex data structures.</li>
-          <li><strong>Async generators</strong> (<code class="inline">async function*</code>) — async iteration with <code class="inline">for await...of</code> (File 20):</li>
+          <li><strong>Async generators</strong> (<code class="inline">async function*</code>) — async iteration with <code class="inline">for await...of</code> (File 21):</li>
         </ul>
         <div class="code"><pre>async function* fetchPages(urls) {
   for (const url of urls) {
@@ -407,11 +432,12 @@ highlight`Hello, ${name}!`;
         <tr><th>Feature</th><th>Example</th><th>Notes</th></tr>
         </thead>
         <tbody>
-        <tr><td>Logical assignment</td><td><code class="inline">a ??= 1</code>, `\</td><td>\</td></tr>
+        <tr><td>Logical assignment</td><td><code class="inline">a ??= 1</code>, <code class="inline">a ||= b</code>, <code class="inline">a &amp;&amp;= b</code></td><td>File 03</td></tr>
         <tr><td>Private fields</td><td><code class="inline">#field</code></td><td>File 19</td></tr>
         <tr><td>Static blocks</td><td><code class="inline">static { }</code></td><td>Class init</td></tr>
         <tr><td>Top-level await</td><td><code class="inline">await fetch()</code></td><td>Modules only</td></tr>
         <tr><td>Numeric separators</td><td><code class="inline">1_000_000</code></td><td>Readability</td></tr>
+        <tr><td><code class="inline">using</code> / <code class="inline">await using</code></td><td>Dispose resources</td><td>Calls <code class="inline">[Symbol.dispose]</code></td></tr>
         <tr><td><code class="inline">globalThis</code></td><td>Cross-env global</td><td>Browser/Node</td></tr>
         <tr><td><code class="inline">SharedArrayBuffer</code></td><td>Shared memory between workers</td><td>Advanced; security constraints in browsers</td></tr>
         <tr><td><code class="inline">Atomics</code></td><td><code class="inline">Atomics.add</code>, <code class="inline">Atomics.wait</code></td><td>Low-level threading with SAB</td></tr>
@@ -428,7 +454,7 @@ const million = 1_000_000;</pre></div>
         <h3 id="5-modern-syntax-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>5.3. Optional chaining (<code class="inline">?.</code>)</h3>
         <ul>
-          <li>Short-circuit access when intermediate value is <strong><code class="inline">null</code></strong> or <strong><code class="inline">undefined</code></strong> (File 03, File 12):</li>
+          <li>Short-circuit access when intermediate value is <strong><code class="inline">null</code></strong> or <strong><code class="inline">undefined</code></strong> (File 03, File 13):</li>
         </ul>
         <div class="code"><pre>const user = { profile: { city: &quot;Pune&quot; } };
 
@@ -490,11 +516,11 @@ missing ?? &quot;Guest&quot;;  // &quot;Guest&quot;</pre></div>
         <h3 id="6-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>6.4. When should I use <code class="inline">Map</code> instead of a plain object?</h3>
         <ul>
-          <li><strong>A:</strong> File 15.</li>
+          <li><strong>A:</strong> File 16.</li>
         </ul>
         <h3>6.5. What is the difference between <code class="inline">Set</code> and array <code class="inline">filter</code> for uniqueness?</h3>
         <ul>
-          <li><strong>A:</strong> File 14.</li>
+          <li><strong>A:</strong> File 15.</li>
         </ul>
         <h3>6.6. What is dynamic <code class="inline">import()</code>?</h3>
         <ul>
@@ -503,6 +529,10 @@ missing ?? &quot;Guest&quot;;  // &quot;Guest&quot;</pre></div>
         <h3>6.7. Can I use <code class="inline">import</code> and <code class="inline">require</code> in the same file?</h3>
         <ul>
           <li><strong>A:</strong> In modern projects, pick <strong>one</strong> system per file. Mixing ESM and CommonJS depends on bundler/Node config — avoid in application code when possible.</li>
+        </ul>
+        <h3>6.11. What is a circular import?</h3>
+        <ul>
+          <li><strong>A:</strong> Two modules import each other. ESM live bindings can work if you only <strong>read</strong> exports after init (inside functions). Top-level use during the cycle can throw (TDZ).</li>
         </ul>
 
         <h3 id="6-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
@@ -516,10 +546,10 @@ missing ?? &quot;Guest&quot;;  // &quot;Guest&quot;</pre></div>
         </ul>
         <h3>6.10. What is the difference between <code class="inline">WeakMap</code> and <code class="inline">Map</code>?</h3>
         <ul>
-          <li><strong>A:</strong> File 15.</li>
+          <li><strong>A:</strong> File 16.</li>
         </ul>
       </section>
-      <footer>HTML note for JavaScript File 21. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 22. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

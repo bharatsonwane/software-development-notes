@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>20. Async &amp; Event Loop - JavaScript Notes</title>
+  <title>21. Async &amp; Event Loop - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -23,7 +23,7 @@
         <a href="#4-async-await">4. async / await</a>
         <a href="#5-event-loop">5. Event loop</a>
         <a href="#6-common-questions">6. Common questions</a>
-        <a href="./20-js-event-loop-animation.html">Animation visualizer</a>
+        <a href="./21-js-event-loop-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -36,11 +36,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">20. Async &amp; Event Loop</span>
+        <span aria-current="page">21. Async &amp; Event Loop</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>20. Async &amp; Event Loop</h1>
-        <p class="subtitle">File 20 — asynchronous JavaScript and execution order.</p>
+        <h1>21. Async &amp; Event Loop</h1>
+        <p class="subtitle">File 21 — asynchronous JavaScript and execution order.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
@@ -315,6 +315,17 @@ Promise.all([p1, Promise.reject(&quot;fail&quot;)]).catch(console.log);  // &quo
         </ul>
         <div class="code"><pre>Promise.resolve(42);
 Promise.reject(new Error(&quot;fail&quot;));</pre></div>
+        <ul>
+          <li><strong><code class="inline">Promise.withResolvers()</code></strong> — get <code class="inline">promise</code>, <code class="inline">resolve</code>, and <code class="inline">reject</code> without wrapping a constructor:</li>
+        </ul>
+        <div class="code"><pre>const { promise, resolve, reject } = Promise.withResolvers();
+button.addEventListener(&quot;click&quot;, () =&gt; resolve(&quot;clicked&quot;));
+await promise;</pre></div>
+        <ul>
+          <li><strong><code class="inline">Promise.try(fn)</code></strong> — run <code class="inline">fn</code> and wrap both sync throws and returned Promises:</li>
+        </ul>
+        <div class="code"><pre>await Promise.try(() =&gt; JSON.parse(text));
+await Promise.try(async () =&gt; fetchUser());</pre></div>
         <h3 id="3-promises-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>3.5. Promise chaining and errors</h3>
         <ul>
@@ -485,7 +496,7 @@ Order (simplified):
 
   sync code → drain ALL microtasks → ONE macrotask → drain microtasks → …</pre></div>
         <ul>
-          <li>Interactive visualizer (like <a href="https://event-loop-visualizer-ruby.vercel.app/">event-loop-visualizer-ruby</a>): open <a href="./20-js-event-loop-animation.html">20-js-event-loop-animation.html</a> in a browser — editable script, queues, Run/Step, output prediction.</li>
+          <li>Interactive visualizer (like <a href="https://event-loop-visualizer-ruby.vercel.app/">event-loop-visualizer-ruby</a>): open <a href="./21-js-event-loop-animation.html">21-js-event-loop-animation.html</a> in a browser — editable script, queues, Run/Step, output prediction.</li>
         </ul>
         <h3>5.1. Call stack</h3>
         <ul>
@@ -516,6 +527,10 @@ a();  // stack: a → b → c → pop c → pop b → pop a</pre></div>
         <tr><td><strong>Macrotask</strong> (task)</td><td><code class="inline">setTimeout</code>, <code class="inline">setInterval</code>, I/O, UI events</td><td>One per event loop turn (simplified)</td></tr>
         </tbody>
         </table>
+        <div class="code"><pre>queueMicrotask(() =&gt; console.log(&quot;micro&quot;));
+setTimeout(() =&gt; console.log(&quot;macro&quot;), 0);
+console.log(&quot;sync&quot;);
+// sync, micro, macro</pre></div>
         <ul>
           <li><strong>Order rule (simplified):</strong></li>
         </ul>
@@ -598,7 +613,7 @@ console.log(&quot;E&quot;);
         <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Is JavaScript multithreaded?</h3>
         <ul>
-          <li><strong>A:</strong> <strong>No</strong> for your JS code on one thread — one call stack. Async uses the <strong>event loop</strong> and host APIs. <strong>Web Workers</strong> / <strong>Worker threads</strong> (Node) are separate threads with message passing.</li>
+          <li><strong>A:</strong> <strong>No</strong> for your JS code on one thread — one call stack. Async uses the <strong>event loop</strong> and host APIs. <strong>Web Workers</strong> (File 24) / <strong>Worker threads</strong> (Node) are separate threads with message passing.</li>
         </ul>
         <h3>6.2. What is the difference between sync and async?</h3>
         <ul>
@@ -640,7 +655,7 @@ console.log(&quot;E&quot;);
           <li><strong>A:</strong> <strong><code class="inline">Promise.then</code></strong> (microtask) runs before <strong><code class="inline">setTimeout</code></strong> (macrotask) after the current synchronous code completes.</li>
         </ul>
       </section>
-      <footer>HTML note for JavaScript File 20. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 21. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

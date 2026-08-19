@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>19. Prototypes - JavaScript Notes</title>
+  <title>20. Prototypes - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -22,7 +22,7 @@
         <a href="#3-inheritance">3. Inheritance</a>
         <a href="#4-how-classes-compile">4. How classes compile</a>
         <a href="#5-common-questions">5. Common questions</a>
-        <a href="./19-js-prototypes-animation.html">Animation visualizer</a>
+        <a href="./20-js-prototypes-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -35,23 +35,23 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">19. Prototypes</span>
+        <span aria-current="page">20. Prototypes</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>19. Prototypes</h1>
-        <p class="subtitle">File 19 — prototype chain, <code class="inline">new</code>, and how classes compile. Class syntax is File 18.</p>
+        <h1>20. Prototypes</h1>
+        <p class="subtitle">File 20 — prototype chain, <code class="inline">new</code>, and how classes compile. Class syntax is File 19.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
         <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
-          <li>JavaScript uses <strong>prototypal inheritance</strong>: objects can delegate property lookups to another object called their <strong>prototype</strong>. <strong><code class="inline">class</code></strong> syntax (File 18) is <strong>syntactic sugar</strong> over this prototype system — this file is how <code class="inline">new</code>, <code class="inline">extends</code>, and <code class="inline">instanceof</code> actually work.</li>
+          <li>JavaScript uses <strong>prototypal inheritance</strong>: objects can delegate property lookups to another object called their <strong>prototype</strong>. <strong><code class="inline">class</code></strong> syntax (File 19) is <strong>syntactic sugar</strong> over this prototype system — this file is how <code class="inline">new</code>, <code class="inline">extends</code>, and <code class="inline">instanceof</code> actually work.</li>
           <li>Every object (except <code class="inline">Object.create(null)</code>) has an internal link to a prototype. Functions have an extra <strong><code class="inline">prototype</code></strong> property used when the function is called with <strong><code class="inline">new</code></strong>.</li>
         </ul>
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li><strong>Default rule today:</strong> write <strong><code class="inline">class</code></strong> in application code (File 18); use this file to debug the prototype chain, <code class="inline">new</code>, and <code class="inline">instanceof</code>.</li>
-          <li>Interactive visualizer: open <a href="./19-js-prototypes-animation.html">19-js-prototypes-animation.html</a> in a browser — chain lookup, <code class="inline">new</code>, <code class="inline">instanceof</code>, manual inheritance, <code class="inline">class extends</code> (Run / Step).</li>
+          <li><strong>Default rule today:</strong> write <strong><code class="inline">class</code></strong> in application code (File 19); use this file to debug the prototype chain, <code class="inline">new</code>, and <code class="inline">instanceof</code>.</li>
+          <li>Interactive visualizer: open <a href="./20-js-prototypes-animation.html">20-js-prototypes-animation.html</a> in a browser — chain lookup, <code class="inline">new</code>, <code class="inline">instanceof</code>, manual inheritance, <code class="inline">class extends</code> (Run / Step).</li>
         </ul>
       </section>
       <section id="1-prototype-chain">
@@ -244,7 +244,7 @@ function Bad(name) {
         <h3 id="2-object-creation-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>2.4. The <code class="inline">new</code> keyword</h3>
         <ul>
-          <li>What <code class="inline">new User(&quot;Bharat&quot;)</code> roughly does (File 17 — <code class="inline">new</code> binding):</li>
+          <li>What <code class="inline">new User(&quot;Bharat&quot;)</code> roughly does (File 18 — <code class="inline">new</code> binding):</li>
         </ul>
         <ol><li>Create empty object <code class="inline">{}</code>.</li><li>Set object&#x27;s <code class="inline">[[Prototype]]</code> to <code class="inline">User.prototype</code>.</li><li>Call <code class="inline">User</code> with <strong><code class="inline">this</code></strong> bound to that object.</li><li>If constructor returns a non-object, return the new object; else return constructor&#x27;s return value.</li></ol>
         <div class="code"><pre>function User(name) {
@@ -335,7 +335,7 @@ const user = Object.assign(Object.create(null), canWalk, { name: &quot;Bharat&qu
         </div>
         <h3 id="4-how-classes-compile-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li><code class="inline">class</code> syntax (<code class="inline">constructor</code>, <code class="inline">extends</code>, <code class="inline">super</code>, <code class="inline">#</code> fields) is File 18. This section is what that syntax becomes at runtime.</li>
+          <li><code class="inline">class</code> syntax (<code class="inline">constructor</code>, <code class="inline">extends</code>, <code class="inline">super</code>, <code class="inline">#</code> fields) is File 19. This section is what that syntax becomes at runtime.</li>
         </ul>
         <h3>4.1. class is a constructor plus prototype methods</h3>
         <div class="code"><pre>class User {
@@ -415,8 +415,16 @@ User.prototype.greet = function () {
         <ul>
           <li><strong>A:</strong> To run the <strong>parent constructor</strong> with the <strong>child instance</strong> as <code class="inline">this</code>, initializing inherited own properties. In classes, <strong><code class="inline">super(...)</code></strong> does this.</li>
         </ul>
+        <h3>5.9. What is prototype pollution?</h3>
+        <ul>
+          <li><strong>A:</strong> Attacker-controlled keys like <code class="inline">__proto__</code> or <code class="inline">constructor.prototype</code> written onto <code class="inline">Object.prototype</code>, so every object inherits malicious properties. Do not merge untrusted JSON onto objects with <code class="inline">for...in</code> assignment. Use <code class="inline">Object.create(null)</code> maps, or block those keys.</li>
+        </ul>
+        <div class="code"><pre>const payload = JSON.parse('{&quot;__proto__&quot;:{&quot;isAdmin&quot;:true}}');
+const user = {};
+Object.assign(user, payload);  // dangerous if assign copies prototype
+user.isAdmin;  // may be true on some merge helpers — never merge untrusted keys blindly</pre></div>
       </section>
-      <footer>HTML note for JavaScript File 19. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 20. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

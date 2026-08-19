@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>14. Set - JavaScript Notes</title>
+  <title>15. Set - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -19,7 +19,7 @@
         <a href="#intro">Intro</a>
         <a href="#1-set">1. Set</a>
         <a href="#2-common-questions">2. Common questions</a>
-        <a href="./21-js-es6-plus-animation.html">Animation visualizer</a>
+        <a href="./22-js-es6-plus-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -32,22 +32,22 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">14. Set</span>
+        <span aria-current="page">15. Set</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>14. Set</h1>
-        <p class="subtitle">File 14 — unique values, dedupe, WeakSet.</p>
+        <h1>15. Set</h1>
+        <p class="subtitle">File 15 — unique values, dedupe, WeakSet.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
 
       <section id="intro-notes">
         <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
-          <li>A <strong><code class="inline">Set</code></strong> stores <strong>unique values</strong>. Duplicates are ignored. Arrays (File 13) allow duplicates and are indexed.</li>
+          <li>A <strong><code class="inline">Set</code></strong> stores <strong>unique values</strong>. Duplicates are ignored. Arrays (File 14) allow duplicates and are indexed.</li>
         </ul>
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li>Use a Set to <strong>dedupe</strong> or for O(1) <code class="inline">has</code> checks. Interactive visualizer: <a href="./21-js-es6-plus-animation.html">21-js-es6-plus-animation.html</a> (Map/Set scenarios).</li>
+          <li>Use a Set to <strong>dedupe</strong> or for O(1) <code class="inline">has</code> checks. Interactive visualizer: <a href="./22-js-es6-plus-animation.html">22-js-es6-plus-animation.html</a> (Map/Set scenarios).</li>
         </ul>
       </section>
       <section id="1-set">
@@ -76,8 +76,22 @@ for (const value of set) {
         <h3 id="1-set-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <h3>1.1. Dedupe an array</h3>
         <div class="code"><pre>const unique = [...new Set([1, 2, 2, 3])];  // [1, 2, 3]</pre></div>
+        <h3>1.2. Set algebra (ES2025)</h3>
+        <div class="code"><pre>const a = new Set([1, 2, 3]);
+const b = new Set([3, 4]);
+
+a.union(b);               // Set {1, 2, 3, 4}
+a.intersection(b);        // Set {3}
+a.difference(b);          // Set {1, 2}
+a.symmetricDifference(b); // Set {1, 2, 4}
+a.isSubsetOf(b);          // false
+a.isSupersetOf(new Set([1, 2]));  // true
+a.isDisjointFrom(new Set([9]));   // true</pre></div>
+        <ul>
+          <li>These return <strong>new</strong> Sets. Older environments: copy to arrays and filter.</li>
+        </ul>
         <h3 id="1-set-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
-        <h3>1.2. WeakSet</h3>
+        <h3>1.3. WeakSet</h3>
         <ul>
           <li>Values must be <strong>objects</strong>. Entries can be <strong>garbage-collected</strong> when no other references exist. Not iterable; no <code class="inline">size</code>.</li>
         </ul>
@@ -87,7 +101,7 @@ ws.add(obj);
 ws.has(obj);  // true
 // When obj is dropped, the entry may disappear</pre></div>
         <ul>
-          <li>Compare with <strong>WeakMap</strong> in File 15. Memory / GC: File 22.</li>
+          <li>Compare with <strong>WeakMap</strong> in File 16. Memory / GC: File 23.</li>
         </ul>
       </section>
       <section id="2-common-questions">
@@ -108,9 +122,13 @@ ws.has(obj);  // true
         <ul>
           <li><strong>A:</strong> To remember that an <strong>object</strong> was seen (e.g. already processed) without preventing garbage collection. You cannot iterate or ask for <code class="inline">size</code>.</li>
         </ul>
+        <h3>2.3. How do I get the intersection of two Sets?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">a.intersection(b)</code> (ES2025), or <code class="inline">[...a].filter((x) =&gt; b.has(x))</code>.</li>
+        </ul>
       </section>
 
-      <footer>HTML note for JavaScript File 14. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 15. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

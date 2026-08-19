@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>10. Numbers - JavaScript Notes</title>
+  <title>11. Numbers - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -19,7 +19,7 @@
         <a href="#intro">Intro</a>
         <a href="#1-numbers">1. Numbers</a>
         <a href="#2-common-questions">2. Common questions</a>
-        <a href="./10-js-numbers-animation.html">Animation visualizer</a>
+        <a href="./11-js-numbers-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -32,11 +32,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">10. Numbers</span>
+        <span aria-current="page">11. Numbers</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>10. Numbers</h1>
-        <p class="subtitle">File 10 — Number, NaN, Infinity, floating point, BigInt. Math is File 11.</p>
+        <h1>11. Numbers</h1>
+        <p class="subtitle">File 11 — Number, NaN, Infinity, floating point, BigInt. Math is File 12.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
@@ -46,7 +46,7 @@
         </ul>
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
-          <li>Interactive visualizer: open <a href="./10-js-numbers-animation.html">10-js-numbers-animation.html</a> in a browser — Number parsing, NaN/Infinity (Run / Step). Math APIs are File 11. Shared scenarios also cover strings and dates.</li>
+          <li>Interactive visualizer: open <a href="./11-js-numbers-animation.html">11-js-numbers-animation.html</a> in a browser — Number parsing, NaN/Infinity (Run / Step). Math APIs are File 12. Shared scenarios also cover strings and dates.</li>
         </ul>
       </section>
       <section id="1-numbers">
@@ -81,7 +81,7 @@ Number.parseFloat(&quot;3.14&quot;);
           <li>Prefer <strong><code class="inline">Number.isNaN</code></strong> over global <strong><code class="inline">isNaN</code></strong> (coerces first).</li>
         </ul>
         <ul>
-          <li><strong><code class="inline">Math</code></strong> helpers (round, random, trig) are File 11.</li>
+          <li><strong><code class="inline">Math</code></strong> helpers (round, random, trig) are File 12.</li>
         </ul>
 
         <h3 id="1-numbers-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
@@ -101,6 +101,21 @@ Number((0.1 + 0.2).toFixed(2)); // 0.3</pre></div>
         <ul>
           <li>For money, store <strong>cents as integers</strong> or use a decimal library.</li>
         </ul>
+        <h3>1.5. Safe integers, EPSILON, parseInt radix</h3>
+        <div class="code"><pre>Number.MAX_SAFE_INTEGER;     // 9007199254740991  (2**53 - 1)
+Number.isSafeInteger(2**53); // false — use BigInt past this
+
+Number.EPSILON;              // ~2.22e-16 — smallest gap around 1
+Math.abs((0.1 + 0.2) - 0.3) &lt; Number.EPSILON;  // true
+
+Number.parseInt(&quot;10&quot;, 10);   // 10 — always pass radix
+Number.parseInt(&quot;10&quot;, 2);    // 2
+Number.parseInt(&quot;08&quot;);       // 8 in modern JS; still pass 10
+
+(255).toString(16);          // &quot;ff&quot;</pre></div>
+        <ul>
+          <li>Compare with <strong><code class="inline">Object.is</code></strong> when you care about <code class="inline">NaN</code> and <code class="inline">-0</code> (File 03).</li>
+        </ul>
       </section>
       <section id="2-common-questions">
         <div class="heading-with-levels">
@@ -119,11 +134,15 @@ Number((0.1 + 0.2).toFixed(2)); // 0.3</pre></div>
         <h3 id="2-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>2.2. Why is <code class="inline">0.1 + 0.2 !== 0.3</code>?</h3>
         <ul>
-          <li><strong>A:</strong> Binary floating point cannot represent some decimals exactly. Use rounding or integer cents for money.</li>
+          <li><strong>A:</strong> Binary floating point cannot represent some decimals exactly. Use rounding, integer cents, or compare with a tolerance (<code class="inline">Number.EPSILON</code>).</li>
+        </ul>
+        <h3>2.3. Why pass a radix to parseInt?</h3>
+        <ul>
+          <li><strong>A:</strong> So <code class="inline">&quot;08&quot;</code> / <code class="inline">&quot;0x10&quot;</code> are not misread. Prefer <code class="inline">Number.parseInt(s, 10)</code> or <code class="inline">Number(s)</code> for decimal.</li>
         </ul>
       </section>
 
-      <footer>HTML note for JavaScript File 10. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 11. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>

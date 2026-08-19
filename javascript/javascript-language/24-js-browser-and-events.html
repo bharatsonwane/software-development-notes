@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>23. Browser &amp; Events - JavaScript Notes</title>
+  <title>24. Browser &amp; Events - JavaScript Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -21,8 +21,9 @@
         <a href="#2-storage-apis">2. Storage APIs</a>
         <a href="#3-fetch-abortcontroller">3. Fetch &amp; AbortController</a>
         <a href="#4-event-handling">4. Event handling</a>
-        <a href="#5-common-questions">5. Common questions</a>
-        <a href="./23-js-browser-events-animation.html">Animation visualizer</a>
+        <a href="#5-observers-workers">5. Observers and workers</a>
+        <a href="#6-common-questions">6. Common questions</a>
+        <a href="./24-js-browser-events-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -35,11 +36,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">23. Browser &amp; Events</span>
+        <span aria-current="page">24. Browser &amp; Events</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>23. Browser &amp; Events</h1>
-        <p class="subtitle">File 23 — DOM/BOM basics, storage, fetch, event bubbling/delegation.</p>
+        <h1>24. Browser &amp; Events</h1>
+        <p class="subtitle">File 24 — DOM/BOM, storage, fetch, URL, observers, events.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
@@ -50,7 +51,7 @@
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
           <li><strong>Default rule today:</strong> default listeners run on the <strong>bubble</strong> phase; use <strong>delegation</strong> on stable parents for dynamic lists; call <strong><code class="inline">preventDefault</code></strong> / <strong><code class="inline">stopPropagation</code></strong> only when you mean to block default behavior or further propagation.</li>
-          <li>Interactive visualizer: open <a href="./23-js-browser-events-animation.html">23-js-browser-events-animation.html</a> in a browser — capture/target/bubble, stopPropagation, preventDefault, delegation, once/remove (Run / Step).</li>
+          <li>Interactive visualizer: open <a href="./24-js-browser-events-animation.html">24-js-browser-events-animation.html</a> in a browser — capture/target/bubble, stopPropagation, preventDefault, delegation, once/remove (Run / Step).</li>
         </ul>
       </section>
       <section id="1-dom-and-bom">
@@ -115,6 +116,8 @@ sessionStorage.setItem(&quot;tab&quot;, &quot;1&quot;);  // cleared when tab clo
         <h3>2.2. Cookies</h3>
         <ul>
           <li>Small key-value strings sent with HTTP requests — set via <strong><code class="inline">document.cookie</code></strong> or server <strong><code class="inline">Set-Cookie</code></strong>. Prefer <strong>httpOnly</strong> cookies for auth tokens (not accessible from JS).</li>
+          <li>Attributes: <strong><code class="inline">Secure</code></strong>, <strong><code class="inline">SameSite=Lax|Strict|None</code></strong> (CSRF), <code class="inline">Path</code>, <code class="inline">Max-Age</code>.</li>
+          <li><code class="inline">localStorage</code> is typically ~5MB per origin; cookies are much smaller (~4KB each) and go on every matching request.</li>
         </ul>
       </section>
       <section id="3-fetch-abortcontroller">
@@ -136,27 +139,41 @@ sessionStorage.setItem(&quot;tab&quot;, &quot;1&quot;);  // cleared when tab clo
 if (!res.ok) throw new Error(`HTTP ${res.status}`);
 const data = await res.json();</pre></div>
         <ul>
-          <li>File 20 — async patterns; React File 10 — TanStack Query.</li>
+          <li>File 21 — async patterns; React File 10 — TanStack Query.</li>
         </ul>
-        <h3>3.2. History and URL APIs</h3>
+        <h3>3.2. History, URL, and encoding</h3>
         <div class="code"><pre>history.pushState({}, &quot;&quot;, &quot;/new-path&quot;);
 history.replaceState({}, &quot;&quot;, &quot;/other&quot;);
 
 const url = new URL(&quot;https://example.com/path?q=1&quot;);
-url.searchParams.get(&quot;q&quot;);
-url.pathname;</pre></div>
+url.searchParams.get(&quot;q&quot;);      // &quot;1&quot;
+url.searchParams.set(&quot;q&quot;, &quot;hi there&quot;);
+url.pathname;
+
+encodeURIComponent(&quot;a b&amp;c&quot;);    // &quot;a%20b%26c&quot; — query values
+encodeURI(&quot;https://ex.com/a b&quot;); // encodes less — whole URLs
+decodeURIComponent(&quot;%20&quot;);</pre></div>
         <ul>
           <li>React Router wraps History API (React File 09).</li>
         </ul>
+        <h3>3.3. FormData</h3>
+        <div class="code"><pre>const fd = new FormData(formElement);
+fd.append(&quot;file&quot;, fileBlob, &quot;photo.jpg&quot;);
+
+await fetch(&quot;/upload&quot;, { method: &quot;POST&quot;, body: fd });
+// do not set Content-Type — browser sets multipart boundary</pre></div>
 
         <h3 id="3-fetch-abortcontroller-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
-        <h3>3.3. AbortController</h3>
+        <h3>3.4. AbortController</h3>
         <ul>
           <li>Cancel in-flight fetch:</li>
         </ul>
         <div class="code"><pre>const controller = new AbortController();
 fetch(&quot;/api/slow&quot;, { signal: controller.signal });
-controller.abort();  // rejects with AbortError</pre></div>
+controller.abort();  // rejects with AbortError
+
+await fetch(url, { signal: AbortSignal.timeout(5_000) });
+await fetch(url, { signal: AbortSignal.any([userAbort.signal, AbortSignal.timeout(5_000)]) });</pre></div>
       </section>
       <section id="4-event-handling">
         <div class="heading-with-levels">
@@ -204,9 +221,42 @@ window.addEventListener(&quot;user-login&quot;, (e) =&gt; {
         <div class="code"><pre>el.addEventListener(&quot;click&quot;, handler);                    // bubble (default)
 el.addEventListener(&quot;click&quot;, handler, { capture: true }); // capture</pre></div>
       </section>
-      <section id="5-common-questions">
+      <section id="5-observers-workers">
         <div class="heading-with-levels">
-          <h2>5. Common questions</h2>
+          <h2>5. Observers and workers</h2>
+          <div class="h2-levels">
+            <span class="tier l3">L3</span>
+          </div>
+        </div>
+        <h3 id="5-observers-workers-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3>5.1. Observers</h3>
+        <table>
+        <thead>
+        <tr><th>API</th><th>Fires when</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">MutationObserver</code></td><td>DOM nodes are added/removed/changed</td></tr>
+        <tr><td><code class="inline">IntersectionObserver</code></td><td>An element enters/leaves the viewport (lazy load, infinite scroll)</td></tr>
+        <tr><td><code class="inline">ResizeObserver</code></td><td>An element&#x27;s size changes</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>const io = new IntersectionObserver((entries) =&gt; {
+  for (const e of entries) {
+    if (e.isIntersecting) loadMore();
+  }
+});
+io.observe(sentinel);</pre></div>
+        <h3>5.2. Web Workers (brief)</h3>
+        <ul>
+          <li>A Worker is a <strong>separate thread</strong> — no DOM access. Talk via <code class="inline">postMessage</code>. Use for CPU-heavy work so the UI stays responsive (File 21 — one JS thread per context).</li>
+        </ul>
+        <div class="code"><pre>const w = new Worker(&quot;./heavy.js&quot;, { type: &quot;module&quot; });
+w.postMessage({ n: 1e8 });
+w.onmessage = (e) =&gt; console.log(e.data);</pre></div>
+      </section>
+      <section id="6-common-questions">
+        <div class="heading-with-levels">
+          <h2>6. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
@@ -243,8 +293,16 @@ el.addEventListener(&quot;click&quot;, handler, { capture: true }); // capture</
         <ul>
           <li><strong>A:</strong> Event propagates from <strong>target up</strong> through ancestors after the target handler runs.</li>
         </ul>
+        <h3>5.7. encodeURI vs encodeURIComponent?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">encodeURIComponent</code> encodes <code class="inline">&amp;</code>, <code class="inline">=</code>, <code class="inline">?</code> — use for <strong>query values</strong>. <code class="inline">encodeURI</code> leaves URL structure intact.</li>
+        </ul>
+        <h3>5.8. When do I use IntersectionObserver?</h3>
+        <ul>
+          <li><strong>A:</strong> When you need to know if an element is on screen — lazy images, infinite scroll — without scroll listeners.</li>
+        </ul>
       </section>
-      <footer>HTML note for JavaScript File 23. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 24. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
