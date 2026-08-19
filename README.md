@@ -57,7 +57,7 @@ Typical headings inside a level (use only what you need):
 
 ### One concept, one place
 
-Keep **one HTML file per topic** (for example `01-js-data-types-and-values.html`). Do not split a concept into separate files such as `array-basic.html` and `array-advanced.html`.
+Keep **one HTML file per topic** (for example `01-js-variables.html`). Do not split a concept into separate files such as `array-basic.html` and `array-advanced.html`.
 
 Inside a file, each **section is a concept**. Organize that concept into L1–L5. Missing levels are fine — add them later in the same section.
 
@@ -134,7 +134,7 @@ Notes for the JavaScript language and related ecosystems. Prefix: `js`, `ts`, `n
 
 | Track | Folder | Chapters |
 | ----- | ------ | -------- |
-| JavaScript language | javascript/javascript-language/ | 16 |
+| JavaScript language | javascript/javascript-language/ | 17 |
 | TypeScript | javascript/typescript/ | 12 |
 | Node.js | javascript/nodejs/ | 14 |
 | React.js | javascript/reactjs/ | 14 |
