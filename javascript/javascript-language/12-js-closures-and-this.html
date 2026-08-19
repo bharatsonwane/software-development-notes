@@ -23,7 +23,7 @@
         <a href="#4-call-apply-bind">4. call, apply, bind</a>
         <a href="#5-arrow-functions-this">5. Arrow functions &amp; `this`</a>
         <a href="#6-common-questions">6. Common questions</a>
-        <a href="./09-js-closures-this-animation.html">Animation visualizer</a>
+        <a href="./12-js-closures-this-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -40,7 +40,7 @@
       </nav>
       <header class="hero" id="intro">
         <h1>08. Closures &amp; this</h1>
-        <p class="subtitle">File 09 — lexical scope, closures, and dynamic this binding.</p>
+        <p class="subtitle">File 12 — lexical scope, closures, and dynamic this binding.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
@@ -52,7 +52,7 @@
         <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
         <ul>
           <li><strong>Default rule today:</strong> use closures for <strong>private state</strong> and <strong>factories</strong>; use <strong>regular methods</strong> when you need <code class="inline">this</code> on objects; use <strong>arrows</strong> for callbacks that should keep outer <code class="inline">this</code>; use <strong><code class="inline">bind</code></strong> when passing methods as handlers.</li>
-          <li>Interactive visualizer: open <a href="./09-js-closures-this-animation.html">09-js-closures-this-animation.html</a> in a browser — closures, private state, lost <code class="inline">this</code>, <code class="inline">call</code>/<code class="inline">bind</code>, arrows (Run / Step).</li>
+          <li>Interactive visualizer: open <a href="./12-js-closures-this-animation.html">12-js-closures-this-animation.html</a> in a browser — closures, private state, lost <code class="inline">this</code>, <code class="inline">call</code>/<code class="inline">bind</code>, arrows (Run / Step).</li>
         </ul>
       </section>
       <section id="1-closures">
@@ -145,7 +145,7 @@ const triple = multiplyBy(3);
 double(5);  // 10
 triple(5);  // 15</pre></div>
         <ul>
-          <li><strong>Callbacks and event handlers</strong> — closures capture context (File 05, File 11):</li>
+          <li><strong>Callbacks and event handlers</strong> — closures capture context (File 05, File 14):</li>
         </ul>
         <div class="code"><pre>function setupButton(label) {
   const button = { label, clicks: 0 };
@@ -256,7 +256,7 @@ app.getSecret();  // &quot;hidden&quot;
 // 0, 1, 2 — IIFE captures copy of i per iteration</pre></div>
         <h3>2.3. IIFE today</h3>
         <ul>
-          <li>With <strong><code class="inline">let</code>/<code class="inline">const</code></strong> blocks and modules (File 12), IIFEs are less common. Still useful for:</li>
+          <li>With <strong><code class="inline">let</code>/<code class="inline">const</code></strong> blocks and modules (File 15), IIFEs are less common. Still useful for:</li>
           <li>One-time initialization</li><li>Isolating legacy scripts</li><li>Quick scope in snippets</li>
           <li>Prefer <strong>block scope</strong> or <strong>modules</strong> for new code:</li>
         </ul>
@@ -283,7 +283,7 @@ counterModule.increment();
 console.log(counterModule.getCount());  // 1
 // count is not accessible from outside</pre></div>
         <ul>
-          <li>ES modules (<code class="inline">export</code> / <code class="inline">import</code>, File 12) replace this pattern in modern code.</li>
+          <li>ES modules (<code class="inline">export</code> / <code class="inline">import</code>, File 15) replace this pattern in modern code.</li>
         </ul>
       </section>
       <section id="3-this-binding">
@@ -343,7 +343,7 @@ greet();  // undefined — default binding, not user
 const other = { name: &quot;Dev&quot;, greet: user.greet };
 other.greet();  // &quot;Dev&quot; — this === other</pre></div>
         <ul>
-          <li><strong>Event handler <code class="inline">this</code></strong> — classic DOM: <code class="inline">this</code> is the <strong>element</strong> (File 16). Arrow handlers use <strong>lexical</strong> <code class="inline">this</code> instead.</li>
+          <li><strong>Event handler <code class="inline">this</code></strong> — classic DOM: <code class="inline">this</code> is the <strong>element</strong> (File 18). Arrow handlers use <strong>lexical</strong> <code class="inline">this</code> instead.</li>
           <li><strong>Nested function</strong> — inner call does not inherit outer <code class="inline">this</code>:</li>
         </ul>
         <div class="code"><pre>const user = {
@@ -379,7 +379,7 @@ greet.call(user);  // &quot;Bharat&quot;</pre></div>
 const u = new User(&quot;Bharat&quot;);
 console.log(u.name);  // &quot;Bharat&quot;</pre></div>
         <ul>
-          <li>If the constructor returns a plain object, that object replaces the default <code class="inline">this</code> (rare pattern). File 10 covers constructors and classes.</li>
+          <li>If the constructor returns a plain object, that object replaces the default <code class="inline">this</code> (rare pattern). File 13 covers constructors and classes.</li>
         </ul>
         <h3 id="3-this-binding-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>3.6. Binding priority (highest wins)</h3>
@@ -545,7 +545,7 @@ const good = {
   },
 };</pre></div>
         <ul>
-          <li>See File 08, section 2.4.</li>
+          <li>See File 09, section 2.4.</li>
         </ul>
         <h3 id="5-arrow-functions-this-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
         <h3>5.3. Other arrow differences (brief)</h3>
@@ -598,7 +598,7 @@ sum(1, 2, 3);  // 6</pre></div>
           <li><strong>A:</strong> <code class="inline">var</code> is function-scoped — one shared <code class="inline">i</code>. All async callbacks see the final value. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, or use an IIFE to capture each value (File 04).</li>
         </ul>
       </section>
-      <footer>HTML note for JavaScript File 09. Open from the JS Language index.</footer>
+      <footer>HTML note for JavaScript File 12. Open from the JS Language index.</footer>
     </main>
   </div>
   <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
