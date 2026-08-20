@@ -42,7 +42,7 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Production TypeScript is less about syntax and more about <strong>team habits</strong> — consistent strictness, lint rules, and a sensible migration path from JavaScript.</li>
         </ul>
@@ -51,12 +51,12 @@
         <div class="heading-with-levels">
           <h2>1. Avoiding <code class="inline">any</code></h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="1-avoiding-any-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="1-avoiding-any-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><code class="inline">any</code> disables the type checker for that value and propagates unsafety:</li>
         </ul>
@@ -85,7 +85,7 @@ function parse(data: unknown) {
         <tr><td>Temporary migration</td><td><code class="inline">// @ts-expect-error</code> with ticket + deadline</td></tr>
         </tbody>
         </table>
-        <h3 id="1-avoiding-any-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="1-avoiding-any-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>1.2. <code class="inline">unknown</code> at boundaries, concrete types inside</h3>
         <div class="code"><pre>async function fetchJson(url: string): Promise&lt;unknown&gt; {
   const res = await fetch(url);
@@ -94,7 +94,7 @@ function parse(data: unknown) {
 
 const raw = await fetchJson(&quot;/api/user&quot;);
 const user = UserSchema.parse(raw); // concrete User type after validation</pre></div>
-        <h3 id="1-avoiding-any-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="1-avoiding-any-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>1.3. ESLint rules</h3>
         <div class="code"><pre>{
   &quot;rules&quot;: {
@@ -111,11 +111,11 @@ const user = UserSchema.parse(raw); // concrete User type after validation</pre>
         <div class="heading-with-levels">
           <h2>2. Prefer <code class="inline">interface</code> vs <code class="inline">type</code> in teams</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="2-prefer-interface-vs-type-in-teams-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="2-prefer-interface-vs-type-in-teams-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>There is no universal winner — <strong>consistency</strong> matters.</li>
         </ul>
@@ -132,7 +132,7 @@ type Result&lt;T&gt; =
   | { ok: false; error: Error };
 
 type UserId = string;</pre></div>
-        <h3 id="2-prefer-interface-vs-type-in-teams-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="2-prefer-interface-vs-type-in-teams-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>2.2. When <code class="inline">interface</code> wins</h3>
         <ul><li>Public API objects you may <strong>extend</strong> later</li><li><strong>Declaration merging</strong> (augmenting Express, Jest globals)</li><li>Class <code class="inline">implements</code> contracts</li></ul>
         <h3>2.3. When <code class="inline">type</code> wins</h3>
@@ -144,12 +144,12 @@ type UserId = string;</pre></div>
         <div class="heading-with-levels">
           <h2>3. ESLint and TypeScript</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="3-eslint-and-typescript-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="3-eslint-and-typescript-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Use <strong><code class="inline">typescript-eslint</code></strong> for type-aware linting:</li>
         </ul>
@@ -158,7 +158,7 @@ type UserId = string;</pre></div>
         <ul>
           <li>Pair ESLint with <strong>Prettier</strong> — ESLint for logic, Prettier for formatting. Avoid duplicate stylistic rules.</li>
         </ul>
-        <h3 id="3-eslint-and-typescript-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="3-eslint-and-typescript-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>3.2. High-value rules</h3>
         <table>
         <thead>
@@ -183,7 +183,7 @@ type UserId = string;</pre></div>
         <ul>
           <li>Run <code class="inline">check</code> on every PR — types and lint together catch different bug classes.</li>
         </ul>
-        <h3 id="3-eslint-and-typescript-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="3-eslint-and-typescript-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <div class="code"><pre>// eslint.config.js (flat config)
 import eslint from &quot;@eslint/js&quot;;
 import tseslint from &quot;typescript-eslint&quot;;
@@ -205,12 +205,12 @@ export default tseslint.config(
         <div class="heading-with-levels">
           <h2>4. Migration from JavaScript</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="4-migration-from-javascript-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="4-migration-from-javascript-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Rename strategy</h3>
         <div class="code"><pre>app.js  →  app.ts
 utils.js → utils.ts (one file at a time)</pre></div>
@@ -227,7 +227,7 @@ utils.js → utils.ts (one file at a time)</pre></div>
         <ul>
           <li>Turn on <code class="inline">&quot;checkJs&quot;: true</code> for <code class="inline">.js</code> files with <code class="inline">// @ts-check</code> at the top.</li>
         </ul>
-        <h3 id="4-migration-from-javascript-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="4-migration-from-javascript-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>4.2. Migration order</h3>
         <ol><li>Add <code class="inline">tsconfig.json</code> + <code class="inline">typescript</code> dev dependency</li><li>Rename <strong>leaf</strong> modules first (no dependents)</li><li>Add types at <strong>boundaries</strong> (API responses, config, shared models)</li><li>Replace <code class="inline">any</code> introduced during migration</li><li>Enable stricter flags incrementally (<code class="inline">strictNullChecks</code>, <code class="inline">noImplicitAny</code>)</li></ol>
         <h3>4.3. <code class="inline">jsdoc</code> bridge</h3>
@@ -248,7 +248,7 @@ export function greet(name) {
         <ul>
           <li>Migrate <strong>by feature</strong> or <strong>by folder</strong>. Mixed <code class="inline">.js</code> and <code class="inline">.ts</code> is normal for months in large apps.</li>
         </ul>
-        <h3 id="4-migration-from-javascript-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="4-migration-from-javascript-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>4.5. Typing existing JS libraries</h3>
         <div class="code"><pre>npm install -D @types/lodash</pre></div>
         <ul>
@@ -264,12 +264,12 @@ declare module &quot;legacy-lib&quot;;</pre></div>
         <div class="heading-with-levels">
           <h2>5. Common questions</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="5-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="5-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. Is <code class="inline">any</code> ever acceptable?</h3>
         <ul>
           <li><strong>A:</strong> During migration or with truly dynamic plugins — isolate it, document why, and plan removal.</li>
@@ -282,7 +282,7 @@ declare module &quot;legacy-lib&quot;;</pre></div>
         <ul>
           <li><strong>A:</strong> Yes when the app is TS — tests get the same type safety and refactoring support.</li>
         </ul>
-        <h3 id="5-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="5-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>5.4. <code class="inline">eslint</code> vs <code class="inline">tsc</code> — which catches what?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">tsc</code> — type correctness. ESLint — patterns, async misuse, style, some type-aware rules. Use both.</li>
@@ -295,7 +295,7 @@ declare module &quot;legacy-lib&quot;;</pre></div>
         <ul>
           <li><strong>A:</strong> Treat <strong>external data as <code class="inline">unknown</code></strong> until validated — never trust <code class="inline">JSON.parse</code>, form input, or query params as typed.</li>
         </ul>
-        <h3 id="5-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="5-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>5.7. <code class="inline">@ts-ignore</code> vs <code class="inline">@ts-expect-error</code>?</h3>
         <ul>
           <li><strong>A:</strong> Prefer <code class="inline">@ts-expect-error</code> — fails if the error is fixed, so you remove the comment. <code class="inline">@ts-ignore</code> silently stays.</li>

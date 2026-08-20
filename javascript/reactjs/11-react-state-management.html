@@ -45,7 +45,7 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>React apps juggle <strong>local UI state</strong>, <strong>shared client state</strong>, and <strong>server state</strong> (File 10). This chapter clarifies <strong>what goes where</strong>, when <strong>Context + useReducer</strong> (File 08) is enough, and when to adopt <strong>Zustand</strong> or <strong>Redux Toolkit</strong> for global client state.</li>
           <li><strong>Default rule today:</strong> keep state <strong>local</strong> until sharing hurts; use <strong>TanStack Query</strong> for server data; use <strong>Zustand</strong> for moderate global client state or <strong>Redux Toolkit</strong> when you need strict patterns, middleware, and large-team tooling.</li>
@@ -55,11 +55,11 @@
         <div class="heading-with-levels">
           <h2>1. State placement decision tree</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="1-state-placement-decision-tree-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="1-state-placement-decision-tree-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Where should this state live?</h3>
         <div class="code"><pre>Is it from the API?
   → Yes → TanStack Query / RTK Query (File 10)
@@ -75,7 +75,7 @@ Do many distant components need it?
 
 Does it change very often across a huge tree?
   → Prefer Zustand/Redux with selectors, not one big Context</pre></div>
-        <h3 id="1-state-placement-decision-tree-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="1-state-placement-decision-tree-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>1.2. Avoid duplicating server data in global store</h3>
         <div class="code"><pre>// Avoid — user also lives in React Query cache
 dispatch(setUser(fetchedUser));
@@ -90,10 +90,10 @@ const { data: user } = useQuery({ queryKey: [&quot;me&quot;], queryFn: fetchMe }
         <div class="heading-with-levels">
           <h2>2. Context limits (recap)</h2>
           <div class="h2-levels">
-            <span class="tier l3">L3</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-context-limits-recap-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="2-context-limits-recap-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>File 08 — Context works for theme, auth snapshot, locale. Pain points at scale:</li>
           <li>One <strong>Provider value</strong> change re-renders many consumers</li><li>No built-in <strong>middleware</strong>, <strong>devtools</strong>, or <strong>time-travel</strong></li><li>Easy to create a <strong>god context</strong> that everything subscribes to</li>
@@ -104,11 +104,11 @@ const { data: user } = useQuery({ queryKey: [&quot;me&quot;], queryFn: fetchMe }
         <div class="heading-with-levels">
           <h2>3. Zustand</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
-            <span class="tier l4">L4</span>
+            <span class="tier l1">L1</span>
+            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="3-zustand-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="3-zustand-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Minimal global store</h3>
         <div class="code"><pre>npm install zustand</pre></div>
         <div class="code"><pre>import { create } from &quot;zustand&quot;;
@@ -148,7 +148,7 @@ const useStore = create(
       }),
   }))
 );</pre></div>
-        <h3 id="3-zustand-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="3-zustand-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>3.4. Selectors prevent extra re-renders</h3>
         <ul>
           <li>Subscribe to <strong>slices</strong> of state:</li>
@@ -163,11 +163,11 @@ const addItem = useCartStore((s) =&gt; s.addItem);    // stable function referen
         <div class="heading-with-levels">
           <h2>4. Redux Toolkit</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="4-redux-toolkit-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="4-redux-toolkit-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Core ideas</h3>
         <table>
         <thead>
@@ -226,7 +226,7 @@ function CartPage() {
 }</pre></div>
         <h3>4.4. When Redux Toolkit fits</h3>
         <ul><li>Large teams wanting <strong>strict conventions</strong></li><li>Complex async middleware (logging, analytics)</li><li><strong>Redux DevTools</strong> time-travel debugging</li><li>Existing Redux ecosystem investment</li></ul>
-        <h3 id="4-redux-toolkit-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="4-redux-toolkit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>4.5. RTK Query (server state)</h3>
         <ul>
           <li>Redux Toolkit includes <strong>RTK Query</strong> — define API slices with generated hooks (parallel to TanStack Query). Pick <strong>one</strong> primary server cache per app.</li>
@@ -236,10 +236,10 @@ function CartPage() {
         <div class="heading-with-levels">
           <h2>5. Zustand vs Redux Toolkit</h2>
           <div class="h2-levels">
-            <span class="tier l3">L3</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-zustand-vs-redux-toolkit-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="5-zustand-vs-redux-toolkit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <table>
         <thead>
         <tr><th></th><th>Zustand</th><th>Redux Toolkit</th></tr>
@@ -261,11 +261,11 @@ function CartPage() {
         <div class="heading-with-levels">
           <h2>6. Patterns across libraries</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="6-patterns-across-libraries-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="6-patterns-across-libraries-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Colocate feature state</h3>
         <ul>
           <li>Keep cart logic in <code class="inline">cartSlice</code> or <code class="inline">useCartStore</code> — not scattered <code class="inline">useState</code> in ten files.</li>
@@ -274,7 +274,7 @@ function CartPage() {
         <ul>
           <li>Filters, pagination, selected tab — prefer <strong>URL search params</strong> (File 09) over global store when users should share/bookmark state.</li>
         </ul>
-        <h3 id="6-patterns-across-libraries-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="6-patterns-across-libraries-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>6.3. Derived state</h3>
         <ul>
           <li>Compute totals in <strong>selectors</strong> or <code class="inline">useMemo</code>, do not duplicate in store unless needed for perf:</li>
@@ -287,10 +287,10 @@ function CartPage() {
         <div class="heading-with-levels">
           <h2>7. Putting it together</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="7-putting-it-together-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="7-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>7.1. Small app stack</h3>
         <table>
         <thead>
@@ -312,12 +312,12 @@ function CartPage() {
         <div class="heading-with-levels">
           <h2>8. Common questions</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="8-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="8-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>8.1. Do I need Redux for every React app?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No.</strong> Most apps get by with <strong>local state</strong>, <strong>Context</strong>, <strong>TanStack Query</strong>, and optionally <strong>Zustand</strong>.</li>
@@ -334,7 +334,7 @@ function CartPage() {
         <ul>
           <li><strong>A:</strong> File 12 (performance — selectors vs re-renders), File 10 (server cache), File 14 (feature folders).</li>
         </ul>
-        <h3 id="8-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="8-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>8.5. Zustand vs Context?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Context</strong> for low-frequency shared values. <strong>Zustand</strong> when many components need <strong>selective</strong> subscriptions without prop drilling or giant re-renders.</li>
@@ -355,7 +355,7 @@ function CartPage() {
         <ul>
           <li><strong>A:</strong> Technically yes, but <strong>avoid</strong> — pick one global client state approach.</li>
         </ul>
-        <h3 id="8-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="8-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>8.10. Is dispatch stable in Redux?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> — like <code class="inline">useReducer</code> dispatch (File 08).</li>

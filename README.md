@@ -5,7 +5,7 @@ Personal notes for technical learning and reference. Topics are organized by fol
 **Notes website:** [https://bharatsonwane.github.io/software-development-notes/](https://bharatsonwane.github.io/software-development-notes/)  
 **Local:** [http://localhost:5500/](http://localhost:5500/)
 
-Files use **numbered learning order**: `01-topic-name.html`, `02-topic-name.html`, and so on. Topic prefix varies by track (`html`, `css`, `js`, `ts`, `node`, `react`, `rn`, `pg`, `mongo`, etc.). Each file uses **relative** section numbers (`1.`, `1.1.` within that file). Concepts inside a file are tagged **L1–L5** (not every concept needs all five levels).
+Files use **numbered learning order**: `01-topic-name.html`, `02-topic-name.html`, and so on. Topic prefix varies by track (`html`, `css`, `js`, `ts`, `node`, `react`, `rn`, `pg`, `mongo`, etc.). Each file uses **relative** section numbers (`1.`, `1.1.` within that file). Concepts inside a file are tagged **L1–L3** (not every concept needs all three levels).
 
 ## Topics
 
@@ -25,7 +25,7 @@ Files use **numbered learning order**: `01-topic-name.html`, `02-topic-name.html
 - Open the **Notes website** above for full chapter lists per track (HTML pages).
 - Add and expand notes in the individual `.html` files as you study.
 - Keep entries concise: concept, example, and key points to remember.
-- Tag each concept with learning levels (L1–L5). A section may skip levels that are not written yet.
+- Tag each concept with learning levels (L1–L3). A section may skip levels that are not written yet.
 
 ## Learning levels
 
@@ -33,41 +33,37 @@ Use this level system for every concept across JavaScript, HTML, CSS, Python, Po
 
 | Level | Name | Purpose |
 | ----- | ---- | ------- |
-| **L1** | Fundamental | What it is, why it exists, basic concepts, terminology, and basic syntax |
-| **L2** | Practical | How to use it, common APIs/methods, common patterns, and real-world usage |
-| **L3** | Intermediate | Deeper behavior, interactions with related concepts, common problems, and trade-offs |
-| **L4** | Advanced | Complex behavior, internals, performance, architecture, and advanced patterns |
-| **L5** | Deep Dive | Specification, runtime/engine internals, implementation details, edge cases, and very deep technical behavior |
+| **L1** | Fundamental | What it is and how to use it: terminology, basic syntax, common APIs, and everyday usage |
+| **L2** | Intermediate | How it behaves: deeper behavior, related concepts, common problems, and trade-offs |
+| **L3** | Advanced | How it works in complex cases: internals, performance, architecture, specification, and edge cases |
 
 ```
-L1 → What is it?
-L2 → How do I use it?
-L3 → How does it behave?
-L4 → How does it work in complex situations?
-L5 → How is it implemented?
+L1 → What is it, and how do I use it?
+L2 → How does it behave?
+L3 → How does it work in complex cases?
 ```
+
+These labels are a **default**, not a hard rule. Tag a block by how hard that concept is. A section may be only L1, skip L2, or start at L2.
 
 Typical headings inside a level (use only what you need):
 
-- **L1:** What is it? · Why does it exist? · Basic syntax · Basic examples · Key points
-- **L2:** Common usage · Common APIs / methods / patterns · Practical examples · Common mistakes
-- **L3:** Deeper behavior · How it interacts with other concepts · Common problems / edge cases · Practical considerations
-- **L4:** Advanced behavior · Internals · Performance · Advanced patterns · Trade-offs
-- **L5:** Specification / standard · Runtime / engine internals · Implementation details · Edge cases · Deep technical notes
+- **L1:** What is it? · Why does it exist? · Basic syntax · Common usage · Common APIs / patterns · Key points
+- **L2:** Deeper behavior · How it interacts with other concepts · Common problems / edge cases
+- **L3:** Internals · Performance · Architecture · Specification / engine · Edge cases
 
 ### One concept, one place
 
 Keep **one HTML file per topic** (for example `01-js-variables.html`). Do not split a concept into separate files such as `array-basic.html` and `array-advanced.html`.
 
-Inside a file, each **section is a concept**. Organize that concept into L1–L5. Missing levels are fine — add them later in the same section.
+Inside a file, each **section is a concept**. Organize that concept into L1–L3. Missing levels are fine — add them later in the same section.
 
-Interview questions can be grouped by the same levels (L1–L5).
+Interview questions can be grouped by the same levels (L1–L3).
 
 ### Status vs current level
 
 Track these separately.
 
-**`current_level`** is how deep you have studied the concept: `L1` … `L5`.
+**`current_level`** is how deep you have studied the concept: `L1` … `L3`.
 
 **`status`** is how you feel at that level:
 
@@ -87,14 +83,12 @@ Topic/track checkboxes on the home page (`Not started` / `In progress` / `Done`)
 
 Do **not** try to master a concept completely before moving on.
 
-For the first pass, focus mainly on **L1** across many concepts. Then revisit those concepts at **L2**, then **L3**, and so on.
+For the first pass, focus mainly on **L1** across many concepts. Then revisit those concepts at **L2**, then **L3**.
 
 ```
 Pass 1 → L1 across many concepts
 Pass 2 → L2 across many concepts
 Pass 3 → L3 across many concepts
-Pass 4 → L4 across many concepts
-Pass 5 → L5 only where deeper knowledge is useful
 ```
 
 Goal: **build breadth first, then progressively increase depth.**

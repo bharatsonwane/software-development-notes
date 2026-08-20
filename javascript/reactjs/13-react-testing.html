@@ -49,7 +49,7 @@
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
       <section id="intro-notes">
-        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Tests give confidence that components <strong>behave correctly for users</strong> — not that implementation details match snapshots. <strong>React Testing Library (RTL)</strong> queries the DOM like a user and fires <strong>real events</strong>. Pair with <strong>Vitest</strong> or <strong>Jest</strong> as the test runner.</li>
           <li>Builds on components, state, forms, and hooks (Files 02–07). File 14 covers error boundaries tested similarly.</li>
@@ -60,10 +60,10 @@
         <div class="heading-with-levels">
           <h2>1. Testing philosophy</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="1-testing-philosophy-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="1-testing-philosophy-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Test user-visible behavior</h3>
         <div class="code"><pre>// Good — what the user sees and does
 expect(screen.getByRole(&quot;button&quot;, { name: /submit/i })).toBeEnabled();
@@ -82,10 +82,10 @@ expect(component.state.count).toBe(1);</pre></div>
         <div class="heading-with-levels">
           <h2>2. Setup</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="2-setup-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="2-setup-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Typical stack (Vite + Vitest)</h3>
         <div class="code"><pre>npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom</pre></div>
         <div class="code"><pre>// vitest.config.js
@@ -118,11 +118,11 @@ describe(&quot;Greeting&quot;, () =&gt; {
         <div class="heading-with-levels">
           <h2>3. Queries (priority order)</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="3-queries-priority-order-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="3-queries-priority-order-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Preferred queries</h3>
         <table>
         <thead>
@@ -143,7 +143,7 @@ describe(&quot;Greeting&quot;, () =&gt; {
         <h3>3.2. within — scope queries</h3>
         <div class="code"><pre>const row = screen.getByRole(&quot;row&quot;, { name: /ada/i });
 within(row).getByRole(&quot;button&quot;, { name: /edit/i });</pre></div>
-        <h3 id="3-queries-priority-order-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="3-queries-priority-order-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>3.3. getBy vs queryBy vs findBy</h3>
         <table>
         <thead>
@@ -163,10 +163,10 @@ await screen.findByText(/loaded/i); // waits for async UI</pre></div>
         <div class="heading-with-levels">
           <h2>4. User events</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="4-user-events-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="4-user-events-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. userEvent.setup()</h3>
         <div class="code"><pre>import userEvent from &quot;@testing-library/user-event&quot;;
 
@@ -198,12 +198,12 @@ await user.tab();</pre></div>
         <div class="heading-with-levels">
           <h2>5. Testing async and data</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="5-testing-async-and-data-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="5-testing-async-and-data-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. waitFor</h3>
         <div class="code"><pre>import { waitFor } from &quot;@testing-library/react&quot;;
 
@@ -213,7 +213,7 @@ await waitFor(() =&gt; {
         <ul>
           <li>Prefer <strong><code class="inline">findBy*</code></strong> when waiting for one element.</li>
         </ul>
-        <h3 id="5-testing-async-and-data-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="5-testing-async-and-data-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>5.2. Mocking fetch</h3>
         <div class="code"><pre>import { vi } from &quot;vitest&quot;;
 
@@ -235,7 +235,7 @@ afterEach(() =&gt; {
         <ul>
           <li>Or use <strong>MSW (Mock Service Worker)</strong> for realistic HTTP mocking across tests.</li>
         </ul>
-        <h3 id="5-testing-async-and-data-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="5-testing-async-and-data-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>5.3. QueryClient wrapper</h3>
         <ul>
           <li>For TanStack Query components (File 10):</li>
@@ -256,10 +256,10 @@ afterEach(() =&gt; {
         <div class="heading-with-levels">
           <h2>6. Providers and routing</h2>
           <div class="h2-levels">
-            <span class="tier l3">L3</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="6-providers-and-routing-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="6-providers-and-routing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>6.1. Custom render helper</h3>
         <div class="code"><pre>function renderWithProviders(ui, { route = &quot;/&quot; } = {}) {
   window.history.pushState({}, &quot;&quot;, route);
@@ -289,11 +289,11 @@ render(
         <div class="heading-with-levels">
           <h2>7. Testing hooks</h2>
           <div class="h2-levels">
+            <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="7-testing-hooks-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="7-testing-hooks-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>7.1. renderHook</h3>
         <div class="code"><pre>import { renderHook, act } from &quot;@testing-library/react&quot;;
 import { useCounter } from &quot;./useCounter&quot;;
@@ -310,7 +310,7 @@ it(&quot;increments&quot;, () =&gt; {
         <ul>
           <li>File 07 — custom hooks tested in isolation.</li>
         </ul>
-        <h3 id="7-testing-hooks-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="7-testing-hooks-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>7.2. Wrapper for hook context</h3>
         <div class="code"><pre>renderHook(() =&gt; useTheme(), {
   wrapper: ThemeProvider,
@@ -320,10 +320,10 @@ it(&quot;increments&quot;, () =&gt; {
         <div class="heading-with-levels">
           <h2>8. Mocking modules</h2>
           <div class="h2-levels">
-            <span class="tier l3">L3</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="8-mocking-modules-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="8-mocking-modules-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>8.1. vi.mock</h3>
         <div class="code"><pre>vi.mock(&quot;./api&quot;, () =&gt; ({
   fetchUser: vi.fn(() =&gt; Promise.resolve({ id: 1, name: &quot;Ada&quot; })),
@@ -340,10 +340,10 @@ it(&quot;increments&quot;, () =&gt; {
         <div class="heading-with-levels">
           <h2>9. Accessibility checks</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="9-accessibility-checks-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="9-accessibility-checks-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>9.1. jest-axe (optional)</h3>
         <div class="code"><pre>import { axe, toHaveNoViolations } from &quot;jest-axe&quot;;
 expect.extend(toHaveNoViolations);
@@ -360,10 +360,10 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
         <div class="heading-with-levels">
           <h2>10. What to test per feature</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="10-what-to-test-per-feature-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="10-what-to-test-per-feature-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <table>
         <thead>
         <tr><th>Feature</th><th>Test ideas</th></tr>
@@ -384,10 +384,10 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
         <div class="heading-with-levels">
           <h2>11. Putting it together</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="11-putting-it-together-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="11-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>11.1. Login form test</h3>
         <div class="code"><pre>describe(&quot;LoginForm&quot;, () =&gt; {
   it(&quot;shows error on invalid email&quot;, async () =&gt; {
@@ -422,12 +422,12 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
         <div class="heading-with-levels">
           <h2>12. Common questions</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="12-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="12-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>12.1. RTL vs Enzyme?</h3>
         <ul>
           <li><strong>A:</strong> <strong>RTL</strong> is the modern default — user-centric. Enzyme shallow-renders implementation details; avoid for new projects.</li>
@@ -448,7 +448,7 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
         <ul>
           <li><strong>A:</strong> File 14 (error boundaries, architecture), File 06/09 for features to test, MSW docs for API mocking.</li>
         </ul>
-        <h3 id="12-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="12-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>12.6. How do I test async fetch?</h3>
         <ul>
           <li><strong>A:</strong> Mock <strong><code class="inline">fetch</code></strong> or <strong>MSW</strong>; use <strong><code class="inline">findBy*</code></strong> or <strong><code class="inline">waitFor</code></strong>. Disable query retries in tests.</li>
@@ -465,7 +465,7 @@ it(&quot;has no a11y violations&quot;, async () =&gt; {
         <ul>
           <li><strong>A:</strong> Sparingly for <strong>stable</strong> small output. Prefer behavior assertions.</li>
         </ul>
-        <h3 id="12-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="12-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>12.10. How do I test custom hooks?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">renderHook</code></strong> + <strong><code class="inline">act</code></strong> for updates. Provide <strong>wrapper</strong> with required providers.</li>

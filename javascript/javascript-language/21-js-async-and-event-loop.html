@@ -49,7 +49,7 @@
           <li>JavaScript runs on a <strong>single thread</strong> — one call stack executes one piece of code at a time. <strong>Asynchronous</strong> work (timers, network, I/O) is handled by the <strong>host environment</strong> (browser, Node.js), which queues <strong>callbacks</strong> for later. The <strong>event loop</strong> decides when those callbacks run.</li>
           <li>Modern async code uses <strong>Promises</strong> and <strong><code class="inline">async</code>/<code class="inline">await</code></strong>. Callbacks remain in older APIs and under the hood.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>Default rule today:</strong> prefer <strong><code class="inline">async</code>/<code class="inline">await</code></strong> with <strong><code class="inline">try/catch</code></strong>; use <strong><code class="inline">Promise.all</code></strong> for parallel independent tasks; understand <strong>microtasks vs macrotasks</strong> for debugging order bugs.</li>
         </ul>
@@ -59,7 +59,6 @@
           <h2>1. Sync vs async</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="1-sync-vs-async-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -98,7 +97,7 @@ console.log(&quot;C&quot;);
         <ul>
           <li>Async does not mean <strong>parallel threads</strong> in JS itself — it means <strong>deferring</strong> work and resuming via the event loop.</li>
         </ul>
-        <h3 id="1-sync-vs-async-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="1-sync-vs-async-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.3. When async is used</h3>
         <table>
         <thead>
@@ -124,7 +123,6 @@ console.log(&quot;request sent&quot;);  // runs before response arrives</pre></d
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
         <h3 id="2-callbacks-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -145,7 +143,7 @@ loadData((err, data) =&gt; {
   }
   console.log(data.name);
 });</pre></div>
-        <h3 id="2-callbacks-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="2-callbacks-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.2. Error-first callbacks (Node style)</h3>
         <ul>
           <li>Convention: first argument is <strong><code class="inline">err</code></strong>, second is <strong>result</strong>:</li>
@@ -171,7 +169,7 @@ divide(10, 2, (err, result) =&gt; {
           <li>Legacy Node APIs (<code class="inline">fs.readFile(path, cb)</code>)</li><li>Event listeners (<code class="inline">button.addEventListener(&quot;click&quot;, handler)</code>)</li><li>Third-party libraries</li>
           <li>Prefer <strong>Promise-based</strong> APIs or <strong><code class="inline">util.promisify</code></strong> (Node) / wrappers when available.</li>
         </ul>
-        <h3 id="2-callbacks-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="2-callbacks-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>2.4. Callback hell</h3>
         <ul>
           <li>Nested callbacks become hard to read and error-prone:</li>
@@ -198,7 +196,6 @@ divide(10, 2, (err, result) =&gt; {
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
         <h3 id="3-promises-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -224,7 +221,7 @@ divide(10, 2, (err, result) =&gt; {
 });
 
 p.then((value) =&gt; console.log(value));  // &quot;done&quot;</pre></div>
-        <h3 id="3-promises-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="3-promises-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.2. Creating Promises</h3>
         <div class="code"><pre>function delay(ms) {
   return new Promise((resolve) =&gt; {
@@ -326,7 +323,7 @@ await promise;</pre></div>
         </ul>
         <div class="code"><pre>await Promise.try(() =&gt; JSON.parse(text));
 await Promise.try(async () =&gt; fetchUser());</pre></div>
-        <h3 id="3-promises-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="3-promises-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>3.5. Promise chaining and errors</h3>
         <ul>
           <li>Rejected Promise skips to nearest <strong><code class="inline">catch</code></strong>:</li>
@@ -347,11 +344,11 @@ await Promise.try(async () =&gt; fetchUser());</pre></div>
         <div class="heading-with-levels">
           <h2>4. async / await</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="4-async-await-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="4-async-await-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong><code class="inline">async</code>/<code class="inline">await</code></strong> is syntactic sugar over Promises — write async code that <strong>looks</strong> synchronous.</li>
         </ul>
@@ -408,7 +405,7 @@ loadUser();</pre></div>
 }
 
 oops();  // UnhandledPromiseRejection — always catch at boundary</pre></div>
-        <h3 id="4-async-await-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="4-async-await-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>4.4. Sequential vs parallel</h3>
         <ul>
           <li><strong>Sequential</strong> — one after another (slower when independent):</li>
@@ -465,11 +462,11 @@ const b = await pB;
         <div class="heading-with-levels">
           <h2>5. Event loop</h2>
           <div class="h2-levels">
+            <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
-        <h3 id="5-event-loop-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="5-event-loop-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>The <strong>event loop</strong> coordinates the <strong>call stack</strong>, <strong>Web APIs</strong> (or Node libuv), and <strong>task queues</strong>.</li>
         </ul>
@@ -547,7 +544,7 @@ console.log(&quot;4&quot;);
         <ul>
           <li>Walkthrough:</li>
           <li><code class="inline">1</code>, <code class="inline">4</code> — sync</li><li>Microtask: <code class="inline">3</code> — Promise <code class="inline">then</code></li><li>Macrotask: <code class="inline">2</code> — <code class="inline">setTimeout</code></li></ul>
-        <h3 id="5-event-loop-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="5-event-loop-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>5.3. Classic interview example</h3>
         <div class="code"><pre>console.log(&quot;start&quot;);
 
@@ -607,7 +604,6 @@ console.log(&quot;E&quot;);
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
-            <span class="tier l4">L4</span>
           </div>
         </div>
         <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -627,7 +623,7 @@ console.log(&quot;E&quot;);
         <ul>
           <li><strong>A:</strong> The mechanism that takes callbacks from task queues and pushes them onto the call stack when the stack is empty — interleaving async work with synchronous JS execution.</li>
         </ul>
-        <h3 id="6-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="6-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.5. What does <code class="inline">async</code> function return?</h3>
         <ul>
           <li><strong>A:</strong> Always a <strong>Promise</strong>. Returning a value wraps it in <code class="inline">Promise.resolve</code>; throwing rejects the Promise.</li>
@@ -640,7 +636,7 @@ console.log(&quot;E&quot;);
         <ul>
           <li><strong>A:</strong> Start both without awaiting immediately, then <code class="inline">await Promise.all([p1, p2])</code>, or assign both to promises first then await each.</li>
         </ul>
-        <h3 id="6-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="6-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>6.8. What is callback hell?</h3>
         <ul>
           <li><strong>A:</strong> Deeply nested callbacks for sequential async steps — hard to read and error-handle. Fixed with Promises and <code class="inline">async</code>/<code class="inline">await</code>.</li>
@@ -649,7 +645,7 @@ console.log(&quot;E&quot;);
         <ul>
           <li><strong>A:</strong> It schedules a <strong>macrotask</strong>. Sync code and <strong>microtasks</strong> (e.g. Promise callbacks) run first.</li>
         </ul>
-        <h3 id="6-common-questions-l4"><span class="chip tier-l4">L4 Advanced</span></h3>
+        <h3 id="6-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
         <h3>6.10. What runs first — <code class="inline">Promise.then</code> or <code class="inline">setTimeout</code>?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">Promise.then</code></strong> (microtask) runs before <strong><code class="inline">setTimeout</code></strong> (macrotask) after the current synchronous code completes.</li>

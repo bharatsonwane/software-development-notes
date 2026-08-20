@@ -52,7 +52,7 @@
           <li>React components should be <strong>pure during render</strong>: given the same props and state, they return the same UI. Anything that <strong>touches the outside world</strong> — fetching data, subscribing to events, updating <code class="inline">document.title</code>, starting timers — is a <strong>side effect</strong>. <strong><code class="inline">useEffect</code></strong> runs that work <strong>after</strong> React paints the screen, and lets you <strong>sync</strong> component state with external systems.</li>
           <li>Builds on state and events (File 03) and rendering patterns (File 04). File 10 goes deeper on <strong>data fetching</strong>; File 07 covers <strong>custom hooks</strong> that wrap effects.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>Default rule today:</strong> put side effects in <strong><code class="inline">useEffect</code></strong>, not in the render body; list every value from the component that the effect <strong>reads</strong> in the <strong>dependency array</strong>; return a <strong>cleanup</strong> function when you subscribe, listen, or create resources that must be torn down.</li>
         </ul>
@@ -62,7 +62,7 @@
           <h2>1. Side effects vs render</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l3">L3</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="1-side-effects-vs-render-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -94,7 +94,7 @@
         <ul>
           <li>Running these <strong>during render</strong> causes bugs: they may run on every render, race with each other, and break React&#x27;s predictable model (File 01 — pure components).</li>
         </ul>
-        <h3 id="1-side-effects-vs-render-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="1-side-effects-vs-render-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>1.2. Where useEffect runs</h3>
         <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
 
@@ -121,7 +121,6 @@ function Page({ userId }) {
           <h2>2. Basic useEffect syntax</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="2-basic-useeffect-syntax-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -132,7 +131,7 @@ function Page({ userId }) {
         <ul>
           <li>The function you pass to <code class="inline">useEffect</code> is the <strong>effect</strong>. React calls it after render.</li>
         </ul>
-        <h3 id="2-basic-useeffect-syntax-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="2-basic-useeffect-syntax-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.2. Optional cleanup return</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   const id = setInterval(() =&gt; console.log(&quot;tick&quot;), 1000);
@@ -163,11 +162,11 @@ function Page({ userId }) {
         <div class="heading-with-levels">
           <h2>3. Dependency array in depth</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="3-dependency-array-in-depth-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="3-dependency-array-in-depth-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Include what you read</h3>
         <ul>
           <li>If the effect <strong>uses</strong> a value from the component, include it in deps:</li>
@@ -186,7 +185,7 @@ function Page({ userId }) {
         <ul>
           <li>The <strong><code class="inline">eslint-plugin-react-hooks</code></strong> rule warns when deps are missing or unnecessary. Treat warnings seriously — they catch stale closure bugs. Suppress only with a comment and a clear reason.</li>
         </ul>
-        <h3 id="3-dependency-array-in-depth-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="3-dependency-array-in-depth-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>3.3. Stale closures</h3>
         <ul>
           <li>Missing deps causes <strong>stale</strong> values inside the effect:</li>
@@ -251,11 +250,11 @@ useEffect(() =&gt; {
         <div class="heading-with-levels">
           <h2>4. Cleanup</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="4-cleanup-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="4-cleanup-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Subscriptions and listeners</h3>
         <div class="code"><pre>useEffect(() =&gt; {
   function onResize() {
@@ -295,7 +294,7 @@ useEffect(() =&gt; {
   const id = setTimeout(() =&gt; setVisible(true), 300);
   return () =&gt; clearTimeout(id);
 }, []);</pre></div>
-        <h3 id="4-cleanup-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="4-cleanup-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>4.4. When cleanup runs</h3>
         <ul>
           <li>Cleanup runs:</li>
@@ -314,10 +313,10 @@ useEffect(() =&gt; {
         <div class="heading-with-levels">
           <h2>5. Common effect patterns</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="5-common-effect-patterns-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="5-common-effect-patterns-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. Syncing document title</h3>
         <div class="code"><pre>function ProductPage({ product }) {
   useEffect(() =&gt; {
@@ -395,16 +394,16 @@ useEffect(() =&gt; {
         <div class="heading-with-levels">
           <h2>6. When not to use useEffect</h2>
           <div class="h2-levels">
+            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="6-when-not-to-use-useeffect-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="6-when-not-to-use-useeffect-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Initial data that could be server-provided</h3>
         <ul>
           <li>In frameworks with <strong>server components</strong> or <strong>loaders</strong> (File 09), fetch on the server or in the route loader instead of <code class="inline">useEffect</code> on mount when possible.</li>
         </ul>
-        <h3 id="6-when-not-to-use-useeffect-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="6-when-not-to-use-useeffect-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>6.2. Deriving state during render</h3>
         <ul>
           <li>Don&#x27;t sync state with props via effect when you can <strong>compute during render</strong>:</li>
@@ -456,10 +455,10 @@ useEffect(() =&gt; {
         <div class="heading-with-levels">
           <h2>7. Strict Mode and development behavior</h2>
           <div class="h2-levels">
-            <span class="tier l3">L3</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="7-strict-mode-and-development-behavior-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="7-strict-mode-and-development-behavior-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts → unmounts → remounts</strong> components to surface missing cleanup:</li>
         </ul>
@@ -477,10 +476,10 @@ useEffect(() =&gt; {
         <div class="heading-with-levels">
           <h2>8. Multiple effects</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="8-multiple-effects-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="8-multiple-effects-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Split unrelated side effects into <strong>separate</strong> <code class="inline">useEffect</code> calls:</li>
         </ul>
@@ -508,10 +507,10 @@ useEffect(() =&gt; {
         <div class="heading-with-levels">
           <h2>9. Putting it together</h2>
           <div class="h2-levels">
-            <span class="tier l2">L2</span>
+            <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="9-putting-it-together-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="9-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>9.1. Online status hook (preview of File 07)</h3>
         <div class="code"><pre>function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(
@@ -578,7 +577,6 @@ function StatusBar() {
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
-            <span class="tier l3">L3</span>
           </div>
         </div>
         <h3 id="10-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -586,7 +584,7 @@ function StatusBar() {
         <ul>
           <li><strong>A:</strong> Anything that touches <strong>outside</strong> the render result — network, DOM APIs, timers, subscriptions, storage. Run these in <strong><code class="inline">useEffect</code></strong>, not during render.</li>
         </ul>
-        <h3 id="10-common-questions-l2"><span class="chip tier-l2">L2 Practical</span></h3>
+        <h3 id="10-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>10.2. What does an empty dependency array <code class="inline">[]</code> mean?</h3>
         <ul>
           <li><strong>A:</strong> Run the effect <strong>once after mount</strong> (and run cleanup on unmount). In Strict Mode dev, mount/cleanup/mount runs once extra to test cleanup.</li>
@@ -599,7 +597,7 @@ function StatusBar() {
         <ul>
           <li><strong>A:</strong> File 06 (forms — controlled inputs and submit), File 07 (custom hooks, useRef), File 10 (data fetching patterns).</li>
         </ul>
-        <h3 id="10-common-questions-l3"><span class="chip tier-l3">L3 Intermediate</span></h3>
+        <h3 id="10-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>10.5. When does useEffect run?</h3>
         <ul>
           <li><strong>A:</strong> <strong>After</strong> React commits the update to the DOM and the browser paints. On mount and after re-renders where <strong>dependencies</strong> changed (if you pass a dependency array).</li>
