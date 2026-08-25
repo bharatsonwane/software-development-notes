@@ -460,13 +460,38 @@ typeTag([]);    // "Array"</pre></div>
         </table>
 
         <h3 id="type-checks-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>5.8. Boxing</h3>
+        <h3>5.8. Boxing (autoboxing)</h3>
         <ul>
-          <li>Primitives can be temporarily wrapped as objects when you access methods:</li>
+          <li><strong>Autoboxing</strong> (also called boxing): when you call a method or property on a <strong>primitive</strong>, the engine temporarily wraps it in the matching object (<code class="inline">String</code>, <code class="inline">Number</code>, or <code class="inline">Boolean</code>), runs the call, then discards the wrapper.</li>
         </ul>
-        <div class="code"><pre>"hello".toUpperCase();  // works — JS wraps in String object, then discards it</pre></div>
+        <div class="code"><pre>&quot;hello&quot;.toUpperCase();  // temporary String object → &quot;HELLO&quot;
+(42).toFixed(2);        // temporary Number object → &quot;42.00&quot;
+true.toString();        // temporary Boolean object → &quot;true&quot;</pre></div>
         <ul>
-          <li>Avoid <code class="inline">new String("hello")</code> — creates an object wrapper, rarely needed.</li>
+          <li>The original value stays a <strong>primitive</strong>. Autoboxing does not turn your variable into an object permanently.</li>
+        </ul>
+        <div class="code"><pre>const s = &quot;hi&quot;;
+typeof s;               // &quot;string&quot;
+s.toUpperCase();
+typeof s;               // still &quot;string&quot;</pre></div>
+        <h3>5.9. Explicit wrapper objects</h3>
+        <ul>
+          <li><code class="inline">new String</code>, <code class="inline">new Number</code>, and <code class="inline">new Boolean</code> create real <strong>objects</strong>. Prefer primitives; avoid wrappers in app code.</li>
+        </ul>
+        <div class="code"><pre>const prim = &quot;hi&quot;;
+const boxed = new String(&quot;hi&quot;);
+
+typeof prim;                 // &quot;string&quot;
+typeof boxed;                // &quot;object&quot;
+prim instanceof String;      // false
+boxed instanceof String;     // true
+prim === boxed;              // false — different types
+prim == boxed;               // true — boxed unwraps for ==
+
+Boolean(new Boolean(false)); // true — object is truthy!
+!!new Boolean(false);        // true — same pitfall</pre></div>
+        <ul>
+          <li>Use <code class="inline">String(x)</code>, <code class="inline">Number(x)</code>, <code class="inline">Boolean(x)</code> <strong>without</strong> <code class="inline">new</code> for conversion (File 03). Those return primitives.</li>
         </ul>
       </section>
 
@@ -614,6 +639,10 @@ obj = { a: 3 };  // TypeError — cannot reassign</pre></div>
         <h3>7.10. What is the difference between an expression and a statement?</h3>
         <ul>
           <li><strong>A:</strong> An <strong>expression</strong> evaluates to a value. A <strong>statement</strong> performs an action (declare, loop, return).</li>
+        </ul>
+        <h3>7.11. What is boxing (autoboxing)?</h3>
+        <ul>
+          <li><strong>A:</strong> Temporary wrapping of a primitive in <code class="inline">String</code>/<code class="inline">Number</code>/<code class="inline">Boolean</code> so methods like <code class="inline">.toUpperCase()</code> work, then the wrapper is discarded. Explicit <code class="inline">new String(&quot;hi&quot;)</code> is a lasting object (<code class="inline">typeof</code> <code class="inline">&quot;object&quot;</code>) — avoid it; use primitives and conversion functions without <code class="inline">new</code>.</li>
         </ul>
       </section>
 
