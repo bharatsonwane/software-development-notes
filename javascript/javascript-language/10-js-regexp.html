@@ -133,6 +133,18 @@ m.groups.year;     // "2026"
 re.test("a");   // true, lastIndex now 1
 re.test("a");   // false — starts at index 1
 re.lastIndex = 0;</pre></div>
+        <h3>1.8. Catastrophic backtracking</h3>
+        <ul>
+          <li>Nested or overlapping quantifiers can make the engine try an exponential number of paths on long input — the match may hang (ReDoS risk).</li>
+        </ul>
+        <div class="code"><pre>// Dangerous shape: (a+)+ on a long string of a&#x27;s then a non-match
+// /(a+)+$/.test(&quot;aaaaaaaaaaaaaaaaaaaaX&quot;);  // can be very slow
+
+// Prefer simpler patterns, possessive-style thinking, or non-backtracking alternatives
+/^[a-z]+$/.test(input);  // clearer bounds</pre></div>
+        <ul>
+          <li>Do not run <strong>untrusted user-built regex</strong> on large strings. Keep patterns simple; prefer string methods when a regex is unnecessary.</li>
+        </ul>
       </section>
       <section id="2-common-questions">
         <div class="heading-with-levels">
@@ -160,6 +172,10 @@ re.lastIndex = 0;</pre></div>
         <h3>2.4. How do I escape user input in a pattern?</h3>
         <ul>
           <li><strong>A:</strong> Replace regex special characters before <code class="inline">new RegExp</code> (or use a well-tested escape helper). Never interpolate raw user text into a regex.</li>
+        </ul>
+        <h3>2.5. What is catastrophic backtracking?</h3>
+        <ul>
+          <li><strong>A:</strong> When quantifiers nest or compete, matching can explode in time on certain inputs. Avoid ambiguous nested <code class="inline">+</code>/<code class="inline">*</code>, bound the input length, and do not evaluate untrusted patterns on large data.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 10. Open from the JS Language index.</footer>

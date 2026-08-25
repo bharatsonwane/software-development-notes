@@ -177,6 +177,14 @@ console.log(greet(&quot;Bharat&quot;));</pre></div>
 
 factorial(5);  // 120
 // fact(5);    // ReferenceError — name only visible inside</pre></div>
+        <ul>
+          <li><strong>Anonymous function</strong> — a function with no name (common as a callback or assigned to a variable). The binding name (if any) comes from the variable, not from the function itself:</li>
+        </ul>
+        <div class="code"><pre>setTimeout(function () {
+  console.log(&quot;anonymous callback&quot;);
+}, 0);
+
+const square = (n) =&gt; n * n;  // also anonymous; name comes from square</pre></div>
         <table>
         <thead>
         <tr><th>Declaration</th><th>Hoisted as callable?</th><th>Typical use</th></tr>
@@ -445,7 +453,20 @@ triple(5);  // 15</pre></div>
         <ul>
           <li>Built-in higher-order array methods (<code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">reduce</code>) are covered in File 14.</li>
         </ul>
-        <h3>3.4. Pure vs impure functions (brief)</h3>
+        <h3>3.4. Function composition (intro)</h3>
+        <ul>
+          <li><strong>Composition</strong> means feeding one function&#x27;s output into the next: <code class="inline">h(g(f(x)))</code>. Keeps small pure steps reusable.</li>
+        </ul>
+        <div class="code"><pre>const trim = (s) =&gt; s.trim();
+const upper = (s) =&gt; s.toUpperCase();
+const exclaim = (s) =&gt; s + &quot;!&quot;;
+
+const shout = (s) =&gt; exclaim(upper(trim(s)));
+shout(&quot;  hi  &quot;);  // &quot;HI!&quot;</pre></div>
+        <ul>
+          <li>Helpers like <code class="inline">compose</code> / <code class="inline">pipe</code>, currying, and memoization are File 23.</li>
+        </ul>
+        <h3>3.5. Pure vs impure functions (brief)</h3>
         <table>
         <thead>
         <tr><th>Pure function</th><th>Impure function</th></tr>
@@ -470,7 +491,7 @@ function pushItem(arr, item) {
           <li>Prefer pure functions where practical; isolate side effects at boundaries (API calls, UI updates).</li>
         </ul>
         <h3 id="3-return-first-class-functions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.5. Returning functions and closures (intro)</h3>
+        <h3>3.6. Returning functions and closures (intro)</h3>
         <ul>
           <li>Inner functions <strong>close over</strong> variables from the outer scope — a <strong>closure</strong>:</li>
         </ul>
@@ -532,6 +553,10 @@ counter();  // 12</pre></div>
         <h3>4.8. How do default parameters work with <code class="inline">null</code>?</h3>
         <ul>
           <li><strong>A:</strong> Defaults apply only when the argument is <strong><code class="inline">undefined</code></strong>, not <code class="inline">null</code>. <code class="inline">fn(null)</code> uses <code class="inline">null</code>, not the default.</li>
+        </ul>
+        <h3>4.9. What is function composition?</h3>
+        <ul>
+          <li><strong>A:</strong> Combining small functions so the output of one is the input of the next (<code class="inline">h(g(f(x)))</code>). See section 3.4; pipe/compose utilities are File 23.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 05. Open from the JS Language index.</footer>

@@ -593,6 +593,18 @@ sum(1, 2, 3);  // 6</pre></div>
         <ul>
           <li><strong>A:</strong> <code class="inline">var</code> is function-scoped — one shared <code class="inline">i</code>. All async callbacks see the final value. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, or use an IIFE to capture each value (File 04).</li>
         </ul>
+        <h3>6.9. Why does <code class="inline">this</code> break inside a callback?</h3>
+        <ul>
+          <li><strong>A:</strong> A nested <code class="inline">function</code> callback gets its own <code class="inline">this</code> (often <code class="inline">undefined</code> in strict mode). Fix with an <strong>arrow</strong> (lexical <code class="inline">this</code>), <code class="inline">.bind(this)</code>, or store <code class="inline">const self = this</code>.</li>
+        </ul>
+        <div class="code"><pre>const user = {
+  name: &quot;Bharat&quot;,
+  delayed() {
+    setTimeout(() =&gt; console.log(this.name), 0);  // arrow keeps user
+    // setTimeout(function () { console.log(this.name); }, 0);  // lost
+  },
+};
+user.delayed();</pre></div>
       </section>
       <footer>HTML note for JavaScript File 18. Open from the JS Language index.</footer>
     </main>

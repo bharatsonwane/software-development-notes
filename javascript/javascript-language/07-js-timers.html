@@ -132,6 +132,19 @@ const id = setInterval(() =&gt; {
 requestAnimationFrame(animate);
 
 // cancel: cancelAnimationFrame(id);</pre></div>
+        <h3>2.3. Recursive setTimeout vs setInterval</h3>
+        <ul>
+          <li><strong><code class="inline">setInterval</code></strong> schedules the next tick on a fixed clock — if the callback is slow, calls can <strong>overlap</strong> or pile up.</li>
+          <li><strong>Recursive <code class="inline">setTimeout</code></strong> schedules the next run only after the current callback finishes — better when work length varies:</li>
+        </ul>
+        <div class="code"><pre>function tick() {
+  // do work (may take longer than the delay)
+  setTimeout(tick, 1000);  // next run after this call completes + 1000ms
+}
+setTimeout(tick, 1000);</pre></div>
+        <ul>
+          <li>Timers are <strong>macrotasks</strong> on the event loop — File 21. <code class="inline">setTimeout(fn, 0)</code> still runs after the current stack and pending microtasks.</li>
+        </ul>
       </section>
       <section id="3-common-questions">
         <div class="heading-with-levels">
@@ -154,6 +167,10 @@ requestAnimationFrame(animate);
         <h3>3.3. Why use requestAnimationFrame?</h3>
         <ul>
           <li><strong>A:</strong> It batches visual updates with the browser <strong>repaint cycle</strong> — smoother than a fixed <code class="inline">setInterval</code>.</li>
+        </ul>
+        <h3>3.4. When prefer recursive setTimeout over setInterval?</h3>
+        <ul>
+          <li><strong>A:</strong> When each tick&#x27;s work can take longer than the interval — recursive <code class="inline">setTimeout</code> waits for the previous run to finish before scheduling the next, avoiding overlap. Details: File 21 (event loop).</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 07. Open from the JS Language index.</footer>

@@ -175,10 +175,24 @@ function exportData(format, data) {
   return acc;
 }</pre></div>
         <h3>3.4. call and apply</h3>
+        <ul>
+          <li><strong>Naive (uses native apply)</strong> — fine for demos, not a real polyfill:</li>
+        </ul>
         <div class="code"><pre>function call(fn, thisArg, ...args) {
   return fn.apply(thisArg, args);
 }
 // apply same with args array</pre></div>
+        <ul>
+          <li><strong>Interview sketch without <code class="inline">apply</code></strong> — temporarily attach <code class="inline">fn</code> as a property on <code class="inline">thisArg</code>, invoke it, then clean up:</li>
+        </ul>
+        <div class="code"><pre>function myCall(fn, thisArg, ...args) {
+  const ctx = thisArg == null ? globalThis : Object(thisArg);
+  const key = Symbol(&quot;call&quot;);
+  ctx[key] = fn;
+  const result = ctx[key](...args);
+  delete ctx[key];
+  return result;
+}</pre></div>
         <h3>3.5. flatten array</h3>
         <div class="code"><pre>function flatten(arr, depth = 1) {
   return depth &gt; 0
@@ -370,6 +384,15 @@ await sleep(1000);</pre></div>
         <ul>
           <li>HTTP header restricting script/style sources — mitigates XSS.</li>
         </ul>
+        <h3>5.6. <code class="inline">eval</code> and <code class="inline">Function</code></h3>
+        <ul>
+          <li><strong><code class="inline">eval(string)</code></strong> and <strong><code class="inline">new Function(string)</code></strong> run arbitrary code. Never feed them user input — XSS and injection risk. Prefer JSON.parse, templating libraries, or explicit parsers.</li>
+        </ul>
+        <h3>5.7. Secure storage</h3>
+        <ul>
+          <li><strong><code class="inline">localStorage</code> / <code class="inline">sessionStorage</code></strong> are readable by any script on the page — if XSS exists, tokens there are stolen.</li>
+          <li>Prefer <strong>httpOnly</strong>, <strong>Secure</strong>, <strong>SameSite</strong> cookies for session credentials when the server can set them. Treat client storage as non-secret UI state.</li>
+        </ul>
       </section>
       <section id="6-engine-performance-interview">
         <div class="heading-with-levels">
@@ -400,6 +423,10 @@ new Chain(2).add(3).mul(4).val();  // 20</pre></div>
         <h3>6.3. De-optimization</h3>
         <ul>
           <li>V8 may <strong>bail out</strong> of optimized code when types change unpredictably (e.g. adding properties to objects in hot loops with varying shapes). Keep object shapes stable (File 23 — hidden classes).</li>
+        </ul>
+        <h3>6.4. Parsing, compilation, JIT</h3>
+        <ul>
+          <li>Engines <strong>parse</strong> source → AST, then emit bytecode and run it. Hot functions are <strong>JIT-compiled</strong> (just-in-time) to optimized machine code (e.g. V8 Ignition + TurboFan). File 23 covers the pipeline and hidden classes.</li>
         </ul>
       </section>
       <section id="7-common-questions">
@@ -448,6 +475,10 @@ new Chain(2).add(3).mul(4).val();  // 20</pre></div>
         <h3>7.8. Implement Promise.all?</h3>
         <ul>
           <li><strong>A:</strong> Wrap in Promise; resolve array when all fulfill; reject on first rejection (section 3.8).</li>
+        </ul>
+        <h3>7.9. Why avoid eval and localStorage for tokens?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">eval</code> runs arbitrary code (injection). <code class="inline">localStorage</code> is script-readable — XSS steals tokens. Prefer httpOnly cookies for sessions (section 5.6–5.7).</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 25. Open from the JS Language index.</footer>

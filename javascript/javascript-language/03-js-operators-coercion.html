@@ -140,7 +140,7 @@ null === 0;   // false</pre></div>
         </thead>
         <tbody>
         <tr><td><code class="inline">&amp;&amp;</code></td><td>AND</td><td>Returns first <strong>falsy</strong> value, or last value if all truthy</td></tr>
-        <tr><td>`\</td><td>\</td><td>`</td></tr>
+        <tr><td><code class="inline">||</code></td><td>OR</td><td>Returns first <strong>truthy</strong> value, or last value if all falsy</td></tr>
         <tr><td><code class="inline">!</code></td><td>NOT</td><td>Converts to boolean and inverts</td></tr>
         </tbody>
         </table>
@@ -160,7 +160,32 @@ const name = user &amp;&amp; user.name;   // null — no error, user.name not ac
 
 false &amp;&amp; doSomething();  // doSomething never called
 true || doSomething();   // doSomething never called</pre></div>
-        <h3>1.5. Unary and other operators</h3>
+        <h3>1.5. Bitwise operators</h3>
+        <ul>
+          <li>Operate on <strong>32-bit integers</strong> (operands are converted with ToInt32). Useful for flags and masks; rare in app UI code.</li>
+        </ul>
+        <table>
+        <thead>
+        <tr><th>Operator</th><th>Name</th><th>Example</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">&amp;</code></td><td>AND</td><td><code class="inline">5 &amp; 1</code> → <code class="inline">1</code></td></tr>
+        <tr><td><code class="inline">|</code></td><td>OR</td><td><code class="inline">5 | 2</code> → <code class="inline">7</code></td></tr>
+        <tr><td><code class="inline">^</code></td><td>XOR</td><td><code class="inline">5 ^ 1</code> → <code class="inline">4</code></td></tr>
+        <tr><td><code class="inline">~</code></td><td>NOT</td><td><code class="inline">~0</code> → <code class="inline">-1</code></td></tr>
+        <tr><td><code class="inline">&lt;&lt;</code></td><td>Left shift</td><td><code class="inline">1 &lt;&lt; 3</code> → <code class="inline">8</code></td></tr>
+        <tr><td><code class="inline">&gt;&gt;</code></td><td>Sign-propagating right shift</td><td><code class="inline">8 &gt;&gt; 2</code> → <code class="inline">2</code></td></tr>
+        <tr><td><code class="inline">&gt;&gt;&gt;</code></td><td>Zero-fill right shift</td><td><code class="inline">-1 &gt;&gt;&gt; 0</code> → <code class="inline">4294967295</code></td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>const READ = 1;   // 001
+const WRITE = 2;  // 010
+const EXEC = 4;   // 100
+
+let flags = READ | WRITE;  // 011 → 3
+flags &amp; READ;              // 1 — has READ
+flags &amp;= ~WRITE;           // clear WRITE → 1</pre></div>
+        <h3>1.6. Unary and other operators</h3>
         <table>
         <thead>
         <tr><th>Operator</th><th>Example</th><th>Notes</th></tr>
@@ -185,7 +210,7 @@ delete obj.a;    // true (already gone, still &quot;succeeds&quot;)
 
 &quot;toString&quot; in {};  // true — inherited from Object.prototype</pre></div>
         <h3 id="1-operators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.6. Operator precedence (brief)</h3>
+        <h3>1.7. Operator precedence (brief)</h3>
         <ul>
           <li>When multiple operators appear in one expression, <strong>precedence</strong> decides evaluation order. Use parentheses when in doubt.</li>
           <li>High → low (partial list):</li>
@@ -417,15 +442,21 @@ String(undefined);   // &quot;undefined&quot;
 Boolean(0);          // false
 Boolean(&quot;hello&quot;);    // true</pre></div>
         <h3>3.4. Common coercion pitfalls</h3>
-        <div class="code"><pre>// + prefers string if either operand is string
-[] + [];             // &quot;&quot; (empty string)
+        <div class="code"><pre>// Classic interview outputs
+&quot;5&quot; + 1;             // &quot;51&quot; — + concatenates when either side is string
+&quot;5&quot; - 1;             // 4 — - forces numbers
+true + true;         // 2 — booleans → 1 + 1
+[] + [];             // &quot;&quot; — arrays become &quot;&quot; then concatenate
 [] + {};             // &quot;[object Object]&quot;
 {} + [];             // 0 in some engines — avoid ambiguous mixes
 
 // Comparison traps with ==
 0 == false;          // true
 &quot;&quot; == 0;             // true
+&quot;&quot; == false;         // true — both ToNumber → 0
+[] == false;         // true — [] → &quot;&quot; → 0; false → 0
 &quot;0&quot; == false;        // true
+null == undefined;   // true (special case)
 null == 0;           // false
 
 // typeof null quirk (from File 02)
@@ -487,7 +518,7 @@ if (value === null || value === undefined) { }</pre></div>
         <tr><th>Operator</th><th>Picks / returns when</th></tr>
         </thead>
         <tbody>
-        <tr><td>`\</td><td>\</td></tr>
+        <tr><td><code class="inline">||</code></td><td>First <strong>truthy</strong> (or last if all falsy)</td></tr>
         <tr><td><code class="inline">??</code></td><td>First <strong>not null/undefined</strong> (or last if both nullish)</td></tr>
         <tr><td><code class="inline">&amp;&amp;</code></td><td>First <strong>falsy</strong> (or last if all truthy)</td></tr>
         </tbody>
@@ -569,6 +600,14 @@ if (arr.length === 0) { /* actually empty */ }</pre></div>
         <h3>5.8. What is the difference between <code class="inline">Object.is</code> and <code class="inline">===</code>?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">Object.is(NaN, NaN)</code> is <code class="inline">true</code>; <code class="inline">NaN === NaN</code> is <code class="inline">false</code>. <code class="inline">Object.is(+0, -0)</code> is <code class="inline">false</code>; <code class="inline">+0 === -0</code> is <code class="inline">true</code>. Otherwise they agree.</li>
+        </ul>
+        <h3>5.9. Why is <code class="inline">[] == false</code> true but <code class="inline">[]</code> is truthy?</h3>
+        <ul>
+          <li><strong>A:</strong> In <code class="inline">if ([])</code>, arrays are truthy (not one of the 8 falsy values). With <code class="inline">==</code>, <code class="inline">false</code> becomes <code class="inline">0</code> and <code class="inline">[]</code> becomes <code class="inline">&quot;&quot;</code> then <code class="inline">0</code>, so <code class="inline">0 == 0</code>. Prefer <code class="inline">===</code>.</li>
+        </ul>
+        <h3>5.10. When do bitwise operators matter?</h3>
+        <ul>
+          <li><strong>A:</strong> Flag masks, permission bits, and some low-level encoding. Day-to-day app code usually prefers booleans and objects. Remember they force 32-bit integer conversion.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 03. Open from the JS Language index.</footer>
