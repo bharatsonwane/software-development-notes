@@ -263,6 +263,20 @@ function fetchUser(id) {
     console.log(&quot;Cleanup — runs either way&quot;);
   });</pre></div>
         <ul><li><strong><code class="inline">then</code></strong> — on fulfillment; can return value or new Promise (chained).</li><li><strong><code class="inline">catch</code></strong> — on rejection anywhere in chain.</li><li><strong><code class="inline">finally</code></strong> — always runs; does not receive result (use for cleanup).</li>
+          <li><strong><code class="inline">finally</code> semantics:</strong> the callback&#x27;s return value is ignored (except a rejected Promise / thrown error, which rejects the chain). The previous fulfillment or rejection value is passed through:</li>
+        </ul>
+        <div class="code"><pre>Promise.resolve(1)
+  .finally(() =&gt; 999)           // return ignored
+  .then((v) =&gt; console.log(v)); // 1
+
+Promise.reject(&quot;err&quot;)
+  .finally(() =&gt; {})
+  .catch((e) =&gt; console.log(e)); // &quot;err&quot; — still rejects
+
+Promise.resolve(1)
+  .finally(() =&gt; { throw new Error(&quot;cleanup failed&quot;); })
+  .catch((e) =&gt; console.log(e.message)); // &quot;cleanup failed&quot;</pre></div>
+        <ul>
           <li>Returning inside <code class="inline">then</code> passes to next <code class="inline">then</code>:</li>
         </ul>
         <div class="code"><pre>Promise.resolve(2)
@@ -456,6 +470,23 @@ const b = await pB;
 }</pre></div>
         <ul>
           <li>Choose based on rate limits and whether order matters.</li>
+        </ul>
+        <h3>4.6. <code class="inline">for await...of</code> and async iteration</h3>
+        <ul>
+          <li>Async iterables implement <strong><code class="inline">Symbol.asyncIterator</code></strong>. Consume with <strong><code class="inline">for await...of</code></strong> (must be inside an async function):</li>
+        </ul>
+        <div class="code"><pre>async function* pages(urls) {
+  for (const url of urls) {
+    const res = await fetch(url);
+    yield await res.json();
+  }
+}
+
+for await (const data of pages([&quot;/a&quot;, &quot;/b&quot;])) {
+  console.log(data);
+}</pre></div>
+        <ul>
+          <li>Also works on sync iterables of Promises. Generators and well-known symbols: File 22. Streams (ReadableStream is async-iterable in modern browsers): File 27.</li>
         </ul>
       </section>
       <section id="5-event-loop">

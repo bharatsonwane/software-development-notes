@@ -81,8 +81,17 @@ const withValues = new Array(1, 2, 3);  // [1, 2, 3]
 const fromStr = Array.from(&quot;hi&quot;);   // [&quot;h&quot;, &quot;i&quot;]
 const copy = Array.from([1, 2]);    // [1, 2]
 
+// Array-like (indexed + length) — e.g. arguments, NodeList, DOMTokenList
+const list = document.querySelectorAll(&quot;div&quot;); // NodeList
+const asArr = Array.from(list);
+const mapped = Array.from(list, (el) =&gt; el.id); // map while converting
+[...list];  // also works when iterable
+
 // Fill fixed length
 const zeros = Array(5).fill(0);     // [0, 0, 0, 0, 0]</pre></div>
+        <ul>
+          <li><strong>Array-like vs iterable:</strong> array-like needs <code class="inline">length</code> + indexes; iterable needs <code class="inline">Symbol.iterator</code>. <code class="inline">Array.from</code> accepts both. Prefer rest params over <code class="inline">arguments</code> (File 05).</li>
+        </ul>
         <h3 id="1-creating-accessing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.2. Index access</h3>
         <div class="code"><pre>const fruits = [&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;];

@@ -199,6 +199,7 @@ flags &amp;= ~WRITE;           // clear WRITE → 1</pre></div>
         <tr><td><code class="inline">in</code></td><td><code class="inline">&quot;name&quot; in obj</code></td><td>Checks if key exists (own or inherited)</td></tr>
         <tr><td><code class="inline">?.</code></td><td><code class="inline">user?.address?.city</code></td><td>Optional chaining — stops on <code class="inline">null</code>/<code class="inline">undefined</code></td></tr>
         <tr><td><code class="inline">??</code></td><td><code class="inline">value ?? &quot;default&quot;</code></td><td>Nullish coalescing — only for <code class="inline">null</code>/<code class="inline">undefined</code></td></tr>
+        <tr><td><code class="inline">,</code> (comma)</td><td><code class="inline">(a = 1, b = 2, a + b)</code></td><td>Evaluates left → right; result is last value</td></tr>
         </tbody>
         </table>
         <div class="code"><pre>+&quot;42&quot;;           // 42
@@ -208,14 +209,19 @@ const obj = { a: 1 };
 delete obj.a;    // true
 delete obj.a;    // true (already gone, still &quot;succeeds&quot;)
 
-&quot;toString&quot; in {};  // true — inherited from Object.prototype</pre></div>
+&quot;toString&quot; in {};  // true — inherited from Object.prototype
+
+// Comma — rare in app code; common in for-loop heads
+let x, y;
+x = (y = 3, y + 1);  // y = 3, then x = 4
+for (let i = 0, j = 10; i &lt; j; i++, j--) { /* ... */ }</pre></div>
         <h3 id="1-operators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>1.7. Operator precedence (brief)</h3>
         <ul>
           <li>When multiple operators appear in one expression, <strong>precedence</strong> decides evaluation order. Use parentheses when in doubt.</li>
           <li>High → low (partial list):</li>
         </ul>
-        <ol><li><code class="inline">()</code> grouping</li><li><code class="inline">++</code> <code class="inline">--</code> (postfix), <code class="inline">?.</code> <code class="inline">??</code> <code class="inline">?.</code></li><li><code class="inline">!</code> unary <code class="inline">+</code> unary <code class="inline">-</code> <code class="inline">typeof</code></li><li><code class="inline">**</code></li><li><code class="inline">*</code> <code class="inline">/</code> <code class="inline">%</code></li><li><code class="inline">+</code> <code class="inline">-</code></li><li><code class="inline">&lt;</code> <code class="inline">&lt;=</code> <code class="inline">&gt;</code> <code class="inline">&gt;=</code></li><li><code class="inline">==</code> <code class="inline">!=</code> <code class="inline">===</code> <code class="inline">!==</code></li><li><code class="inline">&amp;&amp;</code></li><li><code class="inline">||</code></li><li><code class="inline">??</code> (cannot mix with <code class="inline">&amp;&amp;</code>/<code class="inline">||</code> without parentheses)</li><li><code class="inline">=</code> <code class="inline">+=</code> <code class="inline">-=</code> …</li></ol>
+        <ol><li><code class="inline">()</code> grouping</li><li><code class="inline">++</code> <code class="inline">--</code> (postfix), <code class="inline">?.</code> <code class="inline">??</code> <code class="inline">?.</code></li><li><code class="inline">!</code> unary <code class="inline">+</code> unary <code class="inline">-</code> <code class="inline">typeof</code></li><li><code class="inline">**</code></li><li><code class="inline">*</code> <code class="inline">/</code> <code class="inline">%</code></li><li><code class="inline">+</code> <code class="inline">-</code></li><li><code class="inline">&lt;</code> <code class="inline">&lt;=</code> <code class="inline">&gt;</code> <code class="inline">&gt;=</code></li><li><code class="inline">==</code> <code class="inline">!=</code> <code class="inline">===</code> <code class="inline">!==</code></li><li><code class="inline">&amp;&amp;</code></li><li><code class="inline">||</code></li><li><code class="inline">??</code> (cannot mix with <code class="inline">&amp;&amp;</code>/<code class="inline">||</code> without parentheses)</li><li><code class="inline">=</code> <code class="inline">+=</code> <code class="inline">-=</code> …</li><li><code class="inline">,</code> comma (lowest among these)</li></ol>
         <div class="code"><pre>2 + 3 * 4;       // 14, not 20
 (2 + 3) * 4;     // 20
 
@@ -441,6 +447,19 @@ String(undefined);   // &quot;undefined&quot;
 
 Boolean(0);          // false
 Boolean(&quot;hello&quot;);    // true</pre></div>
+        <h3>3.3.1. ToPrimitive (objects → primitives)</h3>
+        <ul>
+          <li>Objects are first converted with <strong>ToPrimitive</strong> (File 02): prefer <code class="inline">Symbol.toPrimitive</code>, else <code class="inline">valueOf</code>/<code class="inline">toString</code> depending on hint.</li>
+          <li>Then the resulting primitive goes through ToNumber / ToString / ToBoolean as needed.</li>
+        </ul>
+        <div class="code"><pre>const box = {
+  valueOf() { return 10; },
+  toString() { return &quot;ten&quot;; },
+};
+
+box + 1;            // 11 — prefer valueOf for +
+String(box);        // &quot;ten&quot; — string hint prefers toString
+Number(box);        // 10</pre></div>
         <h3>3.4. Common coercion pitfalls</h3>
         <div class="code"><pre>// Classic interview outputs
 &quot;5&quot; + 1;             // &quot;51&quot; — + concatenates when either side is string

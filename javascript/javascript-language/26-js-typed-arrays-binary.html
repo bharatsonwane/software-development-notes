@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>26. Typed Arrays &amp; Binary Data - JavaScript Notes</title>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-arraybuffer">1. ArrayBuffer</a>
+        <a href="#2-typed-arrays">2. TypedArrays</a>
+        <a href="#3-dataview">3. DataView</a>
+        <a href="#4-common-questions">4. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">26. Typed Arrays &amp; Binary Data</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>26. Typed Arrays &amp; Binary Data</h1>
+        <p class="subtitle">File 26 — ArrayBuffer, TypedArray views, DataView, transferables.</p>
+      </header>
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>JavaScript arrays hold mixed values. <strong>Binary data</strong> (network packets, images, audio, WASM) uses a fixed byte buffer plus typed views.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Default rule today:</strong> use a TypedArray (<code class="inline">Uint8Array</code>, etc.) for homogeneous numeric buffers; use <code class="inline">DataView</code> when endianness or mixed field sizes matter; pass buffers with <code class="inline">structuredClone</code> / Worker transfer (File 02, 24).</li>
+        </ul>
+      </section>
+
+      <section id="1-arraybuffer">
+        <div class="heading-with-levels">
+          <h2>1. ArrayBuffer</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="1-arraybuffer-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>An <strong><code class="inline">ArrayBuffer</code></strong> is a raw contiguous block of bytes. You do not read/write it directly — attach a <strong>view</strong>.</li>
+        </ul>
+        <div class="code"><pre>const buf = new ArrayBuffer(8);  // 8 bytes
+buf.byteLength;                  // 8</pre></div>
+        <h3 id="1-arraybuffer-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Detach / transfer</h3>
+        <ul>
+          <li>Transferring a buffer (Workers, <code class="inline">structuredClone(..., { transfer })</code>) <strong>detaches</strong> the original — <code class="inline">byteLength</code> becomes 0.</li>
+        </ul>
+        <div class="code"><pre>const buf = new ArrayBuffer(4);
+const moved = structuredClone(buf, { transfer: [buf] });
+buf.byteLength;    // 0 — detached
+moved.byteLength;  // 4</pre></div>
+      </section>
+
+      <section id="2-typed-arrays">
+        <div class="heading-with-levels">
+          <h2>2. TypedArrays</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="2-typed-arrays-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>TypedArrays are <strong>views</strong> over an ArrayBuffer with a fixed element type:</li>
+        </ul>
+        <table>
+        <thead>
+        <tr><th>Type</th><th>Bytes / element</th><th>Range (approx)</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">Uint8Array</code></td><td>1</td><td>0–255</td></tr>
+        <tr><td><code class="inline">Int8Array</code></td><td>1</td><td>−128–127</td></tr>
+        <tr><td><code class="inline">Uint16Array</code> / <code class="inline">Int16Array</code></td><td>2</td><td>16-bit</td></tr>
+        <tr><td><code class="inline">Uint32Array</code> / <code class="inline">Int32Array</code></td><td>4</td><td>32-bit</td></tr>
+        <tr><td><code class="inline">Float32Array</code> / <code class="inline">Float64Array</code></td><td>4 / 8</td><td>IEEE floats</td></tr>
+        <tr><td><code class="inline">BigInt64Array</code> / <code class="inline">BigUint64Array</code></td><td>8</td><td>bigint elements</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>const bytes = new Uint8Array(4);
+bytes[0] = 255;
+bytes[1] = 10;
+
+const fromValues = Uint8Array.from([1, 2, 3]);
+const shared = new Uint8Array(bytes.buffer);  // same underlying buffer
+
+bytes.length;       // element count
+bytes.byteLength;   // bytes
+bytes.buffer;       // ArrayBuffer</pre></div>
+        <ul>
+          <li>Many array methods work (<code class="inline">map</code>, <code class="inline">slice</code>, <code class="inline">set</code>) but TypedArrays are not normal Arrays (<code class="inline">Array.isArray</code> is false).</li>
+        </ul>
+        <h3 id="2-typed-arrays-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Common uses</h3>
+        <div class="code"><pre>// Fetch binary
+const res = await fetch(&quot;/file.bin&quot;);
+const buf = await res.arrayBuffer();
+const view = new Uint8Array(buf);
+
+// Text encode/decode
+const enc = new TextEncoder().encode(&quot;hi&quot;);  // Uint8Array
+const text = new TextDecoder().decode(enc);</pre></div>
+        <h3 id="2-typed-arrays-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Multiple views, one buffer</h3>
+        <div class="code"><pre>const buf = new ArrayBuffer(4);
+const u8 = new Uint8Array(buf);
+const u16 = new Uint16Array(buf);
+u8[0] = 0x01;
+u8[1] = 0x02;
+u16[0];  // depends on endianness of the platform for multi-byte reads</pre></div>
+      </section>
+
+      <section id="3-dataview">
+        <div class="heading-with-levels">
+          <h2>3. DataView</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="3-dataview-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <ul>
+          <li><strong><code class="inline">DataView</code></strong> reads/writes mixed sizes with explicit <strong>endianness</strong> — ideal for binary protocols.</li>
+        </ul>
+        <div class="code"><pre>const buf = new ArrayBuffer(8);
+const dv = new DataView(buf);
+
+dv.setUint16(0, 0x1234, false); // big-endian
+dv.setFloat32(2, 3.14, true);   // little-endian
+dv.getUint16(0, false);         // 0x1234</pre></div>
+        <ul>
+          <li>Third argument <code class="inline">littleEndian</code>: <code class="inline">true</code> = LE, <code class="inline">false</code> = BE.</li>
+        </ul>
+      </section>
+
+      <section id="4-common-questions">
+        <div class="heading-with-levels">
+          <h2>4. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Array vs TypedArray?</h3>
+        <ul>
+          <li><strong>A:</strong> Arrays hold any values and grow. TypedArrays are fixed-type numeric views over bytes — faster and required for many binary APIs.</li>
+        </ul>
+        <h3 id="4-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. When do I use DataView?</h3>
+        <ul>
+          <li><strong>A:</strong> When parsing/writing mixed field widths or when you must control endianness. Prefer a single TypedArray when the buffer is homogeneous.</li>
+        </ul>
+        <h3>4.3. What is a transferable?</h3>
+        <ul>
+          <li><strong>A:</strong> An object (e.g. <code class="inline">ArrayBuffer</code>) that can move ownership to another context without copying — original becomes detached.</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for JavaScript File 26. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

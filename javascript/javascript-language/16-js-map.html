@@ -100,6 +100,32 @@ userMap.entries();</pre></div>
         </ul>
         <div class="code"><pre>const obj = Object.fromEntries(map);
 const map2 = new Map(Object.entries(obj));</pre></div>
+        <h3>1.1.1. SameValueZero keys (NaN and ±0)</h3>
+        <ul>
+          <li>Map key equality matches Set: <strong>SameValueZero</strong> — one <code class="inline">NaN</code> key; <code class="inline">+0</code> and <code class="inline">-0</code> are the same key (File 15).</li>
+        </ul>
+        <div class="code"><pre>const m = new Map();
+m.set(NaN, &quot;a&quot;);
+m.set(NaN, &quot;b&quot;);
+m.get(NaN);             // &quot;b&quot; — same key
+m.set(+0, 1);
+m.set(-0, 2);
+m.get(0);               // 2</pre></div>
+        <h3>1.1.2. <code class="inline">Map.groupBy</code></h3>
+        <ul>
+          <li>Group items into a <strong>Map</strong> keyed by any value (objects, numbers, etc.). <code class="inline">Object.groupBy</code> is the same idea with string keys (File 14).</li>
+        </ul>
+        <div class="code"><pre>const rows = [
+  { type: &quot;a&quot;, n: 1 },
+  { type: &quot;b&quot;, n: 2 },
+  { type: &quot;a&quot;, n: 3 },
+];
+
+const byType = Map.groupBy(rows, (r) =&gt; r.type);
+byType.get(&quot;a&quot;);  // [{ type: &quot;a&quot;, n: 1 }, { type: &quot;a&quot;, n: 3 }]
+
+const oddEven = Map.groupBy([1, 2, 3, 4], (n) =&gt; n % 2 === 0);
+oddEven.get(true);  // [2, 4]</pre></div>
         <h3 id="1-map-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>1.2. WeakMap</h3>
         <ul>
@@ -144,6 +170,14 @@ wm.get(obj);  // "metadata"
         <h3>2.2. What is the difference between WeakMap and Map?</h3>
         <ul>
           <li><strong>A:</strong> <strong>WeakMap</strong> keys must be objects, holds <strong>weak</strong> references (GC-friendly), is <strong>not iterable</strong>, and has <strong>no <code class="inline">size</code></strong>. <strong>Map</strong> holds keys strongly and supports full iteration.</li>
+        </ul>
+        <h3>2.3. How does Map treat <code class="inline">NaN</code> as a key?</h3>
+        <ul>
+          <li><strong>A:</strong> <strong>SameValueZero</strong> — all <code class="inline">NaN</code> values share one key. <code class="inline">+0</code> and <code class="inline">-0</code> are also the same key.</li>
+        </ul>
+        <h3>2.4. When do I use <code class="inline">Map.groupBy</code> vs <code class="inline">Object.groupBy</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Use <strong><code class="inline">Map.groupBy</code></strong> when the group key is not a string (objects, numbers, booleans). Use <strong><code class="inline">Object.groupBy</code></strong> for plain string/symbol keys that you want as a record (File 14).</li>
         </ul>
       </section>
 

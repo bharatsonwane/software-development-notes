@@ -257,6 +257,27 @@ acct.deposit(100);
         <ul>
           <li>Private is <strong>hard privacy</strong> — not accessible via closure trick from outside. Different from convention <code class="inline">_prefix</code>.</li>
         </ul>
+        <h3>2.7. <code class="inline">new.target</code></h3>
+        <ul>
+          <li>Inside a function or constructor, <strong><code class="inline">new.target</code></strong> is the constructor that was invoked with <code class="inline">new</code>, or <code class="inline">undefined</code> if called without <code class="inline">new</code>.</li>
+        </ul>
+        <div class="code"><pre>function User(name) {
+  if (!new.target) {
+    return new User(name);  // allow call without new
+  }
+  this.name = name;
+}
+
+class Animal {
+  constructor() {
+    console.log(new.target.name);  // subclass name when `new Dog()`
+  }
+}
+class Dog extends Animal {}
+new Dog();  // &quot;Dog&quot;</pre></div>
+        <ul>
+          <li>Useful for factory-style constructors and detecting which subclass was constructed. Prototype mechanics: File 20.</li>
+        </ul>
       </section>
       <section id="3-common-questions">
         <div class="heading-with-levels">
@@ -284,6 +305,10 @@ acct.deposit(100);
         <h3>3.4. Why must super() run before this in a subclass?</h3>
         <ul>
           <li><strong>A:</strong> The parent constructor sets up the instance. Until <code class="inline">super()</code> returns, <code class="inline">this</code> is not initialized.</li>
+        </ul>
+        <h3>3.5. What is <code class="inline">new.target</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Meta-property: the constructor invoked with <code class="inline">new</code> (or <code class="inline">undefined</code> without <code class="inline">new</code>). In subclasses it is the most-derived constructor.</li>
         </ul>
       </section>
 

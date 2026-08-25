@@ -287,6 +287,24 @@ const job = {
 
 job.run();  // &quot;done&quot;</pre></div>
         <ul>
+          <li><strong><code class="inline">super</code> in object literals</strong> — method shorthand can call a method on the prototype set via <code class="inline">Object.setPrototypeOf</code> or object inheritance:</li>
+        </ul>
+        <div class="code"><pre>const parent = {
+  greet() { return &quot;hi&quot;; },
+};
+
+const child = {
+  __proto__: parent,          // or Object.create(parent) then assign methods
+  greet() {
+    return super.greet() + &quot;!&quot;;
+  },
+};
+
+child.greet();  // &quot;hi!&quot;</pre></div>
+        <ul>
+          <li><code class="inline">super</code> in object methods requires <strong>method shorthand</strong> (not <code class="inline">greet: function() {}</code>). Class <code class="inline">super</code> is File 19.</li>
+        </ul>
+        <ul>
           <li><strong>Symbol keys</strong> — unique, hidden from most loops (File 02, File 22):</li>
         </ul>
         <div class="code"><pre>const id = Symbol(&quot;id&quot;);

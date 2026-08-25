@@ -128,7 +128,7 @@ Notes for the JavaScript language and related ecosystems. Prefix: `js`, `ts`, `n
 
 | Track | Folder | Chapters |
 | ----- | ------ | -------- |
-| JavaScript language | javascript/javascript-language/ | 25 |
+| JavaScript language | javascript/javascript-language/ | 29 |
 | TypeScript | javascript/typescript/ | 12 |
 | Node.js | javascript/nodejs/ | 14 |
 | React.js | javascript/reactjs/ | 14 |

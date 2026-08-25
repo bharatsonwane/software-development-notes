@@ -490,6 +490,41 @@ function pushItem(arr, item) {
         <ul>
           <li>Prefer pure functions where practical; isolate side effects at boundaries (API calls, UI updates).</li>
         </ul>
+        <h3>3.5.1. Function <code class="inline">.length</code>, <code class="inline">.name</code>, and <code class="inline">.toString()</code></h3>
+        <ul>
+          <li>Functions are objects with useful metadata:</li>
+        </ul>
+        <div class="code"><pre>function greet(name, age = 0) {}
+greet.length;              // 1 — required params only (defaults stop the count)
+greet.name;                // &quot;greet&quot;
+
+const fn = function named() {};
+fn.name;                   // &quot;named&quot;
+
+const anon = () =&gt; {};
+anon.name;                 // &quot;&quot; or inferred from binding when assigned
+
+function add(a, b) { return a + b; }
+add.toString();            // source text — useful for debugging, not for logic</pre></div>
+        <ul>
+          <li>Rest parameters do not count toward <code class="inline">.length</code>. Bound functions may have empty names or reduced length.</li>
+          <li>Do not parse <code class="inline">.toString()</code> for behavior — minifiers and engines can change the string.</li>
+        </ul>
+        <h3>3.5.2. Array-like → array</h3>
+        <ul>
+          <li><strong>Array-like</strong> objects have indexed keys and a <code class="inline">length</code> (e.g. <code class="inline">arguments</code>, <code class="inline">NodeList</code>, some DOM collections) but lack array methods.</li>
+        </ul>
+        <div class="code"><pre>function legacy() {
+  const args = Array.from(arguments);     // preferred
+  const also = [...arguments];            // if iterable
+  return args.map((x) =&gt; x * 2);
+}
+
+Array.from(document.querySelectorAll(&quot;li&quot;));
+Array.prototype.slice.call(arrayLike);    // older idiom</pre></div>
+        <ul>
+          <li>Prefer rest parameters over <code class="inline">arguments</code>. More on <code class="inline">Array.from</code>: File 14.</li>
+        </ul>
         <h3 id="3-return-first-class-functions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>3.6. Returning functions and closures (intro)</h3>
         <ul>

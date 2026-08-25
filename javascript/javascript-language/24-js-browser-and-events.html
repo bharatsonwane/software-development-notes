@@ -218,6 +218,21 @@ window.addEventListener(&quot;user-login&quot;, (e) =&gt; {
         </ul>
         <div class="code"><pre>el.addEventListener(&quot;click&quot;, handler);                    // bubble (default)
 el.addEventListener(&quot;click&quot;, handler, { capture: true }); // capture</pre></div>
+        <h3>4.5. Event properties and options</h3>
+        <ul>
+          <li><strong><code class="inline">e.target</code></strong> — element that originated the event. <strong><code class="inline">e.currentTarget</code></strong> — element the listener is attached to (useful in delegation).</li>
+          <li><strong><code class="inline">e.stopPropagation()</code></strong> — stop further bubbling/capturing. <strong><code class="inline">e.stopImmediatePropagation()</code></strong> — also skip other listeners on the same node.</li>
+          <li><strong><code class="inline">e.composedPath()</code></strong> — full path including shadow DOM hosts (File 28).</li>
+          <li><strong><code class="inline">{ passive: true }</code></strong> — promises not to call <code class="inline">preventDefault</code>; improves scroll/touch performance. Browser may treat touch/wheel as passive by default on some targets.</li>
+        </ul>
+        <div class="code"><pre>list.addEventListener(&quot;click&quot;, (e) =&gt; {
+  console.log(e.target);         // clicked child
+  console.log(e.currentTarget);  // #list
+  e.stopImmediatePropagation();
+});
+
+window.addEventListener(&quot;touchstart&quot;, onTouch, { passive: true });
+window.addEventListener(&quot;wheel&quot;, onWheel, { passive: false }); // need preventDefault</pre></div>
       </section>
       <section id="5-observers-workers">
         <div class="heading-with-levels">
@@ -297,6 +312,14 @@ w.onmessage = (e) =&gt; console.log(e.data);</pre></div>
         <h3>5.8. When do I use IntersectionObserver?</h3>
         <ul>
           <li><strong>A:</strong> When you need to know if an element is on screen — lazy images, infinite scroll — without scroll listeners.</li>
+        </ul>
+        <h3>5.9. target vs currentTarget?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">target</code> is where the event started; <code class="inline">currentTarget</code> is the element the listener is on (parent in delegation).</li>
+        </ul>
+        <h3>5.10. What is a passive listener?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">{ passive: true }</code> promises you will not call <code class="inline">preventDefault</code> — helps scroll/touch performance. Use <code class="inline">passive: false</code> only when you must cancel the default.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 24. Open from the JS Language index.</footer>

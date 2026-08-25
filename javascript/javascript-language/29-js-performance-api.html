@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>29. Performance &amp; User Timing - JavaScript Notes</title>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-high-res-time">1. High resolution time</a>
+        <a href="#2-user-timing">2. User Timing</a>
+        <a href="#3-navigation-resource">3. Navigation &amp; Resource Timing</a>
+        <a href="#4-common-questions">4. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">29. Performance &amp; User Timing</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>29. Performance &amp; User Timing</h1>
+        <p class="subtitle">File 29 — performance.now, marks/measures, Navigation Timing, observers.</p>
+      </header>
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Measure real timings with the <strong>Performance APIs</strong> instead of guessing. App-level habits (debounce, avoid reflows) are File 23; interview engine notes are File 25.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Default rule today:</strong> mark critical user journeys with User Timing; use DevTools Performance panel for deep dives; watch Core Web Vitals with <code class="inline">PerformanceObserver</code> when shipping web apps.</li>
+        </ul>
+      </section>
+
+      <section id="1-high-res-time">
+        <div class="heading-with-levels">
+          <h2>1. High resolution time</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-high-res-time-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><code class="inline">performance.now()</code> returns ms since page time origin — monotonic, sub-ms precision. Prefer over <code class="inline">Date.now()</code> for durations.</li>
+        </ul>
+        <div class="code"><pre>const t0 = performance.now();
+doWork();
+const ms = performance.now() - t0;
+console.log(`took ${ms.toFixed(2)} ms`);</pre></div>
+      </section>
+
+      <section id="2-user-timing">
+        <div class="heading-with-levels">
+          <h2>2. User Timing</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="2-user-timing-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Marks</strong> name a moment; <strong>measures</strong> name a duration between marks (or now).</li>
+        </ul>
+        <div class="code"><pre>performance.mark(&quot;fetch-start&quot;);
+await fetch(&quot;/api&quot;);
+performance.mark(&quot;fetch-end&quot;);
+performance.measure(&quot;fetch&quot;, &quot;fetch-start&quot;, &quot;fetch-end&quot;);
+
+const [entry] = performance.getEntriesByName(&quot;fetch&quot;);
+console.log(entry.duration);
+
+performance.clearMarks();
+performance.clearMeasures();</pre></div>
+        <h3 id="2-user-timing-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.1. PerformanceObserver</h3>
+        <div class="code"><pre>const obs = new PerformanceObserver((list) =&gt; {
+  for (const e of list.getEntries()) {
+    console.log(e.name, e.duration, e.entryType);
+  }
+});
+obs.observe({ type: &quot;measure&quot;, buffered: true });
+// Also: &quot;mark&quot;, &quot;navigation&quot;, &quot;resource&quot;, &quot;paint&quot;, &quot;largest-contentful-paint&quot;, …</pre></div>
+      </section>
+
+      <section id="3-navigation-resource">
+        <div class="heading-with-levels">
+          <h2>3. Navigation &amp; Resource Timing</h2>
+          <div class="h2-levels">
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="3-navigation-resource-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <ul>
+          <li><strong>Navigation Timing</strong> — how the document loaded (DNS, connect, DOMContentLoaded, load).</li>
+          <li><strong>Resource Timing</strong> — each script/CSS/image fetch.</li>
+        </ul>
+        <div class="code"><pre>const nav = performance.getEntriesByType(&quot;navigation&quot;)[0];
+nav.domContentLoadedEventEnd - nav.startTime;
+
+const resources = performance.getEntriesByType(&quot;resource&quot;);
+resources.filter((r) =&gt; r.initiatorType === &quot;script&quot;);</pre></div>
+        <ul>
+          <li>Paint timings: <code class="inline">first-paint</code>, <code class="inline">first-contentful-paint</code>. LCP / CLS / INP need observers / web-vitals libraries for reliable field data.</li>
+        </ul>
+      </section>
+
+      <section id="4-common-questions">
+        <div class="heading-with-levels">
+          <h2>4. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Why not Date.now() for benchmarks?</h3>
+        <ul>
+          <li><strong>A:</strong> System clock can jump (NTP, user change). <code class="inline">performance.now()</code> is monotonic relative to the time origin.</li>
+        </ul>
+        <h3 id="4-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Mark vs measure?</h3>
+        <ul>
+          <li><strong>A:</strong> A <strong>mark</strong> is a timestamp label. A <strong>measure</strong> is a duration entry between two marks (or a mark and now).</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for JavaScript File 29. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

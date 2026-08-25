@@ -89,6 +89,17 @@ a.isDisjointFrom(new Set([9]));   // true</pre></div>
         <ul>
           <li>These return <strong>new</strong> Sets. Older environments: copy to arrays and filter.</li>
         </ul>
+        <h3>1.2.1. SameValueZero (NaN and ±0)</h3>
+        <ul>
+          <li><code class="inline">Set</code> (and <code class="inline">Map</code> keys) use <strong>SameValueZero</strong> equality — like <code class="inline">===</code> except <code class="inline">NaN</code> equals <code class="inline">NaN</code>, and <code class="inline">+0</code> equals <code class="inline">-0</code>.</li>
+        </ul>
+        <div class="code"><pre>const s = new Set([NaN, NaN, +0, -0]);
+s.size;                 // 2 — one NaN, one zero
+s.has(NaN);             // true
+s.has(-0);              // true — same as +0
+
+[NaN].includes(NaN);    // true — includes also uses SameValueZero
+[NaN].indexOf(NaN);     // -1 — indexOf uses ===</pre></div>
         <h3 id="1-set-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>1.3. WeakSet</h3>
         <ul>
@@ -124,6 +135,10 @@ ws.has(obj);  // true
         <h3>2.3. How do I get the intersection of two Sets?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">a.intersection(b)</code> (ES2025), or <code class="inline">[...a].filter((x) =&gt; b.has(x))</code>.</li>
+        </ul>
+        <h3>2.4. Why can a Set hold only one <code class="inline">NaN</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Membership uses <strong>SameValueZero</strong>, where <code class="inline">NaN</code> equals <code class="inline">NaN</code> (unlike <code class="inline">===</code>). <code class="inline">+0</code> and <code class="inline">-0</code> also count as the same key.</li>
         </ul>
       </section>
 

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../../public/styles/common.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
+  <title>28. Web Components &amp; Shadow DOM - JavaScript Notes</title>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> JavaScript Notes</div>
+      <nav class="nav">
+        <a href="../../index.html">← Home</a>
+        <a href="./javascript-language.html">← JS Language</a>
+        <a href="#intro">Intro</a>
+        <a href="#1-custom-elements">1. Custom elements</a>
+        <a href="#2-shadow-dom">2. Shadow DOM</a>
+        <a href="#3-templates-slots">3. Templates &amp; slots</a>
+        <a href="#4-common-questions">4. Common questions</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./javascript-language.html">JavaScript Language</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">28. Web Components &amp; Shadow DOM</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>28. Web Components &amp; Shadow DOM</h1>
+        <p class="subtitle">File 28 — custom elements, shadow DOM, templates, slots, composed events.</p>
+      </header>
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Web Components</strong> are browser-native reusable UI pieces: custom elements + optional Shadow DOM encapsulation + HTML templates.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Default rule today:</strong> use them for framework-agnostic widgets and design-system primitives; prefer your app framework (React, etc.) for full apps unless the team standardizes on WC.</li>
+        </ul>
+      </section>
+
+      <section id="1-custom-elements">
+        <div class="heading-with-levels">
+          <h2>1. Custom elements</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="1-custom-elements-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Name <strong>must</strong> include a hyphen. Extend <code class="inline">HTMLElement</code> and register with <code class="inline">customElements.define</code>.</li>
+        </ul>
+        <div class="code"><pre>class HelloWorld extends HTMLElement {
+  connectedCallback() {
+    this.textContent = &quot;Hello&quot;;
+  }
+}
+customElements.define(&quot;hello-world&quot;, HelloWorld);
+// &lt;hello-world&gt;&lt;/hello-world&gt;</pre></div>
+        <h3 id="1-custom-elements-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Lifecycle callbacks</h3>
+        <table>
+        <thead>
+        <tr><th>Callback</th><th>When</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">connectedCallback</code></td><td>Inserted into document</td></tr>
+        <tr><td><code class="inline">disconnectedCallback</code></td><td>Removed from document</td></tr>
+        <tr><td><code class="inline">attributeChangedCallback</code></td><td>Observed attribute changes</td></tr>
+        <tr><td><code class="inline">adoptedCallback</code></td><td>Moved to a new document</td></tr>
+        </tbody>
+        </table>
+        <div class="code"><pre>class Greeter extends HTMLElement {
+  static get observedAttributes() { return [&quot;name&quot;]; }
+
+  attributeChangedCallback(name, oldVal, newVal) {
+    if (name === &quot;name&quot;) this.render();
+  }
+
+  connectedCallback() { this.render(); }
+
+  render() {
+    this.textContent = `Hello, ${this.getAttribute(&quot;name&quot;) ?? &quot;guest&quot;}`;
+  }
+}
+customElements.define(&quot;x-greeter&quot;, Greeter);</pre></div>
+      </section>
+
+      <section id="2-shadow-dom">
+        <div class="heading-with-levels">
+          <h2>2. Shadow DOM</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="2-shadow-dom-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Shadow DOM</strong> attaches an isolated DOM tree — styles and markup do not leak to/from the page by default.</li>
+        </ul>
+        <div class="code"><pre>class Card extends HTMLElement {
+  constructor() {
+    super();
+    const root = this.attachShadow({ mode: &quot;open&quot; });
+    root.innerHTML = `
+      &lt;style&gt;p { color: navy; }&lt;/style&gt;
+      &lt;p&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/p&gt;
+    `;
+  }
+}
+customElements.define(&quot;x-card&quot;, Card);</pre></div>
+        <ul>
+          <li><code class="inline">mode: &quot;open&quot;</code> → <code class="inline">el.shadowRoot</code> accessible. <code class="inline">&quot;closed&quot;</code> hides it (rare; security theater).</li>
+        </ul>
+        <h3 id="2-shadow-dom-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.1. Events and <code class="inline">composed</code></h3>
+        <ul>
+          <li>Events from shadow trees may not bubble to the light DOM unless <code class="inline">composed: true</code>. Use <code class="inline">e.composedPath()</code> (File 24) to see hosts.</li>
+        </ul>
+        <div class="code"><pre>this.dispatchEvent(new CustomEvent(&quot;save&quot;, {
+  bubbles: true,
+  composed: true,
+  detail: { id: 1 },
+}));</pre></div>
+      </section>
+
+      <section id="3-templates-slots">
+        <div class="heading-with-levels">
+          <h2>3. Templates &amp; slots</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="3-templates-slots-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><code class="inline">&lt;template&gt;</code> holds inert HTML to clone. <code class="inline">&lt;slot&gt;</code> projects light-DOM children into the shadow tree.</li>
+        </ul>
+        <div class="code"><pre>// Light DOM:
+// &lt;x-card&gt;&lt;span slot=&quot;title&quot;&gt;Hi&lt;/span&gt;Body&lt;/x-card&gt;
+
+// Shadow HTML:
+// &lt;slot name=&quot;title&quot;&gt;&lt;/slot&gt;
+// &lt;slot&gt;&lt;/slot&gt;  — default slot</pre></div>
+      </section>
+
+      <section id="4-common-questions">
+        <div class="heading-with-levels">
+          <h2>4. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Why require a hyphen in the tag name?</h3>
+        <ul>
+          <li><strong>A:</strong> Spec rule so custom tags never collide with future HTML elements.</li>
+        </ul>
+        <h3 id="4-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Shadow DOM vs iframe?</h3>
+        <ul>
+          <li><strong>A:</strong> Shadow DOM is style/DOM encapsulation inside the same document and JS realm. iframes are separate documents (heavier; true process isolation only with care).</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for JavaScript File 28. Open from the JS Language index.</footer>
+    </main>
+  </div>
+  <script src="../../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../../public/scripts/notes.js"></script>
+</body>
+</html>

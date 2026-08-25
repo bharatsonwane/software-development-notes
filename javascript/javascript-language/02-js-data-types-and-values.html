@@ -303,6 +303,17 @@ console.log(original.nested.b); // 200 — nested object is shared!</pre></div>
           <li>For a deep copy of plain data, <code class="inline">structuredClone()</code> works in modern environments:</li>
         </ul>
         <div class="code"><pre>const deep = structuredClone(original);</pre></div>
+        <ul>
+          <li><strong>What clones well:</strong> plain objects, arrays, <code class="inline">Map</code>/<code class="inline">Set</code>, <code class="inline">Date</code>, <code class="inline">RegExp</code>, typed arrays, <code class="inline">ArrayBuffer</code>, circular refs.</li>
+          <li><strong>What throws:</strong> functions, DOM nodes, <code class="inline">Error</code> in some older engines, symbols as property keys (dropped), and objects with non-cloneable slots.</li>
+          <li><strong>Transferables</strong> — move ownership of buffers instead of copying (second argument):</li>
+        </ul>
+        <div class="code"><pre>const buf = new ArrayBuffer(8);
+const copy = structuredClone(buf);                    // copy bytes
+const moved = structuredClone(buf, { transfer: [buf] }); // buf is detached</pre></div>
+        <ul>
+          <li>Binary data types (<code class="inline">ArrayBuffer</code>, TypedArray) are File 26.</li>
+        </ul>
       </section>
 
       <section id="type-checks">
@@ -493,6 +504,50 @@ Boolean(new Boolean(false)); // true — object is truthy!
         <ul>
           <li>Use <code class="inline">String(x)</code>, <code class="inline">Number(x)</code>, <code class="inline">Boolean(x)</code> <strong>without</strong> <code class="inline">new</code> for conversion (File 03). Those return primitives.</li>
         </ul>
+        <h3>5.10. <code class="inline">Object(x)</code> vs <code class="inline">new String</code> / <code class="inline">Number</code> / <code class="inline">Boolean</code></h3>
+        <ul>
+          <li><code class="inline">Object(value)</code> boxes a primitive into the matching wrapper object. For <code class="inline">null</code>/<code class="inline">undefined</code> it returns a plain empty object. Prefer it only when you need an object form (rare).</li>
+        </ul>
+        <div class="code"><pre>Object(&quot;hi&quot;);           // String { &quot;hi&quot; }
+Object(42);             // Number { 42 }
+Object(true);           // Boolean { true }
+Object(null);           // {} — not null
+Object(undefined);      // {}
+
+new String(&quot;hi&quot;);       // same idea as Object(&quot;hi&quot;) for strings
+String(&quot;hi&quot;);           // &quot;hi&quot; — primitive (prefer this for conversion)</pre></div>
+        <ul>
+          <li><strong>Rule:</strong> conversion without <code class="inline">new</code> → primitive. <code class="inline">Object(x)</code> / <code class="inline">new Wrapper</code> → object. Almost never need wrapper objects in app code.</li>
+        </ul>
+        <h3>5.11. ToPrimitive and unboxing</h3>
+        <ul>
+          <li>When an object is used where a primitive is expected (<code class="inline">+</code>, <code class="inline">==</code>, <code class="inline">String(obj)</code>, template literals), the engine runs <strong>ToPrimitive</strong>.</li>
+          <li>Default path: try <code class="inline">valueOf()</code>, then <code class="inline">toString()</code> (hint <code class="inline">&quot;number&quot;</code> or <code class="inline">&quot;default&quot;</code>). String hint prefers <code class="inline">toString</code> first.</li>
+          <li><strong>Unboxing</strong> — wrapper objects return their inner primitive from <code class="inline">valueOf()</code>:</li>
+        </ul>
+        <div class="code"><pre>const s = new String(&quot;hi&quot;);
+s.valueOf();            // &quot;hi&quot;
+s + &quot;!&quot;;                // &quot;hi!&quot; — ToPrimitive → valueOf
+
+const n = new Number(7);
+n + 1;                  // 8</pre></div>
+        <ul>
+          <li>Customize with <strong><code class="inline">Symbol.toPrimitive</code></strong> (wins over <code class="inline">valueOf</code>/<code class="inline">toString</code>):</li>
+        </ul>
+        <div class="code"><pre>const money = {
+  amount: 10,
+  [Symbol.toPrimitive](hint) {
+    if (hint === &quot;string&quot;) return `$${this.amount}`;
+    return this.amount;
+  },
+};
+
+String(money);          // &quot;$10&quot;
+money + 5;              // 15
++money;                 // 10</pre></div>
+        <ul>
+          <li>More coercion detail: File 03.</li>
+        </ul>
       </section>
 
       <section id="language-basics">
@@ -643,6 +698,14 @@ obj = { a: 3 };  // TypeError — cannot reassign</pre></div>
         <h3>7.11. What is boxing (autoboxing)?</h3>
         <ul>
           <li><strong>A:</strong> Temporary wrapping of a primitive in <code class="inline">String</code>/<code class="inline">Number</code>/<code class="inline">Boolean</code> so methods like <code class="inline">.toUpperCase()</code> work, then the wrapper is discarded. Explicit <code class="inline">new String(&quot;hi&quot;)</code> is a lasting object (<code class="inline">typeof</code> <code class="inline">&quot;object&quot;</code>) — avoid it; use primitives and conversion functions without <code class="inline">new</code>.</li>
+        </ul>
+        <h3>7.12. What is the difference between <code class="inline">Object(x)</code> and <code class="inline">String(x)</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">String(x)</code> (no <code class="inline">new</code>) returns a <strong>primitive</strong> string. <code class="inline">Object(x)</code> / <code class="inline">new String(x)</code> returns a <strong>String object</strong>. Prefer conversion functions without <code class="inline">new</code>.</li>
+        </ul>
+        <h3>7.13. What is ToPrimitive / <code class="inline">Symbol.toPrimitive</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Spec step that turns an object into a primitive for operators and conversions — usually via <code class="inline">valueOf</code>/<code class="inline">toString</code>. <code class="inline">Symbol.toPrimitive</code> lets you customize that conversion by hint (<code class="inline">&quot;string&quot;</code>, <code class="inline">&quot;number&quot;</code>, <code class="inline">&quot;default&quot;</code>).</li>
         </ul>
       </section>
 
