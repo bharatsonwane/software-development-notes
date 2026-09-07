@@ -14,7 +14,7 @@ Files use **numbered learning order**: `01-topic-name.html`, `02-topic-name.html
 | HTML & CSS | html-css/ | HTML<br>CSS |
 | JavaScript | javascript/ | Javascript Language<br>TypeScript<br>Node.js<br>React.js<br>React Native |
 | Database | database/ | PostgreSQL<br>MongoDB |
-| Python | python/ | README |
+| Python | python/ | python.html (32) |
 | Git | git/ | README |
 | Docker | docker/ | README |
 | System Design | system-design/ | README |
