@@ -1,9 +1,23 @@
 const snippetEditors = [];
 
+function isPythonNotesPage() {
+  const path = (window.location.pathname || "").toLowerCase();
+  if (path.indexOf("/python/") !== -1) return true;
+  if (document.documentElement.getAttribute("data-notes-lang") === "python") return true;
+  return false;
+}
+
+function snippetThemeName() {
+  const isDark = document.documentElement.classList.contains("dark");
+  if (isPythonNotesPage()) {
+    return isDark ? "monokai" : "xq-light";
+  }
+  return isDark ? "material-darker" : "eclipse";
+}
+
 function applySnippetTheme() {
   if (!window.CodeMirror) return;
-  const isDark = document.documentElement.classList.contains("dark");
-  const theme = isDark ? "material-darker" : "eclipse";
+  const theme = snippetThemeName();
   snippetEditors.forEach(function (cm) {
     cm.setOption("theme", theme);
   });
@@ -50,7 +64,11 @@ function attachCopyButton(host, getText) {
 }
 
 function snippetMode() {
-  if (window.CodeMirror && CodeMirror.modes && CodeMirror.modes.javascript) {
+  if (!window.CodeMirror || !CodeMirror.modes) return "text/plain";
+  if (isPythonNotesPage() && CodeMirror.modes.python) {
+    return "python";
+  }
+  if (CodeMirror.modes.javascript) {
     return "javascript";
   }
   return "text/plain";

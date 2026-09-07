@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-notes-lang="python">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
   <title>02. Identifiers and Language Basics - Python Notes</title>
 </head>
 <body>
@@ -17,7 +19,10 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#intro">Intro</a>
-        <a href="#outline">Outline</a>
+        <a href="#1-identifiers">1. Identifiers</a>
+        <a href="#2-reserved">2. Reserved words</a>
+        <a href="#3-comments-indent">3. Comments and indentation</a>
+        <a href="#4-common-questions">4. Common questions</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -34,32 +39,146 @@
       </nav>
       <header class="hero" id="intro">
         <h1>02. Identifiers and Language Basics</h1>
-        <p class="subtitle">File 02 — identifiers, reserved words, naming rules.</p>
+        <p class="subtitle">File 02 — naming rules, reserved words, comments, indentation.</p>
         <div class="chip-row">
-          <span class="chip">Coming soon</span>
+          <span class="chip">Identifiers</span>
+          <span class="chip">Keywords</span>
+          <span class="chip">Indentation</span>
         </div>
       </header>
-      <section id="outline">
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>An <strong>identifier</strong> is a name you give to a variable, function, class, module, etc. Python has strict rules for what is legal, plus conventions for what is readable.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">snake_case</code> for variables/functions, <code class="inline">PascalCase</code> for classes, and never start names with a digit. Indent with <strong>4 spaces</strong>.</div>
+      </section>
+
+      <section id="1-identifiers">
         <div class="heading-with-levels">
-          <h2>Planned sections</h2>
+          <h2>1. Identifiers and naming rules</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-identifiers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Allowed:</strong> letters (A–Z, a–z), digits (0–9), underscore <code class="inline">_</code>.</li>
+          <li><strong>Must</strong> start with a letter or <code class="inline">_</code> — not a digit.</li>
+          <li>Case-sensitive: <code class="inline">age</code>, <code class="inline">Age</code>, <code class="inline">AGE</code> are different.</li>
+          <li>No special characters like <code class="inline">@</code>, <code class="inline">$</code>, <code class="inline">-</code> in names.</li>
+        </ul>
+        <div class="code"><pre>name = "Bharat"     # OK
+_total = 10         # OK — often means "internal"
+user2 = 99          # OK
+# 2user = "x"       # SyntaxError — starts with digit
+# user-name = "x"   # SyntaxError — hyphen not allowed</pre></div>
+        <h3>1.1. Conventions (PEP 8)</h3>
+        <table>
+          <thead>
+            <tr><th>Kind</th><th>Style</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Variable / function</td><td>snake_case</td><td><code class="inline">user_count</code></td></tr>
+            <tr><td>Class</td><td>PascalCase</td><td><code class="inline">BankAccount</code></td></tr>
+            <tr><td>Constant (by convention)</td><td>UPPER_SNAKE</td><td><code class="inline">MAX_SIZE</code></td></tr>
+            <tr><td>“Private” by convention</td><td>leading _</td><td><code class="inline">_helper</code></td></tr>
+            <tr><td>Name mangling (File 20)</td><td>leading __</td><td><code class="inline">__secret</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="2-reserved">
+        <div class="heading-with-levels">
+          <h2>2. Reserved words</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="2-reserved-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Keywords</strong> are reserved — you cannot use them as identifiers.</li>
+        </ul>
+        <div class="code"><pre>import keyword
+print(keyword.kwlist)
+# False, None, True, and, as, assert, async, await, break, class, ...
+# if = 10   # SyntaxError</pre></div>
+        <ul>
+          <li><code class="inline">True</code>, <code class="inline">False</code>, <code class="inline">None</code> are keywords (capitalized).</li>
+        </ul>
+      </section>
+
+      <section id="3-comments-indent">
+        <div class="heading-with-levels">
+          <h2>3. Comments and indentation basics</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Notes for this chapter will be added later. Outline below maps the course video topics.</div>
-        <ol>
-          <li>Identifiers and naming rules</li>
-          <li>Reserved words</li>
-          <li>Comments and indentation basics</li>
-          <li>Common questions</li>
-        </ol>
+        <h3 id="3-comments-indent-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.1. Comments</h3>
+        <div class="code"><pre># Single-line comment
+
+"""
+Multi-line string — often used as a docstring
+(not a special comment type).
+"""
+
+def greet(name):
+    """Return a greeting. This is a docstring."""
+    return f"Hello, {name}"</pre></div>
+        <h3>3.2. Indentation</h3>
+        <ul>
+          <li>Python uses <strong>indentation</strong> (not braces) to define blocks. Standard is <strong>4 spaces</strong>. Mixing tabs and spaces causes errors.</li>
+        </ul>
+        <div class="code"><pre>x = 10
+if x &gt; 5:
+    print("big")   # indented block
+    print("still in if")
+print("outside if")</pre></div>
+        <h3 id="3-comments-indent-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.3. Statements and lines</h3>
+        <ul>
+          <li>One statement per line is normal. Use <code class="inline">\</code> or parentheses for line continuation. Semicolons can join statements but are uncommon.</li>
+        </ul>
+        <div class="code"><pre>total = (1 + 2 + 3
+         + 4 + 5)
+
+a = 1; b = 2   # legal, rarely preferred</pre></div>
       </section>
-      <footer>Placeholder for Python Notes File 02. Open from the Python index.</footer>
+
+      <section id="4-common-questions">
+        <div class="heading-with-levels">
+          <h2>4. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Can identifiers start with underscore?</h3>
+        <ul>
+          <li><strong>A:</strong> Yes. Leading <code class="inline">_</code> is a convention for “internal” use. Double leading <code class="inline">__</code> on class attributes triggers name mangling (File 20).</li>
+        </ul>
+        <h3>4.2. Why no braces for blocks?</h3>
+        <ul>
+          <li><strong>A:</strong> Design choice — indentation is mandatory and keeps structure consistent. Wrong indent raises <code class="inline">IndentationError</code>.</li>
+        </ul>
+        <h3 id="4-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.3. Are Unicode letters allowed in identifiers?</h3>
+        <ul>
+          <li><strong>A:</strong> Yes in Python 3 (PEP 3131), but prefer ASCII names in most codebases for tooling and collaboration.</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for Python File 02. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
-  <script src="../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/python/python.min.js"></script>
   <script src="../public/scripts/notes.js"></script>
 </body>
 </html>

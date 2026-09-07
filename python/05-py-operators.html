@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-notes-lang="python">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
   <title>05. Operators - Python Notes</title>
 </head>
 <body>
@@ -17,7 +19,12 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#intro">Intro</a>
-        <a href="#outline">Outline</a>
+        <a href="#1-arithmetic">1. Arithmetic and assignment</a>
+        <a href="#2-relational-logical">2. Relational and logical</a>
+        <a href="#3-bitwise">3. Bitwise</a>
+        <a href="#4-membership-identity">4. Membership and identity</a>
+        <a href="#5-precedence">5. Precedence</a>
+        <a href="#6-common-questions">6. Common questions</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -34,34 +41,214 @@
       </nav>
       <header class="hero" id="intro">
         <h1>05. Operators</h1>
-        <p class="subtitle">File 05 — arithmetic, relational, logical, bitwise, membership, identity.</p>
+        <p class="subtitle">File 05 — arithmetic, relational, logical, bitwise, membership, identity, precedence.</p>
         <div class="chip-row">
-          <span class="chip">Coming soon</span>
+          <span class="chip">// %</span>
+          <span class="chip">and or not</span>
+          <span class="chip">is / in</span>
+          <span class="chip">Bitwise</span>
         </div>
       </header>
-      <section id="outline">
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Operators combine values into expressions. Python’s set is similar to other languages, with important details: <code class="inline">/</code> vs <code class="inline">//</code>, <code class="inline">and</code>/<code class="inline">or</code>/<code class="inline">not</code> (words, not <code class="inline">&amp;&amp;</code>), and <code class="inline">is</code> vs <code class="inline">==</code>.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">==</code> for value equality, <code class="inline">is</code> only for <code class="inline">None</code> (and similar singletons). Prefer <code class="inline">and</code>/<code class="inline">or</code>/<code class="inline">not</code> for boolean logic.</div>
+      </section>
+
+      <section id="1-arithmetic">
         <div class="heading-with-levels">
-          <h2>Planned sections</h2>
+          <h2>1. Arithmetic and assignment operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-arithmetic-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <table>
+          <thead>
+            <tr><th>Op</th><th>Meaning</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">+</code> <code class="inline">-</code> <code class="inline">*</code></td><td>Add, subtract, multiply</td><td><code class="inline">3 * 4 → 12</code></td></tr>
+            <tr><td><code class="inline">/</code></td><td>True division (float)</td><td><code class="inline">5 / 2 → 2.5</code></td></tr>
+            <tr><td><code class="inline">//</code></td><td>Floor division</td><td><code class="inline">5 // 2 → 2</code></td></tr>
+            <tr><td><code class="inline">%</code></td><td>Modulo (remainder)</td><td><code class="inline">5 % 2 → 1</code></td></tr>
+            <tr><td><code class="inline">**</code></td><td>Exponent</td><td><code class="inline">2 ** 3 → 8</code></td></tr>
+          </tbody>
+        </table>
+        <div class="code"><pre>-5 // 2    # -3 — floor toward -∞
+-5 % 2     # 1  — sign follows divisor rules carefully
+
+x = 10
+x += 5     # 15 — also -= *= /= //= %= **=</pre></div>
+        <ul>
+          <li>Unary <code class="inline">+</code> / <code class="inline">-</code>: <code class="inline">-x</code> negates.</li>
+          <li>String/list <code class="inline">+</code> concatenates; <code class="inline">*</code> repeats: <code class="inline">"ab" * 3 → "ababab"</code>.</li>
+        </ul>
+      </section>
+
+      <section id="2-relational-logical">
+        <div class="heading-with-levels">
+          <h2>2. Relational and logical operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="2-relational-logical-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Relational (comparison)</h3>
+        <div class="code"><pre>3 &lt; 5          # True
+3 &lt;= 3         # True
+a == b         # value equality
+a != b
+"abc" &lt; "abd"  # lexicographic
+1 &lt; 2 &lt; 3      # True — chained comparisons</pre></div>
+        <h3>2.2. Logical</h3>
+        <ul>
+          <li><code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code> — short-circuit; return an operand (not always a bool).</li>
+        </ul>
+        <div class="code"><pre>True and False   # False
+0 or 5           # 5 — first truthy
+"" or "default"  # "default"
+not []           # True
+
+# Short-circuit
+False and expensive()  # expensive never called
+True or expensive()    # expensive never called</pre></div>
+      </section>
+
+      <section id="3-bitwise">
+        <div class="heading-with-levels">
+          <h2>3. Bitwise operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="3-bitwise-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <table>
+          <thead>
+            <tr><th>Op</th><th>Name</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">&amp;</code></td><td>AND</td><td><code class="inline">5 &amp; 3 → 1</code></td></tr>
+            <tr><td><code class="inline">|</code></td><td>OR</td><td><code class="inline">5 | 2 → 7</code></td></tr>
+            <tr><td><code class="inline">^</code></td><td>XOR</td><td><code class="inline">5 ^ 1 → 4</code></td></tr>
+            <tr><td><code class="inline">~</code></td><td>NOT</td><td><code class="inline">~0 → -1</code> (two’s complement style)</td></tr>
+            <tr><td><code class="inline">&lt;&lt;</code> <code class="inline">&gt;&gt;</code></td><td>Shifts</td><td><code class="inline">1 &lt;&lt; 3 → 8</code></td></tr>
+          </tbody>
+        </table>
+        <div class="code"><pre>flags = 0b1010
+flags &amp; 0b0010    # test bit
+flags | 0b0001    # set bit</pre></div>
+      </section>
+
+      <section id="4-membership-identity">
+        <div class="heading-with-levels">
+          <h2>4. Membership (in) and identity (is)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Notes for this chapter will be added later. Outline below maps the course video topics.</div>
-        <ol>
-          <li>Arithmetic and assignment operators</li>
-          <li>Relational and logical operators</li>
-          <li>Bitwise operators</li>
-          <li>Membership (in) and identity (is)</li>
-          <li>Operator precedence</li>
-          <li>Common questions</li>
-        </ol>
+        <h3 id="4-membership-identity-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. in / not in</h3>
+        <div class="code"><pre>"a" in "cat"        # True
+3 in [1, 2, 3]      # True
+"x" not in {"a": 1} # True — checks keys</pre></div>
+        <h3>4.2. is / is not</h3>
+        <ul>
+          <li><code class="inline">is</code> tests <strong>object identity</strong> (same object in memory), not equality of value.</li>
+        </ul>
+        <div class="code"><pre>a = [1, 2]
+b = a
+c = [1, 2]
+a is b          # True — same object
+a is c          # False
+a == c          # True — same contents
+
+x = None
+x is None       # correct None check</pre></div>
+        <h3 id="4-membership-identity-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <ul>
+          <li>Small ints / interned strings may share identity for equal values — do <strong>not</strong> rely on <code class="inline">is</code> for ints/strings. Use <code class="inline">==</code>.</li>
+        </ul>
+        <div class="code"><pre>a = 256
+b = 256
+a is b          # often True (implementation detail)
+
+a = 257
+b = 257
+a is b          # often False — use ==</pre></div>
       </section>
-      <footer>Placeholder for Python Notes File 05. Open from the Python index.</footer>
+
+      <section id="5-precedence">
+        <div class="heading-with-levels">
+          <h2>5. Operator precedence</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-precedence-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Higher precedence binds tighter. When unsure, use parentheses.</li>
+        </ul>
+        <div class="code"><pre>2 + 3 * 4       # 14
+(2 + 3) * 4     # 20</pre></div>
+        <h3 id="5-precedence-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <ol>
+          <li><code class="inline">()</code> grouping</li>
+          <li><code class="inline">**</code></li>
+          <li>unary <code class="inline">+</code> <code class="inline">-</code> <code class="inline">~</code></li>
+          <li><code class="inline">*</code> <code class="inline">/</code> <code class="inline">//</code> <code class="inline">%</code></li>
+          <li><code class="inline">+</code> <code class="inline">-</code></li>
+          <li>Shifts <code class="inline">&lt;&lt;</code> <code class="inline">&gt;&gt;</code></li>
+          <li>Bitwise <code class="inline">&amp;</code> then <code class="inline">^</code> then <code class="inline">|</code></li>
+          <li>Comparisons: <code class="inline">in</code>, <code class="inline">is</code>, <code class="inline">&lt;</code>, <code class="inline">==</code>, …</li>
+          <li><code class="inline">not</code></li>
+          <li><code class="inline">and</code></li>
+          <li><code class="inline">or</code></li>
+        </ol>
+        <ul>
+          <li>Walrus <code class="inline">:=</code> (3.8+) has low precedence — usually parenthesize: <code class="inline">if (n := len(s)) &gt; 0:</code>.</li>
+        </ul>
+      </section>
+
+      <section id="6-common-questions">
+        <div class="heading-with-levels">
+          <h2>6. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. Difference between <code class="inline">/</code> and <code class="inline">//</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">/</code> always does true (float) division in Python 3. <code class="inline">//</code> does floor division.</li>
+        </ul>
+        <h3>6.2. Difference between <code class="inline">==</code> and <code class="inline">is</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">==</code> compares values. <code class="inline">is</code> compares identity. Use <code class="inline">is</code> for <code class="inline">None</code>.</li>
+        </ul>
+        <h3 id="6-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>6.3. What do <code class="inline">and</code>/<code class="inline">or</code> return?</h3>
+        <ul>
+          <li><strong>A:</strong> The last evaluated operand — not necessarily <code class="inline">True</code>/<code class="inline">False</code>. Useful for defaults: <code class="inline">name or "Guest"</code>.</li>
+        </ul>
+        <h3>6.4. Why is <code class="inline">-5 // 2</code> equal to <code class="inline">-3</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Floor division rounds toward negative infinity, not toward zero.</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for Python File 05. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
-  <script src="../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/python/python.min.js"></script>
   <script src="../public/scripts/notes.js"></script>
 </body>
 </html>

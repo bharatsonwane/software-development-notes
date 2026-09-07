@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-notes-lang="python">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
   <title>03. Data Types and Immutability - Python Notes</title>
 </head>
 <body>
@@ -17,7 +19,12 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#intro">Intro</a>
-        <a href="#outline">Outline</a>
+        <a href="#1-overview">1. Overview</a>
+        <a href="#2-fundamentals">2. Fundamental types</a>
+        <a href="#3-immutability">3. Immutability</a>
+        <a href="#4-range">4. range</a>
+        <a href="#5-bytes">5. Bytes</a>
+        <a href="#6-common-questions">6. Common questions</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -34,34 +41,202 @@
       </nav>
       <header class="hero" id="intro">
         <h1>03. Data Types and Immutability</h1>
-        <p class="subtitle">File 03 — fundamental types, mutability, range.</p>
+        <p class="subtitle">File 03 — fundamental types, mutability, range, bytes intro.</p>
         <div class="chip-row">
-          <span class="chip">Coming soon</span>
+          <span class="chip">int / float</span>
+          <span class="chip">bool / None</span>
+          <span class="chip">Immutable</span>
+          <span class="chip">range</span>
         </div>
       </header>
-      <section id="outline">
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Every value in Python has a <strong>type</strong>. Types are checked at runtime. Collections (<code class="inline">str</code>, <code class="inline">list</code>, …) get deep coverage in Files 08–12; this file focuses on <strong>fundamentals</strong> and <strong>immutability</strong>.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">type(x)</code> / <code class="inline">isinstance</code> when debugging; treat <code class="inline">int</code>/<code class="inline">str</code>/<code class="inline">tuple</code> as immutable — “change” means create a new object.</div>
+      </section>
+
+      <section id="1-overview">
         <div class="heading-with-levels">
-          <h2>Planned sections</h2>
+          <h2>1. Fundamental data types overview</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-overview-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <table>
+          <thead>
+            <tr><th>Category</th><th>Types</th><th>Notes file</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Numeric</td><td><code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code></td><td>this file</td></tr>
+            <tr><td>Boolean</td><td><code class="inline">bool</code></td><td>this file</td></tr>
+            <tr><td>None</td><td><code class="inline">NoneType</code></td><td>this file</td></tr>
+            <tr><td>Text</td><td><code class="inline">str</code></td><td>08</td></tr>
+            <tr><td>Sequences</td><td><code class="inline">list</code>, <code class="inline">tuple</code>, <code class="inline">range</code></td><td>09, 10, here</td></tr>
+            <tr><td>Sets</td><td><code class="inline">set</code>, <code class="inline">frozenset</code></td><td>11</td></tr>
+            <tr><td>Mapping</td><td><code class="inline">dict</code></td><td>12</td></tr>
+            <tr><td>Binary</td><td><code class="inline">bytes</code>, <code class="inline">bytearray</code></td><td>this file (intro)</td></tr>
+          </tbody>
+        </table>
+        <div class="code"><pre>x = 10
+type(x)              # &lt;class 'int'&gt;
+isinstance(x, int)   # True</pre></div>
+      </section>
+
+      <section id="2-fundamentals">
+        <div class="heading-with-levels">
+          <h2>2. int, float, complex, bool, None</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="2-fundamentals-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. int</h3>
+        <ul>
+          <li>Arbitrary precision integers (no fixed 32/64-bit limit in CPython for normal ints).</li>
+        </ul>
+        <div class="code"><pre>a = 10
+b = 0b1010      # binary → 10
+c = 0o12        # octal → 10
+d = 0xA         # hex → 10
+big = 10**100   # OK</pre></div>
+        <h3>2.2. float</h3>
+        <ul>
+          <li>IEEE floating point — approximate decimals.</li>
+        </ul>
+        <div class="code"><pre>x = 3.14
+y = 1.5e2       # 150.0
+0.1 + 0.2       # 0.30000000000000004 — classic float quirk</pre></div>
+        <h3>2.3. complex</h3>
+        <div class="code"><pre>z = 2 + 3j
+z.real          # 2.0
+z.imag          # 3.0</pre></div>
+        <h3>2.4. bool</h3>
+        <ul>
+          <li>Subclass of <code class="inline">int</code>: <code class="inline">True == 1</code>, <code class="inline">False == 0</code>.</li>
+        </ul>
+        <div class="code"><pre>True + True     # 2
+bool(0)         # False
+bool("hi")      # True
+bool("")        # False</pre></div>
+        <h3>2.5. None</h3>
+        <ul>
+          <li>Singleton meaning “no value.” Default return of functions with no <code class="inline">return</code>.</li>
+        </ul>
+        <div class="code"><pre>x = None
+x is None       # True — preferred check
+# x == None     # works but prefer `is`</pre></div>
+      </section>
+
+      <section id="3-immutability">
+        <div class="heading-with-levels">
+          <h2>3. Immutability concepts</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="3-immutability-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Immutable</strong> — object contents cannot change after creation: <code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">bool</code>, <code class="inline">str</code>, <code class="inline">tuple</code>, <code class="inline">frozenset</code>, <code class="inline">bytes</code>.</li>
+          <li><strong>Mutable</strong> — can change in place: <code class="inline">list</code>, <code class="inline">dict</code>, <code class="inline">set</code>, <code class="inline">bytearray</code>.</li>
+        </ul>
+        <div class="code"><pre>a = 10
+print(id(a))
+a = a + 1       # new int object; name `a` rebound
+print(id(a))    # usually different id
+
+s = "hi"
+# s[0] = "H"    # TypeError — str immutable
+
+lst = [1, 2]
+print(id(lst))
+lst.append(3)   # same list object mutated
+print(id(lst))  # same id</pre></div>
+        <ul>
+          <li>Reassignment (<code class="inline">a = …</code>) always rebinds the name. Mutation changes the object the name still points to.</li>
+          <li>Aliasing / shallow / deep copy: File 25.</li>
+        </ul>
+      </section>
+
+      <section id="4-range">
+        <div class="heading-with-levels">
+          <h2>4. range and sequence forms</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Notes for this chapter will be added later. Outline below maps the course video topics.</div>
-        <ol>
-          <li>Fundamental data types overview</li>
-          <li>int, float, complex, bool, None</li>
-          <li>Immutability concepts</li>
-          <li>range and sequence forms</li>
-          <li>Bytes / bytearray (intro)</li>
-          <li>Common questions</li>
-        </ol>
+        <h3 id="4-range-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><code class="inline">range</code> is an immutable sequence of integers — lazy (does not build a full list).</li>
+        </ul>
+        <div class="code"><pre>range(5)          # 0..4
+range(1, 5)       # 1..4
+range(1, 10, 2)   # 1, 3, 5, 7, 9
+list(range(3))    # [0, 1, 2]</pre></div>
+        <h3 id="4-range-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <ul>
+          <li>Forms: <code class="inline">range(stop)</code>, <code class="inline">range(start, stop)</code>, <code class="inline">range(start, stop, step)</code>. <code class="inline">stop</code> is exclusive. Negative step allowed.</li>
+        </ul>
+        <div class="code"><pre>list(range(5, 0, -1))  # [5, 4, 3, 2, 1]
+len(range(1_000_000))  # cheap — no million-element list</pre></div>
       </section>
-      <footer>Placeholder for Python Notes File 03. Open from the Python index.</footer>
+
+      <section id="5-bytes">
+        <div class="heading-with-levels">
+          <h2>5. Bytes / bytearray (intro)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-bytes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><code class="inline">bytes</code> — immutable sequence of bytes (0–255). <code class="inline">bytearray</code> — mutable version.</li>
+        </ul>
+        <div class="code"><pre>b = b"hi"
+ba = bytearray(b"hi")
+ba[0] = ord("H")
+print(ba)          # bytearray(b'Hi')</pre></div>
+        <h3 id="5-bytes-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <ul>
+          <li>Text uses <code class="inline">str</code>; binary files / protocols use bytes. Encode/decode: <code class="inline">"hi".encode("utf-8")</code>, <code class="inline">b"hi".decode("utf-8")</code>. More in Files 08 and 17.</li>
+        </ul>
+      </section>
+
+      <section id="6-common-questions">
+        <div class="heading-with-levels">
+          <h2>6. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. How do I check a type?</h3>
+        <ul>
+          <li><strong>A:</strong> Prefer <code class="inline">isinstance(x, int)</code> over <code class="inline">type(x) == int</code> (handles subclasses). For exact type, <code class="inline">type(x) is int</code>.</li>
+        </ul>
+        <h3>6.2. Why is <code class="inline">bool</code> a subclass of <code class="inline">int</code>?</h3>
+        <ul>
+          <li><strong>A:</strong> Historical design — booleans participate in arithmetic. Prefer clear boolean logic over relying on that.</li>
+        </ul>
+        <h3 id="6-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>6.3. Does <code class="inline">a = a + 1</code> mutate the int?</h3>
+        <ul>
+          <li><strong>A:</strong> No. Integers are immutable. A new int is created and the name is rebound.</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for Python File 03. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
-  <script src="../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/python/python.min.js"></script>
   <script src="../public/scripts/notes.js"></script>
 </body>
 </html>

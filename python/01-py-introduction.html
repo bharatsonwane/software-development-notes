@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-notes-lang="python">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
   <title>01. Introduction to Python - Python Notes</title>
 </head>
 <body>
@@ -17,7 +19,12 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#intro">Intro</a>
-        <a href="#outline">Outline</a>
+        <a href="#1-what-where">1. What and where</a>
+        <a href="#2-features">2. Features</a>
+        <a href="#3-limitations">3. Limitations</a>
+        <a href="#4-versions">4. Versions</a>
+        <a href="#5-install-repl">5. Install and REPL</a>
+        <a href="#6-common-questions">6. Common questions</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -34,34 +41,197 @@
       </nav>
       <header class="hero" id="intro">
         <h1>01. Introduction to Python</h1>
-        <p class="subtitle">File 01 — features, limitations, versions, where Python is used.</p>
+        <p class="subtitle">File 01 — what Python is, features, limitations, versions, install and first program.</p>
         <div class="chip-row">
-          <span class="chip">Coming soon</span>
+          <span class="chip">Features</span>
+          <span class="chip">Limitations</span>
+          <span class="chip">3.x</span>
+          <span class="chip">REPL</span>
         </div>
       </header>
-      <section id="outline">
+
+      <section id="intro-notes">
+        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Python</strong> is a high-level, general-purpose language created by <strong>Guido van Rossum</strong> (first release 1991). It emphasizes readable syntax and a large standard library.</li>
+        </ul>
+        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <div class="callout"><strong>Default rule today:</strong> learn and write <strong>Python 3</strong> only. Use a <strong>venv</strong> per project. Prefer clarity over clever one-liners.</div>
+      </section>
+
+      <section id="1-what-where">
         <div class="heading-with-levels">
-          <h2>Planned sections</h2>
+          <h2>1. What is Python and where it is used</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-what-where-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li>Python is <strong>interpreted</strong> (source runs via an interpreter / VM), <strong>dynamically typed</strong>, and supports multiple styles (procedural, OOP, functional).</li>
+          <li><strong>Where it is used:</strong></li>
+        </ul>
+        <table>
+          <thead>
+            <tr><th>Area</th><th>Examples</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Web backends</td><td>Django, Flask, FastAPI</td></tr>
+            <tr><td>Data / ML</td><td>NumPy, pandas, scikit-learn, PyTorch</td></tr>
+            <tr><td>Automation / scripting</td><td>File ops, DevOps glue, testing</td></tr>
+            <tr><td>Desktop / tooling</td><td>CLI apps, scientific tools</td></tr>
+            <tr><td>Education</td><td>First language in many courses</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="2-features">
+        <div class="heading-with-levels">
+          <h2>2. Features of Python (detailed)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="2-features-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Simple / readable syntax</td><td>English-like; indentation defines blocks</td></tr>
+            <tr><td>Free and open source</td><td>PSF license; community-driven</td></tr>
+            <tr><td>High-level</td><td>Memory managed for you (GC)</td></tr>
+            <tr><td>Interpreted</td><td>Run line-by-line / via bytecode + VM</td></tr>
+            <tr><td>Dynamically typed</td><td>Types on values, not fixed on variables</td></tr>
+            <tr><td>Platform independent</td><td>“Write once, run anywhere” (with interpreter)</td></tr>
+            <tr><td>Large standard library</td><td>“Batteries included”</td></tr>
+            <tr><td>Extensible / embeddable</td><td>C extensions; embed in other apps</td></tr>
+            <tr><td>OOP support</td><td>Everything is an object</td></tr>
+            <tr><td>Rich ecosystem (PyPI)</td><td>pip packages for almost every domain</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="3-limitations">
+        <div class="heading-with-levels">
+          <h2>3. Limitations of Python</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="3-limitations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Slower</strong> than C/C++/Rust for CPU-heavy loops (often mitigated with NumPy / C extensions).</li>
+          <li><strong>GIL</strong> (CPython) limits true parallel CPU threads in one process — File 24.</li>
+          <li><strong>Mobile / browser</strong> not primary targets (unlike JS on the web).</li>
+          <li><strong>Runtime errors</strong> for type mistakes unless you add type checkers (mypy) — File 31.</li>
+          <li>Design choices (indentation, dynamic typing) can frustrate some teams — not “bugs,” but trade-offs.</li>
+        </ul>
+      </section>
+
+      <section id="4-versions">
+        <div class="heading-with-levels">
+          <h2>4. Python release journey (2.x → 3.x)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Notes for this chapter will be added later. Outline below maps the course video topics.</div>
-        <ol>
-          <li>What is Python and where it is used</li>
-          <li>Features of Python (detailed)</li>
-          <li>Limitations of Python</li>
-          <li>Python release journey (2.x → 3.x)</li>
-          <li>Install, REPL, and first program</li>
-          <li>Common questions</li>
-        </ol>
+        <h3 id="4-versions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <ul>
+          <li><strong>Python 2</strong> reached end-of-life <strong>1 Jan 2020</strong>. Do not start new projects on 2.x.</li>
+          <li><strong>Python 3</strong> cleaned up design: <code class="inline">print</code> is a function, text is Unicode <code class="inline">str</code>, integer division with <code class="inline">/</code> returns float, etc.</li>
+        </ul>
+        <div class="code"><pre># Python 3
+print("Hello")
+print(5 / 2)   # 2.5
+print(5 // 2)  # 2</pre></div>
+        <h3 id="4-versions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.1. Notable 3.x milestones (high level)</h3>
+        <ul>
+          <li><strong>3.5+</strong> — <code class="inline">async</code>/<code class="inline">await</code></li>
+          <li><strong>3.6+</strong> — f-strings</li>
+          <li><strong>3.7+</strong> — dataclasses (stdlib)</li>
+          <li><strong>3.8+</strong> — walrus operator <code class="inline">:=</code></li>
+          <li><strong>3.10+</strong> — <code class="inline">match</code> / <code class="inline">case</code></li>
+          <li><strong>3.11+</strong> — faster CPython, better errors</li>
+        </ul>
+        <ul>
+          <li>Check your version:</li>
+        </ul>
+        <div class="code"><pre>python3 --version
+# or
+import sys
+print(sys.version)</pre></div>
       </section>
-      <footer>Placeholder for Python Notes File 01. Open from the Python index.</footer>
+
+      <section id="5-install-repl">
+        <div class="heading-with-levels">
+          <h2>5. Install, REPL, and first program</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-install-repl-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. Install</h3>
+        <ul>
+          <li>Download from <strong>python.org</strong>, or use OS package managers / pyenv. On macOS/Linux use <code class="inline">python3</code>; Windows often installs <code class="inline">py</code> launcher.</li>
+        </ul>
+        <h3>5.2. REPL (interactive shell)</h3>
+        <div class="code"><pre>$ python3
+&gt;&gt;&gt; 2 + 3
+5
+&gt;&gt;&gt; print("hi")
+hi
+&gt;&gt;&gt; exit()</pre></div>
+        <ul>
+          <li>REPL is great for experiments. Exit with <code class="inline">exit()</code> or Ctrl-D (Unix) / Ctrl-Z Enter (Windows).</li>
+        </ul>
+        <h3>5.3. First script</h3>
+        <div class="code"><pre># hello.py
+print("Hello, Python")</pre></div>
+        <div class="code"><pre>$ python3 hello.py
+Hello, Python</pre></div>
+        <h3 id="5-install-repl-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.4. Virtual environments (preview)</h3>
+        <ul>
+          <li>Isolate project dependencies (full pip/packages story: Files 15–16):</li>
+        </ul>
+        <div class="code"><pre>python3 -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install requests</pre></div>
+      </section>
+
+      <section id="6-common-questions">
+        <div class="heading-with-levels">
+          <h2>6. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. Is Python compiled or interpreted?</h3>
+        <ul>
+          <li><strong>A:</strong> Source is compiled to <strong>bytecode</strong>, then executed by the <strong>Python VM</strong> (CPython). You usually do not compile to a native binary yourself.</li>
+        </ul>
+        <h3>6.2. Why prefer Python 3?</h3>
+        <ul>
+          <li><strong>A:</strong> Python 2 is EOL. 3.x has better Unicode, cleaner syntax, and all modern libraries target 3.</li>
+        </ul>
+        <h3 id="6-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>6.3. What is CPython?</h3>
+        <ul>
+          <li><strong>A:</strong> The default reference implementation (written in C). Alternatives exist (PyPy, Jython, IronPython) but CPython is what most people mean by “Python.”</li>
+        </ul>
+      </section>
+
+      <footer>HTML note for Python File 01. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
-  <script src="../public/vendor/codemirror/mode/javascript/javascript.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/python/python.min.js"></script>
   <script src="../public/scripts/notes.js"></script>
 </body>
 </html>
