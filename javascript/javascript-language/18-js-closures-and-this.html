@@ -16,13 +16,14 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-closures">1. Closures</a>
-        <a href="#2-iife">2. IIFE</a>
-        <a href="#3-this-binding">3. `this` binding</a>
-        <a href="#4-call-apply-bind">4. call, apply, bind</a>
-        <a href="#5-arrow-functions-this">5. Arrow functions &amp; `this`</a>
-        <a href="#6-common-questions">6. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-closures">2. Closures</a>
+        <a href="#3-iife">3. IIFE</a>
+        <a href="#4-this-binding">3. <code class="inline">this</code> binding</a>
+        <a href="#5-call-apply-bind">5. call, apply, bind</a>
+        <a href="#6-arrow-functions-this">5. Arrow functions &amp; <code class="inline">this</code></a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./18-js-closures-this-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -43,28 +44,49 @@
         <p class="subtitle">File 18 — lexical scope, closures, and dynamic this binding.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+      <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li><strong>Closures</strong> and <strong><code class="inline">this</code></strong> are two of the most important behavior topics in JavaScript — and two of the most misunderstood.</li>
-          <li>A <strong>closure</strong> happens when a function remembers variables from the scope where it was <strong>created</strong> (lexical scope, File 08). <strong><code class="inline">this</code></strong> is different — it is set by <strong>how a function is called</strong>, not where it is written (except arrow functions).</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <ul>
+          <li>A <strong>closure</strong> happens when a function remembers variables from the scope where it was <strong>created</strong> (lexical scope, File 08). <strong><code class="inline">this</code></strong> is different — it is set by <strong>how a function is called</strong>, not where it is written (except arrow functions).</li>
           <li><strong>Default rule today:</strong> use closures for <strong>private state</strong> and <strong>factories</strong>; use <strong>regular methods</strong> when you need <code class="inline">this</code> on objects; use <strong>arrows</strong> for callbacks that should keep outer <code class="inline">this</code>; use <strong><code class="inline">bind</code></strong> when passing methods as handlers.</li>
           <li>Interactive visualizer: open <a href="./18-js-closures-this-animation.html">18-js-closures-this-animation.html</a> in a browser — closures, private state, lost <code class="inline">this</code>, <code class="inline">call</code>/<code class="inline">bind</code>, arrows (Run / Step).</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">18-practice.js</code> before File 19. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Closures</strong></li>
+          <li><strong>IIFE</strong></li>
+          <li><strong><code class="inline">this</code> binding</strong></li>
+          <li><strong>call, apply, bind</strong></li>
+          <li><strong>Arrow functions &amp; <code class="inline">this</code></strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="1-closures">
+      <section id="2-closures">
         <div class="heading-with-levels">
-          <h2>1. Closures</h2>
+          <h2>2. Closures</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-closures-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Lexical scope recap</h3>
+        <h3 id="2-closures-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Lexical scope recap</h3>
         <ul>
           <li>Inner functions can read variables from outer scopes. The lookup chain is fixed at <strong>write time</strong>:</li>
         </ul>
@@ -85,7 +107,7 @@ fn();  // &quot;global&quot; &quot;middle&quot; — even after outerFn finished<
         <ul>
           <li>See File 08, section 1.4 for the scope chain.</li>
         </ul>
-        <h3>1.2. What is a closure?</h3>
+        <h3>2.2. What is a closure?</h3>
         <ul>
           <li>A <strong>closure</strong> is a function plus the <strong>reference to its surrounding lexical environment</strong> (variables from outer scopes that are still &quot;alive&quot;).</li>
         </ul>
@@ -104,8 +126,8 @@ sayHello(&quot;Bharat&quot;);  // &quot;Hello, Bharat!&quot;</pre></div>
           <li><code class="inline">makeGreeter</code> returns — but the inner function still closes over <code class="inline">greeting</code>. Each call to <code class="inline">makeGreeter</code> creates a <strong>new</strong> closure with its own <code class="inline">greeting</code>.</li>
           <li>Every function in JS that references outer variables forms a closure — not only returned inner functions.</li>
         </ul>
-        <h3 id="1-closures-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.3. Closure use cases</h3>
+        <h3 id="2-closures-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.3. Closure use cases</h3>
         <ul>
           <li><strong>Private state / encapsulation:</strong></li>
         </ul>
@@ -166,8 +188,8 @@ triple(5);  // 15</pre></div>
     return cache[key];
   };
 }</pre></div>
-        <h3 id="1-closures-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.4. Common closure bugs</h3>
+        <h3 id="2-closures-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.4. Common closure bugs</h3>
         <ul>
           <li><strong>Loop with <code class="inline">var</code></strong> — one shared binding (File 08, File 04):</li>
         </ul>
@@ -197,19 +219,19 @@ logger.log();  // 5 — OK when using shared mutable binding</pre></div>
           <li><strong>Memory</strong> — closures keep outer variables alive. Holding large objects in closures when only a small field is needed can prevent garbage collection.</li>
         </ul>
       </section>
-      <section id="2-iife">
+      <section id="3-iife">
         <div class="heading-with-levels">
-          <h2>2. IIFE</h2>
+          <h2>3. IIFE</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-iife-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-iife-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>An <strong>IIFE</strong> (Immediately Invoked Function Expression) is a function that runs <strong>right after</strong> it is defined.</li>
         </ul>
-        <h3>2.1. Syntax</h3>
+        <h3>3.1. Syntax</h3>
         <div class="code"><pre>(function () {
   console.log(&quot;runs once&quot;);
 })();
@@ -225,8 +247,8 @@ logger.log();  // 5 — OK when using shared mutable binding</pre></div>
         <ul>
           <li>Wrap in parentheses so the parser treats it as an expression, not a declaration.</li>
         </ul>
-        <h3 id="2-iife-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.2. Why IIFEs were used</h3>
+        <h3 id="3-iife-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.2. Why IIFEs were used</h3>
         <ul>
           <li><strong>Private scope</strong> before block-scoped <code class="inline">let</code>/<code class="inline">const</code> was common:</li>
         </ul>
@@ -252,7 +274,7 @@ app.getSecret();  // &quot;hidden&quot;
   })(i);
 }
 // 0, 1, 2 — IIFE captures copy of i per iteration</pre></div>
-        <h3>2.3. IIFE today</h3>
+        <h3>3.3. IIFE today</h3>
         <ul>
           <li>With <strong><code class="inline">let</code>/<code class="inline">const</code></strong> blocks and modules (File 22), IIFEs are less common. Still useful for:</li>
           <li>One-time initialization</li><li>Isolating legacy scripts</li><li>Quick scope in snippets</li>
@@ -263,8 +285,8 @@ app.getSecret();  // &quot;hidden&quot;
   use(temp);
 }
 // temp not visible here</pre></div>
-        <h3 id="2-iife-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.4. Revealing module pattern</h3>
+        <h3 id="3-iife-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.4. Revealing module pattern</h3>
         <ul>
           <li>Expose a <strong>public API</strong> while keeping internals private via closure:</li>
         </ul>
@@ -284,7 +306,7 @@ console.log(counterModule.getCount());  // 1
           <li>ES modules (<code class="inline">export</code> / <code class="inline">import</code>, File 22) replace this pattern in modern code.</li>
         </ul>
       </section>
-      <section id="3-this-binding">
+      <section id="4-this-binding">
         <div class="heading-with-levels">
           <h2>3. <code class="inline">this</code> binding</h2>
           <div class="h2-levels">
@@ -292,8 +314,8 @@ console.log(counterModule.getCount());  // 1
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="3-this-binding-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. What is <code class="inline">this</code>?</h3>
+        <h3 id="4-this-binding-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. What is <code class="inline">this</code>?</h3>
         <ul>
           <li><strong><code class="inline">this</code></strong> is a special reference inside functions. Its value depends on <strong>call site</strong> (how the function is invoked), not where the function is defined — except for <strong>arrow functions</strong>.</li>
         </ul>
@@ -302,8 +324,8 @@ console.log(counterModule.getCount());  // 1
 }
 
 show();  // depends on strict mode / environment</pre></div>
-        <h3 id="3-this-binding-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.2. Default binding</h3>
+        <h3 id="4-this-binding-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.2. Default binding</h3>
         <ul>
           <li>Standalone function call — <code class="inline">this</code> is <strong><code class="inline">undefined</code></strong> in strict mode, or the <strong>global object</strong> (<code class="inline">window</code> in browsers) in sloppy mode:</li>
         </ul>
@@ -319,7 +341,7 @@ function fn() {
   console.log(this === window);  // true in browser
 }
 fn();</pre></div>
-        <h3>3.3. Implicit binding</h3>
+        <h3>4.3. Implicit binding</h3>
         <ul>
           <li>When called as <strong><code class="inline">obj.method()</code></strong>, <code class="inline">this</code> is <strong><code class="inline">obj</code></strong>:</li>
         </ul>
@@ -354,7 +376,7 @@ other.greet();  // &quot;Dev&quot; — this === other</pre></div>
 };
 
 user.greet();  // undefined (strict) or global name</pre></div>
-        <h3>3.4. Explicit binding</h3>
+        <h3>4.4. Explicit binding</h3>
         <ul>
           <li>Set <code class="inline">this</code> with <strong><code class="inline">call</code></strong>, <strong><code class="inline">apply</code></strong>, or <strong><code class="inline">bind</code></strong> (section 4):</li>
         </ul>
@@ -365,7 +387,7 @@ user.greet();  // undefined (strict) or global name</pre></div>
 const user = { name: &quot;Bharat&quot; };
 
 greet.call(user);  // &quot;Bharat&quot;</pre></div>
-        <h3>3.5. <code class="inline">new</code> binding</h3>
+        <h3>4.5. <code class="inline">new</code> binding</h3>
         <ul>
           <li>With <strong><code class="inline">new</code></strong>, <code class="inline">this</code> is a <strong>new empty object</strong> that becomes the instance:</li>
         </ul>
@@ -378,8 +400,8 @@ console.log(u.name);  // &quot;Bharat&quot;</pre></div>
         <ul>
           <li>If the constructor returns a plain object, that object replaces the default <code class="inline">this</code> (rare pattern). File 20 covers constructors and classes.</li>
         </ul>
-        <h3 id="3-this-binding-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.6. Binding priority (highest wins)</h3>
+        <h3 id="4-this-binding-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.6. Binding priority (highest wins)</h3>
         <ul>
           <li>When multiple rules apply:</li>
         </ul>
@@ -396,19 +418,19 @@ a.fn();               // 1 — implicit
 const bound = fn.bind(b);
 bound.call(a);        // 2 — bind beats call on bound function</pre></div>
       </section>
-      <section id="4-call-apply-bind">
+      <section id="5-call-apply-bind">
         <div class="heading-with-levels">
-          <h2>4. call, apply, bind</h2>
+          <h2>5. call, apply, bind</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-call-apply-bind-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-call-apply-bind-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>All three set <strong><code class="inline">this</code></strong> for a function. They differ in <strong>invocation</strong> and <strong>arguments</strong>.</li>
         </ul>
-        <h3>4.1. call</h3>
+        <h3>5.1. call</h3>
         <ul>
           <li>Invoke <strong>immediately</strong> with <code class="inline">this</code> and <strong>comma-separated</strong> arguments:</li>
         </ul>
@@ -425,7 +447,7 @@ greet.call(user, &quot;Hello&quot;, &quot;!&quot;);  // &quot;Hello, Bharat!&quo
         <div class="code"><pre>const nums = { 0: &quot;a&quot;, 1: &quot;b&quot;, length: 2 };
 Array.prototype.push.call(nums, &quot;c&quot;);
 // nums-like object now has &quot;c&quot; pushed</pre></div>
-        <h3>4.2. apply</h3>
+        <h3>5.2. apply</h3>
         <ul>
           <li>Same as <code class="inline">call</code>, but arguments as an <strong>array</strong> (or array-like):</li>
         </ul>
@@ -437,7 +459,7 @@ Math.max(...numbers);            // 9 — prefer spread today</pre></div>
         <ul>
           <li><code class="inline">apply</code> is mostly legacy; <strong><code class="inline">call</code></strong> + spread replaced most uses.</li>
         </ul>
-        <h3>4.3. bind</h3>
+        <h3>5.3. bind</h3>
         <ul>
           <li>Returns a <strong>new function</strong> with <code class="inline">this</code> permanently fixed (and optionally partial arguments):</li>
         </ul>
@@ -463,8 +485,8 @@ double(5);  // 10</pre></div>
         <ul>
           <li><code class="inline">bind</code> with <code class="inline">new</code> — bound <code class="inline">this</code> is ignored when using <code class="inline">new</code> on the bound function (edge case for interviews).</li>
         </ul>
-        <h3 id="4-call-apply-bind-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.4. When to use which</h3>
+        <h3 id="5-call-apply-bind-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.4. When to use which</h3>
         <table>
         <thead>
         <tr><th>API</th><th>Invokes now?</th><th>Arguments</th><th>Typical use</th></tr>
@@ -483,7 +505,7 @@ handleClick = () =&gt; {
   this.setState({ clicked: true });
 };</pre></div>
       </section>
-      <section id="5-arrow-functions-this">
+      <section id="6-arrow-functions-this">
         <div class="heading-with-levels">
           <h2>5. Arrow functions &amp; <code class="inline">this</code></h2>
           <div class="h2-levels">
@@ -491,8 +513,8 @@ handleClick = () =&gt; {
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-arrow-functions-this-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Lexical <code class="inline">this</code></h3>
+        <h3 id="6-arrow-functions-this-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. Lexical <code class="inline">this</code></h3>
         <ul>
           <li>Arrow functions <strong>do not have their own <code class="inline">this</code></strong>. They inherit <code class="inline">this</code> from the <strong>enclosing lexical scope</strong> at definition time:</li>
         </ul>
@@ -516,7 +538,7 @@ user.listHobbies();
         <div class="code"><pre>this.hobbies.forEach(function (hobby) {
   console.log(this.name);  // undefined — default binding
 });</pre></div>
-        <h3>5.2. When arrows help vs hurt</h3>
+        <h3>6.2. When arrows help vs hurt</h3>
         <table>
         <thead>
         <tr><th>Use arrows</th><th>Avoid arrows</th></tr>
@@ -544,56 +566,56 @@ const good = {
         <ul>
           <li>See File 13, section 2.4.</li>
         </ul>
-        <h3 id="5-arrow-functions-this-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.3. Other arrow differences (brief)</h3>
+        <h3 id="6-arrow-functions-this-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>6.3. Other arrow differences (brief)</h3>
         <ul><li><strong>No <code class="inline">arguments</code></strong> — use rest: <code class="inline">(...args) =&gt;</code></li><li><strong>No <code class="inline">prototype</code></strong> — cannot use as constructor</li><li><strong>Cannot be used with <code class="inline">new</code></strong></li><li><strong>Not hoisted</strong> as callable before line (expression only, File 08)</li></ul>
         <div class="code"><pre>const sum = (...nums) =&gt; nums.reduce((a, b) =&gt; a + b, 0);
 sum(1, 2, 3);  // 6</pre></div>
       </section>
-      <section id="6-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>6. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. What is a closure?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is a closure?</h3>
         <ul>
           <li><strong>A:</strong> A function that <strong>remembers</strong> variables from its outer lexical scope, even after the outer function has returned. In JS, functions close over their surrounding environment.</li>
         </ul>
-        <h3>6.2. What is the difference between scope and closure?</h3>
+        <h3>C.2. What is the difference between scope and closure?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Scope</strong> is where variables are visible. A <strong>closure</strong> is the mechanism that lets an inner function access outer variables after the outer function finishes executing.</li>
         </ul>
-        <h3>6.3. What is an IIFE?</h3>
+        <h3>C.3. What is an IIFE?</h3>
         <ul>
           <li><strong>A:</strong> An <strong>Immediately Invoked Function Expression</strong> — <code class="inline">(function () { ... })()</code> runs as soon as it is defined. Historically used for private scope; less needed with <code class="inline">let</code>/<code class="inline">const</code> and modules.</li>
         </ul>
-        <h3 id="6-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.4. What is the difference between <code class="inline">call</code>, <code class="inline">apply</code>, and <code class="inline">bind</code>?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.4. What is the difference between <code class="inline">call</code>, <code class="inline">apply</code>, and <code class="inline">bind</code>?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">call</code> and <code class="inline">apply</code> <strong>invoke</strong> the function immediately with a given <code class="inline">this</code>; <code class="inline">call</code> takes args individually, <code class="inline">apply</code> as an array. <code class="inline">bind</code> returns a <strong>new function</strong> with fixed <code class="inline">this</code> (and optional partial args) without calling it yet.</li>
         </ul>
-        <h3>6.5. Do arrow functions have <code class="inline">this</code>?</h3>
+        <h3>C.5. Do arrow functions have <code class="inline">this</code>?</h3>
         <ul>
           <li><strong>A:</strong> They do not have their <strong>own</strong> <code class="inline">this</code>. They inherit <code class="inline">this</code> from the surrounding scope where the arrow was <strong>defined</strong>.</li>
         </ul>
-        <h3 id="6-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>6.6. How is <code class="inline">this</code> determined in JavaScript?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.6. How is <code class="inline">this</code> determined in JavaScript?</h3>
         <ul>
           <li><strong>A:</strong> By <strong>how the function is called</strong>: default (bare call), implicit (<code class="inline">obj.method()</code>), explicit (<code class="inline">call</code>/<code class="inline">apply</code>/<code class="inline">bind</code>), or <code class="inline">new</code>. Arrow functions use <strong>lexical</strong> <code class="inline">this</code> from the enclosing scope.</li>
         </ul>
-        <h3>6.7. Why does <code class="inline">const fn = obj.method; fn()</code> lose <code class="inline">this</code>?</h3>
+        <h3>C.7. Why does <code class="inline">const fn = obj.method; fn()</code> lose <code class="inline">this</code>?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">this</code> is set by the <strong>call site</strong>. A bare <code class="inline">fn()</code> uses <strong>default binding</strong>, not <code class="inline">obj</code>. Use <code class="inline">fn.call(obj)</code>, <code class="inline">obj.method()</code>, or <code class="inline">obj.method.bind(obj)</code>.</li>
         </ul>
-        <h3>6.8. Why did <code class="inline">for (var i = 0; ...)</code> break closures in loops?</h3>
+        <h3>C.8. Why did <code class="inline">for (var i = 0; ...)</code> break closures in loops?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">var</code> is function-scoped — one shared <code class="inline">i</code>. All async callbacks see the final value. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, or use an IIFE to capture each value (File 04).</li>
         </ul>
-        <h3>6.9. Why does <code class="inline">this</code> break inside a callback?</h3>
+        <h3>C.9. Why does <code class="inline">this</code> break inside a callback?</h3>
         <ul>
           <li><strong>A:</strong> A nested <code class="inline">function</code> callback gets its own <code class="inline">this</code> (often <code class="inline">undefined</code> in strict mode). Fix with an <strong>arrow</strong> (lexical <code class="inline">this</code>), <code class="inline">.bind(this)</code>, or store <code class="inline">const self = this</code>.</li>
         </ul>
@@ -605,6 +627,46 @@ sum(1, 2, 3);  // 6</pre></div>
   },
 };
 user.delayed();</pre></div>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Predict <code class="inline">this</code> and closure outputs before running. Prefer arrows for lexical this in callbacks.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Write a function that returns an inner function closing over a counter.</li>
+          <li>Create a simple makeMultiplier(n) closure.</li>
+          <li>Log <code class="inline">this</code> in a method vs a bare function (non-strict / strict if you can).</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>makeCounter</strong> — <code class="inline">inc</code>/<code class="inline">dec</code>/<code class="inline">value</code> via closure.</li>
+          <li><strong>partialBind</strong> — Use <code class="inline">bind</code> to preset the first argument of a sum function.</li>
+          <li><strong>call vs apply</strong> — Call a function with an explicit this and argument list vs array.</li>
+          <li><strong>arrow vs method</strong> — Object with method and arrow property; show this difference.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>loop closure</strong> — Fix a classic var-in-loop bug with let or an IIFE/bind.</li>
+          <li><strong>once(fn)</strong> — Closure that runs fn only the first time.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I can explain closures capturing variables by reference.</li>
+          <li>I know how call/apply/bind set this.</li>
+          <li>I know arrows do not have their own this.</li>
+        </ul>
       </section>
       <footer>HTML note for JavaScript File 18. Open from the JS Language index.</footer>
     </main>

@@ -16,13 +16,14 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-modules-esm">1. Modules (ESM)</a>
-        <a href="#2-collections">2. Collections</a>
-        <a href="#3-symbol-iterators">3. Symbol &amp; iterators</a>
-        <a href="#4-generators">4. Generators</a>
-        <a href="#5-modern-syntax">5. Modern syntax</a>
-        <a href="#6-common-questions">6. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-modules-esm">2. Modules (ESM)</a>
+        <a href="#3-collections">3. Collections</a>
+        <a href="#4-symbol-iterators">4. Symbol &amp; iterators</a>
+        <a href="#5-generators">5. Generators</a>
+        <a href="#6-modern-syntax">6. Modern syntax</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./22-js-es6-plus-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -43,31 +44,52 @@
         <p class="subtitle">File 22 — modern JavaScript language features.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+      <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li>ES6 (2015) and later releases added <strong>modules</strong>, <strong><code class="inline">Symbol</code></strong>, <strong>iterators/generators</strong>, and syntax sugar that is now standard in modern codebases. <strong><code class="inline">Set</code></strong> is File 15; <strong><code class="inline">Map</code></strong> is File 16.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> use <strong>ES modules</strong> (<code class="inline">import</code>/<code class="inline">export</code>), <strong><code class="inline">Map</code></strong> (File 16) and <strong><code class="inline">Set</code></strong> (File 15) when keys or uniqueness matter, <strong><code class="inline">for...of</code></strong> on iterables, <strong><code class="inline">?.</code></strong> and <strong><code class="inline">??</code></strong> for safe access, and <strong>generators</strong> only when lazy sequences or custom iteration pay off.</li>
           <li>Interactive visualizer: open <a href="./22-js-es6-plus-animation.html">22-js-es6-plus-animation.html</a> in a browser — destructuring, rest/spread, template literals, optional chaining, nullish coalescing, modules, Map/Set (Run / Step).</li>
+          <li>After reading sections 2–6, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">22-practice.js</code> before File 23. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Modules (ESM)</strong></li>
+          <li><strong>Collections</strong></li>
+          <li><strong>Symbol &amp; iterators</strong></li>
+          <li><strong>Generators</strong></li>
+          <li><strong>Modern syntax</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="1-modules-esm">
+      <section id="2-modules-esm">
         <div class="heading-with-levels">
-          <h2>1. Modules (ESM)</h2>
+          <h2>2. Modules (ESM)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
 
-        <h3 id="1-modules-esm-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-modules-esm-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>ES modules (ESM)</strong> split code into files with explicit <strong>imports</strong> and <strong>exports</strong>. Each module has its own <strong>scope</strong> — no global pollution (File 08).</li>
         </ul>
-        <h3>1.1. Named exports</h3>
+        <h3>2.1. Named exports</h3>
         <ul>
           <li>Export multiple bindings by name:</li>
         </ul>
@@ -98,7 +120,7 @@ console.log(add(2, 3));</pre></div>
 }
 
 export { multiply };</pre></div>
-        <h3>1.2. Default export</h3>
+        <h3>2.2. Default export</h3>
         <ul>
           <li>One <strong>default</strong> export per module — importers choose the local name:</li>
         </ul>
@@ -119,7 +141,7 @@ const u = new User(&quot;Bharat&quot;);</pre></div>
 export default function fetchData() { /* ... */ }
 export const API_URL = &quot;https://api.example.com&quot;;</pre></div>
         <div class="code"><pre>import fetchData, { API_URL } from &quot;./api.js&quot;;</pre></div>
-        <h3>1.3. ESM vs CommonJS (brief)</h3>
+        <h3>2.3. ESM vs CommonJS (brief)</h3>
         <table>
         <thead>
         <tr><th>ESM</th><th>CommonJS (Node legacy)</th></tr>
@@ -133,7 +155,7 @@ export const API_URL = &quot;https://api.example.com&quot;;</pre></div>
         <ul>
           <li>Modern Node supports ESM with <code class="inline">&quot;type&quot;: &quot;module&quot;</code> in <code class="inline">package.json</code> or <code class="inline">.mjs</code> extension.</li>
         </ul>
-        <h3>1.3.1. CJS ↔ ESM interop (pitfalls)</h3>
+        <h3>2.3.1. CJS ↔ ESM interop (pitfalls)</h3>
         <ul>
           <li>Node can load CJS from ESM via <code class="inline">createRequire</code> or default-interop, and ESM from CJS via dynamic <code class="inline">import()</code>. Behavior depends on <code class="inline">package.json</code> <code class="inline">&quot;type&quot;</code> and <code class="inline">&quot;exports&quot;</code>.</li>
         </ul>
@@ -147,7 +169,7 @@ const { foo } = await import(&quot;./esm-only.mjs&quot;);</pre></div>
           <li><strong>Default export mismatch:</strong> CJS <code class="inline">module.exports = fn</code> often becomes <code class="inline">import cjs from ...</code> where the whole export is the default — named imports may be empty.</li>
           <li><strong>Dual packages</strong> publishing both CJS and ESM can cause “two copies of the same module” bugs. Prefer one format in app code.</li>
         </ul>
-        <h3>1.3.2. Top-level <code class="inline">await</code> pitfalls</h3>
+        <h3>2.3.2. Top-level <code class="inline">await</code> pitfalls</h3>
         <ul>
           <li>Allowed in ES modules. The module becomes async — importers wait for it to finish.</li>
           <li><strong>Waterfall risk:</strong> top-level await in many modules serializes startup.</li>
@@ -159,8 +181,8 @@ const res = await fetch(&quot;/config.json&quot;);
 export const config = await res.json();
 // Any importer of config waits for this fetch</pre></div>
 
-        <h3 id="1-modules-esm-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.4. Import rules and patterns</h3>
+        <h3 id="2-modules-esm-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.4. Import rules and patterns</h3>
         <div class="code"><pre>// Side-effect only — runs module init code
 import &quot;./polyfills.js&quot;;
 
@@ -177,8 +199,8 @@ export { default as User } from &quot;./user.js&quot;;</pre></div>
           <li>File extensions in browsers often require <strong><code class="inline">.js</code></strong> explicitly. Bundlers (Vite, webpack) resolve paths.</li>
         </ul>
 
-        <h3 id="1-modules-esm-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.5. Dynamic <code class="inline">import()</code></h3>
+        <h3 id="2-modules-esm-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.5. Dynamic <code class="inline">import()</code></h3>
         <ul>
           <li>Load a module <strong>at runtime</strong> — returns a <strong>Promise</strong>:</li>
         </ul>
@@ -196,7 +218,7 @@ export { default as User } from &quot;./user.js&quot;;</pre></div>
         <ul>
           <li><code class="inline">import()</code> does not hoist — runs when called.</li>
         </ul>
-        <h3>1.6. Live bindings, cycles, <code class="inline">import.meta</code></h3>
+        <h3>2.6. Live bindings, cycles, <code class="inline">import.meta</code></h3>
         <ul>
           <li>ESM exports are <strong>live bindings</strong> — the importer sees later assignments to the export, not a snapshot.</li>
         </ul>
@@ -213,32 +235,32 @@ console.log(n);  // 1 — not a copied 0</pre></div>
         </ul>
         <div class="code"><pre>console.log(import.meta.url);  // this module&#x27;s URL
 import.meta.env;               // bundler-specific (Vite)</pre></div>
-        <h3>1.7. Import attributes (JSON modules)</h3>
+        <h3>2.7. Import attributes (JSON modules)</h3>
         <div class="code"><pre>import data from &quot;./config.json&quot; with { type: &quot;json&quot; };</pre></div>
       </section>
-            <section id="2-collections">
+            <section id="3-collections">
         <div class="heading-with-levels">
-          <h2>2. Collections</h2>
+          <h2>3. Collections</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="2-collections-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-collections-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong><code class="inline">Set</code></strong> (unique values) is File 15. <strong><code class="inline">Map</code></strong> (any-value keys) is File 16. <strong>WeakSet</strong> / <strong>WeakMap</strong> are L3 in those files.</li>
         </ul>
       </section>
-      <section id="3-symbol-iterators">
+      <section id="4-symbol-iterators">
         <div class="heading-with-levels">
-          <h2>3. Symbol &amp; iterators</h2>
+          <h2>4. Symbol &amp; iterators</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
 
-        <h3 id="3-symbol-iterators-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Symbol (File 02 recap)</h3>
+        <h3 id="4-symbol-iterators-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Symbol (File 02 recap)</h3>
         <ul>
           <li><strong>Unique</strong> primitive — every <code class="inline">Symbol()</code> is distinct:</li>
         </ul>
@@ -280,7 +302,7 @@ const obj = {
 for (const n of obj) {
   console.log(n);  // 10, 20
 }</pre></div>
-        <h3>3.1.1. More well-known symbols</h3>
+        <h3>4.1.1. More well-known symbols</h3>
         <table>
         <thead>
         <tr><th>Symbol</th><th>Role</th></tr>
@@ -301,7 +323,7 @@ for (const n of obj) {
 }
 Object.prototype.toString.call(new Tagged());  // &quot;[object Tagged]&quot;</pre></div>
 
-        <h3>3.2. Consumption of iterables</h3>
+        <h3>4.2. Consumption of iterables</h3>
         <ul>
           <li><strong><code class="inline">for...of</code></strong> (File 04):</li>
         </ul>
@@ -323,8 +345,8 @@ function sum(...nums) { }</pre></div>
         </ul>
         <div class="code"><pre>Array.from(&quot;hello&quot;);  // [&quot;h&quot;,&quot;e&quot;,&quot;l&quot;,&quot;l&quot;,&quot;o&quot;]</pre></div>
 
-        <h3 id="3-symbol-iterators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.3. Iterable protocol</h3>
+        <h3 id="4-symbol-iterators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.3. Iterable protocol</h3>
         <ul>
           <li>An object is <strong>iterable</strong> if it has <strong><code class="inline">Symbol.iterator</code></strong> — a function returning an <strong>iterator</strong>:</li>
         </ul>
@@ -339,27 +361,27 @@ const iterator = str[Symbol.iterator]();
 iterator.next();  // { value: &quot;h&quot;, done: false }
 iterator.next();  // { value: &quot;i&quot;, done: false }
 iterator.next();  // { done: true }</pre></div>
-        <h3>3.4. Iterator helpers</h3>
+        <h3>4.4. Iterator helpers</h3>
         <ul>
           <li>Iterators gain chainable <code class="inline">map</code>/<code class="inline">filter</code>/<code class="inline">take</code> (ES2025) — lazy, unlike Array methods that allocate immediately:</li>
         </ul>
         <div class="code"><pre>const it = [1, 2, 3, 4, 5].values();
 [...it.filter((n) =&gt; n % 2 === 1).map((n) =&gt; n * 10)];  // [10, 30, 50]</pre></div>
       </section>
-      <section id="4-generators">
+      <section id="5-generators">
         <div class="heading-with-levels">
-          <h2>4. Generators</h2>
+          <h2>5. Generators</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
 
-        <h3 id="4-generators-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-generators-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>Generator functions</strong> (<code class="inline">function*</code>) return an <strong>iterator</strong> that can <strong>pause</strong> with <strong><code class="inline">yield</code></strong>.</li>
         </ul>
-        <h3>4.1. Basic syntax</h3>
+        <h3>5.1. Basic syntax</h3>
         <div class="code"><pre>function* countUp() {
   yield 1;
   yield 2;
@@ -378,7 +400,7 @@ gen.next();  // { done: true }</pre></div>
         <div class="code"><pre>for (const n of countUp()) {
   console.log(n);  // 1, 2, 3
 }</pre></div>
-        <h3>4.2. Use cases</h3>
+        <h3>5.2. Use cases</h3>
         <ul>
           <li><strong>Lazy sequences</strong> — generate on demand:</li>
         </ul>
@@ -410,8 +432,8 @@ for await (const data of fetchPages([&quot;/a&quot;, &quot;/b&quot;])) {
           <li>Avoid generators when a simple array or async function suffices — adds mental overhead.</li>
         </ul>
 
-        <h3 id="4-generators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.3. yield expression</h3>
+        <h3 id="5-generators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.3. yield expression</h3>
         <ul>
           <li><code class="inline">yield</code> produces a value <strong>and</strong> can receive input on next <code class="inline">.next(arg)</code>:</li>
         </ul>
@@ -434,7 +456,7 @@ g.next(20);    // { value: 20, done: true }</pre></div>
 }
 
 [...combined()];  // [1, 2, &quot;a&quot;, &quot;b&quot;]</pre></div>
-        <h3>4.4. Generator <code class="inline">.return()</code> and <code class="inline">.throw()</code></h3>
+        <h3>5.4. Generator <code class="inline">.return()</code> and <code class="inline">.throw()</code></h3>
         <ul>
           <li><strong><code class="inline">g.return(value)</code></strong> — finishes the generator early; runs <code class="inline">finally</code> blocks; result is <code class="inline">{ value, done: true }</code>.</li>
           <li><strong><code class="inline">g.throw(err)</code></strong> — injects an exception at the paused <code class="inline">yield</code>; the generator can <code class="inline">try/catch</code> it.</li>
@@ -466,16 +488,16 @@ r.throw(new Error(&quot;boom&quot;));  // { value: &quot;caught: boom&quot;, don
           <li><code class="inline">for...of</code> calls <code class="inline">.return()</code> on early <code class="inline">break</code>/<code class="inline">return</code> so cleanup still runs.</li>
         </ul>
       </section>
-      <section id="5-modern-syntax">
+      <section id="6-modern-syntax">
         <div class="heading-with-levels">
-          <h2>5. Modern syntax</h2>
+          <h2>6. Modern syntax</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
 
-        <h3 id="5-modern-syntax-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Template literals</h3>
+        <h3 id="6-modern-syntax-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. Template literals</h3>
         <ul>
           <li>Strings with <strong>interpolation</strong> and multiline (File 02):</li>
         </ul>
@@ -503,7 +525,7 @@ highlight`Hello, ${name}!`;
         <ul>
           <li>Used in libraries (styled-components, Lit HTML).</li>
         </ul>
-        <h3>5.2. Other modern syntax (quick reference)</h3>
+        <h3>6.2. Other modern syntax (quick reference)</h3>
         <table>
         <thead>
         <tr><th>Feature</th><th>Example</th><th>Notes</th></tr>
@@ -528,8 +550,8 @@ highlight`Hello, ${name}!`;
 
 const million = 1_000_000;</pre></div>
 
-        <h3 id="5-modern-syntax-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.3. Optional chaining (<code class="inline">?.</code>)</h3>
+        <h3 id="6-modern-syntax-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.3. Optional chaining (<code class="inline">?.</code>)</h3>
         <ul>
           <li>Short-circuit access when intermediate value is <strong><code class="inline">null</code></strong> or <strong><code class="inline">undefined</code></strong> (File 03, File 13):</li>
         </ul>
@@ -548,7 +570,7 @@ obj?.[dynamicKey];</pre></div>
 // bad.fn?.();  // OK — optional call skipped if not function? 
 // Actually: bad.fn?.() tries to call string — TypeError if fn exists but isn&#x27;t callable
 // Optional CALL only skips if fn is null/undefined</pre></div>
-        <h3>5.4. Nullish coalescing (<code class="inline">??</code>)</h3>
+        <h3>6.4. Nullish coalescing (<code class="inline">??</code>)</h3>
         <ul>
           <li>Default when value is <strong><code class="inline">null</code></strong> or <strong><code class="inline">undefined</code></strong> only (File 03):</li>
         </ul>
@@ -566,71 +588,111 @@ missing ?? &quot;Guest&quot;;  // &quot;Guest&quot;</pre></div>
         <div class="code"><pre>// a ?? b || c;  // SyntaxError
 (a ?? b) || c;</pre></div>
       </section>
-      <section id="6-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>6. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
 
-        <h3 id="6-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. What is the difference between default and named exports?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is the difference between default and named exports?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Named</strong> exports must be imported by <code class="inline">{ name }</code> (or renamed). <strong>Default</strong> export allows <code class="inline">import Anything from &quot;./module.js&quot;</code> — one default per module.</li>
         </ul>
-        <h3>6.2. What is <code class="inline">Symbol</code> used for?</h3>
+        <h3>C.2. What is <code class="inline">Symbol</code> used for?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Unique property keys</strong> that won&#x27;t collide with string keys, and <strong>well-known symbols</strong> (<code class="inline">Symbol.iterator</code>, etc.) to hook into language features.</li>
         </ul>
-        <h3>6.3. What is a generator?</h3>
+        <h3>C.3. What is a generator?</h3>
         <ul>
           <li><strong>A:</strong> A function (<code class="inline">function*</code>) that can <strong>pause</strong> with <strong><code class="inline">yield</code></strong> and resume later, producing an iterable iterator. Useful for lazy sequences and custom iteration.</li>
         </ul>
 
-        <h3 id="6-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.4. When should I use <code class="inline">Map</code> instead of a plain object?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.4. When should I use <code class="inline">Map</code> instead of a plain object?</h3>
         <ul>
           <li><strong>A:</strong> File 16.</li>
         </ul>
-        <h3>6.5. What is the difference between <code class="inline">Set</code> and array <code class="inline">filter</code> for uniqueness?</h3>
+        <h3>C.5. What is the difference between <code class="inline">Set</code> and array <code class="inline">filter</code> for uniqueness?</h3>
         <ul>
           <li><strong>A:</strong> File 15.</li>
         </ul>
-        <h3>6.6. What is dynamic <code class="inline">import()</code>?</h3>
+        <h3>C.6. What is dynamic <code class="inline">import()</code>?</h3>
         <ul>
           <li><strong>A:</strong> Runtime module loading that returns a <strong>Promise</strong> — enables code splitting and conditional imports unlike static <code class="inline">import</code> at top of file.</li>
         </ul>
-        <h3>6.7. Can I use <code class="inline">import</code> and <code class="inline">require</code> in the same file?</h3>
+        <h3>C.7. Can I use <code class="inline">import</code> and <code class="inline">require</code> in the same file?</h3>
         <ul>
           <li><strong>A:</strong> In modern projects, pick <strong>one</strong> system per file. Mixing ESM and CommonJS depends on bundler/Node config — avoid in application code when possible.</li>
         </ul>
-        <h3>6.11. What is a circular import?</h3>
+        <h3>C.11. What is a circular import?</h3>
         <ul>
           <li><strong>A:</strong> Two modules import each other. ESM live bindings can work if you only <strong>read</strong> exports after init (inside functions). Top-level use during the cycle can throw (TDZ).</li>
         </ul>
 
-        <h3 id="6-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>6.8. What makes an object iterable?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.8. What makes an object iterable?</h3>
         <ul>
           <li><strong>A:</strong> It implements <strong><code class="inline">Symbol.iterator</code></strong> — a method returning an iterator with <strong><code class="inline">next()</code></strong> returning <code class="inline">{ value, done }</code>.</li>
         </ul>
-        <h3>6.9. What is the difference between <code class="inline">?.</code> and <code class="inline">&amp;&amp;</code> for safe access?</h3>
+        <h3>C.9. What is the difference between <code class="inline">?.</code> and <code class="inline">&amp;&amp;</code> for safe access?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">?.</code></strong> stops on <strong><code class="inline">null</code>/<code class="inline">undefined</code></strong> only. <strong><code class="inline">&amp;&amp;</code></strong> stops on <strong>any falsy</strong> value (<code class="inline">0</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">false</code>), which may hide valid data.</li>
         </ul>
-        <h3>6.10. What is the difference between <code class="inline">WeakMap</code> and <code class="inline">Map</code>?</h3>
+        <h3>C.10. What is the difference between <code class="inline">WeakMap</code> and <code class="inline">Map</code>?</h3>
         <ul>
           <li><strong>A:</strong> File 16.</li>
         </ul>
-        <h3>6.12. What do generator <code class="inline">.return()</code> and <code class="inline">.throw()</code> do?</h3>
+        <h3>C.12. What do generator <code class="inline">.return()</code> and <code class="inline">.throw()</code> do?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">.return(v)</code> finishes early (runs <code class="inline">finally</code>). <code class="inline">.throw(e)</code> injects an error at the paused <code class="inline">yield</code> so the generator can catch it. <code class="inline">for...of</code> uses <code class="inline">.return()</code> on break.</li>
         </ul>
-        <h3>6.13. What are top-level await pitfalls?</h3>
+        <h3>C.13. What are top-level await pitfalls?</h3>
         <ul>
           <li><strong>A:</strong> The module becomes async — importers wait; heavy top-level awaits serialize startup; cycles + TLA can deadlock. CJS cannot use TLA.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Practice modern syntax. For modules, use .mjs or "type":"module" if you try imports in Node.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Destructure arrays and objects with defaults and rest.</li>
+          <li>Write a small generator that yields 1..N.</li>
+          <li>Use optional chaining and nullish coalescing on a nested object.</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>iterator consumer</strong> — for...of over a custom iterable (Symbol.iterator).</li>
+          <li><strong>generator id</strong> — idMaker generator yielding unique ids.</li>
+          <li><strong>Set/Map refresh</strong> — One snippet using both from earlier files.</li>
+          <li><strong>tagged template toy</strong> — Simple tag that uppercases interpolations.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>module sketch</strong> — Split helpers into two files with export/import (or document the syntax if your runner is CJS-only).</li>
+          <li><strong>async generator</strong> — Yield delayed values; consume with for await...of.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I can use modern operators (?., ??, ...).</li>
+          <li>I understand iterators vs generators at a basic level.</li>
+          <li>I know ESM export/import shapes.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 22. Open from the JS Language index.</footer>

@@ -16,10 +16,11 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-streams">1. Streams</a>
-        <a href="#2-websocket">2. WebSocket</a>
-        <a href="#3-common-questions">3. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-streams">2. Streams</a>
+        <a href="#3-websocket">3. WebSocket</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -39,26 +40,44 @@
         <p class="subtitle">File 27 — ReadableStream / TransformStream, fetch bodies, WebSocket messaging.</p>
       </header>
 
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+      <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li><strong>Streams</strong> process data in chunks (download, upload, transform) without loading everything into memory. <strong>WebSocket</strong> is a full-duplex socket for low-latency messaging.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> use <code class="inline">fetch</code> + streaming body for large HTTP payloads; use WebSocket (or SSE) for live bidirectional updates. Async iteration: File 21.</li>
+          <li>After reading sections 2–3, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">27-practice.js</code> before File 28. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Streams</strong></li>
+          <li><strong>WebSocket</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
-      <section id="1-streams">
+      <section id="2-streams">
         <div class="heading-with-levels">
-          <h2>1. Streams</h2>
+          <h2>2. Streams</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-streams-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-streams-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Web Streams: <strong><code class="inline">ReadableStream</code></strong>, <strong><code class="inline">WritableStream</code></strong>, <strong><code class="inline">TransformStream</code></strong>.</li>
         </ul>
@@ -70,13 +89,13 @@ while (true) {
   if (done) break;
   processChunk(value);
 }</pre></div>
-        <h3 id="1-streams-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. <code class="inline">for await</code> on bodies</h3>
+        <h3 id="2-streams-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. <code class="inline">for await</code> on bodies</h3>
         <div class="code"><pre>const res = await fetch(&quot;/large.txt&quot;);
 for await (const chunk of res.body) {
   // chunk is Uint8Array in browsers
 }</pre></div>
-        <h3>1.2. TransformStream (pipe)</h3>
+        <h3>2.2. TransformStream (pipe)</h3>
         <div class="code"><pre>const upper = new TransformStream({
   transform(chunk, controller) {
     controller.enqueue(chunk.toUpperCase());
@@ -93,23 +112,23 @@ const readable = new ReadableStream({
 const out = readable.pipeThrough(upper);
 const reader = out.getReader();
 console.log((await reader.read()).value); // &quot;HI&quot;</pre></div>
-        <h3 id="1-streams-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.3. Backpressure (idea)</h3>
+        <h3 id="2-streams-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.3. Backpressure (idea)</h3>
         <ul>
           <li>If the consumer is slow, the stream signals the producer to slow down (via promise-based write / pull). Avoid buffering unbounded chunks in memory.</li>
           <li>Node has its own stream API (<code class="inline">stream.Readable</code>); modern Node also supports Web Streams.</li>
         </ul>
       </section>
 
-      <section id="2-websocket">
+      <section id="3-websocket">
         <div class="heading-with-levels">
-          <h2>2. WebSocket</h2>
+          <h2>3. WebSocket</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-websocket-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-websocket-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Persistent connection after HTTP upgrade. Both sides can send anytime.</li>
         </ul>
@@ -127,14 +146,14 @@ ws.addEventListener(&quot;error&quot;, console.error);
 ws.addEventListener(&quot;close&quot;, (e) =&gt; {
   console.log(e.code, e.reason);
 });</pre></div>
-        <h3 id="2-websocket-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Ready states and binary</h3>
+        <h3 id="3-websocket-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.1. Ready states and binary</h3>
         <div class="code"><pre>ws.readyState; // 0 CONNECTING, 1 OPEN, 2 CLOSING, 3 CLOSED
 ws.binaryType = &quot;arraybuffer&quot;;
 ws.send(new Uint8Array([1, 2, 3]));
 ws.close(1000, &quot;done&quot;);</pre></div>
-        <h3 id="2-websocket-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. Practical notes</h3>
+        <h3 id="3-websocket-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Practical notes</h3>
         <ul>
           <li>Reconnection, heartbeats, and auth tokens are application-level — not built into the API.</li>
           <li>Prefer <strong>wss://</strong> in production. For one-way server push, <strong>SSE</strong> (<code class="inline">EventSource</code>) is simpler.</li>
@@ -142,23 +161,63 @@ ws.close(1000, &quot;done&quot;);</pre></div>
         </ul>
       </section>
 
-      <section id="3-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>3. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="3-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. When streams vs reading full body?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. When streams vs reading full body?</h3>
         <ul>
           <li><strong>A:</strong> Stream when the payload is large or you want progressive UI. Use <code class="inline">res.json()</code> / <code class="inline">res.text()</code> for small complete responses (File 24).</li>
         </ul>
-        <h3 id="3-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. WebSocket vs fetch?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.2. WebSocket vs fetch?</h3>
         <ul>
           <li><strong>A:</strong> <strong>fetch</strong> is request/response. <strong>WebSocket</strong> stays open for many messages both ways with lower overhead after connect.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Streams/WebSocket need a browser or appropriate runtime. Sketch code even if you only run parts of it.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Explain in comments: readable vs writable stream roles.</li>
+          <li>Create a small ReadableStream that enqueues 1,2,3 then closes (browser).</li>
+          <li>Open a WebSocket to a public echo server if available; otherwise write the connect/send/close skeleton.</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>tee / pipeTo sketch</strong> — Comment a pipeline from fetch body to another sink.</li>
+          <li><strong>backpressure note</strong> — Write 5–8 lines explaining why producers must respect pull/desiredSize.</li>
+          <li><strong>WS message protocol</strong> — JSON encode/decode helpers for {type, payload}.</li>
+          <li><strong>reconnect policy</strong> — Pseudocode exponential backoff reconnect.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>TransformStream</strong> — Uppercase chunks in a transform (browser).</li>
+          <li><strong>heartbeat</strong> — Interval ping on WebSocket; clear on close.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I know streams are about chunked async I/O.</li>
+          <li>I handle WebSocket open/message/error/close.</li>
+          <li>I think about backpressure and reconnection.</li>
         </ul>
       </section>
 
