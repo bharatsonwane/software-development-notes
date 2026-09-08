@@ -16,15 +16,16 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./reactjs.html">← React.js</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-prop-drilling-problem">1. Prop drilling problem</a>
-        <a href="#2-context-api">2. Context API</a>
-        <a href="#3-context-performance">3. Context performance</a>
-        <a href="#4-usereducer">4. useReducer</a>
-        <a href="#5-context-usereducer-together">5. Context + useReducer together</a>
-        <a href="#6-common-context-use-cases">6. Common Context use cases</a>
-        <a href="#7-putting-it-together">7. Putting it together</a>
-        <a href="#8-common-questions">8. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-prop-drilling-problem">2. Prop drilling problem</a>
+        <a href="#3-context-api">3. Context API</a>
+        <a href="#4-context-performance">4. Context performance</a>
+        <a href="#5-usereducer">5. useReducer</a>
+        <a href="#6-context-usereducer-together">6. Context + useReducer together</a>
+        <a href="#7-common-context-use-cases">7. Common Context use cases</a>
+        <a href="#8-putting-it-together">8. Putting it together</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -44,23 +45,51 @@
         <p class="subtitle">File 08 — useContext, useReducer, avoiding prop drilling.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li>When many components need the same data, passing props through every layer (<strong>prop drilling</strong>) gets painful. <strong>Context</strong> shares values across the tree without explicit props at each level. <strong><code class="inline">useReducer</code></strong> manages complex state updates with a predictable <strong>action → state</strong> flow — similar to Redux, built into React.</li>
           <li>Builds on state (File 03) and hooks patterns (File 07). File 11 covers global stores (Zustand, Redux Toolkit) when Context is not enough.</li>
           <li><strong>Default rule today:</strong> use <strong>Context</strong> for <strong>low-frequency, widely shared</strong> data (theme, locale, auth user); colocate providers <strong>as low as possible</strong>; pair <strong><code class="inline">useReducer</code></strong> with Context for non-trivial shared state; split contexts to avoid unnecessary re-renders.</li>
         </ul>
+
+        <h3>1.2. Default rules and how to study this file</h3>
+        <ul>
+          <li><strong>Default rule today:</strong> prefer function components and hooks; keep components small; colocate state with the UI that needs it.</li>
+          <li>After reading sections 2–8, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">08-practice.jsx</code> before File 09. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Prop drilling problem</strong></li>
+          <li><strong>Context API</strong></li>
+          <li><strong>Context performance</strong></li>
+          <li><strong>useReducer</strong></li>
+          <li><strong>Context + useReducer together</strong></li>
+          <li><strong>Common Context use cases</strong></li>
+          <li><strong>Putting it together</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
       </section>
-      <section id="1-prop-drilling-problem">
+      <section id="2-prop-drilling-problem">
         <div class="heading-with-levels">
-          <h2>1. Prop drilling problem</h2>
+          <h2>2. Prop drilling problem</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="1-prop-drilling-problem-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Passing props through intermediates</h3>
+        <h3 id="2-prop-drilling-problem-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Passing props through intermediates</h3>
         <div class="code"><pre>function App() {
   const [user, setUser] = useState(null);
   return &lt;Layout user={user} setUser={setUser} /&gt;;
@@ -76,20 +105,20 @@ function Sidebar({ user, setUser }) {
         <ul>
           <li><code class="inline">Layout</code> and <code class="inline">Sidebar</code> do not use <code class="inline">user</code> — they only forward props. Context (or a store) removes the middle passes.</li>
         </ul>
-        <h3>1.2. When lifting state is still enough</h3>
+        <h3>2.2. When lifting state is still enough</h3>
         <ul>
           <li>If only <strong>two or three</strong> levels share state, <strong>lifting state up</strong> (File 03) may be simpler than Context. Reach for Context when the tree is deep or many branches need the same value.</li>
         </ul>
       </section>
-      <section id="2-context-api">
+      <section id="3-context-api">
         <div class="heading-with-levels">
-          <h2>2. Context API</h2>
+          <h2>3. Context API</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="2-context-api-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. createContext</h3>
+        <h3 id="3-context-api-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.1. createContext</h3>
         <div class="code"><pre>import { createContext, useContext, useState } from &quot;react&quot;;
 
 const ThemeContext = createContext(null);
@@ -102,7 +131,7 @@ export function useTheme() {
         <ul>
           <li>Default <code class="inline">null</code> (or a sentinel) lets custom hooks <strong>fail fast</strong> outside a provider.</li>
         </ul>
-        <h3>2.2. Provider</h3>
+        <h3>3.2. Provider</h3>
         <div class="code"><pre>export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(&quot;light&quot;);
   const value = { theme, setTheme };
@@ -123,7 +152,7 @@ export function useTheme() {
     &lt;/ThemeProvider&gt;
   );
 }</pre></div>
-        <h3>2.3. Consuming with useContext</h3>
+        <h3>3.3. Consuming with useContext</h3>
         <div class="code"><pre>function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
@@ -135,7 +164,7 @@ export function useTheme() {
         <ul>
           <li>Any descendant of <code class="inline">ThemeProvider</code> can call <code class="inline">useTheme()</code> without prop chains.</li>
         </ul>
-        <h3>2.4. Colocate providers</h3>
+        <h3>3.4. Colocate providers</h3>
         <ul>
           <li>Place providers <strong>as close as needed</strong> to consumers — not always at app root:</li>
         </ul>
@@ -150,15 +179,15 @@ export function useTheme() {
           <li>Smaller subtrees = fewer components that re-render when context value changes.</li>
         </ul>
       </section>
-      <section id="3-context-performance">
+      <section id="4-context-performance">
         <div class="heading-with-levels">
-          <h2>3. Context performance</h2>
+          <h2>4. Context performance</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="3-context-performance-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.1. Re-renders when value changes</h3>
+        <h3 id="4-context-performance-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.1. Re-renders when value changes</h3>
         <ul>
           <li>When <strong><code class="inline">Provider value={...}</code></strong> changes, <strong>all consumers</strong> of that context re-render (unless optimized — File 12).</li>
           <li>Avoid recreating the value object every render without need:</li>
@@ -172,7 +201,7 @@ const value = useMemo(() =&gt; ({ theme, setTheme }), [theme]);
         <ul>
           <li><code class="inline">setTheme</code> from <code class="inline">useState</code> is stable — only <code class="inline">theme</code> needs to be in deps.</li>
         </ul>
-        <h3>3.2. Split contexts</h3>
+        <h3>4.2. Split contexts</h3>
         <ul>
           <li>Separate <strong>read-heavy</strong> data from <strong>actions</strong>:</li>
         </ul>
@@ -192,19 +221,19 @@ function ThemeProvider({ children }) {
         <ul>
           <li>Components that only call <code class="inline">setTheme</code> subscribe to <strong>dispatch</strong> context and skip re-renders when <code class="inline">theme</code> changes (if they only use dispatch).</li>
         </ul>
-        <h3>3.3. When Context is a poor fit</h3>
+        <h3>4.3. When Context is a poor fit</h3>
         <ul><li><strong>High-frequency updates</strong> (mouse position, keystrokes in huge trees)</li><li><strong>Large app state</strong> with many selectors — use <strong>Zustand / Redux</strong> (File 11)</li><li><strong>Server cache</strong> — use <strong>TanStack Query</strong> (File 10)</li></ul>
       </section>
-      <section id="4-usereducer">
+      <section id="5-usereducer">
         <div class="heading-with-levels">
-          <h2>4. useReducer</h2>
+          <h2>5. useReducer</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-usereducer-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Reducer shape</h3>
+        <h3 id="5-usereducer-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. Reducer shape</h3>
         <div class="code"><pre>function counterReducer(state, action) {
   switch (action.type) {
     case &quot;increment&quot;:
@@ -232,12 +261,12 @@ function Counter() {
         <ul>
           <li><strong><code class="inline">dispatch</code></strong> is stable — safe to pass down without <code class="inline">useCallback</code>.</li>
         </ul>
-        <h3>4.2. Immer (optional)</h3>
+        <h3>5.2. Immer (optional)</h3>
         <ul>
           <li>Libraries like <strong>Immer</strong> let you write &quot;mutating&quot; logic that produces immutable state — common in Redux Toolkit (File 11).</li>
         </ul>
-        <h3 id="4-usereducer-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.3. When to prefer useReducer over useState</h3>
+        <h3 id="5-usereducer-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.3. When to prefer useReducer over useState</h3>
         <table>
         <thead>
         <tr><th>useState</th><th>useReducer</th></tr>
@@ -248,22 +277,22 @@ function Counter() {
         <tr><td>Local component only</td><td>Shared update logic via Context</td></tr>
         </tbody>
         </table>
-        <h3>4.4. Lazy initial state</h3>
+        <h3>5.4. Lazy initial state</h3>
         <div class="code"><pre>const [state, dispatch] = useReducer(reducer, initialArg, initFunction);
 // initFunction(initialArg) runs once for expensive setup</pre></div>
         <ul>
           <li>Same idea as lazy <code class="inline">useState</code> (File 03).</li>
         </ul>
       </section>
-      <section id="5-context-usereducer-together">
+      <section id="6-context-usereducer-together">
         <div class="heading-with-levels">
-          <h2>5. Context + useReducer together</h2>
+          <h2>6. Context + useReducer together</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="5-context-usereducer-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Global state pattern</h3>
+        <h3 id="6-context-usereducer-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. Global state pattern</h3>
         <div class="code"><pre>const CartStateContext = createContext(null);
 const CartDispatchContext = createContext(null);
 
@@ -301,7 +330,7 @@ export function useCartDispatch() {
   if (!ctx) throw new Error(&quot;useCartDispatch requires CartProvider&quot;);
   return ctx;
 }</pre></div>
-        <h3>5.2. Dispatching actions from components</h3>
+        <h3>6.2. Dispatching actions from components</h3>
         <div class="code"><pre>function AddToCartButton({ product }) {
   const dispatch = useCartDispatch();
   return (
@@ -316,36 +345,36 @@ function CartSummary() {
   return &lt;p&gt;{items.length} items&lt;/p&gt;;
 }</pre></div>
       </section>
-      <section id="6-common-context-use-cases">
+      <section id="7-common-context-use-cases">
         <div class="heading-with-levels">
-          <h2>6. Common Context use cases</h2>
+          <h2>7. Common Context use cases</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="6-common-context-use-cases-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Theme and locale</h3>
+        <h3 id="7-common-context-use-cases-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>7.1. Theme and locale</h3>
         <ul>
           <li>Theme, language, density — read by many components, changes infrequently.</li>
         </ul>
-        <h3>6.2. Auth session</h3>
+        <h3>7.2. Auth session</h3>
         <ul>
           <li>Current user and login/logout — often Context + fetch on mount (File 10). Keep <strong>token</strong> in httpOnly cookies when possible (security — not React-specific).</li>
         </ul>
-        <h3>6.3. Dependency injection (testing)</h3>
+        <h3>7.3. Dependency injection (testing)</h3>
         <ul>
           <li>Provide mock services via Context in tests without rewiring imports.</li>
         </ul>
       </section>
-      <section id="7-putting-it-together">
+      <section id="8-putting-it-together">
         <div class="heading-with-levels">
-          <h2>7. Putting it together</h2>
+          <h2>8. Putting it together</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="7-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Todo app with Context + reducer</h3>
+        <h3 id="8-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>8.1. Todo app with Context + reducer</h3>
         <div class="code"><pre>function todosReducer(state, action) {
   switch (action.type) {
     case &quot;add&quot;:
@@ -378,55 +407,91 @@ export function TodosProvider({ children }) {
           <li>List UI from File 04 consumes <code class="inline">todos</code> and dispatches actions — no prop drilling through layout chrome.</li>
         </ul>
       </section>
-      <section id="8-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>8. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="8-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. What is prop drilling?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is prop drilling?</h3>
         <ul>
           <li><strong>A:</strong> Passing props through <strong>many intermediate</strong> components that do not use them, only forward them down.</li>
         </ul>
-        <h3>8.2. When should I use Context?</h3>
+        <h3>C.2. When should I use Context?</h3>
         <ul>
           <li><strong>A:</strong> When <strong>many components</strong> in a subtree need the same value and prop drilling hurts. Not for every shared bit of state.</li>
         </ul>
-        <h3>8.3. Where should Provider live?</h3>
+        <h3>C.3. Where should Provider live?</h3>
         <ul>
           <li><strong>A:</strong> As <strong>low</strong> in the tree as still covers all consumers — avoid wrapping the entire app if only one section needs it.</li>
         </ul>
-        <h3>8.4. What should I read next?</h3>
+        <h3>C.4. What should I read next?</h3>
         <ul>
           <li><strong>A:</strong> File 09 (routing), File 11 (Zustand / Redux Toolkit), File 12 (memoizing context consumers).</li>
         </ul>
-        <h3 id="8-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>8.5. Does Context replace Redux?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.5. Does Context replace Redux?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Context + useReducer</strong> covers moderate global state. <strong>Redux / Zustand</strong> (File 11) scale better for large apps, devtools, and middleware.</li>
         </ul>
-        <h3>8.6. Why split state and dispatch contexts?</h3>
+        <h3>C.6. Why split state and dispatch contexts?</h3>
         <ul>
           <li><strong>A:</strong> So components that only <strong>dispatch</strong> do not re-render when <strong>state</strong> changes.</li>
         </ul>
-        <h3>8.7. useReducer vs useState?</h3>
+        <h3>C.7. useReducer vs useState?</h3>
         <ul>
           <li><strong>A:</strong> <strong>useState</strong> for simple local state. <strong>useReducer</strong> when updates are <strong>event-driven</strong>, related, or complex.</li>
         </ul>
-        <h3>8.8. Is dispatch stable?</h3>
+        <h3>C.8. Is dispatch stable?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> — <code class="inline">dispatch</code> identity from <code class="inline">useReducer</code> does not change between renders.</li>
         </ul>
-        <h3>8.9. Can I put functions in context value?</h3>
+        <h3>C.9. Can I put functions in context value?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong>, but a <strong>new object</strong> <code class="inline">{ user, logout }</code> each render re-renders all consumers. <strong>Memoize</strong> the value object.</li>
         </ul>
-        <h3>8.10. How do I type Context in TypeScript?</h3>
+        <h3>C.10. How do I type Context in TypeScript?</h3>
         <ul>
           <li><strong>A:</strong> Type <code class="inline">createContext&lt;T | null&gt;(null)</code> and narrow in custom hooks after null check.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Context for widely needed data; reducer for complex state transitions.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Create a ThemeContext with provider + consumer hook.</li>
+          <li>useReducer counter with increment/decrement/reset.</li>
+          <li>Read context in a nested child.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>split context</strong> — state vs dispatch providers (or memoize value).</li>
+          <li><strong>todo reducer</strong> — add/toggle/remove actions.</li>
+          <li><strong>provider placement</strong> — only wrap the subtree that needs it.</li>
+          <li><strong>default value</strong> — throw if hook used outside provider.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>Auth-like context: user + login/logout; protect a child UI.</li>
+          <li>Measure/discuss unnecessary re-renders when context value is a new object each render.</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I know when Context helps vs prop drilling.</li>
+          <li>I can write useReducer actions.</li>
+          <li>I avoid putting everything in one giant context.</li>
         </ul>
       </section>
       <footer>HTML note for React.js File 08. Open from the React.js index.</footer>

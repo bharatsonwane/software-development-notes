@@ -16,15 +16,16 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./reactjs.html">← React.js</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-state-placement-decision-tree">1. State placement decision tree</a>
-        <a href="#2-context-limits-recap">2. Context limits (recap)</a>
-        <a href="#3-zustand">3. Zustand</a>
-        <a href="#4-redux-toolkit">4. Redux Toolkit</a>
-        <a href="#5-zustand-vs-redux-toolkit">5. Zustand vs Redux Toolkit</a>
-        <a href="#6-patterns-across-libraries">6. Patterns across libraries</a>
-        <a href="#7-putting-it-together">7. Putting it together</a>
-        <a href="#8-common-questions">8. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-state-placement-decision-tree">2. State placement decision tree</a>
+        <a href="#3-context-limits-recap">3. Context limits (recap)</a>
+        <a href="#4-zustand">4. Zustand</a>
+        <a href="#5-redux-toolkit">5. Redux Toolkit</a>
+        <a href="#6-zustand-vs-redux-toolkit">6. Zustand vs Redux Toolkit</a>
+        <a href="#7-patterns-across-libraries">7. Patterns across libraries</a>
+        <a href="#8-putting-it-together">8. Putting it together</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -44,23 +45,51 @@
         <p class="subtitle">File 11 — local vs global state, Zustand / Redux Toolkit basics.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li>React apps juggle <strong>local UI state</strong>, <strong>shared client state</strong>, and <strong>server state</strong> (File 10). This chapter clarifies <strong>what goes where</strong>, when <strong>Context + useReducer</strong> (File 08) is enough, and when to adopt <strong>Zustand</strong> or <strong>Redux Toolkit</strong> for global client state.</li>
           <li><strong>Default rule today:</strong> keep state <strong>local</strong> until sharing hurts; use <strong>TanStack Query</strong> for server data; use <strong>Zustand</strong> for moderate global client state or <strong>Redux Toolkit</strong> when you need strict patterns, middleware, and large-team tooling.</li>
         </ul>
+
+        <h3>1.2. Default rules and how to study this file</h3>
+        <ul>
+          <li><strong>Default rule today:</strong> prefer function components and hooks; keep components small; colocate state with the UI that needs it.</li>
+          <li>After reading sections 2–8, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">11-practice.jsx</code> before File 12. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>State placement decision tree</strong></li>
+          <li><strong>Context limits (recap)</strong></li>
+          <li><strong>Zustand</strong></li>
+          <li><strong>Redux Toolkit</strong></li>
+          <li><strong>Zustand vs Redux Toolkit</strong></li>
+          <li><strong>Patterns across libraries</strong></li>
+          <li><strong>Putting it together</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
       </section>
-      <section id="1-state-placement-decision-tree">
+      <section id="2-state-placement-decision-tree">
         <div class="heading-with-levels">
-          <h2>1. State placement decision tree</h2>
+          <h2>2. State placement decision tree</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-state-placement-decision-tree-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Where should this state live?</h3>
+        <h3 id="2-state-placement-decision-tree-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Where should this state live?</h3>
         <div class="code"><pre>Is it from the API?
   → Yes → TanStack Query / RTK Query (File 10)
 
@@ -75,8 +104,8 @@ Do many distant components need it?
 
 Does it change very often across a huge tree?
   → Prefer Zustand/Redux with selectors, not one big Context</pre></div>
-        <h3 id="1-state-placement-decision-tree-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.2. Avoid duplicating server data in global store</h3>
+        <h3 id="2-state-placement-decision-tree-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Avoid duplicating server data in global store</h3>
         <div class="code"><pre>// Avoid — user also lives in React Query cache
 dispatch(setUser(fetchedUser));
 
@@ -86,30 +115,30 @@ const { data: user } = useQuery({ queryKey: [&quot;me&quot;], queryFn: fetchMe }
           <li>Store <strong>UI preferences</strong>, <strong>draft wizard state</strong>, <strong>cart</strong> (if not server-owned) globally — not every GET response.</li>
         </ul>
       </section>
-      <section id="2-context-limits-recap">
+      <section id="3-context-limits-recap">
         <div class="heading-with-levels">
-          <h2>2. Context limits (recap)</h2>
+          <h2>3. Context limits (recap)</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-context-limits-recap-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="3-context-limits-recap-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>File 08 — Context works for theme, auth snapshot, locale. Pain points at scale:</li>
           <li>One <strong>Provider value</strong> change re-renders many consumers</li><li>No built-in <strong>middleware</strong>, <strong>devtools</strong>, or <strong>time-travel</strong></li><li>Easy to create a <strong>god context</strong> that everything subscribes to</li>
           <li>Graduate to a store when profiling shows Context churn or logic sprawls across files.</li>
         </ul>
       </section>
-      <section id="3-zustand">
+      <section id="4-zustand">
         <div class="heading-with-levels">
-          <h2>3. Zustand</h2>
+          <h2>4. Zustand</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="3-zustand-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Minimal global store</h3>
+        <h3 id="4-zustand-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Minimal global store</h3>
         <div class="code"><pre>npm install zustand</pre></div>
         <div class="code"><pre>import { create } from &quot;zustand&quot;;
 
@@ -133,9 +162,9 @@ function AddButton({ product }) {
   const addItem = useCartStore((s) =&gt; s.addItem);
   return &lt;button onClick={() =&gt; addItem(product)}&gt;Add&lt;/button&gt;;
 }</pre></div>
-        <h3>3.2. When Zustand fits</h3>
+        <h3>4.2. When Zustand fits</h3>
         <ul><li>Medium global state without boilerplate</li><li>Quick prototypes and production apps alike</li><li>Optional <strong>persist</strong> middleware (localStorage)</li><li>Works outside React — <code class="inline">useCartStore.getState()</code></li></ul>
-        <h3>3.3. immer middleware (optional)</h3>
+        <h3>4.3. immer middleware (optional)</h3>
         <div class="code"><pre>import { immer } from &quot;zustand/middleware/immer&quot;;
 
 const useStore = create(
@@ -148,8 +177,8 @@ const useStore = create(
       }),
   }))
 );</pre></div>
-        <h3 id="3-zustand-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>3.4. Selectors prevent extra re-renders</h3>
+        <h3 id="4-zustand-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.4. Selectors prevent extra re-renders</h3>
         <ul>
           <li>Subscribe to <strong>slices</strong> of state:</li>
         </ul>
@@ -159,16 +188,16 @@ const addItem = useCartStore((s) =&gt; s.addItem);    // stable function referen
           <li>Only re-renders when <strong>selected value</strong> changes (shallow compare by default).</li>
         </ul>
       </section>
-      <section id="4-redux-toolkit">
+      <section id="5-redux-toolkit">
         <div class="heading-with-levels">
-          <h2>4. Redux Toolkit</h2>
+          <h2>5. Redux Toolkit</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-redux-toolkit-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Core ideas</h3>
+        <h3 id="5-redux-toolkit-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. Core ideas</h3>
         <table>
         <thead>
         <tr><th>Term</th><th>Meaning</th></tr>
@@ -183,7 +212,7 @@ const addItem = useCartStore((s) =&gt; s.addItem);    // stable function referen
         <ul>
           <li>Redux enforces <strong>one direction</strong>: UI → dispatch(action) → reducer → new state → UI.</li>
         </ul>
-        <h3>4.2. createSlice</h3>
+        <h3>5.2. createSlice</h3>
         <div class="code"><pre>import { configureStore, createSlice } from &quot;@reduxjs/toolkit&quot;;
 
 const cartSlice = createSlice({
@@ -204,7 +233,7 @@ export const { addItem, removeItem } = cartSlice.actions;
 const store = configureStore({
   reducer: { cart: cartSlice.reducer },
 });</pre></div>
-        <h3>4.3. React bindings</h3>
+        <h3>5.3. React bindings</h3>
         <div class="code"><pre>import { Provider, useSelector, useDispatch } from &quot;react-redux&quot;;
 
 function App() {
@@ -224,22 +253,22 @@ function CartPage() {
     &lt;/button&gt;
   );
 }</pre></div>
-        <h3>4.4. When Redux Toolkit fits</h3>
+        <h3>5.4. When Redux Toolkit fits</h3>
         <ul><li>Large teams wanting <strong>strict conventions</strong></li><li>Complex async middleware (logging, analytics)</li><li><strong>Redux DevTools</strong> time-travel debugging</li><li>Existing Redux ecosystem investment</li></ul>
-        <h3 id="4-redux-toolkit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.5. RTK Query (server state)</h3>
+        <h3 id="5-redux-toolkit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.5. RTK Query (server state)</h3>
         <ul>
           <li>Redux Toolkit includes <strong>RTK Query</strong> — define API slices with generated hooks (parallel to TanStack Query). Pick <strong>one</strong> primary server cache per app.</li>
         </ul>
       </section>
-      <section id="5-zustand-vs-redux-toolkit">
+      <section id="6-zustand-vs-redux-toolkit">
         <div class="heading-with-levels">
-          <h2>5. Zustand vs Redux Toolkit</h2>
+          <h2>6. Zustand vs Redux Toolkit</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-zustand-vs-redux-toolkit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="6-zustand-vs-redux-toolkit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <table>
         <thead>
         <tr><th></th><th>Zustand</th><th>Redux Toolkit</th></tr>
@@ -257,25 +286,25 @@ function CartPage() {
           <li>Neither replaces <strong>TanStack Query</strong> for normalized server cache unless you standardize on RTK Query.</li>
         </ul>
       </section>
-      <section id="6-patterns-across-libraries">
+      <section id="7-patterns-across-libraries">
         <div class="heading-with-levels">
-          <h2>6. Patterns across libraries</h2>
+          <h2>7. Patterns across libraries</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="6-patterns-across-libraries-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Colocate feature state</h3>
+        <h3 id="7-patterns-across-libraries-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>7.1. Colocate feature state</h3>
         <ul>
           <li>Keep cart logic in <code class="inline">cartSlice</code> or <code class="inline">useCartStore</code> — not scattered <code class="inline">useState</code> in ten files.</li>
         </ul>
-        <h3>6.2. URL as state</h3>
+        <h3>7.2. URL as state</h3>
         <ul>
           <li>Filters, pagination, selected tab — prefer <strong>URL search params</strong> (File 09) over global store when users should share/bookmark state.</li>
         </ul>
-        <h3 id="6-patterns-across-libraries-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>6.3. Derived state</h3>
+        <h3 id="7-patterns-across-libraries-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>7.3. Derived state</h3>
         <ul>
           <li>Compute totals in <strong>selectors</strong> or <code class="inline">useMemo</code>, do not duplicate in store unless needed for perf:</li>
         </ul>
@@ -283,15 +312,15 @@ function CartPage() {
   s.items.reduce((sum, i) =&gt; sum + i.price, 0)
 );</pre></div>
       </section>
-      <section id="7-putting-it-together">
+      <section id="8-putting-it-together">
         <div class="heading-with-levels">
-          <h2>7. Putting it together</h2>
+          <h2>8. Putting it together</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="7-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Small app stack</h3>
+        <h3 id="8-putting-it-together-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>8.1. Small app stack</h3>
         <table>
         <thead>
         <tr><th>Concern</th><th>Tool</th></tr>
@@ -308,57 +337,93 @@ function CartPage() {
           <li>Avoid Redux until complexity or team standards require it.</li>
         </ul>
       </section>
-      <section id="8-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>8. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="8-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. Do I need Redux for every React app?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. Do I need Redux for every React app?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No.</strong> Most apps get by with <strong>local state</strong>, <strong>Context</strong>, <strong>TanStack Query</strong>, and optionally <strong>Zustand</strong>.</li>
         </ul>
-        <h3>8.2. Can I use multiple Zustand stores?</h3>
+        <h3>C.2. Can I use multiple Zustand stores?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> — one store per feature domain is common (<code class="inline">useCartStore</code>, <code class="inline">useUIStore</code>).</li>
         </ul>
-        <h3>8.3. How do I persist cart to localStorage?</h3>
+        <h3>C.3. How do I persist cart to localStorage?</h3>
         <ul>
           <li><strong>A:</strong> Zustand <strong><code class="inline">persist</code></strong> middleware, or save in effect (File 05) — handle SSR carefully.</li>
         </ul>
-        <h3>8.4. What should I read next?</h3>
+        <h3>C.4. What should I read next?</h3>
         <ul>
           <li><strong>A:</strong> File 12 (performance — selectors vs re-renders), File 10 (server cache), File 14 (feature folders).</li>
         </ul>
-        <h3 id="8-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>8.5. Zustand vs Context?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.5. Zustand vs Context?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Context</strong> for low-frequency shared values. <strong>Zustand</strong> when many components need <strong>selective</strong> subscriptions without prop drilling or giant re-renders.</li>
         </ul>
-        <h3>8.6. Should API data live in Redux?</h3>
+        <h3>C.6. Should API data live in Redux?</h3>
         <ul>
           <li><strong>A:</strong> Prefer <strong>TanStack Query</strong> or <strong>RTK Query</strong>. Duplicating server cache in manual Redux slices adds sync bugs.</li>
         </ul>
-        <h3>8.7. What is a selector?</h3>
+        <h3>C.7. What is a selector?</h3>
         <ul>
           <li><strong>A:</strong> Function that <strong>reads</strong> a slice of store state — enables fine-grained subscriptions.</li>
         </ul>
-        <h3>8.8. When is Redux Toolkit worth the overhead?</h3>
+        <h3>C.8. When is Redux Toolkit worth the overhead?</h3>
         <ul>
           <li><strong>A:</strong> Large codebases, many async workflows, team already on Redux, need <strong>standardized</strong> patterns and DevTools.</li>
         </ul>
-        <h3>8.9. Can Zustand and Redux coexist?</h3>
+        <h3>C.9. Can Zustand and Redux coexist?</h3>
         <ul>
           <li><strong>A:</strong> Technically yes, but <strong>avoid</strong> — pick one global client state approach.</li>
         </ul>
-        <h3 id="8-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>8.10. Is dispatch stable in Redux?</h3>
+        <h3 id="c-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>C.10. Is dispatch stable in Redux?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> — like <code class="inline">useReducer</code> dispatch (File 08).</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Pick the smallest tool: local state → context → Zustand/Redux as needed.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Decision comment: where would cart state live in a shop app?</li>
+          <li>Tiny Zustand store with count + inc (or Redux Toolkit slice).</li>
+          <li>Read store in two components.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>Zustand</strong> — selector to avoid extra re-renders.</li>
+          <li><strong>RTK</strong> — slice with one async thunk or plain reducers.</li>
+          <li><strong>compare</strong> — Same feature in Context vs store; note boilerplate.</li>
+          <li><strong>normalize</strong> — Comment on storing entities by id.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>Migrate a Context theme toggle to Zustand (or vice versa).</li>
+          <li>List 3 signs you’ve outgrown Context-only state.</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I place state deliberately.</li>
+          <li>I know Context limits.</li>
+          <li>I can use one external store library basically.</li>
         </ul>
       </section>
       <footer>HTML note for React.js File 11. Open from the React.js index.</footer>
