@@ -16,9 +16,10 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-regexp">1. Regular expressions</a>
-        <a href="#2-common-questions">2. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-regexp">2. Regular expressions</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -38,26 +39,43 @@
         <p class="subtitle">File 10 — patterns for search and replace on strings (File 09).</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. What are regular expressions?</h3>
         <ul>
-          <li>A <strong>regular expression</strong> describes a <strong>pattern</strong> in text. In JavaScript it is a <code class="inline">RegExp</code> object (File 02). You use it to <strong>test</strong>, <strong>search</strong>, <strong>extract</strong>, or <strong>replace</strong> in strings.</li>
+          <li>A <strong>regular expression</strong> describes a <strong>pattern</strong> in text. In JavaScript it is a <code class="inline">RegExp</code> object (File 02). You use it to <strong>test</strong>, <strong>search</strong>, <strong>extract</strong>, or <strong>replace</strong> in strings (File 09).</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> prefer a <strong>literal</strong> <code class="inline">/pattern/flags</code> when the pattern is fixed. Use <code class="inline">new RegExp(string, flags)</code> only when the pattern is built at runtime. Always think about the <code class="inline">g</code> flag and <code class="inline">lastIndex</code>.</li>
+          <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">10-practice.js</code> before File 11. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Regular expressions</strong> — literals, flags, methods, groups, pitfalls</li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="1-regexp">
+      <section id="2-regexp">
         <div class="heading-with-levels">
-          <h2>1. Regular expressions</h2>
+          <h2>2. Regular expressions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-regexp-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Literal vs constructor</h3>
+        <h3 id="2-regexp-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Literal vs constructor</h3>
         <div class="code"><pre>const lit = /hello/i;
 const dyn = new RegExp("hello", "i");
 
@@ -65,7 +83,7 @@ lit.test("Hello");  // true</pre></div>
         <ul>
           <li>Escape <code class="inline">\\</code> in constructor strings: <code class="inline">new RegExp("\\\\d+")</code> equals <code class="inline">/\d+/</code>.</li>
         </ul>
-        <h3>1.2. Common pattern pieces</h3>
+        <h3>2.2. Common pattern pieces</h3>
         <table>
         <thead>
         <tr><th>Piece</th><th>Means</th></tr>
@@ -80,8 +98,8 @@ lit.test("Hello");  // true</pre></div>
         <tr><td><code class="inline">a|b</code></td><td>Alternation</td></tr>
         </tbody>
         </table>
-        <h3 id="1-regexp-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.3. Flags</h3>
+        <h3 id="2-regexp-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.3. Flags</h3>
         <table>
         <thead>
         <tr><th>Flag</th><th>Meaning</th></tr>
@@ -96,7 +114,7 @@ lit.test("Hello");  // true</pre></div>
         <tr><td><code class="inline">v</code></td><td>Unicode sets (newer class syntax)</td></tr>
         </tbody>
         </table>
-        <h3>1.4. RegExp methods</h3>
+        <h3>2.4. RegExp methods</h3>
         <div class="code"><pre>/\d+/.test("id-42");     // true
 const re = /(\d+)/;
 re.exec("id-42");        // ["42", "42", index, input, groups]
@@ -108,7 +126,7 @@ g.exec("a1 b22");        // ["22"]</pre></div>
         <ul>
           <li>With <code class="inline">g</code>, reuse of the same RegExp object is stateful. Prefer <code class="inline">matchAll</code> or a fresh literal in a loop.</li>
         </ul>
-        <h3>1.5. String methods</h3>
+        <h3>2.5. String methods</h3>
         <div class="code"><pre>const s = "Price: $12 and $3";
 
 s.match(/\d+/);          // ["12"] — first only
@@ -117,8 +135,8 @@ s.search(/\d+/);         // 8 — index, or -1
 s.replace(/\d+/, "N");   // first only
 s.replaceAll(/\d+/g, "N"); // all — replacement regex must be global
 s.split(/\s+/);          // ["Price:", "$12", "and", "$3"]</pre></div>
-        <h3 id="1-regexp-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.6. Groups</h3>
+        <h3 id="2-regexp-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.6. Groups</h3>
         <div class="code"><pre>const re = /(?&lt;year&gt;\d{4})-(?&lt;month&gt;\d{2})/;
 const m = re.exec("2026-08");
 m[1];              // "2026"
@@ -128,12 +146,12 @@ m.groups.year;     // "2026"
         <ul>
           <li><code class="inline">(?:...)</code> groups without capturing. Lookahead <code class="inline">(?=...)</code> / lookbehind <code class="inline">(?&lt;=...)</code> assert without consuming.</li>
         </ul>
-        <h3>1.7. lastIndex pitfall</h3>
+        <h3>2.7. lastIndex pitfall</h3>
         <div class="code"><pre>const re = /a/g;
 re.test("a");   // true, lastIndex now 1
 re.test("a");   // false — starts at index 1
 re.lastIndex = 0;</pre></div>
-        <h3>1.8. Catastrophic backtracking</h3>
+        <h3>2.8. Catastrophic backtracking</h3>
         <ul>
           <li>Nested or overlapping quantifiers can make the engine try an exponential number of paths on long input — the match may hang (ReDoS risk).</li>
         </ul>
@@ -146,36 +164,76 @@ re.lastIndex = 0;</pre></div>
           <li>Do not run <strong>untrusted user-built regex</strong> on large strings. Keep patterns simple; prefer string methods when a regex is unnecessary.</li>
         </ul>
       </section>
-      <section id="2-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>2. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Literal or <code class="inline">new RegExp</code>?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. Literal or <code class="inline">new RegExp</code>?</h3>
         <ul>
           <li><strong>A:</strong> Literal when the pattern is known at write time. Constructor when the pattern string is built at runtime.</li>
         </ul>
-        <h3 id="2-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.2. Why does the same regex fail the second <code class="inline">test</code>?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.2. Why does the same regex fail the second <code class="inline">test</code>?</h3>
         <ul>
           <li><strong>A:</strong> The <code class="inline">g</code> (or <code class="inline">y</code>) flag stores <code class="inline">lastIndex</code> on the object. Reset it, or do not reuse a global regex across calls.</li>
         </ul>
-        <h3>2.3. match vs matchAll?</h3>
+        <h3>C.3. match vs matchAll?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">match</code> with <code class="inline">g</code> returns only the matched strings. <code class="inline">matchAll</code> needs <code class="inline">g</code> and yields match objects including groups.</li>
         </ul>
-        <h3 id="2-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.4. How do I escape user input in a pattern?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.4. How do I escape user input in a pattern?</h3>
         <ul>
           <li><strong>A:</strong> Replace regex special characters before <code class="inline">new RegExp</code> (or use a well-tested escape helper). Never interpolate raw user text into a regex.</li>
         </ul>
-        <h3>2.5. What is catastrophic backtracking?</h3>
+        <h3>C.5. What is catastrophic backtracking?</h3>
         <ul>
           <li><strong>A:</strong> When quantifiers nest or compete, matching can explode in time on certain inputs. Avoid ambiguous nested <code class="inline">+</code>/<code class="inline">*</code>, bound the input length, and do not evaluate untrusted patterns on large data.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Write patterns yourself. Test with several strings. Reset <code class="inline">lastIndex</code> (or avoid reusing global regexes) when using the <code class="inline">g</code> flag.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Write a regex that <code class="inline">test</code>s whether a string contains digits.</li>
+          <li>Use <code class="inline">str.replace(/a/g, &quot;A&quot;)</code> on a sample sentence.</li>
+          <li>Use <code class="inline">str.match(/\w+/g)</code> to list words in a short sentence.</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>isEmailLite</strong> — Simple pattern: local@domain with at least one dot in the domain (not production-grade). Return boolean.</li>
+          <li><strong>extractHashtags</strong> — From a tweet-like string, return an array of <code class="inline">#tags</code> with <code class="inline">match</code> or <code class="inline">matchAll</code>.</li>
+          <li><strong>redactDigits</strong> — Replace every digit with <code class="inline">*</code> using <code class="inline">replace</code>.</li>
+          <li><strong>escapeUser</strong> — Write <code class="inline">escapeRegExp(s)</code> that escapes special characters, then build <code class="inline">new RegExp(escapeRegExp(user), &quot;i&quot;)</code> and search a haystack.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>lastIndex trap</strong> — Create <code class="inline">const re = /a/g</code>; call <code class="inline">re.test(&quot;ab&quot;)</code> twice; log results and <code class="inline">re.lastIndex</code>. Fix it two ways (reset lastIndex; or drop <code class="inline">g</code> for test).</li>
+          <li><strong>Named or numbered groups</strong> — Parse <code class="inline">&quot;2026-09-08&quot;</code> into year/month/day with a capturing group pattern; log the parts.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I prefer literals for fixed patterns and constructors for dynamic ones.</li>
+          <li>I watch <code class="inline">lastIndex</code> when using the <code class="inline">g</code> flag.</li>
+          <li>I escape user input before putting it in a RegExp.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 10. Open from the JS Language index.</footer>

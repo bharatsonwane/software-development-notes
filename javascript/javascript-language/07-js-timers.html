@@ -16,10 +16,11 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-timeout">1. setTimeout / clearTimeout</a>
-        <a href="#2-interval">2. setInterval / clearInterval</a>
-        <a href="#3-common-questions">3. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-timeout">2. setTimeout / clearTimeout</a>
+        <a href="#3-interval">3. setInterval / clearInterval</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./07-js-timers-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -45,8 +46,15 @@
           <span class="chip type">clearInterval</span>
         </div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. What are timers?</h3>
         <ul>
           <li>Timers schedule a <strong>function</strong> (File 05) to run later. They do not pause the rest of the program — other code keeps running until the delay finishes.</li>
         </ul>
@@ -61,22 +69,33 @@
             <tr><td><code class="inline">clearInterval()</code></td><td>Stops an interval.</td></tr>
           </tbody>
         </table>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> save the id that <code class="inline">setTimeout</code>/<code class="inline">setInterval</code> returns, and always <code class="inline">clearTimeout</code>/<code class="inline">clearInterval</code> when you no longer need the callback.</div>
         <ul>
           <li>Interactive visualizer: open <a href="./07-js-timers-animation.html">07-js-timers-animation.html</a> in a browser — setTimeout, setInterval, clearTimeout (Run / Step).</li>
+          <li>After reading sections 2–3, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">07-practice.js</code> (browser console or Node) before File 08. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>setTimeout / clearTimeout</strong> — run once after a delay</li>
+          <li><strong>setInterval / clearInterval</strong> — repeat, rAF, recursive timeout</li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="1-timeout">
+      <section id="2-timeout">
         <div class="heading-with-levels">
-          <h2>1. setTimeout and clearTimeout</h2>
+          <h2>2. setTimeout and clearTimeout</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-timeout-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Run once after a delay</h3>
+        <h3 id="2-timeout-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Run once after a delay</h3>
         <div class="code"><pre>const id = setTimeout(() =&gt; {
   console.log(&quot;After 1 second&quot;);
 }, 1000);
@@ -86,27 +105,27 @@ clearTimeout(id);  // cancel before it runs</pre></div>
           <li>Delay is in <strong>milliseconds</strong>: <code class="inline">1000</code> is 1 second.</li>
           <li><code class="inline">setTimeout</code> returns an <strong>id</strong>. Pass that id to <code class="inline">clearTimeout</code> to cancel.</li>
         </ul>
-        <h3 id="1-timeout-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.2. Extra arguments</h3>
+        <h3 id="2-timeout-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.2. Extra arguments</h3>
         <div class="code"><pre>setTimeout((name) =&gt; {
   console.log(`Hello, ${name}`);
 }, 500, &quot;Bharat&quot;);</pre></div>
-        <h3 id="1-timeout-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.3. Delay 0 is not immediate</h3>
+        <h3 id="2-timeout-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.3. Delay 0 is not immediate</h3>
         <ul>
           <li><code class="inline">setTimeout(fn, 0)</code> still runs <strong>after</strong> the current call stack. File 21 (event loop) explains why.</li>
         </ul>
       </section>
-      <section id="2-interval">
+      <section id="3-interval">
         <div class="heading-with-levels">
-          <h2>2. setInterval and clearInterval</h2>
+          <h2>3. setInterval and clearInterval</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-interval-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Run repeatedly</h3>
+        <h3 id="3-interval-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.1. Run repeatedly</h3>
         <div class="code"><pre>let count = 0;
 const id = setInterval(() =&gt; {
   count++;
@@ -116,12 +135,12 @@ const id = setInterval(() =&gt; {
         <ul>
           <li><code class="inline">setInterval</code> keeps calling the function until you <code class="inline">clearInterval</code>.</li>
         </ul>
-        <h3 id="2-interval-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-interval-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Always <strong><code class="inline">clearInterval</code></strong> when done — leftover intervals keep running and can leak memory (File 23).</li>
         </ul>
-        <h3 id="2-interval-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. requestAnimationFrame</h3>
+        <h3 id="3-interval-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. requestAnimationFrame</h3>
         <ul>
           <li>For <strong>smooth animation</strong> synced to display refresh (~60fps), prefer rAF over <code class="inline">setInterval</code>:</li>
         </ul>
@@ -132,7 +151,7 @@ const id = setInterval(() =&gt; {
 requestAnimationFrame(animate);
 
 // cancel: cancelAnimationFrame(id);</pre></div>
-        <h3>2.3. Recursive setTimeout vs setInterval</h3>
+        <h3>3.3. Recursive setTimeout vs setInterval</h3>
         <ul>
           <li><strong><code class="inline">setInterval</code></strong> schedules the next tick on a fixed clock — if the callback is slow, calls can <strong>overlap</strong> or pile up.</li>
           <li><strong>Recursive <code class="inline">setTimeout</code></strong> schedules the next run only after the current callback finishes — better when work length varies:</li>
@@ -146,31 +165,71 @@ setTimeout(tick, 1000);</pre></div>
           <li>Timers are <strong>macrotasks</strong> on the event loop — File 21. <code class="inline">setTimeout(fn, 0)</code> still runs after the current stack and pending microtasks.</li>
         </ul>
       </section>
-      <section id="3-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>3. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="3-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. What is the difference between setTimeout and setInterval?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is the difference between setTimeout and setInterval?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">setTimeout</code></strong> runs <strong>once</strong> after a delay. <strong><code class="inline">setInterval</code></strong> repeats until cleared.</li>
         </ul>
-        <h3 id="3-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.2. What do clearTimeout and clearInterval do?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.2. What do clearTimeout and clearInterval do?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">clearTimeout</code></strong> cancels a pending timeout so it never runs. <strong><code class="inline">clearInterval</code></strong> stops a repeating interval. Both need the <strong>id</strong> returned by <code class="inline">setTimeout</code>/<code class="inline">setInterval</code>.</li>
         </ul>
-        <h3>3.3. Why use requestAnimationFrame?</h3>
+        <h3>C.3. Why use requestAnimationFrame?</h3>
         <ul>
           <li><strong>A:</strong> It batches visual updates with the browser <strong>repaint cycle</strong> — smoother than a fixed <code class="inline">setInterval</code>.</li>
         </ul>
-        <h3>3.4. When prefer recursive setTimeout over setInterval?</h3>
+        <h3>C.4. When prefer recursive setTimeout over setInterval?</h3>
         <ul>
           <li><strong>A:</strong> When each tick&#x27;s work can take longer than the interval — recursive <code class="inline">setTimeout</code> waits for the previous run to finish before scheduling the next, avoiding overlap. Details: File 21 (event loop).</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Run these in a browser console or Node. Always store timer ids and clear them so scripts do not leak callbacks.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Use <code class="inline">setTimeout</code> to log <code class="inline">&quot;hello&quot;</code> after 1 second.</li>
+          <li>Schedule a timeout, then <code class="inline">clearTimeout</code> it immediately so nothing prints.</li>
+          <li>Pass an extra argument: <code class="inline">setTimeout((name) =&gt; console.log(name), 500, &quot;Ada&quot;)</code>.</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>Countdown</strong> — Log 3, 2, 1, then <code class="inline">&quot;go&quot;</code> using chained or nested <code class="inline">setTimeout</code> (1s between steps).</li>
+          <li><strong>Interval counter</strong> — Use <code class="inline">setInterval</code> to log a number every 500ms; stop at 5 with <code class="inline">clearInterval</code>.</li>
+          <li><strong>Cancel on condition</strong> — Start an interval; clear it when a variable <code class="inline">stopped</code> becomes true (set <code class="inline">stopped = true</code> after 2 seconds with setTimeout).</li>
+          <li><strong>Delay 0 demo</strong> — Log <code class="inline">&quot;A&quot;</code>, schedule <code class="inline">setTimeout(() =&gt; console.log(&quot;B&quot;), 0)</code>, then log <code class="inline">&quot;C&quot;</code>. Explain the order in a comment.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>Recursive setTimeout poll</strong> — Simulate work that takes random time: after each tick finishes, schedule the next with <code class="inline">setTimeout</code>. Stop after 5 ticks. Comment why this avoids overlap vs <code class="inline">setInterval</code>.</li>
+          <li><strong>Browser only:</strong> use <code class="inline">requestAnimationFrame</code> to log frame count for ~1 second, then cancel with <code class="inline">cancelAnimationFrame</code>.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I always save and clear timer ids.</li>
+          <li>I know <code class="inline">setTimeout(..., 0)</code> is not instantaneous.</li>
+          <li>I can explain when recursive <code class="inline">setTimeout</code> beats <code class="inline">setInterval</code>.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 07. Open from the JS Language index.</footer>

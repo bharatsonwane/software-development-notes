@@ -16,9 +16,10 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-strings">1. Strings</a>
-        <a href="#2-common-questions">2. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-strings">2. Strings</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./09-js-strings-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -39,27 +40,45 @@
         <p class="subtitle">File 09 — string methods, template literals, Unicode, immutability</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. What are strings in JavaScript?</h3>
         <ul>
           <li>A <strong>string</strong> is primitive text (File 02). Strings are <strong>immutable</strong> — methods return a new string. File 03 covers <code class="inline">+</code> concatenation vs number addition.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <ul>
+          <li><strong>Default rule today:</strong> prefer <strong>template literals</strong> for interpolation, <code class="inline">slice</code> over <code class="inline">substring</code>, and remember <code class="inline">.length</code> counts UTF-16 code units (not always “characters”).</li>
           <li>Interactive visualizer: open <a href="./09-js-strings-animation.html">09-js-strings-animation.html</a> in a browser — string index/length, slice vs substring, includes/indexOf, padStart (Run / Step). The same visualizer also has Number and Date scenarios (Files 11, 17).</li>
+          <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">09-practice.js</code> before File 10. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Strings</strong> — templates, methods, Unicode, immutability</li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="1-strings">
+      <section id="2-strings">
         <div class="heading-with-levels">
-          <h2>1. Strings</h2>
+          <h2>2. Strings</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
 
-        <h3 id="1-strings-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Template literals</h3>
+        <h3 id="2-strings-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Template literals</h3>
         <div class="code"><pre>const name = &quot;Ada&quot;;
 const msg = `Hello, ${name}!`;
 const multiline = `
@@ -67,8 +86,8 @@ const multiline = `
   line 2
 `;</pre></div>
 
-        <h3 id="1-strings-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.2. Common string methods</h3>
+        <h3 id="2-strings-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.2. Common string methods</h3>
         <div class="code"><pre>const s = &quot;  Hello, World  &quot;;
 
 s.length;                    // 17
@@ -88,7 +107,7 @@ s.split(&quot;, &quot;);               // [&quot;  Hello&quot;, &quot;World  &qu
 s.concat(&quot;!&quot;);               // prefer + or template literals
 &quot;abc&quot;.repeat(3);             // &quot;abcabcabc&quot;
 &quot;5&quot;.padStart(3, &quot;0&quot;);        // &quot;005&quot;</pre></div>
-        <h3>1.3. Tagged templates</h3>
+        <h3>2.3. Tagged templates</h3>
         <div class="code"><pre>function highlight(strings, ...values) {
   return strings.reduce((acc, str, i) =&gt; {
     return acc + str + (values[i] ? `&lt;b&gt;${values[i]}&lt;/b&gt;` : &quot;&quot;);
@@ -100,7 +119,7 @@ highlight`User: ${user}`;  // &quot;User: &lt;b&gt;Ada&lt;/b&gt;&quot;</pre></di
         <ul>
           <li>File 22 covers tagged templates in ES6+ context.</li>
         </ul>
-        <h3>1.3.1. <code class="inline">String.raw</code></h3>
+        <h3>2.3.1. <code class="inline">String.raw</code></h3>
         <ul>
           <li><code class="inline">String.raw</code> is a built-in tag that keeps backslashes <strong>raw</strong> (no escape processing) — handy for paths and regex text:</li>
         </ul>
@@ -110,8 +129,8 @@ highlight`User: ${user}`;  // &quot;User: &lt;b&gt;Ada&lt;/b&gt;&quot;</pre></di
 String.raw`line1\nline2`;          // backslash-n stays two chars, not a newline
 const path = String.raw`\d+`;      // useful when building RegExp strings</pre></div>
 
-        <h3 id="1-strings-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.4. Unicode</h3>
+        <h3 id="2-strings-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.4. Unicode</h3>
         <div class="code"><pre>&quot;😀&quot;.length;                    // 2 — surrogate pair
 [...&quot;😀&quot;].length;                // 1 — code points
 &quot;😀&quot;.codePointAt(0);            // 128512
@@ -119,14 +138,14 @@ String.fromCodePoint(128512);   // &quot;😀&quot;</pre></div>
         <ul>
           <li>Use <strong><code class="inline">for...of</code></strong> on strings for code points, not index loops for emoji.</li>
         </ul>
-        <h3>1.5. String immutability</h3>
+        <h3>2.5. String immutability</h3>
         <ul>
           <li>Strings are <strong>immutable</strong> — methods return <strong>new</strong> strings:</li>
         </ul>
         <div class="code"><pre>let s = &quot;hello&quot;;
 s.toUpperCase();  // &quot;HELLO&quot;
 console.log(s);     // still &quot;hello&quot;</pre></div>
-        <h3>1.6. Locale, normalize, well-formed</h3>
+        <h3>2.6. Locale, normalize, well-formed</h3>
         <div class="code"><pre>&quot;a&quot;.localeCompare(&quot;b&quot;);           // negative — a before b
 &quot;ä&quot;.localeCompare(&quot;z&quot;, &quot;de&quot;);
 
@@ -139,34 +158,34 @@ console.log(s);     // still &quot;hello&quot;</pre></div>
           <li>Pattern matching with <strong>regular expressions</strong> is File 10.</li>
         </ul>
       </section>
-      <section id="2-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>2. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Are strings mutable?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. Are strings mutable?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No</strong> — methods return new strings.</li>
         </ul>
-        <h3 id="2-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.2. What is the difference between <code class="inline">slice</code> and <code class="inline">substring</code>?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.2. What is the difference between <code class="inline">slice</code> and <code class="inline">substring</code>?</h3>
         <ul>
           <li><strong>A:</strong> Both extract substrings. <strong><code class="inline">slice</code></strong> accepts negative indices; <strong><code class="inline">substring</code></strong> swaps negative to 0.</li>
         </ul>
-        <h3 id="2-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.3. Why does <code class="inline">&quot;😀&quot;.length</code> equal 2?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.3. Why does <code class="inline">&quot;😀&quot;.length</code> equal 2?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">.length</code> counts UTF-16 code units; emoji use surrogate pairs. Use spread or <code class="inline">for...of</code> for code points.</li>
         </ul>
-        <h3>2.4. How do I search or replace with a pattern?</h3>
+        <h3>C.4. How do I search or replace with a pattern?</h3>
         <ul>
           <li><strong>A:</strong> File 10 — <code class="inline">RegExp</code>, flags, <code class="inline">match</code>/<code class="inline">matchAll</code>/<code class="inline">replace</code>.</li>
         </ul>
-        <h3>2.5. How do I check if a string is a palindrome?</h3>
+        <h3>C.5. How do I check if a string is a palindrome?</h3>
         <ul>
           <li><strong>A:</strong> Normalize (lowercase, strip non-letters if needed), then compare to its reverse:</li>
         </ul>
@@ -175,6 +194,46 @@ console.log(s);     // still &quot;hello&quot;</pre></div>
   return t === [...t].reverse().join(&quot;&quot;);
 }
 isPalindrome(&quot;A man, a plan, a canal: Panama&quot;);  // true</pre></div>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Type every example. Prefer template literals. Log intermediate results so you see immutability.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Build a greeting with a template literal: name + city.</li>
+          <li>From <code class="inline">&quot;JavaScript&quot;</code>, get <code class="inline">&quot;Script&quot;</code> with <code class="inline">slice</code>.</li>
+          <li>Check whether <code class="inline">&quot;hello world&quot;</code> <code class="inline">includes</code> <code class="inline">&quot;world&quot;</code> and find its <code class="inline">indexOf</code>.</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>normalizeTitle</strong> — Given a messy title string, trim it, collapse internal spaces, and Title-Case each word (split / map / join).</li>
+          <li><strong>maskEmail</strong> — For <code class="inline">&quot;ada@example.com&quot;</code>, return something like <code class="inline">&quot;a***@example.com&quot;</code> (keep first char of local part).</li>
+          <li><strong>slugify</strong> — Lowercase, replace spaces with <code class="inline">-</code>, strip non-alphanumeric (except <code class="inline">-</code>).</li>
+          <li><strong>padReceipt</strong> — Use <code class="inline">padStart</code> / <code class="inline">padEnd</code> to align labels and prices in three logged lines.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>isPalindrome</strong> — Implement the interview version (ignore case and non-alphanumerics). Test with <code class="inline">&quot;A man, a plan, a canal: Panama&quot;</code>.</li>
+          <li><strong>Code points</strong> — Log <code class="inline">&quot;😀&quot;.length</code>, then count characters with <code class="inline">[...str]</code> or <code class="inline">for...of</code>. Comment why they differ.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I know strings are immutable and methods return new strings.</li>
+          <li>I prefer <code class="inline">slice</code> when I need negative indices.</li>
+          <li>I remember <code class="inline">.length</code> is UTF-16 code units.</li>
+        </ul>
       </section>
 
       <footer>HTML note for JavaScript File 09. Open from the JS Language index.</footer>

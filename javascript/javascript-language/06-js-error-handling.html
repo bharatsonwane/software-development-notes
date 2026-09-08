@@ -16,9 +16,10 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-error-handling">1. Error handling</a>
-        <a href="#2-common-questions">2. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-error-handling">2. Error handling</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./06-js-error-handling-animation.html">Animation visualizer</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -39,19 +40,38 @@
         <p class="subtitle">File 06 — try/catch/finally, throw, custom errors, cause, global handlers.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+      <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. What is error handling?</h3>
         <ul>
+          <li><strong>Error handling</strong> is how you detect failures, stop bad paths with <code class="inline">throw</code>, and recover with <code class="inline">try</code>/<code class="inline">catch</code>/<code class="inline">finally</code>.</li>
           <li>Builds on control flow (File 04) and functions (File 05). Async errors are File 21. Custom <code class="inline">class extends Error</code> uses class syntax from File 19.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.2. Default rules and how to study this file</h3>
         <ul>
+          <li><strong>Default rule today:</strong> throw <strong><code class="inline">Error</code> objects</strong> (not strings), use <code class="inline">finally</code> for cleanup, and do not treat <code class="inline">try/catch</code> as a substitute for input validation.</li>
           <li>Interactive visualizer: open <a href="./06-js-error-handling-animation.html">06-js-error-handling-animation.html</a> in a browser — try/catch/finally, throw, nested rethrow, Error object (Run / Step).</li>
+          <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">06-practice.js</code> before File 07. Review <a href="#c-common-questions">C. Common questions</a> for interview-style checks.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Error handling</strong> — try/catch/finally, throw, custom errors, cause, AggregateError</li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="1-error-handling">
+      <section id="2-error-handling">
         <div class="heading-with-levels">
-          <h2>1. Error handling</h2>
+          <h2>2. Error handling</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
@@ -59,8 +79,8 @@
           </div>
         </div>
 
-        <h3 id="1-error-handling-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. try / catch / finally</h3>
+        <h3 id="2-error-handling-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. try / catch / finally</h3>
         <div class="code"><pre>try {
   const data = JSON.parse(maybeInvalidJson);
   process(data);
@@ -72,7 +92,7 @@
         <ul>
           <li><strong><code class="inline">finally</code></strong> runs whether try succeeded or catch ran — useful for closing resources.</li>
         </ul>
-        <h3>1.2. throw</h3>
+        <h3>2.2. throw</h3>
         <div class="code"><pre>function divide(a, b) {
   if (b === 0) throw new Error(&quot;Division by zero&quot;);
   return a / b;
@@ -81,8 +101,8 @@
           <li>Throw <strong>Error objects</strong>, not raw strings — preserves stack trace.</li>
         </ul>
 
-        <h3 id="1-error-handling-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.3. Custom errors</h3>
+        <h3 id="2-error-handling-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.3. Custom errors</h3>
         <div class="code"><pre>class ValidationError extends Error {
   constructor(message, field) {
     super(message);
@@ -98,8 +118,8 @@ function saveUser(user) {
           <li>Async errors use <strong><code class="inline">try/catch</code> with <code class="inline">await</code></strong> or <strong><code class="inline">.catch()</code> on Promises</strong> (File 21). The <code class="inline">class ... extends Error</code> form is File 19.</li>
         </ul>
 
-        <h3 id="1-error-handling-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.4. Error object and types</h3>
+        <h3 id="2-error-handling-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.4. Error object and types</h3>
         <div class="code"><pre>try {
   null.foo;
 } catch (err) {
@@ -112,13 +132,13 @@ function saveUser(user) {
         <ul>
           <li>Built-in types: <strong><code class="inline">Error</code></strong>, <strong><code class="inline">TypeError</code></strong>, <strong><code class="inline">ReferenceError</code></strong>, <strong><code class="inline">SyntaxError</code></strong>, <strong><code class="inline">RangeError</code></strong>, <strong><code class="inline">AggregateError</code></strong> (several errors in one — used by <code class="inline">Promise.any</code>, File 21).</li>
         </ul>
-        <h3>1.5. Optional catch binding</h3>
+        <h3>2.5. Optional catch binding</h3>
         <div class="code"><pre>try {
   JSON.parse(text);
 } catch {
   return fallback;  // no unused err binding
 }</pre></div>
-        <h3>1.6. <code class="inline">Error.cause</code></h3>
+        <h3>2.6. <code class="inline">Error.cause</code></h3>
         <ul>
           <li>Chain the original error when you wrap it — keeps the stack of the inner failure:</li>
         </ul>
@@ -136,7 +156,7 @@ outer.cause.message;</pre></div>
         </ul>
         <div class="code"><pre>Error.isError(new TypeError(&quot;x&quot;));  // true
 Error.isError({ message: &quot;x&quot; });     // false</pre></div>
-        <h3>1.7. <code class="inline">AggregateError</code></h3>
+        <h3>2.7. <code class="inline">AggregateError</code></h3>
         <div class="code"><pre>try {
   await Promise.any([
     Promise.reject(new Error(&quot;a&quot;)),
@@ -147,8 +167,8 @@ Error.isError({ message: &quot;x&quot; });     // false</pre></div>
   err.errors;                     // [Error a, Error b]
 }</pre></div>
 
-        <h3 id="1-error-handling-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>1.8. Errors the catch block never sees</h3>
+        <h3 id="2-error-handling-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>2.8. Errors the catch block never sees</h3>
         <ul>
           <li>Promise rejections with no <code class="inline">.catch</code> / no surrounding <code class="inline">async</code> try:</li>
         </ul>
@@ -166,9 +186,9 @@ Error.isError({ message: &quot;x&quot; });     // false</pre></div>
           <li>Node: <code class="inline">process.on(&quot;unhandledRejection&quot;)</code> / <code class="inline">uncaughtException</code> — log and usually exit; do not “swallow” and keep running.</li>
         </ul>
       </section>
-      <section id="2-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>2. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
@@ -176,36 +196,76 @@ Error.isError({ message: &quot;x&quot; });     // false</pre></div>
           </div>
         </div>
 
-        <h3 id="2-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. What is the difference between throw and return?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is the difference between throw and return?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">throw</code></strong> signals <strong>exceptional failure</strong> — jumps to nearest <strong><code class="inline">catch</code></strong>. <strong><code class="inline">return</code></strong> exits normally with a value.</li>
         </ul>
 
-        <h3 id="2-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.2. Should I throw strings or Error objects?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.2. Should I throw strings or Error objects?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">Error</code> objects</strong> (or subclasses) — better debugging with <code class="inline">.stack</code>.</li>
         </ul>
-        <h3>2.3. How do Promises handle errors vs try/catch?</h3>
+        <h3>C.3. How do Promises handle errors vs try/catch?</h3>
         <ul>
           <li><strong>A:</strong> <strong><code class="inline">async/await</code></strong> uses <strong><code class="inline">try/catch</code></strong>. Promises use <strong><code class="inline">.catch()</code></strong> or second argument to <strong><code class="inline">.then()</code></strong> (File 21).</li>
         </ul>
 
-        <h3 id="2-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.4. Does finally run if try returns?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.4. Does finally run if try returns?</h3>
         <ul>
           <li><strong>A:</strong> <strong>Yes</strong> — <code class="inline">finally</code> runs before the return completes.</li>
         </ul>
-        <h3>2.5. Why use <code class="inline">Error.cause</code>?</h3>
+        <h3>C.5. Why use <code class="inline">Error.cause</code>?</h3>
         <ul>
           <li><strong>A:</strong> To wrap a low-level error in a user-facing one without losing the original stack. Read <code class="inline">err.cause</code> when logging.</li>
         </ul>
 
-        <h3 id="2-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>2.6. Does try/catch catch unhandled Promise rejections?</h3>
+        <h3 id="c-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>C.6. Does try/catch catch unhandled Promise rejections?</h3>
         <ul>
           <li><strong>A:</strong> <strong>No</strong> unless you <code class="inline">await</code> that Promise (or call <code class="inline">.catch</code>). Use <code class="inline">unhandledrejection</code> as a last-resort logger, not as normal control flow.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Write complete scripts. Prefer <code class="inline">throw new Error(...)</code> over throwing strings. Use <code class="inline">console.log</code> / <code class="inline">console.error</code> to verify paths.</div>
+
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Wrap <code class="inline">JSON.parse('{ bad')</code> in <code class="inline">try/catch</code> and log <code class="inline">err.message</code>.</li>
+          <li>Write <code class="inline">divide(a, b)</code> that throws if <code class="inline">b === 0</code>, then call it safely with try/catch.</li>
+          <li>Add a <code class="inline">finally</code> that always logs <code class="inline">&quot;done&quot;</code>.</li>
+        </ol>
+
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>safeParse(json)</strong> — Return the parsed value, or <code class="inline">null</code> if parsing fails. Never throw to the caller.</li>
+          <li><strong>assertPositive(n)</strong> — Throw <code class="inline">new Error</code> if <code class="inline">n</code> is not a number &gt; 0. Call it from a small calculator function.</li>
+          <li><strong>Custom ValidationError</strong> — Create <code class="inline">class ValidationError extends Error {}</code> (or a function that returns an Error with <code class="inline">name = &quot;ValidationError&quot;</code>). Throw it for empty string input; catch and check <code class="inline">err.name</code>.</li>
+          <li><strong>finally return demo</strong> — In try, <code class="inline">return 1</code>; in finally log <code class="inline">&quot;cleanup&quot;</code>. Confirm cleanup runs.</li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li><strong>Error.cause chain</strong> — Catch a low-level error from <code class="inline">JSON.parse</code>, rethrow <code class="inline">new Error(&quot;Config load failed&quot;, { cause: err })</code>, then log <code class="inline">err.message</code> and <code class="inline">err.cause.message</code>.</li>
+          <li><strong>AggregateError sketch</strong> — Collect two failures in an array and throw <code class="inline">new AggregateError(errors, &quot;batch failed&quot;)</code>; catch and log <code class="inline">err.errors.length</code>.</li>
+        </ol>
+
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I know <code class="inline">finally</code> runs even when try returns or catch rethrows.</li>
+          <li>I throw Error objects, not bare strings.</li>
+          <li>I understand try/catch does not catch unhandled Promise rejections unless I await.</li>
         </ul>
       </section>
       <footer>HTML note for JavaScript File 06. Open from the JS Language index.</footer>
