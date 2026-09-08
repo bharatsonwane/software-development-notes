@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
-  <title>How To Work With Multiple Github Accounts on a single Machine - Git Notes</title>
+  <title>11. Multiple GitHub Accounts (SSH) - Git Notes</title>
   </head>
 <body>
   <div class="layout">
@@ -16,15 +16,10 @@
       <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./git.html">← Git</a>
-        <a href="#intro">Intro</a>
-        <a href="#content">Content</a>
-        <a href="#step-1">1. Create SSH keys</a>
-        <a href="#step-2">2. SSH config hosts</a>
-        <a href="#step-3">3. SSH agent</a>
-        <a href="#step-4">4. Add keys to GitHub</a>
-        <a href="#step-5">5. Clone with host aliases</a>
-        <a href="#step-6">6. Change remote URL</a>
-        <a href="#step-7">7. Per-repo user config</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-multiple-github-accounts-ssh">2. Multiple GitHub accounts (SSH)</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -37,19 +32,55 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./git.html">Git</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">How To Work With Multiple Github Accounts on a single Machine</span>
+        <span aria-current="page">11. Multiple GitHub Accounts (SSH)</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>How To Work With Multiple Github Accounts on a single Machine</h1>
+        <h1>11. Multiple GitHub Accounts (SSH)</h1>
+        <p class="subtitle">File 11 — SSH keys, Host aliases, per-repo identity.</p>
+        <div class="chip-row">
+          <span class="chip">SSH</span>
+          <span class="chip">Config</span>
+          <span class="chip">Practice</span>
+        </div>
       </header>
-      <section id="content">
+      <section id="1-introduction">
         <div class="heading-with-levels">
-          <h2>Multiple GitHub accounts (SSH)</h2>
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
+        <ul>
+          <li>Use <strong>separate SSH keys</strong> and <strong>Host aliases</strong> in <code class="inline">~/.ssh/config</code> so one machine can push to multiple GitHub accounts without mixing credentials.</li>
+          <li>Also set <strong>per-repo</strong> <code class="inline">user.name</code> / <code class="inline">user.email</code> so commits are attributed to the right identity.</li>
+        </ul>
+        <h3>1.2. Default rules and how to study this file</h3>
+        <div class="callout"><strong>Default rule today:</strong> back up existing keys before generating new ones. Prefer <code class="inline">ed25519</code>. Test with <code class="inline">ssh -T</code> before pushing.</div>
+        <ul>
+          <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a>. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Multiple GitHub accounts (SSH)</strong> — keys, config, agent, clone, remotes, per-repo identity</li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
+      </section>
+
+      <section id="2-multiple-github-accounts-ssh">
+        <div class="heading-with-levels">
+          <h2>2. Multiple GitHub accounts (SSH)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
+</div>
         <h3 id="content-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Let suppose I have two github accounts, <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatOffice</strong> and <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatPersonal</strong>. Now i want to setup my machine (Mac, Linux, or Windows) to easily talk to both the github accounts.</li>
@@ -59,9 +90,9 @@
           <li>The setup can be done in 5 easy steps:</li>
         </ul>
         <h3 id="content-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Steps</h3>
+        <h3>2.1. Steps</h3>
         <ul><li><a href="#step-1">Step 1</a> : Create SSH keys for all accounts</li><li><a href="#step-2">Step 2</a> : Create a Config File and Make Host Entries</li><li><a href="#step-3">Step 3</a> : Add SSH keys to SSH Agent</li><li><a href="#step-4">Step 4</a> : Add SSH public key to the Github</li><li><a href="#step-5">Step 5</a> : Cloning GitHub repositories using different accounts</li></ul>
-        <h3 id="step-1">1.2. Create SSH keys for all accounts</h3>
+        <h3 id="step-1">2.2. Create SSH keys for all accounts</h3>
         <ul>
           <li>First make sure your current directory is your <strong>.ssh</strong> folder (navigate to the .ssh directory).</li>
           <li><strong>Mac / Linux:</strong></li>
@@ -115,7 +146,7 @@
         <ul>
           <li>&gt;The public key will have an extension __.pub__ and private key will be there without any extension both having same name which you have passed after __-f__ option in the above command. (in my case *bitbucket_bharatOffice* and *github_bharatPersonal*)</li>
         </ul>
-        <h3 id="step-2">1.3. Create a config file and make host entries</h3>
+        <h3 id="step-2">2.3. Create a config file and make host entries</h3>
         <ul>
           <li>The <strong>~/.ssh/config</strong> file allows us specify many config options for SSH.</li>
           <li>If <strong>config</strong> file does not already exist, create one (make sure you are in the <strong>.ssh</strong> directory).</li>
@@ -158,7 +189,7 @@
           User git
           IdentityFile ~/.ssh/github_bharatPersonal</pre></div>
         <div class="callout"><strong>Windows note:</strong> If <code class="inline">~</code> is not resolved in your SSH config, use the full path for <code class="inline">IdentityFile</code>, e.g. <code class="inline">C:\Users\sonwanebr\.ssh\github_bharatPersonal</code>.</div>
-        <h3 id="step-3">1.4. Add SSH keys to SSH agent</h3>
+        <h3 id="step-3">2.4. Add SSH keys to SSH agent</h3>
         <ul>
           <li>#### Start SSH Agent</li>
           <li><strong>Windows:</strong> Run PowerShell as Administrator and execute:</li>
@@ -199,7 +230,7 @@
         <ul>
           <li>You can read more about adding keys to SSH Agent <a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here.</a></li>
         </ul>
-        <h3 id="step-4">1.5. Add SSH public key to GitHub</h3>
+        <h3 id="step-4">2.5. Add SSH public key to GitHub</h3>
         <ul>
           <li>For the next step we need to add our public key (that we have generated in our previous step) and add it to corresponding github accounts.</li>
           <li>For doing this we need to:</li>
@@ -231,7 +262,7 @@
           <li>Sign in to Github Account</li><li>Goto <strong>Settings</strong> &gt; <strong>SSH and GPG keys</strong> &gt; <strong>New SSH Key</strong></li><li>Paste your copied public key and give it a Title of your choice.</li>
           <li>___OR___</li>
           <li>Sign in to Github</li><li>Paste this link in your browser (https://github.com/settings/keys) or click <a href="https://github.com/settings/keys">here</a></li><li>Click on <strong>New SSH Key</strong> and paste your copied key.</li></ul>
-        <h3 id="step-5">1.6. Cloning GitHub repositories using different accounts</h3>
+        <h3 id="step-5">2.6. Cloning GitHub repositories using different accounts</h3>
         <ul>
           <li>So we are done with our setups and now its time to see it in action. We will clone a repository using one of the account we have added.</li>
           <li>Make a new project folder where you want to clone your repository and go to that directory from your terminal.</li>
@@ -241,7 +272,7 @@
 
      [e.g.] git clone git@github.com-bharatPersonal:bharatPersonal/TestRepo.git</pre></div>
         <h3 id="content-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3 id="step-6">1.7. Change remote URL for cloned repositories (optional)</h3>
+        <h3 id="step-6">2.7. Change remote URL for cloned repositories (optional)</h3>
         <ul>
           <li>If you have already cloned repositories using HTTPS, you can change the remote URL to use SSH for a smoother experience. First, navigate to the repository directory, then run the following commands to update the remote URL:</li>
         </ul>
@@ -254,7 +285,7 @@
         <div class="code"><pre>     git remote add origin git@github.com-bharatPersonal:bharatPersonal
      
      git remote add origin git@github.com-bharatOffice:bharatOffice</pre></div>
-        <h3 id="step-7">1.8. Per-repo user.name and user.email</h3>
+        <h3 id="step-7">2.8. Per-repo user.name and user.email</h3>
         <ul>
           <li>From now on, to ensure that our commits and pushes from each repository on the system uses the correct GitHub user — we will have to configure <strong>user.email</strong> and <strong>user.name</strong> in every repository freshly cloned or existing before.</li>
           <li>To do this use the following commands.</li>
@@ -270,8 +301,74 @@
         <div class="code"><pre>     git push
      
      git pull</pre></div>
+      
       </section>
-      <footer>HTML note. Open from the Git index.</footer>
+
+      <section id="c-common-questions">
+        <div class="heading-with-levels">
+          <h2>C. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. Why not use the same SSH key for two GitHub accounts?</h3>
+        <ul>
+          <li><strong>A:</strong> GitHub associates one key with one user. A second account needs its own key (or HTTPS with different credentials).</li>
+        </ul>
+        <h3>C.2. What does an SSH <code class="inline">Host</code> alias do?</h3>
+        <ul>
+          <li><strong>A:</strong> It lets you connect to <code class="inline">github.com</code> with a different IdentityFile while keeping the real HostName as github.com.</li>
+        </ul>
+        <h3>C.3. Why set local <code class="inline">user.email</code> per repo?</h3>
+        <ul>
+          <li><strong>A:</strong> SSH chooses the account for push auth; commit author identity is separate and comes from git config.</li>
+        </ul>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.4. How do I test which account SSH will use?</h3>
+        <ul>
+          <li><strong>A:</strong> <code class="inline">ssh -T git@github.com-YOURALIAS</code> — GitHub replies with the username that key maps to.</li>
+        </ul>
+      </section>
+
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Use two throwaway GitHub users or carefully labeled keys. Do not overwrite production keys without backup.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>List existing keys in <code class="inline">~/.ssh</code>.</li>
+          <li>Generate a second ed25519 key with a clear comment.</li>
+          <li>Add a Host entry in <code class="inline">~/.ssh/config</code> for an alias.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>ssh-add</strong> — Load both keys; <code class="inline">ssh-add -l</code>.</li>
+          <li><strong>test</strong> — <code class="inline">ssh -T git@github.com-YOURALIAS</code>.</li>
+          <li><strong>clone</strong> — Clone using the host alias URL form.</li>
+          <li><strong>local config</strong> — Set per-repo user.name / user.email.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>Convert an HTTPS remote to the SSH alias remote.</li>
+          <li>Document your Host blocks (redact private paths if sharing).</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I can use SSH config Host aliases.</li>
+          <li>I keep commit author identity correct per repo.</li>
+          <li>I test with ssh -T before pushing.</li>
+        </ul>
+      </section>
+      <footer>Git Notes File 11. Open from the Git index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
