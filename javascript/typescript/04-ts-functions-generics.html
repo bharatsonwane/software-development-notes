@@ -16,12 +16,13 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-typed-parameters-and-return-types">1. Typed parameters and return types</a>
-        <a href="#2-optional-and-default-parameters">2. Optional and default parameters</a>
-        <a href="#3-function-overloads">3. Function overloads</a>
-        <a href="#4-generic-functions-and-constraints">4. Generic functions and constraints</a>
-        <a href="#5-common-questions">5. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-typed-parameters-and-return-types">2. Typed parameters and return types</a>
+        <a href="#3-optional-and-default-parameters">3. Optional and default parameters</a>
+        <a href="#4-function-overloads">4. Function overloads</a>
+        <a href="#5-generic-functions-and-constraints">5. Generic functions and constraints</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -41,20 +42,45 @@
         <p class="subtitle">File 04 — parameters, return types, overloads, generics.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li>Functions are first-class in TypeScript. Annotate <strong>inputs and outputs</strong> so callers and implementers stay in sync.</li>
-        </ul>
-      </section>
-      <section id="1-typed-parameters-and-return-types">
+            <section id="1-introduction">
         <div class="heading-with-levels">
-          <h2>1. Typed parameters and return types</h2>
+          <h2>1. Introduction</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="1-typed-parameters-and-return-types-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
+        <ul>
+          <li>Functions are first-class in TypeScript. Annotate <strong>inputs and outputs</strong> so callers and implementers stay in sync.</li>
+        </ul>
+
+        <h3>1.2. Default rules and how to study this file</h3>
+        <ul>
+          <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">04-practice.ts</code> before File 05. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>Typed parameters and return types</strong></li>
+          <li><strong>Optional and default parameters</strong></li>
+          <li><strong>Function overloads</strong></li>
+          <li><strong>Generic functions and constraints</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
+      </section>
+      <section id="2-typed-parameters-and-return-types">
+        <div class="heading-with-levels">
+          <h2>2. Typed parameters and return types</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="2-typed-parameters-and-return-types-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <div class="code"><pre>function add(a: number, b: number): number {
   return a + b;
 }
@@ -65,7 +91,7 @@ const multiply = (a: number, b: number): number =&gt; a * b;
 // Function type alias
 type BinaryOp = (a: number, b: number) =&gt; number;
 const divide: BinaryOp = (a, b) =&gt; a / b;</pre></div>
-        <h3 id="1-typed-parameters-and-return-types-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-typed-parameters-and-return-types-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Return type inference usually works; explicit return types help on <strong>public APIs</strong> and catch accidental changes:</li>
         </ul>
@@ -74,14 +100,14 @@ const divide: BinaryOp = (a, b) =&gt; a / b;</pre></div>
   return { id, name: &quot;Bharat&quot; };
 }</pre></div>
       </section>
-      <section id="2-optional-and-default-parameters">
+      <section id="3-optional-and-default-parameters">
         <div class="heading-with-levels">
-          <h2>2. Optional and default parameters</h2>
+          <h2>3. Optional and default parameters</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="2-optional-and-default-parameters-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-optional-and-default-parameters-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <div class="code"><pre>function greet(name: string, greeting?: string): string {
   return `${greeting ?? &quot;Hello&quot;}, ${name}!`;
 }
@@ -95,23 +121,23 @@ function createUser(name: string, role: string = &quot;member&quot;): User {
         <div class="code"><pre>greet(&quot;Bharat&quot;);           // &quot;Hello, Bharat!&quot;
 greet(&quot;Bharat&quot;, &quot;Hi&quot;);     // &quot;Hi, Bharat!&quot;
 createUser(&quot;Alex&quot;);        // role = &quot;member&quot;</pre></div>
-        <h3 id="2-optional-and-default-parameters-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Rest parameters</h3>
+        <h3 id="3-optional-and-default-parameters-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.1. Rest parameters</h3>
         <div class="code"><pre>function sum(...nums: number[]): number {
   return nums.reduce((a, b) =&gt; a + b, 0);
 }
 
 sum(1, 2, 3); // 6</pre></div>
       </section>
-      <section id="3-function-overloads">
+      <section id="4-function-overloads">
         <div class="heading-with-levels">
-          <h2>3. Function overloads</h2>
+          <h2>4. Function overloads</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="3-function-overloads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-function-overloads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>When one function behaves differently based on argument types, <strong>overloads</strong> document the contract:</li>
         </ul>
@@ -126,12 +152,12 @@ function format(value: string | number): string {
 
 format(&quot;  hi  &quot;); // string
 format(3.14159);  // &quot;3.14&quot;</pre></div>
-        <h3 id="3-function-overloads-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-function-overloads-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Rules:</li>
           <li>Overload <strong>signatures</strong> have no body — they declare allowed call shapes.</li><li>One <strong>implementation</strong> signature must accept all overload cases (often wider types).</li>
         </ul>
-        <h3 id="3-function-overloads-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="4-function-overloads-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>Use sparingly — unions and generics often replace overloads:</li>
         </ul>
@@ -139,33 +165,33 @@ format(3.14159);  // &quot;3.14&quot;</pre></div>
   return value;
 }</pre></div>
       </section>
-      <section id="4-generic-functions-and-constraints">
+      <section id="5-generic-functions-and-constraints">
         <div class="heading-with-levels">
-          <h2>4. Generic functions and constraints</h2>
+          <h2>5. Generic functions and constraints</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-generic-functions-and-constraints-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-generic-functions-and-constraints-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong>Generics</strong> let you write reusable code while preserving type relationships.</li>
         </ul>
-        <h3>4.1. Basic generic function</h3>
+        <h3>5.1. Basic generic function</h3>
         <div class="code"><pre>function first&lt;T&gt;(items: T[]): T | undefined {
   return items[0];
 }
 
 first([1, 2, 3]);     // number | undefined
 first([&quot;a&quot;, &quot;b&quot;]);    // string | undefined</pre></div>
-        <h3 id="4-generic-functions-and-constraints-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.2. Multiple type parameters</h3>
+        <h3 id="5-generic-functions-and-constraints-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.2. Multiple type parameters</h3>
         <div class="code"><pre>function pair&lt;A, B&gt;(a: A, b: B): [A, B] {
   return [a, b];
 }
 
 pair(&quot;id&quot;, 42); // [string, number]</pre></div>
-        <h3>4.3. Generic interfaces and classes</h3>
+        <h3>5.3. Generic interfaces and classes</h3>
         <div class="code"><pre>interface ApiResult&lt;T&gt; {
   data: T;
   status: number;
@@ -180,12 +206,12 @@ class Stack&lt;T&gt; {
     return this.items.pop();
   }
 }</pre></div>
-        <h3>4.4. Defaults on generics</h3>
+        <h3>5.4. Defaults on generics</h3>
         <div class="code"><pre>function createState&lt;T = string&gt;(initial: T): { value: T } {
   return { value: initial };
 }</pre></div>
-        <h3 id="4-generic-functions-and-constraints-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.5. Constraints with <code class="inline">extends</code></h3>
+        <h3 id="5-generic-functions-and-constraints-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.5. Constraints with <code class="inline">extends</code></h3>
         <ul>
           <li>Limit what <code class="inline">T</code> can be:</li>
         </ul>
@@ -196,7 +222,7 @@ class Stack&lt;T&gt; {
 const user = { name: &quot;Bharat&quot;, age: 30 };
 getProperty(user, &quot;name&quot;); // string
 // getProperty(user, &quot;email&quot;); // Error — &quot;email&quot; not in user</pre></div>
-        <h3>4.6. <code class="inline">const</code> type parameters (TS 5.0+)</h3>
+        <h3>5.6. <code class="inline">const</code> type parameters (TS 5.0+)</h3>
         <ul>
           <li>Preserve literal types through generic calls:</li>
         </ul>
@@ -207,48 +233,84 @@ getProperty(user, &quot;name&quot;); // string
 const colors = asConst([&quot;red&quot;, &quot;green&quot;] as const);
 // type readonly [&quot;red&quot;, &quot;green&quot;]</pre></div>
       </section>
-      <section id="5-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>5. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. What is <code class="inline">void</code> vs omitting return type?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is <code class="inline">void</code> vs omitting return type?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">void</code> means the caller should ignore the return value. Functions with no return implicitly return <code class="inline">undefined</code>.</li>
         </ul>
-        <h3>5.2. Are generics erased at runtime?</h3>
+        <h3>C.2. Are generics erased at runtime?</h3>
         <ul>
           <li><strong>A:</strong> Yes — like all types, generics do not exist in emitted JavaScript.</li>
         </ul>
-        <h3 id="5-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.3. Should I always annotate return types?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.3. Should I always annotate return types?</h3>
         <ul>
           <li><strong>A:</strong> Not for simple internal functions — inference is fine. Annotate exported functions and when you want to lock the contract.</li>
         </ul>
-        <h3>5.4. Can arrow functions be generic?</h3>
+        <h3>C.4. Can arrow functions be generic?</h3>
         <ul>
           <li><strong>A:</strong> Yes: <code class="inline">const fn = &lt;T&gt;(x: T): T =&gt; x;</code> (in <code class="inline">.tsx</code>, use <code class="inline">&lt;T,&gt;(x: T) =&gt; x</code> to avoid JSX ambiguity).</li>
         </ul>
-        <h3>5.5. What is the difference between <code class="inline">(x: number) =&gt; void</code> and <code class="inline">(x: number): void =&gt;</code>?</h3>
+        <h3>C.5. What is the difference between <code class="inline">(x: number) =&gt; void</code> and <code class="inline">(x: number): void =&gt;</code>?</h3>
         <ul>
           <li><strong>A:</strong> First is a <strong>type</strong>; second is invalid syntax. Arrow function: <code class="inline">(x: number): void =&gt; { ... }</code>.</li>
         </ul>
-        <h3>5.6. How do generics relate to <code class="inline">any</code>?</h3>
+        <h3>C.6. How do generics relate to <code class="inline">any</code>?</h3>
         <ul>
           <li><strong>A:</strong> Generics preserve type information through the call. <code class="inline">any</code> throws it away.</li>
         </ul>
-        <h3 id="5-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.7. When are overloads better than unions?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.7. When are overloads better than unions?</h3>
         <ul>
           <li><strong>A:</strong> When return type depends on input type in a way callers should see clearly (<code class="inline">document.getElementById</code> style). Prefer generics when one pattern fits all.</li>
         </ul>
-        <h3>5.8. What does <code class="inline">extends keyof T</code> mean?</h3>
+        <h3>C.8. What does <code class="inline">extends keyof T</code> mean?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">K</code> must be one of the keys of <code class="inline">T</code> — safe property access.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Annotate params/returns; write one generic.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Type <code class="inline">add(a: number, b: number): number</code>.</li>
+          <li>Optional param with default.</li>
+          <li><code class="inline">identity&lt;T&gt;(x: T): T</code>.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li>Typed rest sum.</li>
+          <li>Overload format for number|string.</li>
+          <li>Constraint with extends.</li>
+          <li>void callback example.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>mapArray generic without Array.map.</li>
+          <li>findById with T extends { id: number }.</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I annotate functions.</li>
+          <li>I know optional/default params.</li>
+          <li>I can write a basic generic.</li>
         </ul>
       </section>
       <footer>HTML note for TypeScript File 04. Open from the TypeScript index.</footer>

@@ -16,12 +16,13 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-infer-keyword">1. `infer` keyword</a>
-        <a href="#2-template-literal-types">2. Template literal types</a>
-        <a href="#3-branded-types">3. Branded types</a>
-        <a href="#4-type-safe-api-patterns">4. Type-safe API patterns</a>
-        <a href="#5-common-questions">5. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-infer-keyword">2. infer keyword</a>
+        <a href="#3-template-literal-types">3. Template literal types</a>
+        <a href="#4-branded-types">4. Branded types</a>
+        <a href="#5-type-safe-api-patterns">5. Type-safe API patterns</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -41,21 +42,46 @@
         <p class="subtitle">File 11 — infer, template literals, branded types, type-safe APIs.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li>Advanced TypeScript features model <strong>string patterns</strong>, <strong>extract types from other types</strong>, and <strong>prevent mixing similar primitives</strong> at compile time.</li>
         </ul>
+
+        <h3>1.2. Default rules and how to study this file</h3>
+        <ul>
+          <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">11-practice.ts</code> before File 12. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong><code class="inline">infer</code> keyword</strong></li>
+          <li><strong>Template literal types</strong></li>
+          <li><strong>Branded types</strong></li>
+          <li><strong>Type-safe API patterns</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
       </section>
-      <section id="1-infer-keyword">
+      <section id="2-infer-keyword">
         <div class="heading-with-levels">
-          <h2>1. <code class="inline">infer</code> keyword</h2>
+          <h2>2. <code class="inline">infer</code> keyword</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="1-infer-keyword-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="2-infer-keyword-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>Inside a <strong>conditional type</strong>, <code class="inline">infer</code> declares a type variable to capture part of a matched type:</li>
         </ul>
@@ -63,40 +89,40 @@
 
 type A = ElementType&lt;string[]&gt;;  // string
 type B = ElementType&lt;number&gt;;    // number</pre></div>
-        <h3 id="1-infer-keyword-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>1.1. Extract function return type (how <code class="inline">ReturnType</code> works)</h3>
+        <h3 id="2-infer-keyword-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>2.1. Extract function return type (how <code class="inline">ReturnType</code> works)</h3>
         <div class="code"><pre>type MyReturnType&lt;T&gt; = T extends (...args: never[]) =&gt; infer R ? R : never;
 
 type R = MyReturnType&lt;() =&gt; string&gt;; // string</pre></div>
-        <h3>1.2. Extract promise inner type</h3>
+        <h3>2.2. Extract promise inner type</h3>
         <div class="code"><pre>type Awaited&lt;T&gt; = T extends Promise&lt;infer U&gt; ? U : T;
 
 type Data = Awaited&lt;Promise&lt;{ id: number }&gt;&gt;; // { id: number }</pre></div>
         <ul>
           <li>Built-in <code class="inline">Awaited&lt;T&gt;</code> (TS 4.5+) handles nested promises.</li>
         </ul>
-        <h3>1.3. Tuple element inference</h3>
+        <h3>2.3. Tuple element inference</h3>
         <div class="code"><pre>type Head&lt;T&gt; = T extends [infer H, ...unknown[]] ? H : never;
 type Tail&lt;T&gt; = T extends [unknown, ...infer Rest] ? Rest : never;
 
 type H = Head&lt;[string, number, boolean]&gt;; // string</pre></div>
       </section>
-      <section id="2-template-literal-types">
+      <section id="3-template-literal-types">
         <div class="heading-with-levels">
-          <h2>2. Template literal types</h2>
+          <h2>3. Template literal types</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="2-template-literal-types-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="3-template-literal-types-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>Combine string literal types like template strings:</li>
         </ul>
         <div class="code"><pre>type EventName = &quot;click&quot; | &quot;focus&quot; | &quot;blur&quot;;
 type HandlerName = `on${Capitalize&lt;EventName&gt;}`;
 // &quot;onClick&quot; | &quot;onFocus&quot; | &quot;onBlur&quot;</pre></div>
-        <h3>2.1. Intrinsic string manipulation types</h3>
+        <h3>3.1. Intrinsic string manipulation types</h3>
         <table>
         <thead>
         <tr><th>Utility</th><th>Example</th></tr>
@@ -111,7 +137,7 @@ type HandlerName = `on${Capitalize&lt;EventName&gt;}`;
         <div class="code"><pre>type HttpMethod = &quot;get&quot; | &quot;post&quot;;
 type Route = `/api/${string}`;
 type GetRoute = `/api/${Lowercase&lt;HttpMethod&gt;}`;</pre></div>
-        <h3>2.2. CSS / API route safety</h3>
+        <h3>3.2. CSS / API route safety</h3>
         <div class="code"><pre>type Color = &quot;red&quot; | &quot;green&quot; | &quot;blue&quot;;
 type BgClass = `bg-${Color}`;
 // &quot;bg-red&quot; | &quot;bg-green&quot; | &quot;bg-blue&quot;
@@ -119,8 +145,8 @@ type BgClass = `bg-${Color}`;
 function setBg(className: BgClass) {
   document.body.className = className;
 }</pre></div>
-        <h3 id="2-template-literal-types-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>2.3. Mapped + template combo</h3>
+        <h3 id="3-template-literal-types-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>3.3. Mapped + template combo</h3>
         <div class="code"><pre>type PropEvents&lt;T&gt; = {
   [K in keyof T as `on${Capitalize&lt;string &amp; K&gt;}Change`]: (value: T[K]) =&gt; void;
 };
@@ -128,15 +154,15 @@ function setBg(className: BgClass) {
 type UserEvents = PropEvents&lt;{ name: string; age: number }&gt;;
 // { onNameChange: (value: string) =&gt; void; onAgeChange: (value: number) =&gt; void }</pre></div>
       </section>
-      <section id="3-branded-types">
+      <section id="4-branded-types">
         <div class="heading-with-levels">
-          <h2>3. Branded types</h2>
+          <h2>4. Branded types</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="3-branded-types-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="4-branded-types-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li><strong>Branded</strong> (nominal) types prevent accidentally mixing structurally identical types:</li>
         </ul>
@@ -156,8 +182,8 @@ const orderId = &quot;o-456&quot; as OrderId;
 
 getUser(userId);   // OK
 // getUser(orderId); // Error — OrderId not assignable to UserId</pre></div>
-        <h3 id="3-branded-types-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>3.1. Opaque aliases with helper</h3>
+        <h3 id="4-branded-types-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.1. Opaque aliases with helper</h3>
         <div class="code"><pre>declare const __brand: unique symbol;
 
 type Brand&lt;T, B extends string&gt; = T &amp; { readonly [__brand]: B };
@@ -169,7 +195,7 @@ function register(email: Email, password: Password) {}</pre></div>
         <ul>
           <li>Forces explicit creation functions — raw strings cannot slip through.</li>
         </ul>
-        <h3>3.2. Units of measure (pattern)</h3>
+        <h3>4.2. Units of measure (pattern)</h3>
         <div class="code"><pre>type Meters = number &amp; { readonly unit: &quot;m&quot; };
 type Feet = number &amp; { readonly unit: &quot;ft&quot; };
 
@@ -177,16 +203,16 @@ function toMeters(feet: Feet): Meters {
   return (feet * 0.3048) as Meters;
 }</pre></div>
       </section>
-      <section id="4-type-safe-api-patterns">
+      <section id="5-type-safe-api-patterns">
         <div class="heading-with-levels">
-          <h2>4. Type-safe API patterns</h2>
+          <h2>5. Type-safe API patterns</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="4-type-safe-api-patterns-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.1. Zod / schema validation at boundaries</h3>
+        <h3 id="5-type-safe-api-patterns-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.1. Zod / schema validation at boundaries</h3>
         <ul>
           <li>Types are compile-time only — validate external data at runtime:</li>
         </ul>
@@ -205,7 +231,7 @@ function parseUser(raw: unknown): User {
         <ul>
           <li>Single source of truth: schema → runtime check + inferred TS type.</li>
         </ul>
-        <h3>4.2. Const assertions for API contracts</h3>
+        <h3>5.2. Const assertions for API contracts</h3>
         <div class="code"><pre>const ROUTES = {
   home: &quot;/&quot;,
   profile: &quot;/profile&quot;,
@@ -213,13 +239,13 @@ function parseUser(raw: unknown): User {
 
 type Route = typeof ROUTES[keyof typeof ROUTES];
 // &quot;/&quot; | &quot;/profile&quot;</pre></div>
-        <h3>4.3. Checklist for type-safe boundaries</h3>
+        <h3>5.3. Checklist for type-safe boundaries</h3>
         <ul>
           <li>Advanced types shine at <strong>system boundaries</strong> — HTTP, env vars, config keys — where mistakes are costly:</li>
         </ul>
         <ol><li><strong>Parse</strong> external input (<code class="inline">unknown</code> → validated type)</li><li><strong>Brand</strong> IDs and domain primitives</li><li><strong>Discriminate</strong> responses with tagged unions (File 05)</li><li><strong>Derive</strong> types from schemas or const objects — avoid duplicating shapes</li></ol>
-        <h3 id="4-type-safe-api-patterns-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>4.4. End-to-end typed fetch</h3>
+        <h3 id="5-type-safe-api-patterns-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>5.4. End-to-end typed fetch</h3>
         <div class="code"><pre>type ApiRoutes = {
   &quot;/users&quot;: { GET: { response: User[] } };
   &quot;/users/:id&quot;: { GET: { response: User } };
@@ -236,7 +262,7 @@ const users = await apiGet(&quot;/users&quot;); // User[]</pre></div>
         <ul>
           <li>Libraries like <strong>tRPC</strong>, <strong>Hono RPC</strong>, and <strong>OpenAPI generators</strong> automate this pattern.</li>
         </ul>
-        <h3>4.5. Builder pattern with chained generics</h3>
+        <h3>5.5. Builder pattern with chained generics</h3>
         <div class="code"><pre>class QueryBuilder&lt;T extends Record&lt;string, unknown&gt;&gt; {
   where&lt;K extends keyof T&gt;(key: K, value: T[K]): this {
     return this;
@@ -247,36 +273,36 @@ const q = new QueryBuilder&lt;{ name: string; age: number }&gt;();
 q.where(&quot;name&quot;, &quot;Bharat&quot;); // OK
 // q.where(&quot;age&quot;, &quot;thirty&quot;); // Error</pre></div>
       </section>
-      <section id="5-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>5. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l2">L2</span>
             <span class="tier l3">L3</span>
           </div>
         </div>
-        <h3 id="5-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.1. What does <code class="inline">infer</code> do?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.1. What does <code class="inline">infer</code> do?</h3>
         <ul>
           <li><strong>A:</strong> Captures a type inside a conditional match — &quot;if T looks like X, name this part U&quot;.</li>
         </ul>
-        <h3>5.2. Are template literal types only for strings?</h3>
+        <h3>C.2. Are template literal types only for strings?</h3>
         <ul>
           <li><strong>A:</strong> Yes — they operate on string literal types and string manipulation utilities.</li>
         </ul>
-        <h3>5.3. Do branded types exist at runtime?</h3>
+        <h3>C.3. Do branded types exist at runtime?</h3>
         <ul>
           <li><strong>A:</strong> No — brands are compile-time only. Runtime validation still needed for untrusted input.</li>
         </ul>
-        <h3>5.4. When are advanced types worth it?</h3>
+        <h3>C.4. When are advanced types worth it?</h3>
         <ul>
           <li><strong>A:</strong> Libraries, design systems, API clients, large teams. Overkill for small scripts.</li>
         </ul>
-        <h3>5.5. How does Zod relate to TypeScript?</h3>
+        <h3>C.5. How does Zod relate to TypeScript?</h3>
         <ul>
           <li><strong>A:</strong> Zod validates at runtime; <code class="inline">z.infer</code> gives static types — bridges the compile/runtime gap.</li>
         </ul>
-        <h3>5.6. What is <code class="inline">satisfies</code> (TS 4.9+)?</h3>
+        <h3>C.6. What is <code class="inline">satisfies</code> (TS 4.9+)?</h3>
         <ul>
           <li><strong>A:</strong> Checks value matches type while preserving narrow literal inference — great for config objects:</li>
         </ul>
@@ -284,14 +310,50 @@ q.where(&quot;name&quot;, &quot;Bharat&quot;); // OK
   red: &quot;#f00&quot;,
   green: &quot;#0f0&quot;,
 } as const satisfies Record&lt;string, string&gt;;</pre></div>
-        <h3 id="5-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>5.7. What is the difference between <code class="inline">infer</code> and generics?</h3>
+        <h3 id="c-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>C.7. What is the difference between <code class="inline">infer</code> and generics?</h3>
         <ul>
           <li><strong>A:</strong> Generics declare parameters on types/functions. <code class="inline">infer</code> extracts types <strong>inside</strong> conditional type logic.</li>
         </ul>
-        <h3>5.8. Can template literals be too slow to compile?</h3>
+        <h3>C.8. Can template literals be too slow to compile?</h3>
         <ul>
           <li><strong>A:</strong> Very large cartesian products of unions can slow <code class="inline">tsc</code>. Split types or simplify unions if builds lag.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Keep advanced examples small.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>infer Awaited toy.</li>
+          <li>template literal onX.</li>
+          <li>branded UserId.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li>infer param type.</li>
+          <li>event name map.</li>
+          <li>parseUserId brand.</li>
+          <li>fetch Result&lt;T&gt; wrapper.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>NonNullable conditional.</li>
+          <li>type-safe route params.</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I read infer/template literals.</li>
+          <li>I know branded types.</li>
+          <li>I type API boundaries.</li>
         </ul>
       </section>
       <footer>HTML note for TypeScript File 11. Open from the TypeScript index.</footer>

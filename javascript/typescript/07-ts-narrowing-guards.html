@@ -16,12 +16,13 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-typeof-and-instanceof-narrowing">1. `typeof` and `instanceof` narrowing</a>
-        <a href="#2-truthiness-narrowing">2. Truthiness narrowing</a>
-        <a href="#3-type-predicates-is">3. Type predicates (`is`)</a>
-        <a href="#4-in-operator-narrowing">4. `in` operator narrowing</a>
-        <a href="#5-common-questions">5. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-typeof-and-instanceof-narrowing">2. typeof and instanceof narrowing</a>
+        <a href="#3-truthiness-narrowing">3. Truthiness narrowing</a>
+        <a href="#4-type-predicates-is">4. Type predicates (is)</a>
+        <a href="#5-in-operator-narrowing">5. in operator narrowing</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -41,30 +42,53 @@
         <p class="subtitle">File 07 — typeof, instanceof, truthiness, type predicates, <code class="inline">in</code>.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li><strong>Narrowing</strong> refines a broad type to a specific one inside a branch so TypeScript allows safe operations.</li>
         </ul>
-        <h3 id="intro-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <div class="code"><pre>function print(value: string | number) {
+<div class="code"><pre>function print(value: string | number) {
   if (typeof value === &quot;string&quot;) {
     console.log(value.toUpperCase()); // string
   } else {
     console.log(value.toFixed(2));    // number
   }
 }</pre></div>
+        <h3>1.2. Default rules and how to study this file</h3>
+        <ul>
+          <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">07-practice.ts</code> before File 08. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong><code class="inline">typeof</code> and <code class="inline">instanceof</code> narrowing</strong></li>
+          <li><strong>Truthiness narrowing</strong></li>
+          <li><strong>Type predicates (<code class="inline">is</code>)</strong></li>
+          <li><strong><code class="inline">in</code> operator narrowing</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
       </section>
-      <section id="1-typeof-and-instanceof-narrowing">
+      <section id="2-typeof-and-instanceof-narrowing">
         <div class="heading-with-levels">
-          <h2>1. <code class="inline">typeof</code> and <code class="inline">instanceof</code> narrowing</h2>
+          <h2>2. <code class="inline">typeof</code> and <code class="inline">instanceof</code> narrowing</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-typeof-and-instanceof-narrowing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. <code class="inline">typeof</code> (primitives)</h3>
+        <h3 id="2-typeof-and-instanceof-narrowing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. <code class="inline">typeof</code> (primitives)</h3>
         <ul>
           <li>Works well for: <code class="inline">string</code>, <code class="inline">number</code>, <code class="inline">boolean</code>, <code class="inline">bigint</code>, <code class="inline">symbol</code>, <code class="inline">undefined</code>, <code class="inline">function</code>.</li>
         </ul>
@@ -73,7 +97,7 @@
     x.length; // OK
   }
 }</pre></div>
-        <h3>1.2. <code class="inline">instanceof</code> (objects / classes)</h3>
+        <h3>2.2. <code class="inline">instanceof</code> (objects / classes)</h3>
         <div class="code"><pre>class ApiError extends Error {
   statusCode: number;
   constructor(message: string, statusCode: number) {
@@ -92,7 +116,7 @@ function handle(err: unknown) {
         <ul>
           <li><code class="inline">instanceof</code> checks the prototype chain — useful for class instances, not plain object shapes.</li>
         </ul>
-        <h3 id="1-typeof-and-instanceof-narrowing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="2-typeof-and-instanceof-narrowing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li><strong>Caveat:</strong> <code class="inline">typeof null === &quot;object&quot;</code> in JavaScript — combine with null check:</li>
         </ul>
@@ -100,15 +124,15 @@ function handle(err: unknown) {
   // object (not null)
 }</pre></div>
       </section>
-      <section id="2-truthiness-narrowing">
+      <section id="3-truthiness-narrowing">
         <div class="heading-with-levels">
-          <h2>2. Truthiness narrowing</h2>
+          <h2>3. Truthiness narrowing</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-truthiness-narrowing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-truthiness-narrowing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Falsy values in JS: <code class="inline">false</code>, <code class="inline">0</code>, <code class="inline">-0</code>, <code class="inline">0n</code>, <code class="inline">&quot;&quot;</code>, <code class="inline">null</code>, <code class="inline">undefined</code>, <code class="inline">NaN</code>.</li>
         </ul>
@@ -117,14 +141,14 @@ function handle(err: unknown) {
     console.log(name.toUpperCase());
   }
 }</pre></div>
-        <h3 id="2-truthiness-narrowing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.1. Equality narrowing</h3>
+        <h3 id="3-truthiness-narrowing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.1. Equality narrowing</h3>
         <div class="code"><pre>function example(x: string | number, y: string | boolean) {
   if (x === y) {
     // x and y are both string here
   }
 }</pre></div>
-        <h3>2.2. <code class="inline">== null</code> / <code class="inline">!= null</code></h3>
+        <h3>3.2. <code class="inline">== null</code> / <code class="inline">!= null</code></h3>
         <ul>
           <li>Checks both <code class="inline">null</code> and <code class="inline">undefined</code>:</li>
         </ul>
@@ -132,15 +156,15 @@ function handle(err: unknown) {
   // value is neither null nor undefined
 }</pre></div>
       </section>
-      <section id="3-type-predicates-is">
+      <section id="4-type-predicates-is">
         <div class="heading-with-levels">
-          <h2>3. Type predicates (<code class="inline">is</code>)</h2>
+          <h2>4. Type predicates (<code class="inline">is</code>)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="3-type-predicates-is-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-type-predicates-is-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>A <strong>type predicate</strong> tells TypeScript a boolean function narrows the type:</li>
         </ul>
@@ -163,7 +187,7 @@ function move(pet: Fish | Bird) {
     pet.fly();
   }
 }</pre></div>
-        <h3 id="3-type-predicates-is-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="4-type-predicates-is-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>Custom guards are essential for <strong>discriminated unions</strong> without a single tag field:</li>
         </ul>
@@ -173,15 +197,15 @@ function move(pet: Fish | Bird) {
   return result.ok === true;
 }</pre></div>
       </section>
-      <section id="4-in-operator-narrowing">
+      <section id="5-in-operator-narrowing">
         <div class="heading-with-levels">
-          <h2>4. <code class="inline">in</code> operator narrowing</h2>
+          <h2>5. <code class="inline">in</code> operator narrowing</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-in-operator-narrowing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-in-operator-narrowing-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Check if a property exists on an object:</li>
         </ul>
@@ -210,11 +234,11 @@ function reducer(state: number, action: Action): number {
       return 0;
   }
 }</pre></div>
-        <h3 id="4-in-operator-narrowing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.1. Assignment narrowing</h3>
+        <h3 id="5-in-operator-narrowing-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.1. Assignment narrowing</h3>
         <div class="code"><pre>let x: string | number = &quot;hello&quot;;
 x = 42; // now narrowed to number in following code</pre></div>
-        <h3>4.2. Control flow analysis</h3>
+        <h3>5.2. Control flow analysis</h3>
         <ul>
           <li>TypeScript tracks narrowing across <code class="inline">if</code>, <code class="inline">else</code>, <code class="inline">switch</code>, early <code class="inline">return</code>, and <code class="inline">throw</code>:</li>
         </ul>
@@ -226,48 +250,84 @@ x = 42; // now narrowed to number in following code</pre></div>
   console.log(value.length);
 }</pre></div>
       </section>
-      <section id="5-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>5. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. What is narrowing?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What is narrowing?</h3>
         <ul>
           <li><strong>A:</strong> Refining a union or <code class="inline">unknown</code> to a specific type inside a conditional branch.</li>
         </ul>
-        <h3>5.2. What is a type predicate?</h3>
+        <h3>C.2. What is a type predicate?</h3>
         <ul>
           <li><strong>A:</strong> Return type <code class="inline">arg is Type</code> on a boolean function — custom narrowing for TS.</li>
         </ul>
-        <h3 id="5-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.3. <code class="inline">typeof</code> vs <code class="inline">instanceof</code>?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.3. <code class="inline">typeof</code> vs <code class="inline">instanceof</code>?</h3>
         <ul>
           <li><strong>A:</strong> <code class="inline">typeof</code> for primitives (and functions). <code class="inline">instanceof</code> for class instances.</li>
         </ul>
-        <h3>5.4. How do I narrow <code class="inline">unknown</code> from <code class="inline">JSON.parse</code>?</h3>
+        <h3>C.4. How do I narrow <code class="inline">unknown</code> from <code class="inline">JSON.parse</code>?</h3>
         <ul>
           <li><strong>A:</strong> Validate with <code class="inline">typeof</code>, <code class="inline">Array.isArray</code>, custom type guards, or libraries like Zod/io-ts.</li>
         </ul>
-        <h3>5.5. Can I assert a type without narrowing?</h3>
+        <h3>C.5. Can I assert a type without narrowing?</h3>
         <ul>
           <li><strong>A:</strong> Type assertions (<code class="inline">as Type</code>) force TS to trust you — no runtime check. Prefer guards when data is external.</li>
         </ul>
-        <h3 id="5-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.6. Why doesn&#x27;t <code class="inline">typeof</code> narrow <code class="inline">null</code> correctly?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.6. Why doesn&#x27;t <code class="inline">typeof</code> narrow <code class="inline">null</code> correctly?</h3>
         <ul>
           <li><strong>A:</strong> JS quirk — <code class="inline">typeof null === &quot;object&quot;</code>. Always add <code class="inline">value !== null</code>.</li>
         </ul>
-        <h3>5.7. Does narrowing work across function boundaries?</h3>
+        <h3>C.7. Does narrowing work across function boundaries?</h3>
         <ul>
           <li><strong>A:</strong> Generally <strong>no</strong> — TS does not track mutations on outer variables inside nested functions (unless const or proven immutable).</li>
         </ul>
-        <h3>5.8. What is discriminant narrowing?</h3>
+        <h3>C.8. What is discriminant narrowing?</h3>
         <ul>
           <li><strong>A:</strong> Switching on a shared field (<code class="inline">kind</code>, <code class="inline">type</code>, <code class="inline">status</code>) to narrow tagged unions (File 05).</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Narrow before use; type predicates.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>typeof narrow.</li>
+          <li>instanceof narrow.</li>
+          <li>truthiness filter nulls.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li>isString predicate.</li>
+          <li>in operator narrow.</li>
+          <li>discriminant equality.</li>
+          <li>never default helper.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>User|Admin guards.</li>
+          <li>Replace bad assertion with guard.</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I narrow with typeof/instanceof/in.</li>
+          <li>I write predicates.</li>
+          <li>I avoid unsafe assertions.</li>
         </ul>
       </section>
       <footer>HTML note for TypeScript File 07. Open from the TypeScript index.</footer>

@@ -16,12 +16,13 @@
       <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#intro">Intro</a>
-        <a href="#1-interface-syntax">1. `interface` syntax</a>
-        <a href="#2-type-aliases">2. `type` aliases</a>
-        <a href="#3-extending-interfaces">3. Extending interfaces</a>
-        <a href="#4-interface-vs-type-when-to-use-which">4. Interface vs type — when to use which</a>
-        <a href="#5-common-questions">5. Common questions</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-interface-syntax">2. interface syntax</a>
+        <a href="#3-type-aliases">3. type aliases</a>
+        <a href="#4-extending-interfaces">4. Extending interfaces</a>
+        <a href="#5-interface-vs-type-when-to-use-which">5. Interface vs type — when to use which</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -41,21 +42,46 @@
         <p class="subtitle">File 03 — interface, type, extending, when to use which.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
-      <section id="intro-notes">
-        <h3 id="intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+            <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
         <ul>
           <li>Objects dominate application data. TypeScript describes object shapes with <strong><code class="inline">interface</code></strong> and <strong><code class="inline">type</code></strong> aliases.</li>
         </ul>
+
+        <h3>1.2. Default rules and how to study this file</h3>
+        <ul>
+          <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">03-practice.ts</code> before File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+        </ul>
+        <h3>1.3. Section map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong><code class="inline">interface</code> syntax</strong></li>
+          <li><strong><code class="inline">type</code> aliases</strong></li>
+          <li><strong>Extending interfaces</strong></li>
+          <li><strong>Interface vs type — when to use which</strong></li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
       </section>
-      <section id="1-interface-syntax">
+      <section id="2-interface-syntax">
         <div class="heading-with-levels">
-          <h2>1. <code class="inline">interface</code> syntax</h2>
+          <h2>2. <code class="inline">interface</code> syntax</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="1-interface-syntax-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-interface-syntax-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>An <strong>interface</strong> names the shape of an object:</li>
         </ul>
@@ -69,8 +95,8 @@ const user: User = {
   id: 1,
   name: &quot;Bharat&quot;,
 };</pre></div>
-        <h3 id="1-interface-syntax-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Readonly and index signatures</h3>
+        <h3 id="2-interface-syntax-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>2.1. Readonly and index signatures</h3>
         <div class="code"><pre>interface Config {
   readonly apiUrl: string;
   timeout: number;
@@ -83,8 +109,8 @@ interface StringDictionary {
 interface NumberDictionary {
   [index: number]: string; // array-like
 }</pre></div>
-        <h3 id="1-interface-syntax-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>1.2. Call and construct signatures</h3>
+        <h3 id="2-interface-syntax-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Call and construct signatures</h3>
         <div class="code"><pre>interface SearchFn {
   (query: string, limit?: number): string[];
 }
@@ -97,15 +123,15 @@ interface UserConstructor {
   new (name: string): User;
 }</pre></div>
       </section>
-      <section id="2-type-aliases">
+      <section id="3-type-aliases">
         <div class="heading-with-levels">
-          <h2>2. <code class="inline">type</code> aliases</h2>
+          <h2>3. <code class="inline">type</code> aliases</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="2-type-aliases-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-type-aliases-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><strong><code class="inline">type</code></strong> creates an alias for any type — objects, unions, primitives, tuples:</li>
         </ul>
@@ -115,7 +141,7 @@ type Point = { x: number; y: number };
 type Result =
   | { success: true; data: string }
   | { success: false; error: string };</pre></div>
-        <h3 id="2-type-aliases-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-type-aliases-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Object shapes with <code class="inline">type</code>:</li>
         </ul>
@@ -124,19 +150,19 @@ type Result =
   name: string;
   email?: string;
 };</pre></div>
-        <h3 id="2-type-aliases-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="3-type-aliases-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>For a plain object shape, <code class="inline">interface User</code> and <code class="inline">type User = { ... }</code> are often interchangeable.</li>
         </ul>
       </section>
-      <section id="3-extending-interfaces">
+      <section id="4-extending-interfaces">
         <div class="heading-with-levels">
-          <h2>3. Extending interfaces</h2>
+          <h2>4. Extending interfaces</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="3-extending-interfaces-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-extending-interfaces-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Interfaces support <strong>declaration merging</strong> and <strong><code class="inline">extends</code></strong>:</li>
         </ul>
@@ -166,8 +192,8 @@ interface Aged {
 }
 
 interface Person extends Named, Aged {}</pre></div>
-        <h3 id="3-extending-interfaces-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Extending with <code class="inline">type</code> (intersection)</h3>
+        <h3 id="4-extending-interfaces-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Extending with <code class="inline">type</code> (intersection)</h3>
         <ul>
           <li>Types use <strong><code class="inline">&amp;</code></strong> (intersection), not <code class="inline">extends</code>:</li>
         </ul>
@@ -177,15 +203,15 @@ type Employee = Person &amp; {
   employeeId: number;
 };</pre></div>
       </section>
-      <section id="4-interface-vs-type-when-to-use-which">
+      <section id="5-interface-vs-type-when-to-use-which">
         <div class="heading-with-levels">
-          <h2>4. Interface vs type — when to use which</h2>
+          <h2>5. Interface vs type — when to use which</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-interface-vs-type-when-to-use-which-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-interface-vs-type-when-to-use-which-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <table>
         <thead>
         <tr><th>Prefer <code class="inline">interface</code></th><th>Prefer <code class="inline">type</code></th></tr>
@@ -197,8 +223,8 @@ type Employee = Person &amp; {
         <tr><td>React component props (team convention)</td><td>Utility type compositions</td></tr>
         </tbody>
         </table>
-        <h3 id="4-interface-vs-type-when-to-use-which-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Practical team guidelines</h3>
+        <h3 id="5-interface-vs-type-when-to-use-which-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. Practical team guidelines</h3>
         <div class="code"><pre>// Object shape for a domain model
 interface Product {
   id: string;
@@ -216,7 +242,7 @@ type ProductId = string;</pre></div>
         <ul>
           <li>Many codebases use <strong><code class="inline">interface</code> for objects</strong> and <strong><code class="inline">type</code> for everything else</strong>. Consistency within a project matters more than the rule itself.</li>
         </ul>
-        <h3>4.2. Implementing in classes</h3>
+        <h3>5.2. Implementing in classes</h3>
         <ul>
           <li>Both work with <code class="inline">implements</code>:</li>
         </ul>
@@ -230,8 +256,8 @@ class User implements Serializable {
     return JSON.stringify({ name: this.name });
   }
 }</pre></div>
-        <h3 id="4-interface-vs-type-when-to-use-which-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.3. Declaration merging (interfaces only)</h3>
+        <h3 id="5-interface-vs-type-when-to-use-which-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.3. Declaration merging (interfaces only)</h3>
         <div class="code"><pre>interface Window {
   myAppVersion: string;
 }
@@ -244,48 +270,84 @@ interface Window {
           <li>Types cannot be merged — duplicate <code class="inline">type Window</code> is an error.</li>
         </ul>
       </section>
-      <section id="5-common-questions">
+      <section id="c-common-questions">
         <div class="heading-with-levels">
-          <h2>5. Common questions</h2>
+          <h2>C. Common questions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. What does <code class="inline">?</code> mean on a property?</h3>
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.1. What does <code class="inline">?</code> mean on a property?</h3>
         <ul>
           <li><strong>A:</strong> Optional — the property may be missing or explicitly <code class="inline">undefined</code> (with <code class="inline">strictNullChecks</code>).</li>
         </ul>
-        <h3>5.2. Can interfaces describe functions?</h3>
+        <h3>C.2. Can interfaces describe functions?</h3>
         <ul>
           <li><strong>A:</strong> Yes — via call signatures (<code class="inline">interface Fn { (x: number): number }</code>) or as a property type.</li>
         </ul>
-        <h3>5.3. What is an index signature?</h3>
+        <h3>C.3. What is an index signature?</h3>
         <ul>
           <li><strong>A:</strong> Allows arbitrary keys of a given type — <code class="inline">[key: string]: number</code> for a string-keyed map.</li>
         </ul>
-        <h3>5.4. Do interfaces exist at runtime?</h3>
+        <h3>C.4. Do interfaces exist at runtime?</h3>
         <ul>
           <li><strong>A:</strong> No. They are erased during compilation — zero runtime footprint.</li>
         </ul>
-        <h3 id="5-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.5. Can I use <code class="inline">interface</code> and <code class="inline">type</code> together?</h3>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>C.5. Can I use <code class="inline">interface</code> and <code class="inline">type</code> together?</h3>
         <ul>
           <li><strong>A:</strong> Yes. An interface can extend a type alias, and a type can use an interface in an intersection.</li>
         </ul>
-        <h3>5.6. Which is better for React props?</h3>
+        <h3>C.6. Which is better for React props?</h3>
         <ul>
           <li><strong>A:</strong> Both work. <code class="inline">interface Props</code> is common; <code class="inline">type Props</code> is equally valid, especially with unions.</li>
         </ul>
-        <h3 id="5-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.7. When would I augment an interface?</h3>
+        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>C.7. When would I augment an interface?</h3>
         <ul>
           <li><strong>A:</strong> Extending third-party types (e.g. adding fields to <code class="inline">Express.Request</code>) via declaration merging in a <code class="inline">.d.ts</code> file.</li>
         </ul>
-        <h3>5.8. Interface vs type performance?</h3>
+        <h3>C.8. Interface vs type performance?</h3>
         <ul>
           <li><strong>A:</strong> No runtime difference. Compile-time performance is similar; pick based on expressiveness and team style.</li>
+        </ul>
+      </section>
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Model objects with interface/type.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>Define <code class="inline">interface User</code> and create a value.</li>
+          <li>Add optional <code class="inline">email?</code>.</li>
+          <li>Create <code class="inline">type ID = string | number</code>.</li>
+        </ol>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li><strong>extend</strong> — Admin extends User.</li>
+          <li><strong>index signature</strong> — string-keyed numbers.</li>
+          <li><strong>readonly</strong> — readonly id.</li>
+          <li><strong>interface vs type</strong> — same shape both ways; comment pick.</li>
+        </ol>
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Challenge</h3>
+        <ol>
+          <li>Declaration merging demo.</li>
+          <li>Function type alias.</li>
+        </ol>
+        <h3>P.4. Self-check</h3>
+        <ul>
+          <li>I can write interfaces and aliases.</li>
+          <li>I know optional/readonly.</li>
+          <li>I can extend interfaces.</li>
         </ul>
       </section>
       <footer>HTML note for TypeScript File 03. Open from the TypeScript index.</footer>
