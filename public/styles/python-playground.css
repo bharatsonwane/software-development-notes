@@ -1,0 +1,167 @@
+/* Python playground — layout on top of common.css */
+
+.playground-page main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.playground-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.playground-toolbar label {
+  font-size: 0.9rem;
+  color: var(--muted-foreground, var(--foreground));
+}
+
+.playground-toolbar select {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--border);
+  background: var(--card, var(--background));
+  color: var(--foreground);
+}
+
+.playground-btn {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--border);
+  background: var(--card, var(--background));
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.playground-btn:hover:not(:disabled) {
+  border-color: var(--primary, var(--foreground));
+}
+
+.playground-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.playground-btn-primary {
+  background: var(--primary, #2563eb);
+  color: var(--primary-foreground, #fff);
+  border-color: transparent;
+}
+
+.playground-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.playground-status {
+  font-size: 0.85rem;
+  color: var(--muted-foreground, var(--foreground));
+  margin-left: auto;
+}
+
+.playground-status[data-state="ready"] {
+  color: var(--foreground);
+}
+
+.playground-status[data-state="error"] {
+  color: #dc2626;
+}
+
+html.dark .playground-status[data-state="error"] {
+  color: #f87171;
+}
+
+.playground-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  min-height: 420px;
+}
+
+@media (max-width: 900px) {
+  .playground-panes {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+}
+
+.playground-pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card, var(--background));
+  overflow: hidden;
+}
+
+.playground-pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted-foreground, var(--foreground));
+}
+
+.playground-hint {
+  font-weight: 500;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.playground-editor-host {
+  flex: 1;
+  min-height: 320px;
+}
+
+.playground-editor-host .CodeMirror {
+  height: 100%;
+  min-height: 320px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 0;
+}
+
+.playground-output {
+  flex: 1;
+  min-height: 320px;
+  margin: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--foreground);
+  background: transparent;
+}
+
+.playground-output .out-stderr {
+  color: #dc2626;
+}
+
+html.dark .playground-output .out-stderr {
+  color: #f87171;
+}
+
+.playground-output .out-result {
+  color: var(--muted-foreground, var(--foreground));
+  opacity: 0.9;
+}
+
+.playground-output .out-empty {
+  opacity: 0.55;
+  font-style: italic;
+}

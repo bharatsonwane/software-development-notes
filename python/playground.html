@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-notes-lang="python">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../public/styles/common.css" />
+  <link rel="stylesheet" href="../public/styles/python-playground.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
+  <title>Python Playground - Python Notes</title>
+</head>
+<body>
+  <div class="layout playground-page">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> Python Notes</div>
+      <nav class="nav">
+        <a href="../index.html">← Home</a>
+        <a href="./python.html">← Python</a>
+        <a href="./playground.html" aria-current="page">Playground</a>
+        <a href="#editor">Editor</a>
+        <a href="#output">Output</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./python.html">Python</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">Playground</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>Python Playground</h1>
+        <p class="subtitle">Run Python in the browser — no install required. Powered by Pyodide (CPython on WebAssembly).</p>
+        <div class="chip-row">
+          <span class="chip">REPL</span>
+          <span class="chip">Pyodide</span>
+          <span class="chip">Stdlib</span>
+        </div>
+      </header>
+
+      <section id="intro-notes">
+        <ul>
+          <li>Python runs in the browser via a vendored Pyodide runtime under <code class="inline">public/vendor/pyodide</code> (no CDN required for the interpreter).</li>
+          <li>Works with the standard library and pure-Python code. Native packages and <code class="inline">pip install</code> are out of scope for this playground.</li>
+          <li>Use this to try snippets from the notes chapters, then write full practice files locally when you are ready.</li>
+        </ul>
+        <div class="callout"><strong>Tip:</strong> press <strong>Ctrl+Enter</strong> (Windows/Linux) or <strong>Cmd+Enter</strong> (Mac) to run.</div>
+      </section>
+
+      <div class="playground-toolbar" role="toolbar" aria-label="Playground controls">
+        <label for="playground-example">Example</label>
+        <select id="playground-example" aria-label="Load example"></select>
+        <button type="button" class="playground-btn playground-btn-primary" id="playground-run" disabled>Run</button>
+        <button type="button" class="playground-btn" id="playground-clear">Clear output</button>
+        <button type="button" class="playground-btn" id="playground-reset" disabled>Reset example</button>
+        <span class="playground-status" id="playground-status" data-state="loading">Loading Python…</span>
+      </div>
+
+      <div class="playground-panes">
+        <div class="playground-pane" id="editor">
+          <div class="playground-pane-header">
+            <span>Editor</span>
+            <span class="playground-hint">editable</span>
+          </div>
+          <div class="playground-editor-host" id="playground-editor-host">
+            <textarea id="playground-source" aria-label="Python source"></textarea>
+          </div>
+        </div>
+        <div class="playground-pane" id="output">
+          <div class="playground-pane-header">
+            <span>Output</span>
+            <span class="playground-hint">stdout / stderr</span>
+          </div>
+          <pre class="playground-output" id="playground-output" aria-live="polite"></pre>
+        </div>
+      </div>
+
+      <footer>Python playground — runs entirely in your browser via Pyodide. Open from the Python index.</footer>
+    </main>
+  </div>
+  <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/python/python.min.js"></script>
+  <script src="../public/scripts/notes.js"></script>
+  <script src="../public/vendor/pyodide/pyodide.js"></script>
+  <script src="../public/scripts/python-playground.js"></script>
+</body>
+</html>
