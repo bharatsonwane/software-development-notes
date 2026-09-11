@@ -2,10 +2,75 @@
 
 **Last verified:** September 11, 2026
 **Verified by:** Claude, via live web search of official sources (see Sources section)
-**Next review due:** ~December 2026 (or sooner — see "How to update this file" below)
+**Next review due:** ~December 2026 (or sooner — see [How to update this file](#how-to-update-this-file))
 
 **Stack context:** React.js, React Native, Node.js, TypeScript, PostgreSQL, MongoDB, AWS, Terraform, Docker, OpenSearch, AWS Bedrock, Playwright, Puppeteer, multi-tenant SaaS, large existing codebases, REST APIs, CI/CD
 **Primary tool:** Cursor · **Secondary tool:** GitHub Copilot
+
+**Also see:** [How to update this file](#how-to-update-this-file) · [Context](#context) · [Intelligence rating methodology](#intelligence-rating-methodology)
+
+---
+
+## Full comparison table
+
+| Rank | Model | Provider | Cursor | Copilot | Input $/1M | Output $/1M | Intelligence (/5) | Speed | Context | Best use | Recommended usage |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | Claude Sonnet 5 | Anthropic | ✅ | ✅ | $2 | $10 | **4.5** | Fast | 1M (128K max out) | Daily agentic coding, refactors, PR-sized features | Daily driver |
+| 2 | GPT-5.6 Sol | OpenAI | ✅ | ✅ | $2–4* | $10–20* | **4.5** | Med-Fast | 272K default / ~1M ext | Long-running agent sessions, terminal-heavy work | Daily driver |
+| 3 | Composer 2.5 | Cursor (Kimi K2.5 base) | ✅ | ❌ | $0.50 / $3 (fast) | $2.50 / $15 (fast) | **3.5** | Very fast | 200K | High-volume tab/agent loops, cost control | Daily driver |
+| 4 | Claude Opus 5 | Anthropic | ✅ | ✅ | $5 | $25 | **5** | Med | 1M (128K max out) | Architecture, hard production bugs, security review | Frequent |
+| 5 | Grok 4.6 | xAI / SpaceXAI | ✅ | ✅ | $2 / $4 (fast) | $6 / $12 (fast) | **4** | Fast | 500K | Long-horizon multi-file agent runs | Frequent |
+| 6 | GPT-5.6 Terra | OpenAI | ✅ | ✅ | $2 | $12 | **3.5** | Fast | 272K default | Everyday agentic coding, mid-tier cost | Frequent |
+| 7 | Gemini 3.1 Pro | Google | ✅ | ✅ | $2 | $12 | **4** | Med | 1M (~1.05M) | Huge-repo ingestion, screenshot-to-UI, multimodal | Frequent |
+| 8 | Grok 4.5 | xAI / SpaceXAI | ✅ | ✅ | $2 / $4 (fast) | $6 / $18 (fast) | **3.5** | Fast | 500K | Same niche as 4.6, now "previous gen" | Sometimes |
+| 9 | Claude Haiku 4.5 | Anthropic | ✅ | ✅ | $1 | $5 | **3** | Very fast | 200K (64K max out) | Boilerplate, small fixes, test writing | Sometimes |
+| 10 | GPT-5.6 Luna | OpenAI | ✅ | ✅ | $0.20 | $1.20 | **2.5** | Very fast | 272K | Trivial edits, high-volume subagent calls | Sometimes |
+| 11 | Gemini 3.7 / 3.8 Flash | Google | ✅ (3.8) | ✅ (3.7 → 3.8) | $0.75 | $3.50–3.75 | **2.5** | Very fast | ~1M | Cheap large-context scans, quick checks | Sometimes |
+| 12 | GPT-5.3-Codex | OpenAI | ✅ | ✅ (LTS fallback) | $1.75 | $14 | **3.5** | Med | ~272K legacy tier | Copilot's LTS fallback, solid pure coding | Rarely |
+| 13 | Claude Fable 5.1 | Anthropic (Mythos-tier) | ✅ | ✅ (ZDR exemption thru 2026) | $10 | $50 | **5** | Slow | 1M (128K max out) | Only the hardest, highest-stakes reasoning | Rarely |
+| 14 | GPT-5.5 | OpenAI | ✅ | ✅ | $5 | $30 | **3.5** | Med | 272K | Superseded by 5.6 family | Rarely |
+| 15 | GPT-5 mini | OpenAI | ✅ | ✅ | $0.25 | $2 | **2** | Fast | ~128K–272K | Legacy cheap fallback | Not recommended |
+| 16 | Legacy Claude (Opus/Sonnet 4.x), Kimi K2.7/K3, MAI-Code, Qwen2.5, Raptor mini | Mixed | Varies | Deprecated / niche | Varies | Varies | **1.5–2** | Varies | Varies | Deprecated or no edge for this stack | Not recommended |
+
+\* GPT-5.6 Sol pricing varies by surface — Cursor's docs list $4/$20, GitHub's Copilot changelog lists a promotional $2/$10 (effective through part of Q3 2026).
+
+## Recommended model-selection strategy
+
+Composer 2.5 is Cursor-only — in Copilot, use Haiku / Luna / Flash for the cheap-fast tier instead.
+
+| Task | Cursor | GitHub Copilot |
+|---|---|---|
+| Simple task (small fix, boilerplate, tests) | Composer 2.5 or Claude Haiku 4.5 | Claude Haiku 4.5 or GPT-5.6 Luna |
+| Normal development (day-to-day feature work) | Claude Sonnet 5 | Claude Sonnet 5 |
+| Agentic task (multi-file feature implementation) | GPT-5.6 Sol or Grok 4.6 | GPT-5.6 Sol or Grok 4.6 |
+| Difficult debugging | Claude Opus 5 | Claude Opus 5 |
+| Architecture | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) |
+| Huge codebase / long-context ingestion | Gemini 3.1 Pro | Gemini 3.1 Pro (or Gemini 3.8 Flash for cheap scans) |
+| UI / screenshot-to-code | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement |
+| Cost-sensitive / high-volume chat | Composer 2.5 or Claude Haiku 4.5 | GPT-5.6 Terra or Gemini 3.8 Flash |
+| LTS / stable fallback | — | GPT-5.3-Codex |
+
+## Final 3–5 model setup
+
+1. **Claude Sonnet 5** — default for ~60% of work: normal dev, refactoring, debugging, code review
+2. **Claude Opus 5** — escalate for architecture calls and hard production bugs
+3. **Composer 2.5** — cheap/fast mode for boilerplate, tests, high-volume agent loops (separate Cursor usage pool)
+4. **Gemini 3.1 Pro** — huge-repo context dumps and screenshot-to-UI work
+5. *(optional)* **GPT-5.6 Sol** — very long multi-hour autonomous agent sessions where Sonnet 5 loses steam
+
+## Sources
+
+- Cursor Models & Pricing — https://cursor.com/docs/models-and-pricing
+- GitHub Copilot Supported AI Models — https://docs.github.com/en/copilot/reference/ai-models/supported-models
+- Anthropic — Claude Sonnet 5 announcement — https://www.anthropic.com/news/claude-sonnet-5
+- Anthropic — Claude Haiku 4.5 announcement — https://www.anthropic.com/news/claude-haiku-4-5
+- Anthropic — Claude Platform Pricing docs — https://platform.claude.com/docs/en/about-claude/pricing
+- OpenAI — GPT-5.6 announcement — https://openai.com/index/gpt-5-6/
+- Cursor — Introducing Grok 4.5 — https://cursor.com/blog/grok-4-5
+- Cursor — Introducing Composer 2.5 — https://cursor.com/blog/composer-2-5
+- Google Gemini API Pricing (via Google AI / OpenRouter listings, cross-checked against Cursor's model pricing page)
+
+*Re-check this table quarterly — the coding-model market is moving fast enough that rankings and prices shift meaningfully every few months.*
 
 ---
 
@@ -44,69 +109,15 @@ Pricing below is **API/list pricing per 1M tokens** as published by each vendor 
 
 The Intelligence (/5) column is a synthesized rating — there is no single universal cross-vendor benchmark — built from SWE-bench Verified, Terminal-Bench, Artificial Analysis Intelligence Index, and Agents' Last Exam results as published by Anthropic, OpenAI, and third-party trackers, weighted toward coding/agentic performance rather than general knowledge or math. Opus 5 and Fable 5.1 tie at 5/5 on raw reasoning depth; Sonnet 5 and GPT-5.6 Sol sit at 4.5 because they trade a small amount of ceiling for much better speed/cost — which is why they're the better *daily* picks despite the slightly lower score.
 
-## Full comparison table
-
-| Rank | Model | Provider | Cursor | Copilot | Input $/1M | Output $/1M | Intelligence (/5) | Speed | Context | Best use | Recommended usage |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Claude Sonnet 5 | Anthropic | ✅ | ✅ | $2 | $10 | **4.5** | Fast | 1M (128K max out) | Daily agentic coding, refactors, PR-sized features | Daily driver |
-| 2 | GPT-5.6 Sol | OpenAI | ✅ | ✅ | $2–4* | $10–20* | **4.5** | Med-Fast | 272K default / ~1M ext | Long-running agent sessions, terminal-heavy work | Daily driver |
-| 3 | Composer 2.5 | Cursor (Kimi K2.5 base) | ✅ | ❌ | $0.50 / $3 (fast) | $2.50 / $15 (fast) | **3.5** | Very fast | 200K | High-volume tab/agent loops, cost control | Daily driver |
-| 4 | Claude Opus 5 | Anthropic | ✅ | ✅ | $5 | $25 | **5** | Med | 1M (128K max out) | Architecture, hard production bugs, security review | Frequent |
-| 5 | Grok 4.6 | xAI / SpaceXAI | ✅ | ✅ | $2 / $4 (fast) | $6 / $12 (fast) | **4** | Fast | 500K | Long-horizon multi-file agent runs | Frequent |
-| 6 | GPT-5.6 Terra | OpenAI | ✅ | ✅ | $2 | $12 | **3.5** | Fast | 272K default | Everyday agentic coding, mid-tier cost | Frequent |
-| 7 | Gemini 3.1 Pro | Google | ✅ | ✅ | $2 | $12 | **4** | Med | 1M (~1.05M) | Huge-repo ingestion, screenshot-to-UI, multimodal | Frequent |
-| 8 | Grok 4.5 | xAI / SpaceXAI | ✅ | ✅ | $2 / $4 (fast) | $6 / $18 (fast) | **3.5** | Fast | 500K | Same niche as 4.6, now "previous gen" | Sometimes |
-| 9 | Claude Haiku 4.5 | Anthropic | ✅ | ✅ | $1 | $5 | **3** | Very fast | 200K (64K max out) | Boilerplate, small fixes, test writing | Sometimes |
-| 10 | GPT-5.6 Luna | OpenAI | ✅ | ✅ | $0.20 | $1.20 | **2.5** | Very fast | 272K | Trivial edits, high-volume subagent calls | Sometimes |
-| 11 | Gemini 3.7 / 3.8 Flash | Google | ✅ (3.8) | ✅ (3.7 → 3.8) | $0.75 | $3.50–3.75 | **2.5** | Very fast | ~1M | Cheap large-context scans, quick checks | Sometimes |
-| 12 | GPT-5.3-Codex | OpenAI | ✅ | ✅ (LTS fallback) | $1.75 | $14 | **3.5** | Med | ~272K legacy tier | Copilot's LTS fallback, solid pure coding | Rarely |
-| 13 | Claude Fable 5.1 | Anthropic (Mythos-tier) | ✅ | ✅ (ZDR exemption thru 2026) | $10 | $50 | **5** | Slow | 1M (128K max out) | Only the hardest, highest-stakes reasoning | Rarely |
-| 14 | GPT-5.5 | OpenAI | ✅ | ✅ | $5 | $30 | **3.5** | Med | 272K | Superseded by 5.6 family | Rarely |
-| 15 | GPT-5 mini | OpenAI | ✅ | ✅ | $0.25 | $2 | **2** | Fast | ~128K–272K | Legacy cheap fallback | Not recommended |
-| 16 | Legacy Claude (Opus/Sonnet 4.x), Kimi K2.7/K3, MAI-Code, Qwen2.5, Raptor mini | Mixed | Varies | Deprecated / niche | Varies | Varies | **1.5–2** | Varies | Varies | Deprecated or no edge for this stack | Not recommended |
-
-\* GPT-5.6 Sol pricing varies by surface — Cursor's docs list $4/$20, GitHub's Copilot changelog lists a promotional $2/$10 (effective through part of Q3 2026).
-
-## Recommended Cursor model-selection strategy
-
-| Task | Model |
-|---|---|
-| Simple task (small fix, boilerplate, tests) | Composer 2.5 or Claude Haiku 4.5 |
-| Normal development (day-to-day feature work) | Claude Sonnet 5 |
-| Agentic task (multi-file feature implementation) | GPT-5.6 Sol or Grok 4.6 |
-| Difficult debugging | Claude Opus 5 |
-| Architecture | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) |
-| Huge codebase / long-context ingestion | Gemini 3.1 Pro |
-| UI / screenshot-to-code | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement |
-
-## Final 3–5 model setup
-
-1. **Claude Sonnet 5** — default for ~60% of work: normal dev, refactoring, debugging, code review
-2. **Claude Opus 5** — escalate for architecture calls and hard production bugs
-3. **Composer 2.5** — cheap/fast mode for boilerplate, tests, high-volume agent loops (separate Cursor usage pool)
-4. **Gemini 3.1 Pro** — huge-repo context dumps and screenshot-to-UI work
-5. *(optional)* **GPT-5.6 Sol** — very long multi-hour autonomous agent sessions where Sonnet 5 loses steam
-
-## Sources
-
-- Cursor Models & Pricing — https://cursor.com/docs/models-and-pricing
-- GitHub Copilot Supported AI Models — https://docs.github.com/en/copilot/reference/ai-models/supported-models
-- Anthropic — Claude Sonnet 5 announcement — https://www.anthropic.com/news/claude-sonnet-5
-- Anthropic — Claude Haiku 4.5 announcement — https://www.anthropic.com/news/claude-haiku-4-5
-- Anthropic — Claude Platform Pricing docs — https://platform.claude.com/docs/en/about-claude/pricing
-- OpenAI — GPT-5.6 announcement — https://openai.com/index/gpt-5-6/
-- Cursor — Introducing Grok 4.5 — https://cursor.com/blog/grok-4-5
-- Cursor — Introducing Composer 2.5 — https://cursor.com/blog/composer-2-5
-- Google Gemini API Pricing (via Google AI / OpenRouter listings, cross-checked against Cursor's model pricing page)
-
-*Re-check this table quarterly — the coding-model market is moving fast enough that rankings and prices shift meaningfully every few months.*
-
 ---
 
 ## Changelog
 
 | Date | Change |
 |---|---|
+| 2026-09-11 | Merged Cursor and GitHub Copilot model-selection strategies into one table. |
+| 2026-09-11 | Moved How to update / Context / Intelligence methodology to bottom; top now links only. |
+| 2026-09-11 | Added Recommended GitHub Copilot model-selection strategy (Composer substitutes: Haiku / Luna / Flash; LTS fallback: GPT-5.3-Codex). |
 | 2026-09-11 | Initial version. Full comparison of Anthropic, OpenAI, Google, Cursor/SpaceXAI, and xAI models across Cursor and GitHub Copilot, ranked for a React/RN/Node/TS/Postgres/AWS/Terraform multi-tenant SaaS stack. |
 
 *(Add a new row each time this file is refreshed, noting what changed — new models, price changes, deprecations, or ranking shifts.)*
