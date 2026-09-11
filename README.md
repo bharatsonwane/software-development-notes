@@ -19,6 +19,7 @@ Files use **numbered learning order**: `01-topic-name.html`, `02-topic-name.html
 | Docker | docker/ | README |
 | System Design | system-design/ | README |
 | AWS | aws/ | README |
+| AI coding models | ai/ | [ai-coding-models.md](ai/ai-coding-models.md) |
 
 ## How to use
 
