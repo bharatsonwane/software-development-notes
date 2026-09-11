@@ -11,6 +11,22 @@
 
 ---
 
+## Recommended model-selection strategy
+
+Composer 2.5 is Cursor-only — in Copilot, use Haiku / Luna / Flash for the cheap-fast tier instead.
+
+| Task | Cursor | GitHub Copilot |
+|---|---|---|
+| Simple task (small fix, boilerplate, tests) | Composer 2.5 or Claude Haiku 4.5 | Claude Haiku 4.5 or GPT-5.6 Luna |
+| Normal development (day-to-day feature work) | Claude Sonnet 5 | Claude Sonnet 5 |
+| Agentic task (multi-file feature implementation) | GPT-5.6 Sol or Grok 4.6 | GPT-5.6 Sol or Grok 4.6 |
+| Difficult debugging | Claude Opus 5 | Claude Opus 5 |
+| Architecture | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) |
+| Huge codebase / long-context ingestion | Gemini 3.1 Pro | Gemini 3.1 Pro (or Gemini 3.8 Flash for cheap scans) |
+| UI / screenshot-to-code | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement |
+| Cost-sensitive / high-volume chat | Composer 2.5 or Claude Haiku 4.5 | GPT-5.6 Terra or Gemini 3.8 Flash |
+| LTS / stable fallback | — | GPT-5.3-Codex |
+
 ## Full comparison table
 
 | Rank | Model | Provider | Cursor | Copilot | Input $/1M | Output $/1M | Intelligence (/5) | Speed | Context | Best use | Recommended usage |
@@ -33,22 +49,6 @@
 | 16 | Legacy Claude (Opus/Sonnet 4.x), Kimi K2.7/K3, MAI-Code, Qwen2.5, Raptor mini | Mixed | Varies | Deprecated / niche | Varies | Varies | **1.5–2** | Varies | Varies | Deprecated or no edge for this stack | Not recommended |
 
 \* GPT-5.6 Sol pricing varies by surface — Cursor's docs list $4/$20, GitHub's Copilot changelog lists a promotional $2/$10 (effective through part of Q3 2026).
-
-## Recommended model-selection strategy
-
-Composer 2.5 is Cursor-only — in Copilot, use Haiku / Luna / Flash for the cheap-fast tier instead.
-
-| Task | Cursor | GitHub Copilot |
-|---|---|---|
-| Simple task (small fix, boilerplate, tests) | Composer 2.5 or Claude Haiku 4.5 | Claude Haiku 4.5 or GPT-5.6 Luna |
-| Normal development (day-to-day feature work) | Claude Sonnet 5 | Claude Sonnet 5 |
-| Agentic task (multi-file feature implementation) | GPT-5.6 Sol or Grok 4.6 | GPT-5.6 Sol or Grok 4.6 |
-| Difficult debugging | Claude Opus 5 | Claude Opus 5 |
-| Architecture | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) |
-| Huge codebase / long-context ingestion | Gemini 3.1 Pro | Gemini 3.1 Pro (or Gemini 3.8 Flash for cheap scans) |
-| UI / screenshot-to-code | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement |
-| Cost-sensitive / high-volume chat | Composer 2.5 or Claude Haiku 4.5 | GPT-5.6 Terra or Gemini 3.8 Flash |
-| LTS / stable fallback | — | GPT-5.3-Codex |
 
 ## Final 3–5 model setup
 
