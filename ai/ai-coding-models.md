@@ -13,19 +13,19 @@
 
 ## Recommended model-selection strategy
 
-Composer 2.5 is Cursor-only — in Copilot, use Haiku / Luna / Flash for the cheap-fast tier instead.
+Composer 2.5 is Cursor-only — in Copilot, use Haiku / Luna / Flash for the cheap-fast tier instead. In Claude (claude.ai / Claude Code), stay on Anthropic models only.
 
-| Task | Cursor | GitHub Copilot |
-|---|---|---|
-| Simple task (small fix, boilerplate, tests) | Composer 2.5 or Claude Haiku 4.5 | Claude Haiku 4.5 or GPT-5.6 Luna |
-| Normal development (day-to-day feature work) | Claude Sonnet 5 | Claude Sonnet 5 |
-| Agentic task (multi-file feature implementation) | GPT-5.6 Sol or Grok 4.6 | GPT-5.6 Sol or Grok 4.6 |
-| Difficult debugging | Claude Opus 5 | Claude Opus 5 |
-| Architecture | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) |
-| Huge codebase / long-context ingestion | Gemini 3.1 Pro | Gemini 3.1 Pro (or Gemini 3.8 Flash for cheap scans) |
-| UI / screenshot-to-code | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement |
-| Cost-sensitive / high-volume chat | Composer 2.5 or Claude Haiku 4.5 | GPT-5.6 Terra or Gemini 3.8 Flash |
-| LTS / stable fallback | — | GPT-5.3-Codex |
+| Task | Cursor | GitHub Copilot | Claude |
+|---|---|---|---|
+| Simple task (small fix, boilerplate, tests) | Composer 2.5 or Claude Haiku 4.5 | Claude Haiku 4.5 or GPT-5.6 Luna | Claude Haiku 4.5 |
+| Normal development (day-to-day feature work) | Claude Sonnet 5 | Claude Sonnet 5 | Claude Sonnet 5 |
+| Agentic task (multi-file feature implementation) | GPT-5.6 Sol or Grok 4.6 | GPT-5.6 Sol or Grok 4.6 | Claude Sonnet 5 (escalate to Opus 5 if stuck) |
+| Difficult debugging | Claude Opus 5 | Claude Opus 5 | Claude Opus 5 |
+| Architecture | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) | Claude Opus 5 (escalate to Claude Fable 5.1 only if Opus 5 stalls) |
+| Huge codebase / long-context ingestion | Gemini 3.1 Pro | Gemini 3.1 Pro (or Gemini 3.8 Flash for cheap scans) | Claude Sonnet 5 or Opus 5 (1M context) |
+| UI / screenshot-to-code | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement | Gemini 3.1 Pro to interpret, Claude Sonnet 5 to implement | Claude Sonnet 5 (multimodal) |
+| Cost-sensitive / high-volume chat | Composer 2.5 or Claude Haiku 4.5 | GPT-5.6 Terra or Gemini 3.8 Flash | Claude Haiku 4.5 |
+| LTS / stable fallback | — | GPT-5.3-Codex | Claude Sonnet 5 |
 
 ## Full comparison table
 
@@ -115,6 +115,7 @@ The Intelligence (/5) column is a synthesized rating — there is no single univ
 
 | Date | Change |
 |---|---|
+| 2026-09-11 | Added Claude column to Recommended model-selection strategy (claude.ai / Claude Code). |
 | 2026-09-11 | Merged Cursor and GitHub Copilot model-selection strategies into one table. |
 | 2026-09-11 | Moved How to update / Context / Intelligence methodology to bottom; top now links only. |
 | 2026-09-11 | Added Recommended GitHub Copilot model-selection strategy (Composer substitutes: Haiku / Luna / Flash; LTS fallback: GPT-5.3-Codex). |
