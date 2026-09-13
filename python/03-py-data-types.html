@@ -240,20 +240,40 @@ print(ba)          # bytearray(b'Hi')</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. How do I check a type?</h3>
-        <ul>
-          <li><strong>A:</strong> Prefer <code class="inline">isinstance(x, int)</code> over <code class="inline">type(x) == int</code> (handles subclasses). For exact type, <code class="inline">type(x) is int</code>.</li>
-        </ul>
-        <h3>C.2. Why is <code class="inline">bool</code> a subclass of <code class="inline">int</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Historical design — booleans participate in arithmetic. Prefer clear boolean logic over relying on that.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. How do I check a type?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Prefer <code class="inline">isinstance(x, int)</code> over <code class="inline">type(x) == int</code> (handles subclasses). For exact type, <code class="inline">type(x) is int</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Why is <code class="inline">bool</code> a subclass of <code class="inline">int</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Historical design — booleans participate in arithmetic. Prefer clear boolean logic over relying on that.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.3. Does <code class="inline">a = a + 1</code> mutate the int?</h3>
-        <ul>
-          <li><strong>A:</strong> No. Integers are immutable. A new int is created and the name is rebound.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Does <code class="inline">a = a + 1</code> mutate the int?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>No. Integers are immutable. A new int is created and the name is rebound.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -267,22 +287,180 @@ print(ba)          # bytearray(b'Hi')</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Create one value of each: int, float, complex, bool, None; print types.</li>
-          <li>Show that <code class="inline">True == 1</code> and <code class="inline">False == 0</code>.</li>
-          <li>Build a <code class="inline">range(5)</code> and convert to list.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create one value of each: int, float, complex, bool, None; print types.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Create one value of each fundamental data type:
+val_int = 42
+val_float = 3.14159
+val_complex = 2 + 5j
+val_bool = True
+val_none = None
+
+print(&quot;val_int:&quot;, type(val_int), val_int)
+print(&quot;val_float:&quot;, type(val_float), val_float)
+print(&quot;val_complex:&quot;, type(val_complex), val_complex)
+print(&quot;val_bool:&quot;, type(val_bool), val_bool)
+print(&quot;val_none:&quot;, type(val_none), val_none)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Show that <code class="inline">True == 1</code> and <code class="inline">False == 0</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># bool is a subclass of int in Python:
+print(&quot;True == 1:&quot;, True == 1)   # True
+print(&quot;False == 0:&quot;, False == 0) # True
+print(&quot;True + True:&quot;, True + True) # 2
+print(&quot;isinstance(True, int):&quot;, isinstance(True, int)) # True</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Build a <code class="inline">range(5)</code> and convert to list.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Build range(5) and convert to list:
+r = range(5)
+print(&quot;range object:&quot;, r)
+lst = list(r)
+print(&quot;list from range:&quot;, lst)  # [0, 1, 2, 3, 4]</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>immutability demo</strong> — Rebind an int; show id change. Mutate a list; show id same.</li>
-          <li><strong>bool contexts</strong> — Which of 0, 0.0, "", [], None are falsy? Print bool(x) for each.</li>
-          <li><strong>complex</strong> — Create <code class="inline">3+4j</code>; print real/imag.</li>
-          <li><strong>bytes intro</strong> — Create <code class="inline">b"hi"</code> and a bytearray; note mutability.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>immutability demo</strong> — Rebind an int; show id change. Mutate a list; show id same.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Int is immutable: rebinding creates a new object with a new id
+x = 100
+print(&quot;Initial x id:&quot;, id(x))
+x = x + 1
+print(&quot;After reassignment x id:&quot;, id(x))  # Different id!
+
+# List is mutable: mutating in-place preserves the id
+nums = [1, 2, 3]
+print(&quot;Initial nums id:&quot;, id(nums))
+nums.append(4)
+print(&quot;After append nums id:&quot;, id(nums))  # Exactly the same id!</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>bool contexts</strong> — Which of 0, 0.0, "", [], None are falsy? Print bool(x) for each.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Testing truthiness of common values:
+falsy_values = [0, 0.0, &quot;&quot;, [], None, set(), {}]
+for val in falsy_values:
+    print(f&quot;bool({repr(val)}):&quot;, bool(val))  # All are False
+
+truthy_values = [1, -1, &quot;hello&quot;, [0], (None,)]
+for val in truthy_values:
+    print(f&quot;bool({repr(val)}):&quot;, bool(val))  # All are True</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>complex</strong> — Create <code class="inline">3+4j</code>; print real/imag.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Complex numbers in Python:
+c = 3 + 4j
+print(&quot;Complex value:&quot;, c)
+print(&quot;Real part:&quot;, c.real)        # 3.0
+print(&quot;Imaginary part:&quot;, c.imag)   # 4.0
+print(&quot;Conjugate:&quot;, c.conjugate()) # (3-4j)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>bytes intro</strong> — Create <code class="inline">b"hi"</code> and a bytearray; note mutability.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># bytes (immutable) vs bytearray (mutable):
+b = b&quot;hi&quot;
+print(&quot;bytes:&quot;, b, type(b))
+# b[0] = 72  # TypeError: &#x27;bytes&#x27; object does not support item assignment
+
+ba = bytearray(b&quot;hi&quot;)
+print(&quot;bytearray before:&quot;, ba)
+ba[0] = ord(&#x27;H&#x27;)  # Mutating in-place
+print(&quot;bytearray after:&quot;, ba)  # bytearray(b&#x27;Hi&#x27;)</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Explain with code why small ints may share ids (interning) but large ones may not.</li>
-          <li>Write a function <code class="inline">describe(x)</code> that returns type name and whether the value is mutable (for the types you know).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Explain with code why small ints may share ids (interning) but large ones may not.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Small integer interning in CPython [-5 to 256]:
+a = 250
+b = 250
+print(&quot;a is b (250, interned):&quot;, a is b)  # True (same memory reference)
+
+c = 1000001
+d = 1000001
+print(&quot;c is d (large int outside intern range):&quot;, c is d)  # Often False in REPL / scripts
+print(&quot;c == d (equality check):&quot;, c == d)  # Always True</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write a function <code class="inline">describe(x)</code> that returns type name and whether the value is mutable (for the types you know).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>def describe(x):
+    &quot;&quot;&quot;Return type name and whether the value is mutable.&quot;&quot;&quot;
+    type_name = type(x).__name__
+    mutable_types = (list, dict, set, bytearray)
+    is_mutable = isinstance(x, mutable_types)
+    return {&quot;type&quot;: type_name, &quot;mutable&quot;: is_mutable}
+
+print(describe(42))            # {&#x27;type&#x27;: &#x27;int&#x27;, &#x27;mutable&#x27;: False}
+print(describe(&quot;hello&quot;))       # {&#x27;type&#x27;: &#x27;str&#x27;, &#x27;mutable&#x27;: False}
+print(describe([1, 2, 3]))     # {&#x27;type&#x27;: &#x27;list&#x27;, &#x27;mutable&#x27;: True}
+print(describe({&quot;a&quot;: 1}))      # {&#x27;type&#x27;: &#x27;dict&#x27;, &#x27;mutable&#x27;: True}
+print(describe((1, 2)))        # {&#x27;type&#x27;: &#x27;tuple&#x27;, &#x27;mutable&#x27;: False}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

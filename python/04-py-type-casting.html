@@ -176,20 +176,40 @@ format(10, "b")  # '1010' without prefix</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What does int(3.9) return?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">3</code> — truncates toward zero, does not round.</li>
-        </ul>
-        <h3>C.2. How do I convert user input to a number?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">n = int(input("n: "))</code> or wrap in <code class="inline">try/except ValueError</code> (File 23).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What does int(3.9) return?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">3</code> — truncates toward zero, does not round.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. How do I convert user input to a number?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">n = int(input("n: "))</code> or wrap in <code class="inline">try/except ValueError</code> (File 23).</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.3. Why is bool("0") True?</h3>
-        <ul>
-          <li><strong>A:</strong> Only empty string is falsy among strings. <code class="inline">"0"</code> is non-empty. Use <code class="inline">int("0")</code> then compare, or compare the string explicitly.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why is bool("0") True?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Only empty string is falsy among strings. <code class="inline">"0"</code> is non-empty. Use <code class="inline">int("0")</code> then compare, or compare the string explicitly.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -203,22 +223,188 @@ format(10, "b")  # '1010' without prefix</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Cast "42" to int and 3.9 to int; note truncation.</li>
-          <li>Cast True/False to int.</li>
-          <li>Use int("1010", 2) and hex/bin/oct helpers.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Cast "42" to int and 3.9 to int; note truncation.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Casting string to int:
+s = &quot;42&quot;
+val_int = int(s)
+print(f&quot;int(&#x27;{s}&#x27;) -&gt;&quot;, val_int, type(val_int))
+
+# Float to int truncation (drops decimals, no rounding):
+f = 3.9
+trunc = int(f)
+print(f&quot;int({f}) -&gt;&quot;, trunc, &quot;(truncated toward zero)&quot;)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Cast True/False to int.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Casting boolean values to int:
+print(&quot;int(True):&quot;, int(True))    # 1
+print(&quot;int(False):&quot;, int(False))  # 0
+print(&quot;float(True):&quot;, float(True)) # 1.0</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Use int("1010", 2) and hex/bin/oct helpers.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Base conversions:
+# Binary string to int (base 2):
+n = int(&quot;1010&quot;, 2)
+print(&quot;int(&#x27;1010&#x27;, 2):&quot;, n)  # 10
+
+# Conversion helpers:
+num = 42
+print(&quot;bin:&quot;, bin(num))  # &#x27;0b101010&#x27;
+print(&quot;oct:&quot;, oct(num))  # &#x27;0o52&#x27;
+print(&quot;hex:&quot;, hex(num))  # &#x27;0x2a&#x27;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>safe_int(s)</strong> — Return int or None if conversion fails.</li>
-          <li><strong>to_bool</strong> — Convert common strings "yes"/"no"/"1"/"0" to bool.</li>
-          <li><strong>float money</strong> — Parse "12.50" to float; format back with 2 decimals.</li>
-          <li><strong>base table</strong> — Print 0–15 in binary, octal, hex.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>safe_int(s)</strong> — Return int or None if conversion fails.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>def safe_int(s):
+    &quot;&quot;&quot;Safely convert string to int; return None on failure.&quot;&quot;&quot;
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return None
+
+print(safe_int(&quot;123&quot;))    # 123
+print(safe_int(&quot;abc&quot;))    # None
+print(safe_int(&quot;12.5&quot;))   # None (float string cannot be directly cast with int())
+print(safe_int(None))     # None</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>to_bool</strong> — Convert common strings "yes"/"no"/"1"/"0" to bool.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>def to_bool(val):
+    &quot;&quot;&quot;Convert common user inputs (&#x27;yes&#x27;, &#x27;no&#x27;, &#x27;1&#x27;, &#x27;0&#x27;) to bool.&quot;&quot;&quot;
+    if isinstance(val, bool):
+        return val
+    s = str(val).strip().lower()
+    if s in (&quot;1&quot;, &quot;true&quot;, &quot;yes&quot;, &quot;y&quot;, &quot;t&quot;, &quot;on&quot;):
+        return True
+    if s in (&quot;0&quot;, &quot;false&quot;, &quot;no&quot;, &quot;n&quot;, &quot;f&quot;, &quot;off&quot;):
+        return False
+    raise ValueError(f&quot;Cannot convert {val} to boolean&quot;)
+
+print(to_bool(&quot;yes&quot;))  # True
+print(to_bool(&quot;0&quot;))    # False
+print(to_bool(&quot;TRUE&quot;)) # True</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>float money</strong> — Parse "12.50" to float; format back with 2 decimals.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Parsing currency string and formatting back:
+price_str = &quot;12.50&quot;
+price = float(price_str)
+tax = price * 0.08
+total = price + tax
+
+# Format back with 2 decimal places:
+print(f&quot;Subtotal: ${price:.2f}&quot;)
+print(f&quot;Tax (8%):  ${tax:.2f}&quot;)
+print(f&quot;Total:     ${total:.2f}&quot;)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>base table</strong> — Print 0–15 in binary, octal, hex.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Base table: 0 to 15 in Decimal, Binary, Octal, Hexadecimal
+print(f&quot;{&#x27;Dec&#x27;:&lt;5} {&#x27;Binary&#x27;:&lt;8} {&#x27;Octal&#x27;:&lt;6} {&#x27;Hex&#x27;:&lt;4}&quot;)
+print(&quot;-&quot; * 25)
+for i in range(16):
+    print(f&quot;{i:&lt;5} {bin(i):&lt;8} {oct(i):&lt;6} {hex(i):&lt;4}&quot;)</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Show a pitfall: float("nan") or int("3.14") behavior; comment the rule.</li>
-          <li>Convert between str and bytes with encode/decode for utf-8.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Show a pitfall: float("nan") or int("3.14") behavior; comment the rule.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Pitfall 1: int() fails directly on float strings:
+# int(&quot;3.14&quot;) -&gt; ValueError: invalid literal for int() with base 10: &#x27;3.14&#x27;
+# Proper fix: convert to float first, then int:
+print(&quot;int(float(&#x27;3.14&#x27;)):&quot;, int(float(&quot;3.14&quot;)))
+
+# Pitfall 2: float(&#x27;nan&#x27;) never equals itself:
+nan_val = float(&quot;nan&quot;)
+print(&quot;nan == nan:&quot;, nan_val == nan_val)  # False!
+import math
+print(&quot;math.isnan(nan):&quot;, math.isnan(nan_val))  # True</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Convert between str and bytes with encode/decode for utf-8.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># UTF-8 Encoding and Decoding between str and bytes:
+text = &quot;Hello, Python! 🐍&quot;  # Includes snake emoji
+print(&quot;Original str:&quot;, text)
+
+# String to bytes (encode):
+encoded_bytes = text.encode(&quot;utf-8&quot;)
+print(&quot;Encoded bytes:&quot;, encoded_bytes)
+
+# Bytes back to string (decode):
+decoded_str = encoded_bytes.decode(&quot;utf-8&quot;)
+print(&quot;Decoded str:&quot;, decoded_str)
+print(&quot;Matches original:&quot;, text == decoded_str)</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

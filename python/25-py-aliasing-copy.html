@@ -114,15 +114,28 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What should I know about Aliasing vs cloning?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.2. What should I know about Shallow copy vs deep copy?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What should I know about Aliasing vs cloning?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What should I know about Shallow copy vs deep copy?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -136,21 +149,186 @@
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Skim the section map; write a 3-bullet comment summarizing <strong>Aliasing vs cloning</strong>.</li>
-          <li>Create a tiny example related to <strong>Shallow copy vs deep copy</strong> and print the result.</li>
-          <li>Add a docstring at the top of your practice file stating the goal of this chapter.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Aliasing vs cloning</strong>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Summary of Aliasing vs Cloning:
+# 1. Aliasing (&#x27;b = a&#x27;) gives an existing object another reference name (same memory address).
+# 2. Cloning creates a separate copy of the object in memory (different memory address).
+# 3. Changes to an alias affect the original object; changes to a clone do not.</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a tiny example related to <strong>Shallow copy vs deep copy</strong> and print the result.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Shallow copy vs deep copy:
+import copy
+
+original = [1, [2, 3]]
+shallow = copy.copy(original)
+deep = copy.deepcopy(original)
+
+shallow[1].append(4)  # Mutates inner list in original too!
+print(&quot;Original after shallow mutate:&quot;, original) # [1, [2, 3, 4]]
+
+deep[1].append(99)   # Completely independent!
+print(&quot;Original after deep mutate:&quot;, original)    # [1, [2, 3, 4]]
+print(&quot;Deep copy contents:&quot;, deep)               # [1, [2, 3, 99]]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Aliasing, Cloning, and Copy Semantics.
+
+Goal: Master object identity vs equality, slice cloning, copy.copy (shallow),
+copy.deepcopy (recursive), and avoiding unintended mutation side-effects.
+&quot;&quot;&quot;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>Task 1: Aliasing vs cloning</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</li>
-          <li><strong>Task 2: Shallow copy vs deep copy</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</li>
-          <li><strong>Cheat sheet</strong> — Comment 5 key facts about Aliasing, Cloning, and Copy.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 1: Aliasing vs cloning</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 1: Aliasing vs cloning
+# Aliasing:
+orig_list = [10, 20, 30]
+alias_list = orig_list
+print(&quot;id(orig):&quot;, id(orig_list), &quot;== id(alias):&quot;, id(alias_list))
+alias_list.append(40)
+print(&quot;orig_list modified through alias:&quot;, orig_list)  # [10, 20, 30, 40]
+
+# Cloning via slicing:
+clone_list = orig_list[:]
+clone_list.append(50)
+print(&quot;orig_list after clone append:&quot;, orig_list)      # [10, 20, 30, 40]
+print(&quot;clone_list:&quot;, clone_list)                      # [10, 20, 30, 40, 50]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 2: Shallow copy vs deep copy</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 2: Shallow copy vs deep copy
+import copy
+
+nested = {&quot;user&quot;: &quot;Alice&quot;, &quot;preferences&quot;: {&quot;theme&quot;: &quot;dark&quot;, &quot;zoom&quot;: 100}}
+
+shallow_dict = copy.copy(nested)
+deep_dict = copy.deepcopy(nested)
+
+# Mutate nested dictionary:
+shallow_dict[&quot;preferences&quot;][&quot;theme&quot;] = &quot;light&quot;
+print(&quot;Original theme after shallow change:&quot;, nested[&quot;preferences&quot;][&quot;theme&quot;]) # &#x27;light&#x27;
+
+deep_dict[&quot;preferences&quot;][&quot;theme&quot;] = &quot;sepia&quot;
+print(&quot;Original theme after deep change:&quot;, nested[&quot;preferences&quot;][&quot;theme&quot;])    # &#x27;light&#x27; (unaffected!)
+print(&quot;Deep dict theme:&quot;, deep_dict[&quot;preferences&quot;][&quot;theme&quot;])                 # &#x27;sepia&#x27;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Cheat sheet</strong> — Comment 5 key facts about Aliasing, Cloning, and Copy.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Cheat sheet — 5 Key Facts about Aliasing, Cloning, and Copy:
+# 1. Assignment (&#x27;=&#x27;) NEVER creates a copy; it only binds another name to the existing object.
+# 2. &#x27;is&#x27; checks if two references share the same id; &#x27;==&#x27; checks if values are equal.
+# 3. Slice operator [:], list.copy(), and dict.copy() all perform SHALLOW copies.
+# 4. Shallow copy duplicates outer container but copies references to nested objects.
+# 5. copy.deepcopy() recursively traverses and duplicates every nested container and object.</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>Mini project</strong> — Combine two topics from this file into one short script related to Aliasing, Cloning, and Copy.</li>
-          <li><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Aliasing, Cloning, and Copy.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Mini Project: Safe Configuration Snapshot &amp; Rollback Engine
+import copy
+
+class ConfigManager:
+    def __init__(self, initial_config):
+        self.config = initial_config
+        self.snapshots = []
+    
+    def take_snapshot(self):
+        # Deep copy ensures snapshots are immutable records of past state
+        self.snapshots.append(copy.deepcopy(self.config))
+        print(f&quot;Snapshot taken at version {len(self.snapshots)}&quot;)
+    
+    def rollback(self):
+        if self.snapshots:
+            self.config = self.snapshots.pop()
+            print(&quot;Rolled back to previous snapshot successfully.&quot;)
+        else:
+            print(&quot;No snapshot available to rollback.&quot;)
+
+mgr = ConfigManager({&quot;server&quot;: {&quot;host&quot;: &quot;localhost&quot;, &quot;port&quot;: 8000}})
+mgr.take_snapshot()
+
+# Mutate nested configuration:
+mgr.config[&quot;server&quot;][&quot;port&quot;] = 9999
+print(&quot;Mutated config:&quot;, mgr.config)
+
+# Rollback:
+mgr.rollback()
+print(&quot;Restored config:&quot;, mgr.config)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Copy Pitfalls &amp; Edge Cases:
+# 1. Default arguments with mutable collections (classic aliasing bug):
+# def add_item(item, basket=[]): ...
+
+# 2. Performance penalty: deepcopy() is slow on very large nested structures or cyclic graphs.
+
+# 3. Copying objects with thread locks, open files, or network sockets fails with TypeError.</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

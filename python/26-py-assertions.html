@@ -114,15 +114,28 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What should I know about Debugging with assertions?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.2. What should I know about assert forms and when to use?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What should I know about Debugging with assertions?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What should I know about assert forms and when to use?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -136,21 +149,169 @@
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Skim the section map; write a 3-bullet comment summarizing <strong>Debugging with assertions</strong>.</li>
-          <li>Create a tiny example related to <strong>assert forms and when to use</strong> and print the result.</li>
-          <li>Add a docstring at the top of your practice file stating the goal of this chapter.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Debugging with assertions</strong>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Summary of Debugging with Assertions:
+# 1. Assertions test internal invariants and developer assumptions that should never be violated if the code is correct.
+# 2. Syntax: &#x27;assert condition, message&#x27; raises AssertionError with message if condition is False.
+# 3. Assertions can be globally disabled in production using Python&#x27;s optimization flag (python -O).</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a tiny example related to <strong>assert forms and when to use</strong> and print the result.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># assert forms:
+# Simple form:
+x = 10
+assert x &gt; 0
+
+# Augmented form with descriptive error message:
+def calculate_discount(price, discount_rate):
+    assert 0.0 &lt;= discount_rate &lt;= 1.0, f&quot;Invalid discount rate: {discount_rate}&quot;
+    return price * (1.0 - discount_rate)
+
+print(&quot;Discounted:&quot;, calculate_discount(100.0, 0.2))</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Assertions &amp; Internal Invariant Testing.
+
+Goal: Master assertion mechanics, augmented messages, distinguishing assertions from
+business logic validation, and handling Python -O flag optimization implications.
+&quot;&quot;&quot;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>Task 1: Debugging with assertions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</li>
-          <li><strong>Task 2: assert forms and when to use</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</li>
-          <li><strong>Cheat sheet</strong> — Comment 5 key facts about Assertions.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 1: Debugging with assertions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 1: Debugging with assertions
+def parse_positive_int(s):
+    val = int(s)
+    # Assertion acts as an internal sanity check for developer logic
+    assert val &gt; 0, f&quot;Expected positive integer, received: {val}&quot;
+    return val
+
+print(&quot;Parsed:&quot;, parse_positive_int(&quot;42&quot;))
+try:
+    parse_positive_int(&quot;-5&quot;)
+except AssertionError as err:
+    print(f&quot;Caught assertion failure: {err}&quot;)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 2: assert forms and when to use</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 2: Assert forms and when to use
+class Account:
+    def __init__(self, balance):
+        # Assert invariant: balance cannot be negative on initialization
+        assert balance &gt;= 0, &quot;Account cannot start with negative balance&quot;
+        self.balance = balance
+    
+    def deposit(self, amount):
+        assert amount &gt; 0, &quot;Deposit amount must be positive&quot;
+        self.balance += amount
+
+acc = Account(100)
+acc.deposit(50)
+print(f&quot;Account balance verified: ${acc.balance}&quot;)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Cheat sheet</strong> — Comment 5 key facts about Assertions.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Cheat sheet — 5 Key Facts about Assertions:
+# 1. Assertions are strictly for debugging and checking internal invariants; NEVER for user input validation.
+# 2. In production, running &#x27;python -O main.py&#x27; disables ALL assert statements completely (__debug__ is False).
+# 3. If you use assertions for security or permissions, running -O bypasses all checks!
+# 4. Never put parentheses around assert condition and message: &#x27;assert(cond, msg)&#x27; tests a truthy tuple!
+# 5. An assertion should never perform mutations with side effects (e.g., assert pop() == 1).</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>Mini project</strong> — Combine two topics from this file into one short script related to Assertions.</li>
-          <li><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Assertions.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Mini Project: Data Pipeline Pre-condition and Post-condition Auditor
+def process_batch(items):
+    # Pre-condition check:
+    assert isinstance(items, list), &quot;Batch input must be a list&quot;
+    assert len(items) &gt; 0, &quot;Batch cannot be empty&quot;
+    
+    processed = [x * 2 for x in items if x is not None]
+    
+    # Post-condition check:
+    assert len(processed) &lt;= len(items), &quot;Processed count cannot exceed input count&quot;
+    assert all(x &gt;= 0 for x in processed), &quot;All processed results must be non-negative&quot;
+    return processed
+
+result = process_batch([1, 2, 3, 4])
+print(&quot;Batch processed and verified:&quot;, result)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Assertion Pitfalls &amp; Edge Cases:
+# 1. The Parentheses Trap:
+# assert(False, &quot;Message&quot;) evaluates bool((False, &quot;Message&quot;)) which is ALWAYS TRUE!
+# Correct: assert False, &quot;Message&quot;
+
+# 2. Never validate API requests or web inputs with assert. Use exceptions:
+# if not user_id: raise ValueError(&quot;user_id required&quot;)
+
+# 3. Assertions with side effects (disappear when -O flag is passed).</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
