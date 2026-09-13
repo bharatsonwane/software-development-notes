@@ -189,31 +189,60 @@ let notYetDeclared = 1;</pre></div>
         </div>
 
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is the difference between const, let, and var?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">const</code> and <code class="inline">let</code> are block-scoped, cannot be redeclared in the same scope, and sit in the TDZ until initialized. <code class="inline">const</code> does not allow reassignment; <code class="inline">let</code> does. <code class="inline">var</code> is function-scoped, can be redeclared, and hoists as <code class="inline">undefined</code>. File 08 covers scope and hoisting in depth.</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is the difference between const, let, and var?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code class="inline">const</code>:</strong> Block-scoped. Cannot be reassigned or redeclared. Resides in the TDZ until declared. Preferred by default.</li>
+              <li><strong><code class="inline">let</code>:</strong> Block-scoped. Can be reassigned, but cannot be redeclared in the same scope. Resides in the TDZ until declared.</li>
+              <li><strong><code class="inline">var</code>:</strong> Function-scoped (ignores <code class="inline">{ }</code> blocks). Can be redeclared and reassigned. Hoisted and initialized to <code class="inline">undefined</code>.</li>
+            </ul>
+          </div>
+        </details>
 
-        <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.2. Can I use a variable before declaring it with var?</h3>
-        <ul>
-          <li><strong>A:</strong> You can read it without a <code class="inline">ReferenceError</code>, but the value is <code class="inline">undefined</code> until the assignment runs — a common source of bugs. Prefer <code class="inline">const</code>/<code class="inline">let</code> so TDZ catches the mistake early.</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Can I use a variable before declaring it with var?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>You can read it without throwing a <code class="inline">ReferenceError</code> because <code class="inline">var</code> declarations are hoisted and initialized to <code class="inline">undefined</code>. However, reading <code class="inline">undefined</code> before the assignment runs is a common bug source. Prefer <code class="inline">const</code> / <code class="inline">let</code> so the TDZ catches premature access early.</p>
+          </div>
+        </details>
 
-        <h3>C.3. Should I ever use var?</h3>
-        <ul>
-          <li><strong>A:</strong> In modern JS, rarely. Use <code class="inline">const</code>/<code class="inline">let</code>. You may still see <code class="inline">var</code> in older tutorials, legacy codebases, or snippets that rely on function scope — know it for interviews and maintenance, not for new features.</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Should I ever use var?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In modern JavaScript, <strong>almost never</strong>. Use <code class="inline">const</code> by default, and <code class="inline">let</code> when reassignment is needed. You may still see <code class="inline">var</code> in legacy codebases, older tutorials, or interview questions testing scope and hoisting.</p>
+          </div>
+        </details>
 
-        <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.4. What is the Temporal Dead Zone?</h3>
-        <ul>
-          <li><strong>A:</strong> The period between entering a scope and executing the <code class="inline">const</code>/<code class="inline">let</code> declaration line. The binding exists but accessing it throws <code class="inline">ReferenceError</code>. File 08 covers how this fits with hoisting.</li>
-        </ul>
-        <h3>C.5. What happens if I assign without <code class="inline">var</code>, <code class="inline">let</code>, or <code class="inline">const</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> In non-strict mode, <code class="inline">x = 1</code> creates an <strong>accidental global</strong> (a property on the global object). In strict mode it throws <code class="inline">ReferenceError</code>. Always declare with <code class="inline">const</code>/<code class="inline">let</code>. File 08 covers strict mode and accidental globals.</li>
-        </ul>
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What is the Temporal Dead Zone?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The <strong>Temporal Dead Zone (TDZ)</strong> is the state between entering a block scope and executing the line where the <code class="inline">let</code> or <code class="inline">const</code> variable is declared. Accessing the variable during this window throws an immediate <code class="inline">ReferenceError: Cannot access variable before initialization</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What happens if I assign without var, let, or const?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In non-strict mode, assigning <code class="inline">x = 1</code> without a declaration keyword creates an <strong>accidental global property</strong> on <code class="inline">window</code> (browser) or <code class="inline">global</code> (Node.js). In strict mode (<code class="inline">"use strict";</code>) or inside ES modules, it throws a <code class="inline">ReferenceError</code>. Always declare with <code class="inline">const</code> or <code class="inline">let</code>.</p>
+          </div>
+        </details>
       </section>
 
       <section id="p-practice">
@@ -229,36 +258,170 @@ let notYetDeclared = 1;</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up (type these yourself)</h3>
         <ol>
-          <li>Declare your name with <code class="inline">const</code> and log it.</li>
-          <li>Declare <code class="inline">let age</code>, then reassign a new age and log both steps.</li>
-          <li>Try reassigning a <code class="inline">const</code> and note the error (comment the line after you see it).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Declare your name with <code class="inline">const</code> and log it.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const myName = "Bharat";
+console.log(myName); // Bharat</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Declare <code class="inline">let age</code>, then reassign a new age and log both steps.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>let age = 25;
+console.log("Initial age:", age);
+
+age = 26; // Reassignment
+console.log("Updated age:", age);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Try reassigning a <code class="inline">const</code> and note the error (comment the line after you see it).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const country = "India";
+// country = "Canada"; // TypeError: Assignment to constant variable.
+console.log("Country is fixed:", country);</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
-        <div class="code"><pre>// Starter shape — fill in the blanks in your own file
-const name = /* your name */;
-let age = /* number */;
-console.log(name, age);
-age = /* new number */;
-console.log(age);</pre></div>
 
         <h3>P.2. Core tasks (write full programs)</h3>
         <ol>
-          <li><strong>Profile card</strong> — Declare <code class="inline">const</code> for <code class="inline">fullName</code>, <code class="inline">city</code>, and <code class="inline">isStudent</code>. Use <code class="inline">let</code> for <code class="inline">score</code>. Log a sentence like: <code class="inline">Bharat from Pune, score: 85</code>.</li>
-          <li><strong>Swap with a temp</strong> — Given <code class="inline">let a = 10; let b = 20;</code>, swap values using a temporary variable. Log before and after.</li>
-          <li><strong>const object gotcha</strong> — Create <code class="inline">const user = { name: &quot;Ada&quot; };</code>. Change <code class="inline">user.name</code> to another string (allowed). Then try <code class="inline">user = {}</code> and confirm it fails. Write one comment explaining why.</li>
-          <li><strong>Declare checklist</strong> — In one file, show three valid declarations (<code class="inline">const</code>, <code class="inline">let</code>, and one <code class="inline">var</code> only for comparison) and log <code class="inline">typeof</code> each value.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Profile card</strong> — Declare <code class="inline">const</code> for <code class="inline">fullName</code>, <code class="inline">city</code>, and <code class="inline">isStudent</code>. Use <code class="inline">let</code> for <code class="inline">score</code>. Log a sentence like: <code class="inline">Bharat from Pune, score: 85</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const fullName = "Bharat";
+const city = "Pune";
+const isStudent = true;
+let score = 85;
+
+console.log(`${fullName} from ${city}, score: ${score}`);
+// Output: Bharat from Pune, score: 85</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Swap with a temp</strong> — Given <code class="inline">let a = 10; let b = 20;</code>, swap values using a temporary variable. Log before and after.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>let a = 10;
+let b = 20;
+console.log(`Before swap: a = ${a}, b = ${b}`);
+
+const temp = a;
+a = b;
+b = temp;
+
+console.log(`After swap:  a = ${a}, b = ${b}`);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>const object gotcha</strong> — Create <code class="inline">const user = { name: "Ada" };</code>. Change <code class="inline">user.name</code> to another string (allowed). Then try <code class="inline">user = {}</code> and confirm it fails. Write one comment explaining why.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const user = { name: "Ada" };
+
+// 1. Mutating properties inside a const object is ALLOWED:
+user.name = "Grace";
+console.log("Updated property:", user.name);
+
+// 2. Reassigning the variable itself FAILS:
+// user = {}; // TypeError: Assignment to constant variable.
+
+// Reason: const prevents changing the variable's memory binding/reference,
+// but does not freeze the properties of the object itself.</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Declare checklist</strong> — In one file, show three valid declarations (<code class="inline">const</code>, <code class="inline">let</code>, and one <code class="inline">var</code> only for comparison) and log <code class="inline">typeof</code> each value.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const maxAttempts = 3;           // number
+let currentAttempt = 1;          // number
+var statusMessage = "In Progress"; // string
+
+console.log(maxAttempts, typeof maxAttempts);
+console.log(currentAttempt, typeof currentAttempt);
+console.log(statusMessage, typeof statusMessage);</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>TDZ demo</strong> — In a block <code class="inline">{ }</code>, put <code class="inline">console.log(x)</code> <em>above</em> <code class="inline">let x = 1</code>. Run it, capture the error message in a comment, then fix the order so it works.</li>
-          <li><strong>Refactor legacy</strong> — Rewrite this to modern style (no <code class="inline">var</code>, prefer <code class="inline">const</code>):</li>
-        </ol>
-        <div class="code"><pre>var total = 0;
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>TDZ demo</strong> — In a block <code class="inline">{ }</code>, put <code class="inline">console.log(x)</code> <em>above</em> <code class="inline">let x = 1</code>. Run it, capture the error message in a comment, then fix the order so it works.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>{
+  // 1. TDZ error Demonstration:
+  // console.log(x); // ReferenceError: Cannot access 'x' before initialization
+
+  // 2. Fixed order (declare first, then access):
+  let x = 1;
+  console.log("Correct access after declaration:", x); // 1
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Refactor legacy</strong> — Rewrite this to modern style (no <code class="inline">var</code>, prefer <code class="inline">const</code>):</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <p>Original legacy snippet:</p>
+                <div class="code"><pre>var total = 0;
 var total = 5;
 var step = 1;
 step = step + 1;
 console.log(total, step);</pre></div>
+                <p>Modern refactored solution:</p>
+                <div class="code"><pre>const total = 5; // total is not reassigned, declare directly with const
+let step = 1;    // step is incremented, so declare with let
+step += 1;
+
+console.log(total, step); // 5 2</pre></div>
+              </div>
+            </details>
+          </li>
+        </ol>
 
         <h3>P.4. Self-check</h3>
         <ul>

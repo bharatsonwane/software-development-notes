@@ -211,11 +211,37 @@ hi
         <ul>
           <li>REPL is great for experiments. Exit with <code class="inline">exit()</code> or Ctrl-D (Unix) / Ctrl-Z Enter (Windows).</li>
         </ul>
-        <h3>6.3. First script</h3>
+        <h3>6.3. Creating and running a Python file</h3>
+        <p>A Python script is a plain text file saved with the <code class="inline">.py</code> extension. You can run it in several ways:</p>
         <div class="code"><pre># hello.py
 print("Hello, Python")</pre></div>
-        <div class="code"><pre>$ python3 hello.py
-Hello, Python</pre></div>
+        <ul>
+          <li><strong>1. Standard terminal execution:</strong> Open your terminal, navigate to the folder where the file is saved, and run:</li>
+        </ul>
+        <div class="code"><pre># macOS / Linux
+python3 hello.py
+
+# Windows (using py launcher or python)
+py hello.py
+# or: python hello.py
+
+# Output:
+# Hello, Python</pre></div>
+        <ul>
+          <li><strong>2. Running with relative or absolute paths:</strong> If your terminal is in the project root, provide the relative path to the script:</li>
+        </ul>
+        <div class="code"><pre>python3 python/01-practice.py</pre></div>
+        <ul>
+          <li><strong>3. Inside an active virtual environment:</strong> Once your <code class="inline">.venv</code> is activated (prompt displays <code class="inline">(.venv)</code>), the alias <code class="inline">python</code> points directly to the environment runtime:</li>
+        </ul>
+        <div class="code"><pre>python hello.py</pre></div>
+        <ul>
+          <li><strong>4. Running as a module (<code class="inline">-m</code> flag):</strong> Executes the file as a module within Python's import path (leave off the <code class="inline">.py</code>):</li>
+        </ul>
+        <div class="code"><pre>python3 -m hello</pre></div>
+        <ul>
+          <li><strong>5. From your code editor / IDE:</strong> In VS Code or Antigravity IDE, click the <strong>▷ (Run Python File)</strong> play button in the top-right corner of the editor, or right-click in the file and select <em>"Run Python File in Terminal"</em>.</li>
+        </ul>
         <h3>6.4. Virtual environments (preview)</h3>
         <ul>
           <li>A virtual environment (venv) provides an isolated Python runtime so project dependencies do not conflict with system packages (full details in File 16):</li>
@@ -244,19 +270,45 @@ deactivate</pre></div>
           </div>
         </div>
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Is Python compiled or interpreted?</h3>
-        <ul>
-          <li><strong>A:</strong> Source is compiled to <strong>bytecode</strong>, then executed by the <strong>Python VM</strong> (CPython). You usually do not compile to a native binary yourself.</li>
-        </ul>
-        <h3>C.2. Why prefer Python 3?</h3>
-        <ul>
-          <li><strong>A:</strong> Python 2 is EOL. 3.x has better Unicode, cleaner syntax, and all modern libraries target 3.</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Is Python compiled or interpreted?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python source code (<code class="inline">.py</code>) is compiled into platform-independent <strong>bytecode</strong> (<code class="inline">.pyc</code> files inside <code class="inline">__pycache__</code>), which is then executed by the <strong>Python Virtual Machine (PVM)</strong> (the CPython runtime). Because compilation happens automatically on the fly without producing a standalone machine binary, Python is classified as an <strong>interpreted, bytecode-executed</strong> language.</p>
+          </div>
+        </details>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Why prefer Python 3?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Python 2 is EOL:</strong> Python 2 reached official End-of-Life on Jan 1, 2020 and receives no security updates.</li>
+              <li><strong>Native Unicode:</strong> Python 3 uses UTF-8 strings by default (<code class="inline">str</code> is Unicode text, <code class="inline">bytes</code> is raw binary).</li>
+              <li><strong>Cleaner syntax:</strong> True float division (<code class="inline">5 / 2 = 2.5</code>), <code class="inline">print()</code> as a function, f-strings, keyword-only args, and type hints.</li>
+              <li><strong>Modern libraries:</strong> All modern frameworks (FastAPI, Django, NumPy, PyTorch) exclusively support Python 3.</li>
+            </ul>
+          </div>
+        </details>
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.3. What is CPython?</h3>
-        <ul>
-          <li><strong>A:</strong> The default reference implementation (written in C). Alternatives exist (PyPy, Jython, IronPython) but CPython is what most people mean by “Python.”</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What is CPython?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>CPython is the default reference implementation of Python written in C. It compiles Python code to bytecode and executes it on the CPython VM. Alternatives include:</p>
+            <ul>
+              <li><strong>PyPy:</strong> Uses a Just-In-Time (JIT) compiler for significantly faster execution in CPU-bound programs.</li>
+              <li><strong>Jython:</strong> Runs on the JVM with seamless Java interoperability.</li>
+              <li><strong>IronPython:</strong> Targets the .NET framework / CLR.</li>
+              <li><strong>MicroPython:</strong> Optimized to run directly on microcontrollers and embedded devices.</li>
+            </ul>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -270,22 +322,170 @@ deactivate</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Print your name and a greeting in the REPL or a script using a basic <code class="inline">print()</code> statement.</li>
-          <li>Check versions: run <code class="inline">python3 --version</code> and note it in a comment.</li>
-          <li>Create and activate a venv; install nothing yet — just confirm <code class="inline">which python</code> points inside <code class="inline">.venv</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Print your name and a greeting in the REPL or a script using a basic <code class="inline">print()</code> statement.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <p>Run directly in the REPL or in <code class="inline">01-practice.py</code>:</p>
+                <div class="code"><pre>print("Hello, my name is Bharat!")</pre></div>
+                <p>Run from terminal: <code class="inline">python3 01-practice.py</code></p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Check versions: run <code class="inline">python3 --version</code> and note it in a comment.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <p>Check in your terminal:</p>
+                <div class="code"><pre>$ python3 --version
+Python 3.12.2</pre></div>
+                <p>Record in <code class="inline">01-practice.py</code>:</p>
+                <div class="code"><pre># Python version checked: Python 3.12.2 (macOS)
+import sys
+print("Runtime info:", sys.version)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create and activate a venv; install nothing yet — just confirm <code class="inline">which python</code> points inside <code class="inline">.venv</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># 1. Create the virtual environment
+python3 -m venv .venv
+
+# 2. Activate it
+source .venv/bin/activate       # Windows: .venv\Scripts\activate
+
+# 3. Confirm python path points inside .venv
+which python                    # Windows: where python
+# Expected output: /path/to/project/.venv/bin/python
+
+# 4. Deactivate when finished
+deactivate</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>hello.py</strong> — Ask nothing; print three facts about Python (feature, use case, limitation) as separate lines.</li>
-          <li><strong>venv checklist</strong> — Write comments listing create / activate / deactivate / deactivate commands for your OS.</li>
-          <li><strong>REPL vs file</strong> — Run one expression in REPL and the same in a file; note the difference in a comment.</li>
-          <li><strong>Why Python 3</strong> — Five bullet comments explaining why not to use Python 2.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>hello.py</strong> — Ask nothing; print three facts about Python (feature, use case, limitation) as separate lines.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># hello.py
+print("Feature: Python features clean, readable syntax and automatic memory management.")
+print("Use Case: Leading language for Artificial Intelligence, Machine Learning, and Data Science.")
+print("Limitation: Slower CPU-bound execution speed compared to compiled languages like C++.")</pre></div>
+                <p>Run with: <code class="inline">python3 hello.py</code></p>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>venv checklist</strong> — Write comments listing create / activate / deactivate commands for your OS.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># --- venv checklist (macOS / Linux) ---
+# 1. Create:     python3 -m venv .venv
+# 2. Activate:   source .venv/bin/activate
+# 3. Check:      which python
+# 4. Deactivate: deactivate
+
+# --- venv checklist (Windows PowerShell) ---
+# 1. Create:     py -m venv .venv
+# 2. Activate:   .venv\Scripts\Activate.ps1
+# 3. Check:      where python
+# 4. Deactivate: deactivate</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>REPL vs file</strong> — Run one expression in REPL and the same in a file; note the difference in a comment.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># In interactive REPL:
+# >>> 10 + 20
+# 30
+# (The REPL automatically evaluates and prints the expression result)
+
+# In a file (01-practice.py):
+10 + 20          # Evaluates expression, but produces NO console output!
+print(10 + 20)   # Must explicitly call print() to display output from a script.</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Why Python 3</strong> — Five bullet comments explaining why not to use Python 2.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Why Python 2 should not be used in modern projects:
+# 1. EOL: Python 2 reached End-of-Life on Jan 1, 2020 and receives zero security updates.
+# 2. Unicode: Python 2 strings are ASCII by default, causing frequent UnicodeDecodeErrors.
+# 3. Division: In Python 2, 5/2 evaluates to integer 2; Python 3 gives true float 2.5.
+# 4. Ecosystem: Modern packages (NumPy, Django, FastAPI, PyTorch) have dropped Python 2.
+# 5. Modern Features: Python 2 lacks f-strings, pattern matching, type hints, and async/await.</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Research one alternative implementation (PyPy or Jython) and write a 5-line comment comparing it to CPython.</li>
-          <li>List three domains where Python is common and one where another language is often preferred — with reasons.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Research one alternative implementation (PyPy or Jython) and write a 5-line comment comparing it to CPython.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Comparison: PyPy vs CPython
+# 1. CPython is the standard reference implementation written in C; it interprets bytecode with a PVM.
+# 2. PyPy is an alternative implementation written in RPython with a built-in JIT (Just-In-Time) compiler.
+# 3. PyPy often executes pure CPU-bound Python code significantly faster (often 4x-7x) than CPython.
+# 4. PyPy has higher memory overhead and may have compatibility issues with some C-extensions.
+# 5. CPython remains the default because of universal C-extension library compatibility (NumPy, SciPy).</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">List three domains where Python is common and one where another language is often preferred — with reasons.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># --- 3 Domains where Python is common ---
+# 1. AI & Machine Learning: Unmatched ecosystem (PyTorch, TensorFlow, Scikit-learn, HuggingFace).
+# 2. Web Development & APIs: Rapid turnaround with modern frameworks (FastAPI, Django, Flask).
+# 3. Data Analysis & Automation: Intuitive data wrangling (Pandas, Polars, BeautifulSoup).
+
+# --- 1 Domain where another language is preferred ---
+# Game Engines / Low-Latency Trading / OS Kernels:
+# C, C++, or Rust are preferred because they compile directly to machine code, offer direct memory
+# control, deterministic execution latency, and zero garbage-collection pauses.</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

@@ -314,4 +314,10 @@ function initStickyPageTop() {
   initCodeMirrorSnippets();
   refreshSnippets();
   updateToggleUI();
+
+  document.addEventListener("toggle", function (event) {
+    if (event.target && event.target.tagName === "DETAILS" && event.target.open) {
+      refreshSnippets();
+    }
+  }, true);
 })();
