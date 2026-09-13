@@ -149,23 +149,48 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What should I know about Client-side hooks overview?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.2. What should I know about pre-commit and commit-msg?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.3. What should I know about Commit message conventions?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.4. What should I know about What not to commit (secrets, build artifacts)?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What should I know about Client-side hooks overview?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What should I know about pre-commit and commit-msg?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What should I know about Commit message conventions?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What should I know about What not to commit (secrets, build artifacts)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -179,22 +204,177 @@
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>List hooks in <code class="inline">.git/hooks</code>.</li>
-          <li>Enable a sample pre-commit that rejects WIP in the message.</li>
-          <li>Write a conventional commit example set.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">List hooks in <code class="inline">.git/hooks</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Inspect available sample git hooks
+ls -la .git/hooks
+# pre-commit.sample, pre-push.sample, commit-msg.sample, etc.</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Enable a sample pre-commit that rejects WIP in the message.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Create simple pre-commit hook that blocks &quot;WIP&quot; in staged files:
+cat &lt;&lt; &#x27;EOF&#x27; &gt; .git/hooks/pre-commit
+#!/bin/sh
+if git diff --cached | grep -q &quot;TODO: NOCOMMIT&quot;; then
+  echo &quot;ERROR: Attempting to commit code containing &#x27;TODO: NOCOMMIT&#x27;!&quot;
+  exit 1
+fi
+EOF
+
+chmod +x .git/hooks/pre-commit</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write a conventional commit example set.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Conventional Commit Examples:
+feat(auth): implement Google OAuth2 login flow
+fix(cart): prevent negative item quantity calculation
+docs(readme): update local setup instructions
+test(order): add unit tests for discount coupon validation
+refactor(api): simplify database query builder
+chore(deps): bump vite from 5.1 to 5.4
+*/</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>commit-msg</strong> — Enforce subject length or prefix.</li>
-          <li><strong>secrets</strong> — Checklist of files that must never be committed.</li>
-          <li><strong>pre-commit framework</strong> — Note or install pre-commit.com style config (optional).</li>
-          <li><strong>signed commits</strong> — Comment when GPG/SSH signing helps.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>commit-msg</strong> — Enforce subject length or prefix.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Enforce commit message format in .git/hooks/commit-msg:
+cat &lt;&lt; &#x27;EOF&#x27; &gt; .git/hooks/commit-msg
+#!/bin/sh
+msg=$(head -n 1 &quot;$1&quot;)
+regex=&quot;^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?: .+&quot;
+
+if ! echo &quot;$msg&quot; | grep -Eq &quot;$regex&quot;; then
+  echo &quot;ERROR: Invalid commit message format. Expected conventional commit.&quot;
+  exit 1
+fi
+EOF
+
+chmod +x .git/hooks/commit-msg</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>secrets</strong> — Checklist of files that must never be committed.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Files That Must NEVER Be Committed Checklist:
+- .env, .env.local, .env.production (secret environment keys)
+- *.pem, *.key, id_rsa, id_ed25519 (private cryptographic keys)
+- credentials.json, service-account.json (cloud provider credentials)
+- database backups (*.sql, *.dump)
+- node_modules/, vendor/, target/, dist/
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>pre-commit framework</strong> — Note or install pre-commit.com style config (optional).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># pre-commit framework (.pre-commit-config.yaml):
+# Install: pip install pre-commit &amp;&amp; pre-commit install
+# Config:
+# repos:
+#   - repo: https://github.com/pre-commit/pre-commit-hooks
+#     rev: v4.4.0
+#     hooks:
+#       - id: trailing-whitespace
+#       - id: end-of-file-fixer
+#       - id: check-yaml</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>signed commits</strong> — Comment when GPG/SSH signing helps.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Signed Commits (GPG / SSH):
+- Proves cryptographic authenticity that a commit was created by the keyholder, preventing author impersonation.
+- GitHub displays a &quot;Verified&quot; badge next to signed commits.
+- Enable: git config --global commit.gpgsign true
+*/</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Design a minimal team hook policy (what runs locally vs CI).</li>
-          <li>Show how to bypass a hook and why you usually should not.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Design a minimal team hook policy (what runs locally vs CI).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Team Hook Architecture Strategy:
+- Local Hooks (Husky / pre-commit):
+  - Fast linting (ESLint on staged files via lint-staged).
+  - Secret scanning (detect-secrets / git-secrets).
+  - Must execute in &lt; 2 seconds so developer workflow is not hindered.
+- CI/CD Server (GitHub Actions):
+  - Full test suite, integration tests, security audits, build validation.
+  - Acts as the final non-bypassable gate.
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Show how to bypass a hook and why you usually should not.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Bypassing hooks:
+git commit --no-verify -m &quot;urgent hotfix&quot;
+
+# DANGER:
+# Bypassing hooks skips linters and secret detectors. Never use in regular workflows!</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

@@ -80,7 +80,6 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-</div>
         <h3 id="content-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li>Let suppose I have two github accounts, <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatOffice</strong> and <strong>https:/&lt;span&gt;&lt;/span&gt;/github.com&lt;span&gt;&lt;/span&gt;/bharatPersonal</strong>. Now i want to setup my machine (Mac, Linux, or Windows) to easily talk to both the github accounts.</li>
@@ -312,24 +311,50 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Why not use the same SSH key for two GitHub accounts?</h3>
-        <ul>
-          <li><strong>A:</strong> GitHub associates one key with one user. A second account needs its own key (or HTTPS with different credentials).</li>
-        </ul>
-        <h3>C.2. What does an SSH <code class="inline">Host</code> alias do?</h3>
-        <ul>
-          <li><strong>A:</strong> It lets you connect to <code class="inline">github.com</code> with a different IdentityFile while keeping the real HostName as github.com.</li>
-        </ul>
-        <h3>C.3. Why set local <code class="inline">user.email</code> per repo?</h3>
-        <ul>
-          <li><strong>A:</strong> SSH chooses the account for push auth; commit author identity is separate and comes from git config.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Why not use the same SSH key for two GitHub accounts?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>GitHub associates one key with one user. A second account needs its own key (or HTTPS with different credentials).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What does an SSH <code class="inline">Host</code> alias do?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>It lets you connect to <code class="inline">github.com</code> with a different IdentityFile while keeping the real HostName as github.com.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why set local <code class="inline">user.email</code> per repo?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>SSH chooses the account for push auth; commit author identity is separate and comes from git config.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.4. How do I test which account SSH will use?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">ssh -T git@github.com-YOURALIAS</code> — GitHub replies with the username that key maps to.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. How do I test which account SSH will use?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">ssh -T git@github.com-YOURALIAS</code> — GitHub replies with the username that key maps to.</p>
+          </div>
+        </details>
       </section>
 
       <section id="p-practice">
@@ -344,22 +369,173 @@
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>List existing keys in <code class="inline">~/.ssh</code>.</li>
-          <li>Generate a second ed25519 key with a clear comment.</li>
-          <li>Add a Host entry in <code class="inline">~/.ssh/config</code> for an alias.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">List existing keys in <code class="inline">~/.ssh</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># List existing SSH keys
+ls -la ~/.ssh
+# Look for id_ed25519, id_rsa, id_ed25519.pub</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Generate a second ed25519 key with a clear comment.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Generate second SSH key for work account:
+ssh-keygen -t ed25519 -C &quot;bharat.work@company.com&quot; -f ~/.ssh/id_ed25519_work</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Add a Host entry in <code class="inline">~/.ssh/config</code> for an alias.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># ~/.ssh/config configuration for multiple GitHub accounts:
+cat &lt;&lt; &#x27;EOF&#x27; &gt;&gt; ~/.ssh/config
+
+# Personal GitHub Account
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_personal
+
+# Work GitHub Account (Custom Alias)
+Host github-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_work
+EOF</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>ssh-add</strong> — Load both keys; <code class="inline">ssh-add -l</code>.</li>
-          <li><strong>test</strong> — <code class="inline">ssh -T git@github.com-YOURALIAS</code>.</li>
-          <li><strong>clone</strong> — Clone using the host alias URL form.</li>
-          <li><strong>local config</strong> — Set per-repo user.name / user.email.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>ssh-add</strong> — Load both keys; <code class="inline">ssh-add -l</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Add both SSH keys to ssh-agent
+ssh-add ~/.ssh/id_ed25519_personal
+ssh-add ~/.ssh/id_ed25519_work
+
+# List active keys in agent
+ssh-add -l</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>test</strong> — <code class="inline">ssh -T git@github.com-YOURALIAS</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Test authentications against GitHub:
+ssh -T git@github.com
+# Hi personal-user! You&#x27;ve successfully authenticated.
+
+ssh -T git@github-work
+# Hi work-user! You&#x27;ve successfully authenticated.</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>clone</strong> — Clone using the host alias URL form.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Clone using the host alias:
+# Instead of: git clone git@github.com:company/repo.git
+# Use:
+git clone git@github-work:company/repo.git</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>local config</strong> — Set per-repo user.name / user.email.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Configure local user identity in work repository:
+cd repo
+git config user.name &quot;Bharat Sonwane (Work)&quot;
+git config user.email &quot;bharat.work@company.com&quot;
+
+# Verify local override:
+git config --local user.email</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Convert an HTTPS remote to the SSH alias remote.</li>
-          <li>Document your Host blocks (redact private paths if sharing).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Convert an HTTPS remote to the SSH alias remote.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Converting HTTPS remote to SSH alias remote:
+# Check current remote:
+git remote -v
+# origin https://github.com/company/repo.git (fetch)
+
+# Update to use custom SSH host alias:
+git remote set-url origin git@github-work:company/repo.git
+
+# Verify updated remote:
+git remote -v
+# origin git@github-work:company/repo.git (fetch)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Document your Host blocks (redact private paths if sharing).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Documentation of ~/.ssh/config Structure:
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_personal
+  IdentitiesOnly yes
+
+Host github-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_work
+  IdentitiesOnly yes
+
+Note: &#x27;IdentitiesOnly yes&#x27; prevents ssh-agent from offering other keys first.
+*/</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

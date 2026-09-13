@@ -149,23 +149,48 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What should I know about Fast-forward vs merge commit?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.2. What should I know about Merging a feature branch?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.3. What should I know about Resolving merge conflicts?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.4. What should I know about Aborting and undoing a merge?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What should I know about Fast-forward vs merge commit?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What should I know about Merging a feature branch?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What should I know about Resolving merge conflicts?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What should I know about Aborting and undoing a merge?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -179,22 +204,158 @@
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Branch, commit on both sides, merge feature into main.</li>
-          <li>Create a conflict on purpose; resolve it.</li>
-          <li>Abort a merge mid-conflict once for practice.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Branch, commit on both sides, merge feature into main.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Merge feature branch into main
+git switch main
+git merge feature/user-profile</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a conflict on purpose; resolve it.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Creating and resolving a merge conflict:
+# 1. When Git encounters conflicting changes on the same lines, it pauses:
+# &quot;CONFLICT (content): Merge conflict in config.js&quot;
+
+# 2. Open file, manually remove conflict markers (&lt;&lt;&lt;&lt;&lt;&lt;&lt;, =======, &gt;&gt;&gt;&gt;&gt;&gt;&gt;)
+# 3. Stage resolved file and complete merge:
+git add config.js
+git commit -m &quot;merge: resolve conflict in config.js&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Abort a merge mid-conflict once for practice.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Aborting a conflicted merge and returning working directory to pre-merge state:
+git merge --abort</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>fast-forward</strong> — Show a FF merge.</li>
-          <li><strong>no-ff</strong> — Force a merge commit and compare history.</li>
-          <li><strong>conflict markers</strong> — Resolve keeping both changes intentionally.</li>
-          <li><strong>merge tool</strong> — Note your preferred conflict editor.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>fast-forward</strong> — Show a FF merge.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Fast-Forward Merge:
+# Occurs when main has no new commits since the branch was created.
+# Git simply moves the &#x27;main&#x27; pointer forward without creating a merge commit.
+git switch main
+git merge feature/linear-task
+# Output: &quot;Updating 3a4b5c..6d7e8f Fast-forward&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>no-ff</strong> — Force a merge commit and compare history.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Forcing a merge commit (--no-ff) to preserve branch topology:
+git switch main
+git merge --no-ff feature/linear-task -m &quot;merge: merge feature/linear-task into main&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>conflict markers</strong> — Resolve keeping both changes intentionally.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Conflict Marker Anatomy &amp; Resolution:
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (Current branch: main)
+const API_URL = &quot;https://api.prod.com&quot;;
+=======
+const API_URL = &quot;https://api.staging.com&quot;;
+const TIMEOUT = 5000;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/api-update
+
+Resolved combination:
+const API_URL = &quot;https://api.prod.com&quot;;
+const TIMEOUT = 5000;
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>merge tool</strong> — Note your preferred conflict editor.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Setting default merge conflict resolution tool (e.g. VS Code):
+git config --global merge.tool code
+git config --global mergetool.code.cmd &#x27;code --wait &quot;$MERGED&quot;&#x27;
+
+# Launch tool during conflict:
+git mergetool</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Document the difference between merge commit and FF with two ASCII graphs.</li>
-          <li>Undo a merge with <code class="inline">git revert -m 1</code> (after merge commit) or explain reset if unpushed.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Document the difference between merge commit and FF with two ASCII graphs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Fast-Forward vs Merge Commit (--no-ff):
+
+Fast-Forward (Linear History):
+A --- B --- C (main, feature)
+
+Merge Commit (--no-ff):
+A --- B ──────── M (main)
+       \       /
+        C ─── D (feature)
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Undo a merge with <code class="inline">git revert -m 1</code> (after merge commit) or explain reset if unpushed.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Undoing an already pushed merge commit:
+# -m 1 specifies that parent 1 (mainline branch) is kept as the baseline
+git revert -m 1 &lt;MERGE_COMMIT_SHA&gt; -m &quot;revert: rollback bad merge from release/v1.0&quot;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

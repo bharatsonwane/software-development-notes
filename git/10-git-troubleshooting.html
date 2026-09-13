@@ -149,23 +149,48 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What should I know about Detached HEAD?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.2. What should I know about Accidental commits on the wrong branch?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.3. What should I know about Recovering with reflog?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
-        <h3>C.4. What should I know about Common error messages and fixes?</h3>
-        <ul>
-          <li><strong>A:</strong> Be able to explain it and run a short demo. Full notes will expand this answer.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What should I know about Detached HEAD?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What should I know about Accidental commits on the wrong branch?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What should I know about Recovering with reflog?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What should I know about Common error messages and fixes?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -179,22 +204,161 @@
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Enter detached HEAD; create a branch to keep the commit.</li>
-          <li>Commit on wrong branch; move the commit with cherry-pick or reset.</li>
-          <li>Use reflog to find yesterday’s tip.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Enter detached HEAD; create a branch to keep the commit.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Rescuing commits made in detached HEAD state:
+git checkout 7a8b9c0
+git commit -am &quot;work done in detached HEAD&quot;
+
+# Secure commits into a named branch:
+git switch -c feature/rescued-branch</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Commit on wrong branch; move the commit with cherry-pick or reset.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Moving a commit accidentally made on &#x27;main&#x27; to a new feature branch:
+# 1. Create feature branch at current commit
+git branch feature/my-feature
+
+# 2. Reset local main back one commit
+git reset --hard HEAD~1
+
+# 3. Switch to feature branch
+git switch feature/my-feature</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Use reflog to find yesterday’s tip.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Using reflog to restore yesterday&#x27;s state:
+git reflog --date=relative
+# Find entry: HEAD@{yesterday}: commit: Stable work
+git reset --hard HEAD@{yesterday}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>error catalog</strong> — Reproduce “refusing to merge unrelated histories” or document the fix.</li>
-          <li><strong>corrupt index</strong> — Comment recovery: <code class="inline">git reset</code> / remove index cautiously.</li>
-          <li><strong>permission denied (publickey)</strong> — Checklist for SSH failures.</li>
-          <li><strong>large file</strong> — What to do if you committed a huge binary.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>error catalog</strong> — Reproduce “refusing to merge unrelated histories” or document the fix.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Error: &quot;fatal: refusing to merge unrelated histories&quot;
+# Cause: Two repositories initialized independently with no common ancestor.
+# Fix:
+git pull origin main --allow-unrelated-histories</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>corrupt index</strong> — Comment recovery: <code class="inline">git reset</code> / remove index cautiously.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Recovering from corrupted git index:
+# Symptom: &quot;fatal: index file corrupt&quot;
+# Fix: Remove corrupt index and reset from HEAD
+rm .git/index
+git reset</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>permission denied (publickey)</strong> — Checklist for SSH failures.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+SSH &quot;Permission denied (publickey)&quot; Troubleshooting Checklist:
+1. Verify ssh-agent is running: eval &quot;$(ssh-agent -s)&quot;
+2. Confirm key is loaded: ssh-add -l
+3. Test GitHub connection: ssh -Tv git@github.com
+4. Ensure public key (.pub) is uploaded to GitHub Settings -&gt; SSH Keys.
+5. Check ~/.ssh/config permissions (chmod 600 ~/.ssh/config).
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>large file</strong> — What to do if you committed a huge binary.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Removing large accidental binary file from git history:
+# 1. Remove from index and track in gitignore:
+git rm --cached heavy-data.zip
+echo &quot;heavy-data.zip&quot; &gt;&gt; .gitignore
+
+# 2. For committed files across history, use git-filter-repo:
+# git filter-repo --path heavy-data.zip --invert-paths</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Write a personal runbook: 8 recovery commands with one-line purpose.</li>
-          <li>Practice: undo last commit keeping changes, then redo cleanly.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write a personal runbook: 8 recovery commands with one-line purpose.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+8 Essential Git Recovery Runbook Commands:
+1. git restore &lt;file&gt;                    -&gt; Discard unstaged working tree edits.
+2. git restore --staged &lt;file&gt;           -&gt; Unstage file back to working tree.
+3. git commit --amend                    -&gt; Fix message or stage forgotten files for last commit.
+4. git reset --soft HEAD~1               -&gt; Undo last commit, keep changes staged.
+5. git reset --mixed HEAD~1              -&gt; Undo last commit, unstage changes to working tree.
+6. git revert &lt;commit-sha&gt;               -&gt; Safely undo a published commit with inverse commit.
+7. git reflog                            -&gt; View chronological log of every HEAD movement to recover lost work.
+8. git clean -fd                         -&gt; Remove untracked files and directories.
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Practice: undo last commit keeping changes, then redo cleanly.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Practice: Undo last commit keeping changes, then redo cleanly:
+git commit -m &quot;wip: bad commit message&quot;
+git reset --soft HEAD~1
+git commit -m &quot;feat(api): proper descriptive commit message&quot;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
