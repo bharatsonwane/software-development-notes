@@ -473,48 +473,110 @@ function ProductDetail({ id }) {
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Where should I fetch — useEffect or event handler?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>Load data</strong> — <code class="inline">useEffect</code>, route <strong>loader</strong>, or <strong><code class="inline">useQuery</code></strong>. <strong>Mutations</strong> — <strong>event handlers</strong> / <strong><code class="inline">useMutation</code></strong>, not effect on mount.</li>
-        </ul>
-        <h3>C.2. What is server state?</h3>
-        <ul>
-          <li><strong>A:</strong> Data that <strong>lives on the server</strong> and you <strong>cache</strong> on the client — users, lists, permissions. Different from UI toggles and form drafts.</li>
-        </ul>
-        <h3>C.3. Why TanStack Query over raw fetch?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>Caching</strong>, deduping, retries, background refresh, and less boilerplate for loading/error.</li>
-        </ul>
-        <h3>C.4. What is a query key?</h3>
-        <ul>
-          <li><strong>A:</strong> A <strong>serializable array</strong> identifying a query in the cache — must include all variables (<code class="inline">userId</code>, filters).</li>
-        </ul>
-        <h3>C.5. How do I refetch after a mutation?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">queryClient.invalidateQueries({ queryKey: [...] })</code></strong> or update cache directly with <strong><code class="inline">setQueryData</code></strong>.</li>
-        </ul>
-        <h3>C.6. What should I read next?</h3>
-        <ul>
-          <li><strong>A:</strong> File 11 (global client state), File 12 (Suspense + queries), File 09 (loaders).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Where should I fetch — useEffect or event handler?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Load data</strong> — <code class="inline">useEffect</code>, route <strong>loader</strong>, or <strong><code class="inline">useQuery</code></strong>. <strong>Mutations</strong> — <strong>event handlers</strong> / <strong><code class="inline">useMutation</code></strong>, not effect on mount.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What is server state?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Data that <strong>lives on the server</strong> and you <strong>cache</strong> on the client — users, lists, permissions. Different from UI toggles and form drafts.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why TanStack Query over raw fetch?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Caching</strong>, deduping, retries, background refresh, and less boilerplate for loading/error.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What is a query key?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <strong>serializable array</strong> identifying a query in the cache — must include all variables (<code class="inline">userId</code>, filters).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How do I refetch after a mutation?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">queryClient.invalidateQueries({ queryKey: [...] })</code></strong> or update cache directly with <strong><code class="inline">setQueryData</code></strong>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What should I read next?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>File 11 (global client state), File 12 (Suspense + queries), File 09 (loaders).</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.7. How do I avoid fetch races?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>AbortController</strong>, cancelled flag, or use a library that cancels outdated queries by key.</li>
-        </ul>
-        <h3>C.8. isLoading vs isFetching?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">isLoading</code></strong> — no cached data yet and fetching. <strong><code class="inline">isFetching</code></strong> — any in-flight request (including background).</li>
-        </ul>
-        <h3>C.9. Should I store API data in useContext?</h3>
-        <ul>
-          <li><strong>A:</strong> Usually <strong>no</strong> — use TanStack Query. Context fits <strong>auth session</strong>, theme, not full API cache.</li>
-        </ul>
-        <h3>C.10. Loader vs useQuery?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>Loader</strong> prefetches before route render. <strong>useQuery</strong> fetches when component mounts. Combine with shared <strong><code class="inline">queryKey</code></strong>.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How do I avoid fetch races?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>AbortController</strong>, cancelled flag, or use a library that cancels outdated queries by key.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. isLoading vs isFetching?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">isLoading</code></strong> — no cached data yet and fetching. <strong><code class="inline">isFetching</code></strong> — any in-flight request (including background).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.9. Should I store API data in useContext?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Usually <strong>no</strong> — use TanStack Query. Context fits <strong>auth session</strong>, theme, not full API cache.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.10. Loader vs useQuery?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Loader</strong> prefetches before route render. <strong>useQuery</strong> fetches when component mounts. Combine with shared <strong><code class="inline">queryKey</code></strong>.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -528,22 +590,232 @@ function ProductDetail({ id }) {
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Fetch a public JSON API in useEffect; show loading/error/data.</li>
-          <li>Button that refetches.</li>
-          <li>Display a list from fetched data with keys.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Fetch a public JSON API in useEffect; show loading/error/data.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
+
+function PublicDataFetcher() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() =&gt; {
+    fetch(&quot;https://jsonplaceholder.typicode.com/posts/1&quot;)
+      .then((res) =&gt; {
+        if (!res.ok) throw new Error(&quot;HTTP error &quot; + res.status);
+        return res.json();
+      })
+      .then((json) =&gt; setData(json))
+      .catch((err) =&gt; setError(err.message))
+      .finally(() =&gt; setLoading(false));
+  }, []);
+
+  if (loading) return &lt;p&gt;Loading data...&lt;/p&gt;;
+  if (error) return &lt;p className=&quot;error&quot;&gt;Error: {error}&lt;/p&gt;;
+  return &lt;div&gt;&lt;h3&gt;{data.title}&lt;/h3&gt;&lt;p&gt;{data.body}&lt;/p&gt;&lt;/div&gt;;
+}
+
+export default PublicDataFetcher;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Button that refetches.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
+
+function RefetchableComponent() {
+  const [count, setCount] = useState(0);
+  const [data, setData] = useState(null);
+
+  useEffect(() =&gt; {
+    fetch(&quot;https://jsonplaceholder.typicode.com/todos/1&quot;)
+      .then((r) =&gt; r.json())
+      .then((d) =&gt; setData(d));
+  }, [count]); // Refetches when count changes
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Data: {data ? data.title : &quot;Loading...&quot;}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount((c) =&gt; c + 1)}&gt;Refetch Data&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default RefetchableComponent;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Display a list from fetched data with keys.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function PostList({ posts }) {
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;
+          &lt;strong&gt;{post.title}&lt;/strong&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default PostList;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>stale response</strong> — ignore outdated fetch when id changes.</li>
-          <li><strong>mutation</strong> — POST then refresh list (mock API ok).</li>
-          <li><strong>query key sketch</strong> — Design keys for list vs detail (TanStack style comments or code).</li>
-          <li><strong>UX</strong> — Skeleton or disabled UI while loading.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>stale response</strong> — ignore outdated fetch when id changes.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import { useState, useEffect } from &quot;react&quot;;
+
+function PostViewer({ postId }) {
+  const [post, setPost] = useState(null);
+
+  useEffect(() =&gt; {
+    let isCurrent = true; // Prevents race condition / stale response
+
+    fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`)
+      .then((r) =&gt; r.json())
+      .then((data) =&gt; {
+        if (isCurrent) setPost(data);
+      });
+
+    return () =&gt; {
+      isCurrent = false; // Discards response if postId changed before request returned
+    };
+  }, [postId]);
+
+  return &lt;div&gt;{post ? post.title : &quot;Loading...&quot;}&lt;/div&gt;;
+}
+
+export default PostViewer;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>mutation</strong> — POST then refresh list (mock API ok).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>async function createNewPost(postData, onCreated) {
+  const res = await fetch(&quot;https://jsonplaceholder.typicode.com/posts&quot;, {
+    method: &quot;POST&quot;,
+    headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+    body: JSON.stringify(postData)
+  });
+  const newPost = await res.json();
+  onCreated(newPost); // Update local state / refetch list
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>query key sketch</strong> — Design keys for list vs detail (TanStack style comments or code).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+TanStack Query Key Hierarchy:
+- Users list:               [&#x27;users&#x27;]
+- Filtered users list:      [&#x27;users&#x27;, { role: &#x27;admin&#x27; }]
+- Single user detail:       [&#x27;users&#x27;, userId]
+- User posts:               [&#x27;users&#x27;, userId, &#x27;posts&#x27;]
+*/</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>UX</strong> — Skeleton or disabled UI while loading.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function LoadingButton({ isLoading, children, onClick }) {
+  return (
+    &lt;button onClick={onClick} disabled={isLoading} className={isLoading ? &quot;btn-loading&quot; : &quot;&quot;}&gt;
+      {isLoading ? &quot;Saving changes...&quot; : children}
+    &lt;/button&gt;
+  );
+}
+
+export default LoadingButton;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>Introduce TanStack Query for one endpoint (or document the API you’d use).</li>
-          <li>Combine Router loader with a simple client cache strategy in comments.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Introduce TanStack Query for one endpoint (or document the API you’d use).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import { useQuery } from &quot;@tanstack/react-query&quot;;
+
+function UserProfile({ userId }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: [&quot;user&quot;, userId],
+    queryFn: async () =&gt; {
+      const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+      if (!res.ok) throw new Error(&quot;Network response was not ok&quot;);
+      return res.json();
+    },
+    staleTime: 1000 * 60 * 5 // Cache valid for 5 minutes
+  });
+
+  if (isLoading) return &lt;p&gt;Loading user profile...&lt;/p&gt;;
+  if (error) return &lt;p&gt;Error: {error.message}&lt;/p&gt;;
+  return &lt;h3&gt;{data.name} ({data.email})&lt;/h3&gt;;
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Combine Router loader with a simple client cache strategy in comments.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Client-side Cache Strategy with Route Loaders:
+1. When navigating, the loader checks the client-side cache (e.g. queryClient.getQueryData(key)).
+2. If fresh data exists in cache, return immediately without network overhead.
+3. If stale or missing, fetch from network and populate the cache.
+*/</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>

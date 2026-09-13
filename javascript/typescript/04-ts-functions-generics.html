@@ -241,41 +241,92 @@ const colors = asConst([&quot;red&quot;, &quot;green&quot;] as const);
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is <code class="inline">void</code> vs omitting return type?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">void</code> means the caller should ignore the return value. Functions with no return implicitly return <code class="inline">undefined</code>.</li>
-        </ul>
-        <h3>C.2. Are generics erased at runtime?</h3>
-        <ul>
-          <li><strong>A:</strong> Yes — like all types, generics do not exist in emitted JavaScript.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is <code class="inline">void</code> vs omitting return type?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">void</code> means the caller should ignore the return value. Functions with no return implicitly return <code class="inline">undefined</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Are generics erased at runtime?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Yes — like all types, generics do not exist in emitted JavaScript.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.3. Should I always annotate return types?</h3>
-        <ul>
-          <li><strong>A:</strong> Not for simple internal functions — inference is fine. Annotate exported functions and when you want to lock the contract.</li>
-        </ul>
-        <h3>C.4. Can arrow functions be generic?</h3>
-        <ul>
-          <li><strong>A:</strong> Yes: <code class="inline">const fn = &lt;T&gt;(x: T): T =&gt; x;</code> (in <code class="inline">.tsx</code>, use <code class="inline">&lt;T,&gt;(x: T) =&gt; x</code> to avoid JSX ambiguity).</li>
-        </ul>
-        <h3>C.5. What is the difference between <code class="inline">(x: number) =&gt; void</code> and <code class="inline">(x: number): void =&gt;</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> First is a <strong>type</strong>; second is invalid syntax. Arrow function: <code class="inline">(x: number): void =&gt; { ... }</code>.</li>
-        </ul>
-        <h3>C.6. How do generics relate to <code class="inline">any</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Generics preserve type information through the call. <code class="inline">any</code> throws it away.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Should I always annotate return types?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Not for simple internal functions — inference is fine. Annotate exported functions and when you want to lock the contract.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Can arrow functions be generic?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Yes: <code class="inline">const fn = &lt;T&gt;(x: T): T =&gt; x;</code> (in <code class="inline">.tsx</code>, use <code class="inline">&lt;T,&gt;(x: T) =&gt; x</code> to avoid JSX ambiguity).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the difference between <code class="inline">(x: number) =&gt; void</code> and <code class="inline">(x: number): void =&gt;</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>First is a <strong>type</strong>; second is invalid syntax. Arrow function: <code class="inline">(x: number): void =&gt; { ... }</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How do generics relate to <code class="inline">any</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Generics preserve type information through the call. <code class="inline">any</code> throws it away.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.7. When are overloads better than unions?</h3>
-        <ul>
-          <li><strong>A:</strong> When return type depends on input type in a way callers should see clearly (<code class="inline">document.getElementById</code> style). Prefer generics when one pattern fits all.</li>
-        </ul>
-        <h3>C.8. What does <code class="inline">extends keyof T</code> mean?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">K</code> must be one of the keys of <code class="inline">T</code> — safe property access.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. When are overloads better than unions?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When return type depends on input type in a way callers should see clearly (<code class="inline">document.getElementById</code> style). Prefer generics when one pattern fits all.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. What does <code class="inline">extends keyof T</code> mean?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">K</code> must be one of the keys of <code class="inline">T</code> — safe property access.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -289,22 +340,171 @@ const colors = asConst([&quot;red&quot;, &quot;green&quot;] as const);
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Type <code class="inline">add(a: number, b: number): number</code>.</li>
-          <li>Optional param with default.</li>
-          <li><code class="inline">identity&lt;T&gt;(x: T): T</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Type <code class="inline">add(a: number, b: number): number</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function add(a: number, b: number): number {
+  return a + b;
+}
+
+console.log(&quot;add(10, 20) =&quot;, add(10, 20)); // 30</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Optional param with default.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function buildGreeting(name: string, prefix: string = &quot;Hello&quot;): string {
+  return `${prefix}, ${name}!`;
+}
+
+console.log(buildGreeting(&quot;Bharat&quot;));          // &quot;Hello, Bharat!&quot;
+console.log(buildGreeting(&quot;Alice&quot;, &quot;Welcome&quot;)); // &quot;Welcome, Alice!&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><code class="inline">identity&lt;T&gt;(x: T): T</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function identity&lt;T&gt;(x: T): T {
+  return x;
+}
+
+const num = identity(42);       // Inferred as number
+const str = identity(&quot;Hello&quot;);  // Inferred as string
+console.log({ num, str });</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li>Typed rest sum.</li>
-          <li>Overload format for number|string.</li>
-          <li>Constraint with extends.</li>
-          <li>void callback example.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Typed rest sum.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function sum(...numbers: number[]): number {
+  return numbers.reduce((acc, curr) =&gt; acc + curr, 0);
+}
+
+console.log(&quot;Sum of 4 numbers:&quot;, sum(1, 2, 3, 4)); // 10</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Overload format for number|string.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Function Overloads:
+function format(val: string): string;
+function format(val: number): string;
+function format(val: string | number): string {
+  if (typeof val === &quot;string&quot;) return val.trim().toUpperCase();
+  return `$${val.toFixed(2)}`;
+}
+
+console.log(format(&quot;  typescript  &quot;)); // &quot;TYPESCRIPT&quot;
+console.log(format(19.99));            // &quot;$19.99&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Constraint with extends.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>interface HasLength {
+  length: number;
+}
+
+function logLength&lt;T extends HasLength&gt;(item: T): number {
+  console.log(&quot;Length:&quot;, item.length);
+  return item.length;
+}
+
+logLength(&quot;Hello World&quot;); // string has .length
+logLength([1, 2, 3, 4]);   // array has .length</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">void callback example.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function performTask(callback: (status: string) =&gt; void) {
+  console.log(&quot;Performing task...&quot;);
+  callback(&quot;DONE&quot;);
+}
+
+performTask((status) =&gt; {
+  console.log(&quot;Callback received status:&quot;, status);
+});</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li>mapArray generic without Array.map.</li>
-          <li>findById with T extends { id: number }.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">mapArray generic without Array.map.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function mapArray&lt;T, U&gt;(arr: T[], fn: (item: T, index: number) =&gt; U): U[] {
+  const result: U[] = [];
+  for (let i = 0; i &lt; arr.length; i++) {
+    result.push(fn(arr[i], i));
+  }
+  return result;
+}
+
+const squared = mapArray([1, 2, 3], (x) =&gt; x * x);
+console.log(&quot;Squared:&quot;, squared); // [1, 4, 9]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">findById with T extends { id: number }.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function findById&lt;T extends { id: number }&gt;(items: T[], id: number): T | undefined {
+  return items.find((item) =&gt; item.id === id);
+}
+
+const users = [{ id: 1, name: &quot;Bharat&quot; }, { id: 2, name: &quot;Alice&quot; }];
+console.log(&quot;Found user:&quot;, findById(users, 1)); // { id: 1, name: &quot;Bharat&quot; }</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
