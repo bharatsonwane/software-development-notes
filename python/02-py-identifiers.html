@@ -121,15 +121,198 @@ user2 = 99          # OK
         </div>
         <h3 id="3-reserved-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
-          <li><strong>Keywords</strong> are reserved — you cannot use them as identifiers.</li>
+          <li><strong>Reserved keywords</strong> have fixed grammatical meanings in Python — they <strong>cannot</strong> be used as identifiers (variable names, function names, or class names).</li>
+          <li>In Python 3, there are <strong>35 reserved keywords</strong>.</li>
+          <li><strong>Capitalization rule:</strong> Exactly <strong>3</strong> keywords start with an uppercase letter (<code class="inline">True</code>, <code class="inline">False</code>, <code class="inline">None</code>). The remaining <strong>32</strong> keywords are all strictly lowercase.</li>
         </ul>
+
+        <h3>3.1. Complete List of all 35 Reserved Words (Categorized)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Keywords</th>
+              <th>Description / Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Values / Literals</strong> (3)</td>
+              <td><code class="inline">False</code>, <code class="inline">None</code>, <code class="inline">True</code></td>
+              <td>Boolean truth values and singleton absence of value (Capitalized).</td>
+            </tr>
+            <tr>
+              <td><strong>Logical Operators</strong> (3)</td>
+              <td><code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code></td>
+              <td>Short-circuiting boolean operations.</td>
+            </tr>
+            <tr>
+              <td><strong>Conditionals</strong> (3)</td>
+              <td><code class="inline">if</code>, <code class="inline">elif</code>, <code class="inline">else</code></td>
+              <td>Conditional branching statements.</td>
+            </tr>
+            <tr>
+              <td><strong>Loops &amp; Flow</strong> (4)</td>
+              <td><code class="inline">for</code>, <code class="inline">while</code>, <code class="inline">break</code>, <code class="inline">continue</code></td>
+              <td>Definite/indefinite iteration, loop termination, and next iteration jump.</td>
+            </tr>
+            <tr>
+              <td><strong>Functions &amp; Generators</strong> (4)</td>
+              <td><code class="inline">def</code>, <code class="inline">return</code>, <code class="inline">lambda</code>, <code class="inline">yield</code></td>
+              <td>Function definition, exit value, anonymous functions, generator iteration.</td>
+            </tr>
+            <tr>
+              <td><strong>Classes &amp; Deletion</strong> (2)</td>
+              <td><code class="inline">class</code>, <code class="inline">del</code></td>
+              <td>Object-oriented class definition and explicit variable/item deletion.</td>
+            </tr>
+            <tr>
+              <td><strong>Exception Handling</strong> (5)</td>
+              <td><code class="inline">try</code>, <code class="inline">except</code>, <code class="inline">finally</code>, <code class="inline">raise</code>, <code class="inline">assert</code></td>
+              <td>Error catching, cleanup guarantee, manual raising, and diagnostic testing.</td>
+            </tr>
+            <tr>
+              <td><strong>Namespaces &amp; Scope</strong> (2)</td>
+              <td><code class="inline">global</code>, <code class="inline">nonlocal</code></td>
+              <td>Binding identifiers to module global scope or outer closure scope.</td>
+            </tr>
+            <tr>
+              <td><strong>Modules &amp; Imports</strong> (3)</td>
+              <td><code class="inline">import</code>, <code class="inline">from</code>, <code class="inline">as</code></td>
+              <td>Loading libraries, importing specific symbols, and creating aliases.</td>
+            </tr>
+            <tr>
+              <td><strong>Context &amp; Identity</strong> (4)</td>
+              <td><code class="inline">with</code>, <code class="inline">pass</code>, <code class="inline">in</code>, <code class="inline">is</code></td>
+              <td>Context managers, no-op placeholder, membership test, and memory identity.</td>
+            </tr>
+            <tr>
+              <td><strong>Asynchronous</strong> (2)</td>
+              <td><code class="inline">async</code>, <code class="inline">await</code></td>
+              <td>Coroutines and asynchronous task suspension (asyncio).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3.2. Inspecting Keywords in Code</h3>
         <div class="code"><pre>import keyword
+
+# 1. Total keyword count in current Python environment:
+print("Keyword count:", len(keyword.kwlist))  # 35
+
+# 2. Print all keywords sorted:
 print(keyword.kwlist)
-# False, None, True, and, as, assert, async, await, break, class, ...
-# if = 10   # SyntaxError</pre></div>
-        <ul>
-          <li><code class="inline">True</code>, <code class="inline">False</code>, <code class="inline">None</code> are keywords (capitalized).</li>
-        </ul>
+
+# 3. Check programmatically if a name is reserved:
+print(keyword.iskeyword("class"))   # True  -&gt; Cannot use as variable
+print(keyword.iskeyword("total"))   # False -&gt; Safe to use
+
+# 4. Attempting to assign to a reserved word:
+# class = 100    # SyntaxError: invalid syntax
+# def = "func"   # SyntaxError: invalid syntax</pre></div>
+
+        <h3>3.3. Soft Keywords (Python 3.10+ &amp; 3.12+)</h3>
+        <p>A <strong>soft keyword</strong> is a keyword that is reserved <em>only in specific syntactic contexts</em>, but remains a completely valid identifier (variable name, function name, parameter, or attribute) everywhere else. This preserves backward compatibility with existing codebases.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Soft Keyword</th>
+              <th>Introduced In</th>
+              <th>Contextual Role</th>
+              <th>Allowed as Variable / Identifier?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">match</code></td>
+              <td>Python 3.10 (PEP 634)</td>
+              <td>Starts a structural pattern matching block: <code class="inline">match subject:</code></td>
+              <td><strong>Yes</strong> — e.g. <code class="inline">match = re.search(...)</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">case</code></td>
+              <td>Python 3.10 (PEP 634)</td>
+              <td>Specifies a pattern clause inside a match block: <code class="inline">case 404:</code></td>
+              <td><strong>Yes</strong> — e.g. <code class="inline">case = "uppercase"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">_</code></td>
+              <td>Python 3.10 (PEP 634)</td>
+              <td>Wildcard pattern inside a match statement: <code class="inline">case _:</code></td>
+              <td><strong>Yes</strong> — e.g. <code class="inline">for _ in range(5):</code> or REPL last result</td>
+            </tr>
+            <tr>
+              <td><code class="inline">type</code></td>
+              <td>Python 3.12 (PEP 695)</td>
+              <td>Defines type aliases: <code class="inline">type Point = tuple[float, float]</code></td>
+              <td><strong>Yes</strong> — e.g. <code class="inline">type = "admin"</code> (also the built-in function <code class="inline">type()</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Hard Keywords vs. Soft Keywords Comparison</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Hard Keywords (<code class="inline">kwlist</code>)</th>
+              <th>Soft Keywords (<code class="inline">softkwlist</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Total Count</strong></td>
+              <td>35 reserved words</td>
+              <td>4 contextual words (<code class="inline">'_'</code>, <code class="inline">'case'</code>, <code class="inline">'match'</code>, <code class="inline">'type'</code>)</td>
+            </tr>
+            <tr>
+              <td><strong>Identifier Usage</strong></td>
+              <td>Strictly prohibited (raises <code class="inline">SyntaxError</code>)</td>
+              <td>Allowed anywhere outside its specific statement context</td>
+            </tr>
+            <tr>
+              <td><strong>Detection Function</strong></td>
+              <td><code class="inline">keyword.iskeyword(name)</code></td>
+              <td><code class="inline">keyword.issoftkeyword(name)</code></td>
+            </tr>
+            <tr>
+              <td><strong>Primary Purpose</strong></td>
+              <td>Core language syntax &amp; grammar</td>
+              <td>New language features without breaking existing variable names</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Soft Keywords Demonstration in Python</h4>
+        <div class="code"><pre>import keyword
+
+# 1. Inspect soft keywords list:
+print("Soft keywords count:", len(keyword.softkwlist))  # 4
+print("keyword.softkwlist:", keyword.softkwlist)        # ['_', 'case', 'match', 'type']
+
+# 2. Testing keyword membership:
+print(keyword.issoftkeyword("match"))  # True
+print(keyword.issoftkeyword("class"))  # False (class is a HARD keyword)
+print(keyword.iskeyword("match"))      # False (not a hard keyword!)
+
+# 3. Soft keywords work seamlessly as variables outside match/type blocks:
+match = "regex_result"      # Completely valid variable name!
+case = 100                  # Completely valid variable name!
+type = "regular_user"       # Completely valid variable name!
+
+# 4. Pattern matching context (Python 3.10+):
+http_status = 404
+match http_status:          # 'match' acts as keyword here
+    case 200:               # 'case' acts as keyword here
+        status_msg = "OK"
+    case 404:
+        status_msg = "Not Found"
+    case _:                 # '_' acts as wildcard pattern here
+        status_msg = "Unknown Status"
+
+print(f"Status for {http_status}: {status_msg}")
+print(f"Variables outside match: match='{match}', case={case}, type='{type}'")</pre></div>
       </section>
 
       <section id="4-comments-indent">
