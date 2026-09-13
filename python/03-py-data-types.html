@@ -21,7 +21,7 @@
         <a href="#1-introduction">1. Introduction</a>
         <a href="#2-overview">2. Fundamental data types overview</a>
         <a href="#3-fundamentals">3. int, float, complex, bool, None</a>
-        <a href="#4-immutability">4. Immutability concepts</a>
+        <a href="#4-immutability">4. Immutability concepts and the id() function</a>
         <a href="#5-range">5. range and sequence forms</a>
         <a href="#6-bytes">6. Bytes / bytearray (intro)</a>
         <a href="#c-common-questions">C. Common questions</a>
@@ -73,7 +73,7 @@
           <li><strong>Introduction</strong> — this section</li>
           <li><strong>Fundamental data types overview</strong></li>
           <li><strong>int, float, complex, bool, None</strong></li>
-          <li><strong>Immutability concepts</strong></li>
+          <li><strong>Immutability concepts and the id() function</strong></li>
           <li><strong>range and sequence forms</strong></li>
           <li><strong>Bytes / bytearray (intro)</strong></li>
         </ol>
@@ -222,15 +222,167 @@ isinstance(x, int)   # True</pre></div>
           </div>
         </div>
         <h3 id="3-fundamentals-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. int</h3>
+        <h3>3.1. int (Integer Data Type)</h3>
         <ul>
-          <li>Arbitrary precision integers (no fixed 32/64-bit limit in CPython for normal ints).</li>
+          <li><strong>Arbitrary precision:</strong> In Python 3, <code class="inline">int</code> values have unlimited precision (no fixed 32-bit or 64-bit overflow limit; constrained only by available system RAM).</li>
         </ul>
-        <div class="code"><pre>a = 10
-b = 0b1010      # binary → 10
-c = 0o12        # octal → 10
-d = 0xA         # hex → 10
-big = 10**100   # OK</pre></div>
+
+        <h4>❖ Types of Representation for int Literal Values (Number Systems)</h4>
+        <p>In Python, programmers can represent integer values in <strong>4 different number systems</strong> (bases):</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Form / Number System</th>
+              <th>Base</th>
+              <th>Allowed Digits</th>
+              <th>Required Prefix</th>
+              <th>Valid Examples</th>
+              <th>SyntaxError Pitfall</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Decimal Form</strong></td>
+              <td>Base 10</td>
+              <td><code class="inline">0 to 9</code></td>
+              <td><em>None</em> (Default)</td>
+              <td><code class="inline">a = 10</code>, <code class="inline">count = 789</code></td>
+              <td>Cannot start with leading zero (e.g. <code class="inline">0123</code> is invalid in Python 3)</td>
+            </tr>
+            <tr>
+              <td><strong>2. Binary Form</strong></td>
+              <td>Base 2</td>
+              <td><code class="inline">0, 1</code></td>
+              <td><code class="inline">0b</code> or <code class="inline">0B</code></td>
+              <td><code class="inline">a = 0b1111</code> (15), <code class="inline">b = 0B11</code> (3)</td>
+              <td><code class="inline">c = 0B112</code> (<code class="inline">2</code> is not allowed in binary)</td>
+            </tr>
+            <tr>
+              <td><strong>3. Octal Form</strong></td>
+              <td>Base 8</td>
+              <td><code class="inline">0 to 7</code></td>
+              <td><code class="inline">0o</code> or <code class="inline">0O</code></td>
+              <td><code class="inline">a = 0o123</code> (83), <code class="inline">b = 0O567</code> (375)</td>
+              <td><code class="inline">c = 0O786</code> (<code class="inline">8</code> is not allowed in octal)</td>
+            </tr>
+            <tr>
+              <td><strong>4. Hexadecimal Form</strong></td>
+              <td>Base 16</td>
+              <td><code class="inline">0 to 9</code> &amp; <code class="inline">a to f</code> / <code class="inline">A to F</code></td>
+              <td><code class="inline">0x</code> or <code class="inline">0X</code></td>
+              <td><code class="inline">a = 0xface</code> (64206), <code class="inline">b = 0XBee5</code> (48869)</td>
+              <td><code class="inline">c = 0xBeer</code> (<code class="inline">'r'</code> is not in hex range <code class="inline">a-f</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Key Rule on PVM Output:</strong>
+          As a programmer, you can declare integer literals in <strong>decimal, binary, octal, or hexadecimal</strong> forms. However, the <strong>Python Virtual Machine (PVM) will always print and return numbers in decimal (base-10) form by default</strong>!
+        </div>
+
+        <div class="code"><pre># --- 1. Decimal Form (Base-10, Default) ---
+a = 10
+print("Decimal:", a)  # 10
+
+# --- 2. Binary Form (Base-2, Prefix 0b / 0B) ---
+a = 0b1111
+b = 0B11
+print("0b1111 -&gt;", a)  # 15 (PVM output is decimal)
+print("0B11   -&gt;", b)  # 3
+# c = 0B112            # SyntaxError: invalid digit '2' in binary literal
+
+# --- 3. Octal Form (Base-8, Prefix 0o / 0O) ---
+a = 0o123
+b = 0O567
+print("0o123  -&gt;", a)  # 83
+print("0O567  -&gt;", b)  # 375
+# c = 0O786            # SyntaxError: invalid digit '8' in octal literal
+
+# --- 4. Hexadecimal Form (Base-16, Prefix 0x / 0X) ---
+a = 0xface
+b = 0XBee5
+print("0xface -&gt;", a)  # 64206
+print("0XBee5 -&gt;", b)  # 48869
+# c = 0xBeer           # SyntaxError: invalid hexadecimal literal ('r' is invalid)</pre></div>
+
+        <h4>❖ Base Conversion Functions: bin(), oct(), hex()</h4>
+        <p>Python provides built-in conversion functions to convert an integer value from <strong>any base</strong> (decimal, binary, octal, or hexadecimal) into its corresponding binary, octal, or hexadecimal string representation.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Conversion Function</th>
+              <th>Target Base</th>
+              <th>Description</th>
+              <th>Prefix in Output String</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">bin(x)</code></td>
+              <td>Base 2 (Binary)</td>
+              <td>Converts any integer (decimal, octal, hex) into a binary string representation.</td>
+              <td><code class="inline">'0b'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">oct(x)</code></td>
+              <td>Base 8 (Octal)</td>
+              <td>Converts any integer (decimal, binary, hex) into an octal string representation.</td>
+              <td><code class="inline">'0o'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">hex(x)</code></td>
+              <td>Base 16 (Hexadecimal)</td>
+              <td>Converts any integer (decimal, binary, octal) into a hexadecimal string representation.</td>
+              <td><code class="inline">'0x'</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># ==========================================================
+# 1. bin() - Convert from ANY base to Binary
+# ==========================================================
+# From Decimal:
+print(bin(15))       # '0b1111'
+
+# From Octal:
+print(bin(0o11))     # '0b1001' (0o11 is 9 in decimal -&gt; 0b1001)
+
+# From Hexadecimal:
+print(bin(0X10))     # '0b10000' (0x10 is 16 in decimal -&gt; 0b10000)
+
+# ==========================================================
+# 2. oct() - Convert from ANY base to Octal
+# ==========================================================
+# From Decimal:
+print(oct(10))       # '0o12'
+
+# From Binary:
+print(oct(0B1111))   # '0o17' (0b1111 is 15 in decimal -&gt; 0o17)
+
+# From Hexadecimal:
+print(oct(0X123))    # '0o443' (0x123 is 291 in decimal -&gt; 0o443)
+
+# ==========================================================
+# 3. hex() - Convert from ANY base to Hexadecimal
+# ==========================================================
+# From Decimal:
+print(hex(100))      # '0x64'
+
+# From Binary:
+print(hex(0B111111)) # '0x3f' (0b111111 is 63 in decimal -&gt; 0x3f)
+
+# From Octal:
+print(hex(0o12345))  # '0x14e5' (0o12345 is 5349 in decimal -&gt; 0x14e5)
+
+# ==========================================================
+# 4. Bonus: int(string, base) - Convert strings back to Decimal
+# ==========================================================
+print(int("0b1111", 2))   # 15
+print(int("0o123", 8))    # 83
+print(int("0xface", 16))  # 64206</pre></div>
         <h3>3.2. float</h3>
         <ul>
           <li>IEEE floating point — approximate decimals.</li>
@@ -261,32 +413,138 @@ x is None       # True — preferred check
 
       <section id="4-immutability">
         <div class="heading-with-levels">
-          <h2>4. Immutability concepts</h2>
+          <h2>4. Immutability concepts and the id() function</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="4-immutability-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li><strong>Immutable</strong> — object contents cannot change after creation: <code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">bool</code>, <code class="inline">str</code>, <code class="inline">tuple</code>, <code class="inline">frozenset</code>, <code class="inline">bytes</code>.</li>
-          <li><strong>Mutable</strong> — can change in place: <code class="inline">list</code>, <code class="inline">dict</code>, <code class="inline">set</code>, <code class="inline">bytearray</code>.</li>
-        </ul>
-        <div class="code"><pre>a = 10
-print(id(a))
-a = a + 1       # new int object; name `a` rebound
-print(id(a))    # usually different id
 
-s = "hi"
-# s[0] = "H"    # TypeError — str immutable
-
-lst = [1, 2]
-print(id(lst))
-lst.append(3)   # same list object mutated
-print(id(lst))  # same id</pre></div>
+        <h3>4.1. What is the id() function?</h3>
         <ul>
-          <li>Reassignment (<code class="inline">a = …</code>) always rebinds the name. Mutation changes the object the name still points to.</li>
-          <li>Aliasing / shallow / deep copy: File 25.</li>
+          <li><code class="inline">id(object)</code> is a built-in Python function that returns the <strong>unique identity</strong> of an object as an integer.</li>
+          <li><strong>Unique &amp; Constant:</strong> An object's ID is guaranteed to be unique and remain completely constant for that object throughout its entire lifetime in memory.</li>
+          <li><strong>CPython Implementation (Memory Address):</strong> In standard CPython, <code class="inline">id(x)</code> is the <strong>actual virtual memory address</strong> (<code class="inline">PyObject*</code> pointer) where the object is stored in RAM.</li>
+          <li>You can format the ID with <code class="inline">hex(id(x))</code> to see standard hexadecimal memory pointer addresses (e.g., <code class="inline">0x104b2c890</code>).</li>
         </ul>
+
+        <div class="code"><pre>name = "Bharat"
+num = 42
+
+print("Decimal ID:    ", id(name))        # e.g., 4376483504
+print("Hex Memory Addr:", hex(id(name)))  # e.g., 0x104dd2eb0
+print("Number ID:      ", hex(id(num)))   # e.g., 0x104b50d50</pre></div>
+
+        <h3>4.2. Relationship between id(), the 'is' operator, and '=='</h3>
+        <p>Understanding <code class="inline">id()</code> is essential for grasping the difference between <strong>equality</strong> and <strong>identity</strong>:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Operator / Check</th>
+              <th>What it tests</th>
+              <th>How Python evaluates it</th>
+              <th>Example (<code class="inline">a = [1, 2]; b = [1, 2]</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Equality:</strong> <code class="inline">a == b</code></td>
+              <td><strong>Value equality:</strong> Do both objects contain identical data?</td>
+              <td>Calls <code class="inline">a.__eq__(b)</code></td>
+              <td><code class="inline">True</code> (both contain 1 and 2)</td>
+            </tr>
+            <tr>
+              <td><strong>Identity:</strong> <code class="inline">a is b</code></td>
+              <td><strong>Memory identity:</strong> Do both variable names point to the <em>exact same object</em> in RAM?</td>
+              <td>Fundamentally evaluates <code class="inline">id(a) == id(b)</code></td>
+              <td><code class="inline">False</code> (two distinct heap objects)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>list1 = [1, 2, 3]
+list2 = [1, 2, 3]
+list3 = list1  # Aliasing: list3 points to the same object as list1
+
+print("list1 == list2:", list1 == list2)  # True  (same contents)
+print("list1 is list2:", list1 is list2)  # False (different memory addresses)
+print("id(list1) == id(list2):", id(list1) == id(list2))  # False
+
+print("list1 is list3:", list1 is list3)  # True  (same object)
+print("id(list1) == id(list3):", id(list1) == id(list3))  # True</pre></div>
+
+        <h3>4.3. Proving Mutability vs. Immutability with id()</h3>
+        <ul>
+          <li><strong>Immutable Types</strong> (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">bool</code>, <code class="inline">str</code>, <code class="inline">tuple</code>, <code class="inline">frozenset</code>, <code class="inline">bytes</code>):
+            Any operation that appears to "modify" the value actually constructs a <strong>brand new object</strong> in memory with a <strong>new <code class="inline">id()</code></strong>.
+          </li>
+          <li><strong>Mutable Types</strong> (<code class="inline">list</code>, <code class="inline">dict</code>, <code class="inline">set</code>, <code class="inline">bytearray</code>):
+            In-place modification alters the object contents directly, preserving the <strong>exact same <code class="inline">id()</code></strong>.
+          </li>
+        </ul>
+
+        <div class="code"><pre># --- Immutable Example: int ---
+x = 100
+print("Initial x ID:", hex(id(x)))
+x = x + 1  # Creates a new int(101) object and rebinds name x
+print("After + 1 ID: ", hex(id(x)))  # DIFFERENT memory address!
+
+# --- Immutable Example: str ---
+s = "hello"
+print("Initial s ID:", hex(id(s)))
+s = s + " world"  # Allocates a new concatenated string
+print("After concat ID:", hex(id(s)))  # DIFFERENT memory address!
+
+# --- Mutable Example: list ---
+nums = [1, 2]
+print("Initial nums ID:", hex(id(nums)))
+nums.append(3)  # Mutates the existing list in-place
+print("After append ID:  ", hex(id(nums)))  # EXACT SAME memory address!</pre></div>
+
+        <h3 id="4-immutability-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.4. CPython Memory Optimization: Interning &amp; Singletons</h3>
+        <p>Because creating millions of tiny immutable objects would be slow and waste RAM, CPython employs <strong>memory interning</strong> and pre-allocated singleton pools:</p>
+        <ul>
+          <li><strong>Small Integer Caching (-5 to 256):</strong> CPython pre-allocates an array of integer objects for values between <code class="inline">-5</code> and <code class="inline">256</code> at startup. Any variable holding a value in this range shares the <em>exact same object and ID</em>.</li>
+          <li><strong>String Interning:</strong> Short strings that look like Python identifiers (alphanumeric and underscores) are automatically interned.</li>
+          <li><strong>Singletons:</strong> <code class="inline">None</code>, <code class="inline">True</code>, and <code class="inline">False</code> are guaranteed singletons; their memory address is permanent across the process. Always compare them using <code class="inline">is None</code> rather than <code class="inline">== None</code>.</li>
+        </ul>
+
+        <div class="code"><pre># Small integers share IDs (interned):
+a = 250
+b = 250
+print("250: a is b -&gt;", a is b)              # True (same id)
+print("id(a) == id(b):", id(a) == id(b))      # True
+
+# Large integers outside [-5, 256] may have different IDs:
+c = 1000500
+d = 1000500
+print("1000500: c is d -&gt;", c is d)          # Often False in REPL / scripts
+print("id(c) == id(d):", id(c) == id(d))      # False (distinct heap objects)
+print("c == d (values equal):", c == d)      # True
+
+# None is a singleton:
+val = None
+print("val is None:", val is None)            # True (checks id(val) == id(None))</pre></div>
+
+        <h3>4.5. The ID Recycling Gotcha (Temporary Objects)</h3>
+        <div class="callout">
+          <strong>Crucial Pitfall — Lifetime and ID Reuse:</strong>
+          An object's ID is only guaranteed unique <em>while the object is alive</em>. Once an object has no remaining references, Python's garbage collector deallocates it. The memory allocator can then immediately reuse that same memory address for a new object!
+        </div>
+
+        <div class="code"><pre># Pitfall: Comparing IDs of temporary objects that don't exist simultaneously
+# The first list [1, 2] is created and immediately garbage-collected!
+# The second list [3, 4] can be allocated in the EXACT SAME freed memory slot:
+print(id([1, 2]) == id([3, 4]))  # May evaluate to True!
+
+# To safely compare identities, both objects MUST be held by variables simultaneously:
+obj_a = [1, 2]  # Kept alive by obj_a
+obj_b = [3, 4]  # Kept alive by obj_b
+print(id(obj_a) == id(obj_b))    # Always False!
+print(obj_a is obj_b)            # Always False!</pre></div>
       </section>
 
       <section id="5-range">
