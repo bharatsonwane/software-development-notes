@@ -312,32 +312,60 @@ function fn() {
         </div>
 
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is lexical scope?</h3>
-        <ul>
-          <li><strong>A:</strong> Scope is determined by <strong>where code is written</strong> in the source, not by the call stack at runtime. Inner functions can read outer variables; that outer lookup chain is the <strong>scope chain</strong>.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is lexical scope?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Scope is determined by <strong>where code is written</strong> in the source, not by the call stack at runtime. Inner functions can read outer variables; that outer lookup chain is the <strong>scope chain</strong>.</p>
+          </div>
+        </details>
 
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.2. Does hoisting move code physically to the top?</h3>
-        <ul>
-          <li><strong>A:</strong> No. It is a mental model. During compilation, JS registers declarations in scope first; then it executes the code top to bottom. Assignments and initializations stay on their original lines.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Does hoisting move code physically to the top?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>No. It is a mental model. During compilation, JS registers declarations in scope first; then it executes the code top to bottom. Assignments and initializations stay on their original lines.</p>
+          </div>
+        </details>
 
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.3. Why does for (var i = 0; ...) break closures in loops?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">var</code> is function-scoped, so there is <strong>one</strong> <code class="inline">i</code> shared by all iterations. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, which is what you want with async callbacks.</li>
-        </ul>
 
-        <h3>C.4. Are function declarations hoisted above var?</h3>
-        <ul>
-          <li><strong>A:</strong> In the same scope, the function declaration wins during the initial hoisting phase. If you later assign to the same name with <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code>, that assignment overwrites it at runtime.</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why does for (var i = 0; ...) break closures in loops?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">var</code> is function-scoped, so there is <strong>one</strong> <code class="inline">i</code> shared by all iterations. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, which is what you want with async callbacks.</p>
+          </div>
+        </details>
 
-        <h3>C.5. What is the Temporal Dead Zone?</h3>
-        <ul>
-          <li><strong>A:</strong> The period between entering a scope and executing the <code class="inline">const</code>/<code class="inline">let</code> declaration line. The binding exists but accessing it throws <code class="inline">ReferenceError</code>. File 01 introduces TDZ with <code class="inline">const</code>/<code class="inline">let</code>; this file shows how it fits the hoisting model.</li>
-        </ul>
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Are function declarations hoisted above var?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In the same scope, the function declaration wins during the initial hoisting phase. If you later assign to the same name with <code class="inline">const</code>/<code class="inline">let</code>/<code class="inline">var</code>, that assignment overwrites it at runtime.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the Temporal Dead Zone?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The period between entering a scope and executing the <code class="inline">const</code>/<code class="inline">let</code> declaration line. The binding exists but accessing it throws <code class="inline">ReferenceError</code>. File 01 introduces TDZ with <code class="inline">const</code>/<code class="inline">let</code>; this file shows how it fits the hoisting model.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -352,24 +380,228 @@ function fn() {
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Create a global <code class="inline">const city</code>, a function that shadows it with a local <code class="inline">city</code>, and log both from inside and outside.</li>
-          <li>Inside a block <code class="inline">{ }</code>, declare <code class="inline">let x</code> and try to log <code class="inline">x</code> outside — note the error.</li>
-          <li>Show <code class="inline">var</code> leaking out of a block vs <code class="inline">let</code> staying inside.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a global <code class="inline">const city</code>, a function that shadows it with a local <code class="inline">city</code>, and log both from inside and outside.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const city = &quot;Pune&quot;;
+
+function showCity() {
+  const city = &quot;Mumbai&quot;; // Shadows the outer &#x27;city&#x27;
+  console.log(&quot;Inner local city:&quot;, city); // Mumbai
+}
+
+showCity();
+console.log(&quot;Outer global city:&quot;, city); // Pune</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Inside a block <code class="inline">{ }</code>, declare <code class="inline">let x</code> and try to log <code class="inline">x</code> outside — note the error.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>{
+  let x = 42;
+  console.log(&quot;Inside block:&quot;, x); // 42
+}
+
+try {
+  console.log(x); // ReferenceError: x is not defined outside the block
+} catch (err) {
+  console.log(&quot;Caught outside block:&quot;, err.message);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Show <code class="inline">var</code> leaking out of a block vs <code class="inline">let</code> staying inside.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>{
+  var leakedVar = &quot;I leak out of blocks&quot;;
+  let trappedLet = &quot;I stay inside&quot;;
+}
+
+console.log(&quot;var access outside block:&quot;, leakedVar); // Works!
+try {
+  console.log(trappedLet);
+} catch (err) {
+  console.log(&quot;let access outside block:&quot;, err.message); // ReferenceError
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>Scope chain</strong> — Nested functions <code class="inline">outer → middle → inner</code> where each level has a variable; innermost logs all three via the chain.</li>
-          <li><strong>TDZ demo</strong> — In a block, log a <code class="inline">let</code> before its declaration (catch the error), then fix the order.</li>
-          <li><strong>var vs let in loops</strong> — Create an array of 3 functions with <code class="inline">for (var i = 0; i &lt; 3; i++)</code> that each log <code class="inline">i</code>; call them after the loop. Repeat with <code class="inline">let</code>. Explain the difference.</li>
-          <li><strong>Hoisting quiz</strong> — Without looking, write what this prints, then run it: a function declaration call before its line; a <code class="inline">const</code> arrow assigned after a call attempt.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Scope chain</strong> — Nested functions <code class="inline">outer → middle → inner</code> where each level has a variable; innermost logs all three via the chain.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const globalVar = &quot;global&quot;;
+
+function outer() {
+  const outerVar = &quot;outer&quot;;
+
+  function middle() {
+    const middleVar = &quot;middle&quot;;
+
+    function inner() {
+      const innerVar = &quot;inner&quot;;
+      // Accessing all variables up the scope chain:
+      console.log(`${innerVar} -&gt; ${middleVar} -&gt; ${outerVar} -&gt; ${globalVar}`);
+    }
+
+    inner();
+  }
+
+  middle();
+}
+
+outer(); // &quot;inner -&gt; middle -&gt; outer -&gt; global&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>TDZ demo</strong> — In a block, log a <code class="inline">let</code> before its declaration (catch the error), then fix the order.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>{
+  // TDZ (Temporal Dead Zone) window starts here for &#x27;data&#x27;
+  try {
+    // Accessing before initialization throws ReferenceError
+    // console.log(data);
+    eval(&quot;console.log(data)&quot;);
+  } catch (err) {
+    console.log(&quot;TDZ Error:&quot;, err.message); // Cannot access &#x27;data&#x27; before initialization
+  }
+
+  let data = &quot;Initialized now!&quot;;
+  console.log(data); // Works safely after declaration
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>var vs let in loops</strong> — Create an array of 3 functions with <code class="inline">for (var i = 0; i &lt; 3; i++)</code> that each log <code class="inline">i</code>; call them after the loop. Repeat with <code class="inline">let</code>. Explain the difference.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// var: all functions share the same hoisted binding
+const varFuncs = [];
+for (var i = 0; i &lt; 3; i++) {
+  varFuncs.push(() =&gt; i);
+}
+console.log(&quot;var loop:&quot;, varFuncs.map(fn =&gt; fn())); // [3, 3, 3]
+
+// let: creates a fresh binding per iteration
+const letFuncs = [];
+for (let j = 0; j &lt; 3; j++) {
+  letFuncs.push(() =&gt; j);
+}
+console.log(&quot;let loop:&quot;, letFuncs.map(fn =&gt; fn())); // [0, 1, 2]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Hoisting quiz</strong> — Without looking, write what this prints, then run it: a function declaration call before its line; a <code class="inline">const</code> arrow assigned after a call attempt.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Hoisting demonstration:
+console.log(&quot;1. Function call before declaration:&quot;, add(2, 3)); // 5 (fully hoisted)
+console.log(&quot;2. var before assignment:&quot;, myVar);                // undefined (declaration hoisted, initialized to undefined)
+
+function add(a, b) {
+  return a + b;
+}
+
+var myVar = &quot;Hello World&quot;;
+console.log(&quot;3. var after assignment:&quot;, myVar);                 // &quot;Hello World&quot;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>Accidental global</strong> — In a function (non-strict if needed), assign <code class="inline">oops = 1</code> without declaring; log <code class="inline">typeof oops</code> outside. Then rewrite with <code class="inline">&quot;use strict&quot;</code> and show the ReferenceError.</li>
-          <li><strong>Shadow map</strong> — Draw (as comments) the scope chain for a short nested snippet you invent with 2 shadows of the same name.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Accidental global</strong> — In a function (non-strict if needed), assign <code class="inline">oops = 1</code> without declaring; log <code class="inline">typeof oops</code> outside. Then rewrite with <code class="inline">&quot;use strict&quot;</code> and show the ReferenceError.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function createAccidentalGlobal() {
+  // In non-strict mode, assigning without declaration attaches to global/window
+  // strict mode (&quot;use strict&quot;) throws ReferenceError: undeclaredVar is not defined
+  accidentalGlobal = &quot;I am an accidental global!&quot;;
+}
+
+createAccidentalGlobal();
+console.log(globalThis.accidentalGlobal); // &quot;I am an accidental global!&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Shadow map</strong> — Draw (as comments) the scope chain for a short nested snippet you invent with 2 shadows of the same name.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Scope Chain Hierarchy:
+[Global Scope]
+  ├── window / globalThis
+  └── a = 1
+       └── [outer Scope]
+             ├── a = 10 (shadows global a)
+             └── b = 20
+                  └── [inner Scope]
+                        ├── b = 200 (shadows outer b)
+                        └── c = 300
+*/
+
+const a = 1;
+function outerScope() {
+  const a = 10; // Shadows global a
+  const b = 20;
+
+  function innerScope() {
+    const b = 200; // Shadows outer b
+    const c = 300;
+    console.log({ a, b, c }); // a: 10 (from outer), b: 200 (from inner), c: 300 (from inner)
+  }
+
+  innerScope();
+}
+
+outerScope();</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

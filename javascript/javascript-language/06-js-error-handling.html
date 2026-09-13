@@ -197,36 +197,72 @@ Error.isError({ message: &quot;x&quot; });     // false</pre></div>
         </div>
 
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is the difference between throw and return?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">throw</code></strong> signals <strong>exceptional failure</strong> — jumps to nearest <strong><code class="inline">catch</code></strong>. <strong><code class="inline">return</code></strong> exits normally with a value.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is the difference between throw and return?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">throw</code></strong> signals <strong>exceptional failure</strong> — jumps to nearest <strong><code class="inline">catch</code></strong>. <strong><code class="inline">return</code></strong> exits normally with a value.</p>
+          </div>
+        </details>
 
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.2. Should I throw strings or Error objects?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">Error</code> objects</strong> (or subclasses) — better debugging with <code class="inline">.stack</code>.</li>
-        </ul>
-        <h3>C.3. How do Promises handle errors vs try/catch?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">async/await</code></strong> uses <strong><code class="inline">try/catch</code></strong>. Promises use <strong><code class="inline">.catch()</code></strong> or second argument to <strong><code class="inline">.then()</code></strong> (File 21).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Should I throw strings or Error objects?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">Error</code> objects</strong> (or subclasses) — better debugging with <code class="inline">.stack</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. How do Promises handle errors vs try/catch?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">async/await</code></strong> uses <strong><code class="inline">try/catch</code></strong>. Promises use <strong><code class="inline">.catch()</code></strong> or second argument to <strong><code class="inline">.then()</code></strong> (File 21).</p>
+          </div>
+        </details>
 
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.4. Does finally run if try returns?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>Yes</strong> — <code class="inline">finally</code> runs before the return completes.</li>
-        </ul>
-        <h3>C.5. Why use <code class="inline">Error.cause</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> To wrap a low-level error in a user-facing one without losing the original stack. Read <code class="inline">err.cause</code> when logging.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Does finally run if try returns?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Yes</strong> — <code class="inline">finally</code> runs before the return completes.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why use <code class="inline">Error.cause</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>To wrap a low-level error in a user-facing one without losing the original stack. Read <code class="inline">err.cause</code> when logging.</p>
+          </div>
+        </details>
 
         <h3 id="c-common-questions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>C.6. Does try/catch catch unhandled Promise rejections?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>No</strong> unless you <code class="inline">await</code> that Promise (or call <code class="inline">.catch</code>). Use <code class="inline">unhandledrejection</code> as a last-resort logger, not as normal control flow.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Does try/catch catch unhandled Promise rejections?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No</strong> unless you <code class="inline">await</code> that Promise (or call <code class="inline">.catch</code>). Use <code class="inline">unhandledrejection</code> as a last-resort logger, not as normal control flow.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -241,24 +277,229 @@ Error.isError({ message: &quot;x&quot; });     // false</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Wrap <code class="inline">JSON.parse('{ bad')</code> in <code class="inline">try/catch</code> and log <code class="inline">err.message</code>.</li>
-          <li>Write <code class="inline">divide(a, b)</code> that throws if <code class="inline">b === 0</code>, then call it safely with try/catch.</li>
-          <li>Add a <code class="inline">finally</code> that always logs <code class="inline">&quot;done&quot;</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Wrap <code class="inline">JSON.parse('{ bad')</code> in <code class="inline">try/catch</code> and log <code class="inline">err.message</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>try {
+  JSON.parse(&#x27;{ bad&#x27;);
+} catch (err) {
+  console.log(&quot;Caught error message:&quot;, err.message);
+  // Output: Caught error message: Unexpected token &#x27;b&#x27;, &quot;bad&quot; is not valid JSON
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write <code class="inline">divide(a, b)</code> that throws if <code class="inline">b === 0</code>, then call it safely with try/catch.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function divide(a, b) {
+  if (b === 0) {
+    throw new Error(&quot;DivisionByZeroError: cannot divide by zero&quot;);
+  }
+  return a / b;
+}
+
+try {
+  console.log(divide(10, 0));
+} catch (err) {
+  console.error(&quot;Error occurred:&quot;, err.message);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Add a <code class="inline">finally</code> that always logs <code class="inline">&quot;done&quot;</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function runTask() {
+  try {
+    console.log(&quot;1. Executing task...&quot;);
+    throw new Error(&quot;Task failed!&quot;);
+  } catch (err) {
+    console.log(&quot;2. Handling error:&quot;, err.message);
+  } finally {
+    console.log(&quot;3. Done (finally always runs)&quot;);
+  }
+}
+
+runTask();</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>safeParse(json)</strong> — Return the parsed value, or <code class="inline">null</code> if parsing fails. Never throw to the caller.</li>
-          <li><strong>assertPositive(n)</strong> — Throw <code class="inline">new Error</code> if <code class="inline">n</code> is not a number &gt; 0. Call it from a small calculator function.</li>
-          <li><strong>Custom ValidationError</strong> — Create <code class="inline">class ValidationError extends Error {}</code> (or a function that returns an Error with <code class="inline">name = &quot;ValidationError&quot;</code>). Throw it for empty string input; catch and check <code class="inline">err.name</code>.</li>
-          <li><strong>finally return demo</strong> — In try, <code class="inline">return 1</code>; in finally log <code class="inline">&quot;cleanup&quot;</code>. Confirm cleanup runs.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>safeParse(json)</strong> — Return the parsed value, or <code class="inline">null</code> if parsing fails. Never throw to the caller.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function safeParse(json) {
+  try {
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+console.log(safeParse(&#x27;{&quot;valid&quot;: true}&#x27;)); // { valid: true }
+console.log(safeParse(&#x27;invalid json&#x27;));     // null</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>assertPositive(n)</strong> — Throw <code class="inline">new Error</code> if <code class="inline">n</code> is not a number &gt; 0. Call it from a small calculator function.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function assertPositive(n) {
+  if (typeof n !== &quot;number&quot; || n &lt;= 0) {
+    throw new Error(`Expected a positive number, got ${n}`);
+  }
+  return n;
+}
+
+try {
+  assertPositive(5);   // OK
+  assertPositive(-2);  // Throws Error
+} catch (err) {
+  console.log(&quot;Assertion caught:&quot;, err.message);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Custom ValidationError</strong> — Create <code class="inline">class ValidationError extends Error {}</code> (or a function that returns an Error with <code class="inline">name = &quot;ValidationError&quot;</code>). Throw it for empty string input; catch and check <code class="inline">err.name</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = &quot;ValidationError&quot;;
+  }
+}
+
+function registerUser(username) {
+  if (!username) {
+    throw new ValidationError(&quot;Username is required&quot;);
+  }
+  return { username };
+}
+
+try {
+  registerUser(&quot;&quot;);
+} catch (err) {
+  if (err instanceof ValidationError) {
+    console.log(`[${err.name}] ${err.message}`);
+  } else {
+    throw err;
+  }
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>finally return demo</strong> — In try, <code class="inline">return 1</code>; in finally log <code class="inline">&quot;cleanup&quot;</code>. Confirm cleanup runs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function testFinallyReturn() {
+  try {
+    return 1;
+  } finally {
+    console.log(&quot;Cleanup executed inside finally block!&quot;);
+  }
+}
+
+const result = testFinallyReturn();
+console.log(&quot;Returned result:&quot;, result);
+// Output:
+// Cleanup executed inside finally block!
+// Returned result: 1</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>Error.cause chain</strong> — Catch a low-level error from <code class="inline">JSON.parse</code>, rethrow <code class="inline">new Error(&quot;Config load failed&quot;, { cause: err })</code>, then log <code class="inline">err.message</code> and <code class="inline">err.cause.message</code>.</li>
-          <li><strong>AggregateError sketch</strong> — Collect two failures in an array and throw <code class="inline">new AggregateError(errors, &quot;batch failed&quot;)</code>; catch and log <code class="inline">err.errors.length</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Error.cause chain</strong> — Catch a low-level error from <code class="inline">JSON.parse</code>, rethrow <code class="inline">new Error(&quot;Config load failed&quot;, { cause: err })</code>, then log <code class="inline">err.message</code> and <code class="inline">err.cause.message</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function loadConfig(jsonStr) {
+  try {
+    return JSON.parse(jsonStr);
+  } catch (err) {
+    throw new Error(&quot;Failed to load application config&quot;, { cause: err });
+  }
+}
+
+try {
+  loadConfig(&quot;{ invalid }&quot;);
+} catch (err) {
+  console.log(&quot;Primary error:&quot;, err.message);
+  console.log(&quot;Original root cause:&quot;, err.cause.message);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>AggregateError sketch</strong> — Collect two failures in an array and throw <code class="inline">new AggregateError(errors, &quot;batch failed&quot;)</code>; catch and log <code class="inline">err.errors.length</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function validateRegistration(data) {
+  const errors = [];
+  if (!data.email) errors.push(new Error(&quot;Email is missing&quot;));
+  if (!data.age || data.age &lt; 18) errors.push(new Error(&quot;Must be 18 or older&quot;));
+
+  if (errors.length &gt; 0) {
+    throw new AggregateError(errors, &quot;Registration validation failed&quot;);
+  }
+  return true;
+}
+
+try {
+  validateRegistration({ age: 16 });
+} catch (err) {
+  if (err instanceof AggregateError) {
+    console.log(err.message);
+    for (const singleErr of err.errors) {
+      console.log(&quot; - Sub-error:&quot;, singleErr.message);
+    }
+  }
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

@@ -140,24 +140,50 @@ ws.has(obj);  // true
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is the difference between Set and array filter for uniqueness?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">Set</code></strong> enforces uniqueness on every <strong><code class="inline">add</code></strong>. <strong><code class="inline">[...new Set(arr)]</code></strong> dedupes an existing array. Set also offers O(1) <strong><code class="inline">has</code></strong> checks.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is the difference between Set and array filter for uniqueness?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">Set</code></strong> enforces uniqueness on every <strong><code class="inline">add</code></strong>. <strong><code class="inline">[...new Set(arr)]</code></strong> dedupes an existing array. Set also offers O(1) <strong><code class="inline">has</code></strong> checks.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.2. When should I use WeakSet?</h3>
-        <ul>
-          <li><strong>A:</strong> To remember that an <strong>object</strong> was seen (e.g. already processed) without preventing garbage collection. You cannot iterate or ask for <code class="inline">size</code>.</li>
-        </ul>
-        <h3>C.3. How do I get the intersection of two Sets?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">a.intersection(b)</code> (ES2025), or <code class="inline">[...a].filter((x) =&gt; b.has(x))</code>.</li>
-        </ul>
-        <h3>C.4. Why can a Set hold only one <code class="inline">NaN</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Membership uses <strong>SameValueZero</strong>, where <code class="inline">NaN</code> equals <code class="inline">NaN</code> (unlike <code class="inline">===</code>). <code class="inline">+0</code> and <code class="inline">-0</code> also count as the same key.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. When should I use WeakSet?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>To remember that an <strong>object</strong> was seen (e.g. already processed) without preventing garbage collection. You cannot iterate or ask for <code class="inline">size</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. How do I get the intersection of two Sets?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">a.intersection(b)</code> (ES2025), or <code class="inline">[...a].filter((x) =&gt; b.has(x))</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Why can a Set hold only one <code class="inline">NaN</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Membership uses <strong>SameValueZero</strong>, where <code class="inline">NaN</code> equals <code class="inline">NaN</code> (unlike <code class="inline">===</code>). <code class="inline">+0</code> and <code class="inline">-0</code> also count as the same key.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -172,24 +198,172 @@ ws.has(obj);  // true
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Create a Set from an array with duplicates; log size.</li>
-          <li><code class="inline">add</code>, <code class="inline">has</code>, <code class="inline">delete</code> a few values.</li>
-          <li>Iterate a Set with <code class="inline">for...of</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a Set from an array with duplicates; log size.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const nums = [1, 2, 2, 3, 3, 3, 4];
+const set = new Set(nums);
+
+console.log(&quot;Set values:&quot;, Array.from(set)); // [1, 2, 3, 4]
+console.log(&quot;Set size:  &quot;, set.size);        // 4</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><code class="inline">add</code>, <code class="inline">has</code>, <code class="inline">delete</code> a few values.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const set = new Set();
+
+set.add(&quot;apple&quot;);
+set.add(&quot;banana&quot;);
+console.log(&quot;Has apple?&quot;, set.has(&quot;apple&quot;)); // true
+
+set.delete(&quot;apple&quot;);
+console.log(&quot;Has apple after delete?&quot;, set.has(&quot;apple&quot;)); // false</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Iterate a Set with <code class="inline">for...of</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const colors = new Set([&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;]);
+
+for (const color of colors) {
+  console.log(&quot;Color:&quot;, color);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>union(a, b)</strong> — Return a new Set.</li>
-          <li><strong>intersection(a, b)</strong> — Values in both.</li>
-          <li><strong>difference(a, b)</strong> — In a but not b.</li>
-          <li><strong>uniqueWords(str)</strong> — Split on spaces into a Set.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>union(a, b)</strong> — Return a new Set.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function union(a, b) {
+  return new Set([...a, ...b]);
+}
+
+const s1 = new Set([1, 2, 3]);
+const s2 = new Set([3, 4, 5]);
+
+console.log(&quot;Union:&quot;, Array.from(union(s1, s2))); // [1, 2, 3, 4, 5]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>intersection(a, b)</strong> — Values in both.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function intersection(a, b) {
+  return new Set([...a].filter(item =&gt; b.has(item)));
+}
+
+const s1 = new Set([1, 2, 3]);
+const s2 = new Set([2, 3, 4]);
+
+console.log(&quot;Intersection:&quot;, Array.from(intersection(s1, s2))); // [2, 3]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>difference(a, b)</strong> — In a but not b.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function difference(a, b) {
+  return new Set([...a].filter(item =&gt; !b.has(item)));
+}
+
+const s1 = new Set([1, 2, 3, 4]);
+const s2 = new Set([3, 4, 5]);
+
+console.log(&quot;Difference (s1 - s2):&quot;, Array.from(difference(s1, s2))); // [1, 2]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>uniqueWords(str)</strong> — Split on spaces into a Set.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function uniqueWords(sentence) {
+  const words = sentence.toLowerCase().match(/\w+/g) || [];
+  return new Set(words);
+}
+
+const text = &quot;The quick brown fox jumps over the lazy dog the quick fox&quot;;
+console.log(&quot;Unique words count:&quot;, uniqueWords(text).size); // 8</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>SameValueZero</strong> — Show Set treats <code class="inline">NaN</code> as equal to <code class="inline">NaN</code>.</li>
-          <li><strong>object identity</strong> — Add two different <code class="inline">{}</code> objects; explain size 2.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>SameValueZero</strong> — Show Set treats <code class="inline">NaN</code> as equal to <code class="inline">NaN</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Set uses SameValueZero algorithm:
+const nanSet = new Set();
+nanSet.add(NaN);
+nanSet.add(NaN);
+
+console.log(&quot;Set size with two NaNs:&quot;, nanSet.size); // 1 (NaN is treated as equal to NaN)
+console.log(&quot;Has NaN?               &quot;, nanSet.has(NaN)); // true</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>object identity</strong> — Add two different <code class="inline">{}</code> objects; explain size 2.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const objSet = new Set();
+
+const obj1 = {};
+const obj2 = {};
+
+objSet.add(obj1);
+objSet.add(obj2);
+
+console.log(&quot;Set size with two {} literals:&quot;, objSet.size); // 2
+// Explanation: Sets compare objects by reference identity, not structural equality.
+// obj1 and obj2 occupy different memory addresses, so they are considered distinct entries.</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

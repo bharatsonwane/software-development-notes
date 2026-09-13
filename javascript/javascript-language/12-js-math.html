@@ -111,20 +111,40 @@ crypto.getRandomValues(bytes);  // CSPRNG</pre></div>
             <span class="tier l1">L1</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Is Math a number type?</h3>
-        <ul>
-          <li><strong>A:</strong> No. It is a <strong>namespace object</strong> of functions and constants. Values you pass in and get back are File 11 numbers.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Is Math a number type?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>No. It is a <strong>namespace object</strong> of functions and constants. Values you pass in and get back are File 11 numbers.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.2. How do you get a random integer in a range?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">Math.floor(Math.random() * (max - min + 1)) + min</code> (inclusive min and max).</li>
-        </ul>
-        <h3>C.3. Should I use Math.random for IDs?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>No</strong> for secrets or uniqueness you care about. Use <code class="inline">crypto.randomUUID()</code> or <code class="inline">crypto.getRandomValues</code>.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. How do you get a random integer in a range?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">Math.floor(Math.random() * (max - min + 1)) + min</code> (inclusive min and max).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Should I use Math.random for IDs?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No</strong> for secrets or uniqueness you care about. Use <code class="inline">crypto.randomUUID()</code> or <code class="inline">crypto.getRandomValues</code>.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -139,24 +159,162 @@ crypto.getRandomValues(bytes);  // CSPRNG</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Log <code class="inline">Math.max(3, 9, 1)</code> and <code class="inline">Math.min(...[3,9,1])</code>.</li>
-          <li>Round <code class="inline">4.5</code> with <code class="inline">round</code>, <code class="inline">floor</code>, <code class="inline">ceil</code>, <code class="inline">trunc</code>.</li>
-          <li>Generate a random integer from 1 to 6 (inclusive).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Log <code class="inline">Math.max(3, 9, 1)</code> and <code class="inline">Math.min(...[3,9,1])</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>console.log(&quot;Math.max(3, 9, 1):    &quot;, Math.max(3, 9, 1));       // 9
+console.log(&quot;Math.min(...[3, 9, 1]):&quot;, Math.min(...[3, 9, 1])); // 1</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Round <code class="inline">4.5</code> with <code class="inline">round</code>, <code class="inline">floor</code>, <code class="inline">ceil</code>, <code class="inline">trunc</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const val = 4.5;
+
+console.log(&quot;Math.round(4.5):&quot;, Math.round(val)); // 5 (nearest integer)
+console.log(&quot;Math.floor(4.5):&quot;, Math.floor(val)); // 4 (round down)
+console.log(&quot;Math.ceil(4.5): &quot;, Math.ceil(val));  // 5 (round up)
+console.log(&quot;Math.trunc(4.5):&quot;, Math.trunc(val)); // 4 (strip fractional part)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Generate a random integer from 1 to 6 (inclusive).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function rollDie() {
+  return Math.floor(Math.random() * 6) + 1; // 1 to 6 inclusive
+}
+
+console.log(&quot;Random die roll:&quot;, rollDie());</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>clamp(n, lo, hi)</strong> — Keep <code class="inline">n</code> in range using <code class="inline">Math.min</code>/<code class="inline">max</code>.</li>
-          <li><strong>randomInt(min, max)</strong> — Inclusive integer range helper.</li>
-          <li><strong>hypot2d(x, y)</strong> — Use <code class="inline">Math.hypot</code>; compare to manual sqrt.</li>
-          <li><strong>degToRad / radToDeg</strong> — Convert and verify with <code class="inline">Math.PI</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>clamp(n, lo, hi)</strong> — Keep <code class="inline">n</code> in range using <code class="inline">Math.min</code>/<code class="inline">max</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function clamp(n, lo, hi) {
+  return Math.min(Math.max(n, lo), hi);
+}
+
+console.log(clamp(15, 0, 10)); // 10 (clamped above)
+console.log(clamp(-5, 0, 10)); // 0  (clamped below)
+console.log(clamp(7, 0, 10));  // 7  (within range)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>randomInt(min, max)</strong> — Inclusive integer range helper.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+console.log(&quot;Random between 10 and 20:&quot;, randomInt(10, 20));</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>hypot2d(x, y)</strong> — Use <code class="inline">Math.hypot</code>; compare to manual sqrt.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function hypot2d(x, y) {
+  const usingHypot = Math.hypot(x, y);
+  const manual = Math.sqrt(x * x + y * y);
+  return { usingHypot, manual, equal: Math.abs(usingHypot - manual) &lt; Number.EPSILON };
+}
+
+console.log(hypot2d(3, 4)); // { usingHypot: 5, manual: 5, equal: true }</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>degToRad / radToDeg</strong> — Convert and verify with <code class="inline">Math.PI</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function degToRad(deg) {
+  return deg * (Math.PI / 180);
+}
+
+function radToDeg(rad) {
+  return rad * (180 / Math.PI);
+}
+
+console.log(&quot;180 deg to rad:&quot;, degToRad(180)); // 3.141592653589793 (Math.PI)
+console.log(&quot;Math.PI rad to deg:&quot;, radToDeg(Math.PI)); // 180</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>seeded-ish demo</strong> — Simulate 10 dice rolls; count frequency of each face in an object.</li>
-          <li><strong>power / root</strong> — Use <code class="inline">Math.pow</code> / <code class="inline">**</code> and <code class="inline">Math.sqrt</code> on a few values; note negatives.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>seeded-ish demo</strong> — Simulate 10 dice rolls; count frequency of each face in an object.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const frequencies = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+for (let i = 0; i &lt; 10; i++) {
+  const roll = Math.floor(Math.random() * 6) + 1;
+  frequencies[roll]++;
+}
+
+console.log(&quot;10 Dice Roll Frequencies:&quot;, frequencies);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>power / root</strong> — Use <code class="inline">Math.pow</code> / <code class="inline">**</code> and <code class="inline">Math.sqrt</code> on a few values; note negatives.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>console.log(&quot;Math.pow(2, 3): &quot;, Math.pow(2, 3)); // 8
+console.log(&quot;2 ** 3:          &quot;, 2 ** 3);          // 8
+
+console.log(&quot;Math.sqrt(16):   &quot;, Math.sqrt(16));   // 4
+console.log(&quot;16 ** 0.5:       &quot;, 16 ** 0.5);       // 4
+
+console.log(&quot;Math.cbrt(27):   &quot;, Math.cbrt(27));   // 3 (cube root)</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

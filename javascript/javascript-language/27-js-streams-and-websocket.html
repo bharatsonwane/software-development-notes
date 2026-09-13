@@ -169,16 +169,30 @@ ws.close(1000, &quot;done&quot;);</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. When streams vs reading full body?</h3>
-        <ul>
-          <li><strong>A:</strong> Stream when the payload is large or you want progressive UI. Use <code class="inline">res.json()</code> / <code class="inline">res.text()</code> for small complete responses (File 24).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. When streams vs reading full body?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Stream when the payload is large or you want progressive UI. Use <code class="inline">res.json()</code> / <code class="inline">res.text()</code> for small complete responses (File 24).</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.2. WebSocket vs fetch?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>fetch</strong> is request/response. <strong>WebSocket</strong> stays open for many messages both ways with lower overhead after connect.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. WebSocket vs fetch?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>fetch</strong> is request/response. <strong>WebSocket</strong> stays open for many messages both ways with lower overhead after connect.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -193,24 +207,261 @@ ws.close(1000, &quot;done&quot;);</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Explain in comments: readable vs writable stream roles.</li>
-          <li>Create a small ReadableStream that enqueues 1,2,3 then closes (browser).</li>
-          <li>Open a WebSocket to a public echo server if available; otherwise write the connect/send/close skeleton.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Explain in comments: readable vs writable stream roles.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Streams Roles:
+1. ReadableStream: Produces chunks of data sequentially (e.g. incoming HTTP response body, file reader).
+2. WritableStream: Consumes chunks of data and writes them to a sink (e.g. disk file, writable HTTP socket).
+3. TransformStream: Bridges a readable and writable stream to manipulate data in-flight (e.g. compression, decryption).
+*/
+console.log(&quot;Stream roles documented.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a small ReadableStream that enqueues 1,2,3 then closes (browser).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// In browser environments with Web Streams API:
+async function runDemoStream() {
+  if (typeof ReadableStream === &quot;undefined&quot;) {
+    console.log(&quot;ReadableStream is available in Web/modern Node environments.&quot;);
+    return;
+  }
+
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(&quot;Chunk 1&quot;);
+      controller.enqueue(&quot;Chunk 2&quot;);
+      controller.enqueue(&quot;Chunk 3&quot;);
+      controller.close();
+    }
+  });
+
+  const reader = stream.getReader();
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    console.log(&quot;Stream chunk received:&quot;, value);
+  }
+}
+
+runDemoStream();</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Open a WebSocket to a public echo server if available; otherwise write the connect/send/close skeleton.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// WebSocket skeleton:
+function setupWebSocket(url) {
+  if (typeof WebSocket === &quot;undefined&quot;) {
+    console.log(&quot;WebSocket is a browser / Node &#x27;ws&#x27; API.&quot;);
+    return;
+  }
+
+  const ws = new WebSocket(url);
+  ws.onopen = () =&gt; {
+    console.log(&quot;WebSocket connected! Sending greeting...&quot;);
+    ws.send(JSON.stringify({ type: &quot;hello&quot;, text: &quot;Client online&quot; }));
+  };
+  ws.onmessage = (event) =&gt; {
+    console.log(&quot;Received server message:&quot;, event.data);
+  };
+  ws.onerror = (err) =&gt; console.error(&quot;WebSocket error:&quot;, err);
+  ws.onclose = () =&gt; console.log(&quot;WebSocket connection closed.&quot;);
+}
+
+console.log(&quot;WebSocket client skeleton configured.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>tee / pipeTo sketch</strong> — Comment a pipeline from fetch body to another sink.</li>
-          <li><strong>backpressure note</strong> — Write 5–8 lines explaining why producers must respect pull/desiredSize.</li>
-          <li><strong>WS message protocol</strong> — JSON encode/decode helpers for {type, payload}.</li>
-          <li><strong>reconnect policy</strong> — Pseudocode exponential backoff reconnect.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>tee / pipeTo sketch</strong> — Comment a pipeline from fetch body to another sink.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Pipeline Sketch (tee and pipeTo):
+1. response.body.tee(): Splits single ReadableStream into two independent branches [streamA, streamB].
+2. streamA.pipeTo(cacheWritableSink): Caches original chunks to disk or CacheStorage.
+3. streamB.pipeThrough(decompressionStream).pipeTo(domRendererSink): Displays decompressed content.
+*/
+console.log(&quot;Pipeline tee and pipeTo pattern documented.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>backpressure note</strong> — Write 5–8 lines explaining why producers must respect pull/desiredSize.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Backpressure Explanation:
+- Fast Producer / Slow Consumer problem: If a producer generates data at 100 MB/s but the consumer can only process 10 MB/s, unconsumed chunks accumulate in memory, leading to high latency and Out-Of-Memory (OOM) crashes.
+- How Streams solve this: WritableStream signals backpressure via its internal desiredSize and ready promise.
+- When the buffer reaches highWaterMark, desiredSize becomes &lt;= 0. The upstream pipeline pauses pulling from the producer until the consumer finishes processing current chunks.
+*/
+console.log(&quot;Backpressure mechanism documented.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>WS message protocol</strong> — JSON encode/decode helpers for {type, payload}.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const Protocol = {
+  encode(type, payload) {
+    return JSON.stringify({
+      type,
+      payload,
+      timestamp: Date.now()
+    });
+  },
+  decode(rawMessage) {
+    try {
+      const data = JSON.parse(rawMessage);
+      if (!data.type) throw new Error(&quot;Missing message type&quot;);
+      return data;
+    } catch (err) {
+      console.error(&quot;Invalid protocol message:&quot;, err.message);
+      return null;
+    }
+  }
+};
+
+const packet = Protocol.encode(&quot;chat&quot;, { text: &quot;Hello WebSocket!&quot; });
+console.log(&quot;Encoded:&quot;, packet);
+console.log(&quot;Decoded:&quot;, Protocol.decode(packet));</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>reconnect policy</strong> — Pseudocode exponential backoff reconnect.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function connectWithBackoff(url, attempt = 0) {
+  const maxAttempts = 5;
+  const baseDelay = 500; // ms
+  const delay = Math.min(baseDelay * Math.pow(2, attempt), 10000);
+
+  console.log(`Connecting to ${url}... (Attempt #${attempt + 1}, delay: ${delay}ms)`);
+
+  // Simulated reconnection failure trigger
+  if (attempt &lt; maxAttempts) {
+    setTimeout(() =&gt; {
+      console.log(`Attempt #${attempt + 1} failed. Retrying...`);
+      connectWithBackoff(url, attempt + 1);
+    }, delay);
+  } else {
+    console.log(&quot;Max reconnection attempts reached. Giving up.&quot;);
+  }
+}
+
+// connectWithBackoff(&quot;wss://example.com/live&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>TransformStream</strong> — Uppercase chunks in a transform (browser).</li>
-          <li><strong>heartbeat</strong> — Interval ping on WebSocket; clear on close.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>TransformStream</strong> — Uppercase chunks in a transform (browser).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// TransformStream Uppercasing demo:
+async function testTransformStream() {
+  if (typeof TransformStream === &quot;undefined&quot;) return;
+
+  const uppercaseTransform = new TransformStream({
+    transform(chunk, controller) {
+      controller.enqueue(chunk.toUpperCase());
+    }
+  });
+
+  const readable = new ReadableStream({
+    start(controller) {
+      controller.enqueue(&quot;hello &quot;);
+      controller.enqueue(&quot;world &quot;);
+      controller.enqueue(&quot;streams!&quot;);
+      controller.close();
+    }
+  });
+
+  const transformedStream = readable.pipeThrough(uppercaseTransform);
+  const reader = transformedStream.getReader();
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    console.log(&quot;Transformed chunk:&quot;, value);
+  }
+}
+
+testTransformStream();</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>heartbeat</strong> — Interval ping on WebSocket; clear on close.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function startHeartbeat(ws) {
+  let pingInterval = setInterval(() =&gt; {
+    if (ws?.readyState === 1 /* OPEN */) {
+      ws.send(JSON.stringify({ type: &quot;ping&quot; }));
+      console.log(&quot;Heartbeat ping sent&quot;);
+    }
+  }, 30000);
+
+  // Clear timer when connection closes or errors to prevent memory leaks
+  const stopHeartbeat = () =&gt; {
+    clearInterval(pingInterval);
+    console.log(&quot;Heartbeat stopped&quot;);
+  };
+
+  return stopHeartbeat;
+}
+
+console.log(&quot;Heartbeat watchdog helper initialized.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

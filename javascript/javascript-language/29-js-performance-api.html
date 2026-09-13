@@ -151,16 +151,30 @@ resources.filter((r) =&gt; r.initiatorType === &quot;script&quot;);</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Why not Date.now() for benchmarks?</h3>
-        <ul>
-          <li><strong>A:</strong> System clock can jump (NTP, user change). <code class="inline">performance.now()</code> is monotonic relative to the time origin.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Why not Date.now() for benchmarks?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>System clock can jump (NTP, user change). <code class="inline">performance.now()</code> is monotonic relative to the time origin.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.2. Mark vs measure?</h3>
-        <ul>
-          <li><strong>A:</strong> A <strong>mark</strong> is a timestamp label. A <strong>measure</strong> is a duration entry between two marks (or a mark and now).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Mark vs measure?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <strong>mark</strong> is a timestamp label. A <strong>measure</strong> is a duration entry between two marks (or a mark and now).</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -175,24 +189,214 @@ resources.filter((r) =&gt; r.initiatorType === &quot;script&quot;);</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Log <code class="inline">performance.now()</code> before/after a loop; print duration.</li>
-          <li>Create a performance mark and measure between two marks.</li>
-          <li>List a few <code class="inline">performance.getEntriesByType(&quot;resource&quot;)</code> names (browser).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Log <code class="inline">performance.now()</code> before/after a loop; print duration.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const start = performance.now();
+
+let total = 0;
+for (let i = 0; i &lt; 1_000_000; i++) {
+  total += i;
+}
+
+const duration = performance.now() - start;
+console.log(`Loop calculated total ${total} in ${duration.toFixed(3)} ms`);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a performance mark and measure between two marks.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>performance.mark(&quot;task-start&quot;);
+
+// Do work
+let sum = 0;
+for (let i = 0; i &lt; 500_000; i++) sum += i;
+
+performance.mark(&quot;task-end&quot;);
+performance.measure(&quot;task-duration&quot;, &quot;task-start&quot;, &quot;task-end&quot;);
+
+const measures = performance.getEntriesByName(&quot;task-duration&quot;);
+console.log(&quot;Measured duration:&quot;, measures[0].duration.toFixed(3), &quot;ms&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">List a few <code class="inline">performance.getEntriesByType(&quot;resource&quot;)</code> names (browser).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>if (typeof performance !== &quot;undefined&quot; &amp;&amp; performance.getEntriesByType) {
+  const resources = performance.getEntriesByType(&quot;resource&quot;);
+  console.log(`Found ${resources.length} loaded resources.`);
+  resources.slice(0, 3).forEach((entry) =&gt; console.log(&quot; - Resource:&quot;, entry.name));
+} else {
+  console.log(&quot;Resource timing API accessible via performance.getEntriesByType(&#x27;resource&#x27;)&quot;);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>timeFn(fn)</strong> — Helper returning {result, ms} using performance.now.</li>
-          <li><strong>User Timing</strong> — mark start/end around JSON.parse of a large string; measure.</li>
-          <li><strong>buffer note</strong> — Check performance.setResourceTimingBufferSize if available; comment why it matters.</li>
-          <li><strong>navigation timing</strong> — Read domContentLoaded-like timings from PerformanceNavigationTiming if present.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>timeFn(fn)</strong> — Helper returning {result, ms} using performance.now.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function timeFn(fn) {
+  const start = performance.now();
+  const result = fn();
+  const durationMs = performance.now() - start;
+  return { result, durationMs: Number(durationMs.toFixed(3)) };
+}
+
+const timed = timeFn(() =&gt; {
+  return Array.from({ length: 100_000 }, (_, i) =&gt; i * 2).reduce((a, b) =&gt; a + b, 0);
+});
+
+console.log(`Computed ${timed.result} in ${timed.durationMs}ms`);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>User Timing</strong> — mark start/end around JSON.parse of a large string; measure.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const largeObject = Array.from({ length: 50_000 }, (_, i) =&gt; ({ id: i, name: `User_${i}` }));
+const jsonPayload = JSON.stringify(largeObject);
+
+performance.mark(&quot;json-parse-start&quot;);
+const parsed = JSON.parse(jsonPayload);
+performance.mark(&quot;json-parse-end&quot;);
+
+performance.measure(&quot;json-parse-metric&quot;, &quot;json-parse-start&quot;, &quot;json-parse-end&quot;);
+const [entry] = performance.getEntriesByName(&quot;json-parse-metric&quot;);
+console.log(`JSON.parse took ${entry.duration.toFixed(3)}ms for ${parsed.length} records.`);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>buffer note</strong> — Check performance.setResourceTimingBufferSize if available; comment why it matters.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Resource Timing Buffer Management:
+- Browsers allocate a fixed buffer (typically 250-300 entries) for performance.getEntriesByType(&quot;resource&quot;).
+- Once full, newer resource timings are dropped unless expanded or cleared.
+- Adjust buffer size via performance.setResourceTimingBufferSize(500) and listen to onresourcetimingbufferfull.
+*/
+if (typeof performance !== &quot;undefined&quot; &amp;&amp; performance.setResourceTimingBufferSize) {
+  performance.setResourceTimingBufferSize(500);
+  console.log(&quot;Resource timing buffer size set to 500.&quot;);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>navigation timing</strong> — Read domContentLoaded-like timings from PerformanceNavigationTiming if present.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>if (typeof performance !== &quot;undefined&quot; &amp;&amp; performance.getEntriesByType) {
+  const [nav] = performance.getEntriesByType(&quot;navigation&quot;);
+  if (nav) {
+    const domReady = nav.domContentLoadedEventEnd - nav.domContentLoadedEventStart;
+    const loadTime = nav.loadEventEnd - nav.startTime;
+    console.log(`DOMContentLoaded took: ${domReady.toFixed(2)}ms`);
+    console.log(`Full Page Load took:   ${loadTime.toFixed(2)}ms`);
+  }
+} else {
+  console.log(&quot;PerformanceNavigationTiming reports domContentLoaded and load events.&quot;);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>long task awareness</strong> — Chunk a heavy loop with setTimeout/await delay; compare UI responsiveness notes.</li>
-          <li><strong>measure spam</strong> — Clear marks/measures after logging to avoid unbounded buffers.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>long task awareness</strong> — Chunk a heavy loop with setTimeout/await delay; compare UI responsiveness notes.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Long Task Chunking Pattern:
+// Prevents blocking the browser main thread and dropping UI frame rates
+async function processHeavyDataInChunks(items, chunkSize = 10_000) {
+  let index = 0;
+
+  while (index &lt; items.length) {
+    const chunk = items.slice(index, index + chunkSize);
+    // Process chunk
+    chunk.forEach((x) =&gt; Math.sqrt(x));
+    index += chunkSize;
+
+    // Yield back to the browser event loop to allow render &amp; input handling
+    await new Promise((resolve) =&gt; setTimeout(resolve, 0));
+  }
+
+  console.log(&quot;Heavy processing complete without UI freezing!&quot;);
+}
+
+processHeavyDataInChunks(Array.from({ length: 50_000 }, (_, i) =&gt; i));</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>measure spam</strong> — Clear marks/measures after logging to avoid unbounded buffers.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Measure Spam Prevention &amp; Cleanup:
+function runBenchmarkedTask(label, work) {
+  const startMark = `${label}-start`;
+  const endMark = `${label}-end`;
+
+  performance.mark(startMark);
+  work();
+  performance.mark(endMark);
+
+  performance.measure(label, startMark, endMark);
+  const [measurement] = performance.getEntriesByName(label);
+  console.log(`[${label}] took: ${measurement.duration.toFixed(3)}ms`);
+
+  // Clear to prevent memory leaks and buffer pollution:
+  performance.clearMarks(startMark);
+  performance.clearMarks(endMark);
+  performance.clearMeasures(label);
+}
+
+runBenchmarkedTask(&quot;QuickCalculation&quot;, () =&gt; Math.hypot(300, 400));</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

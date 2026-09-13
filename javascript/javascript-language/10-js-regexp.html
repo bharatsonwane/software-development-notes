@@ -172,29 +172,62 @@ re.lastIndex = 0;</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Literal or <code class="inline">new RegExp</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Literal when the pattern is known at write time. Constructor when the pattern string is built at runtime.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Literal or <code class="inline">new RegExp</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Literal when the pattern is known at write time. Constructor when the pattern string is built at runtime.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.2. Why does the same regex fail the second <code class="inline">test</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> The <code class="inline">g</code> (or <code class="inline">y</code>) flag stores <code class="inline">lastIndex</code> on the object. Reset it, or do not reuse a global regex across calls.</li>
-        </ul>
-        <h3>C.3. match vs matchAll?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">match</code> with <code class="inline">g</code> returns only the matched strings. <code class="inline">matchAll</code> needs <code class="inline">g</code> and yields match objects including groups.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Why does the same regex fail the second <code class="inline">test</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The <code class="inline">g</code> (or <code class="inline">y</code>) flag stores <code class="inline">lastIndex</code> on the object. Reset it, or do not reuse a global regex across calls.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. match vs matchAll?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">match</code> with <code class="inline">g</code> returns only the matched strings. <code class="inline">matchAll</code> needs <code class="inline">g</code> and yields match objects including groups.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.4. How do I escape user input in a pattern?</h3>
-        <ul>
-          <li><strong>A:</strong> Replace regex special characters before <code class="inline">new RegExp</code> (or use a well-tested escape helper). Never interpolate raw user text into a regex.</li>
-        </ul>
-        <h3>C.5. What is catastrophic backtracking?</h3>
-        <ul>
-          <li><strong>A:</strong> When quantifiers nest or compete, matching can explode in time on certain inputs. Avoid ambiguous nested <code class="inline">+</code>/<code class="inline">*</code>, bound the input length, and do not evaluate untrusted patterns on large data.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. How do I escape user input in a pattern?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Replace regex special characters before <code class="inline">new RegExp</code> (or use a well-tested escape helper). Never interpolate raw user text into a regex.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is catastrophic backtracking?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When quantifiers nest or compete, matching can explode in time on certain inputs. Avoid ambiguous nested <code class="inline">+</code>/<code class="inline">*</code>, bound the input length, and do not evaluate untrusted patterns on large data.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -209,24 +242,169 @@ re.lastIndex = 0;</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Write a regex that <code class="inline">test</code>s whether a string contains digits.</li>
-          <li>Use <code class="inline">str.replace(/a/g, &quot;A&quot;)</code> on a sample sentence.</li>
-          <li>Use <code class="inline">str.match(/\w+/g)</code> to list words in a short sentence.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write a regex that <code class="inline">test</code>s whether a string contains digits.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const hasDigits = /\d/;
+
+console.log(hasDigits.test(&quot;user123&quot;)); // true
+console.log(hasDigits.test(&quot;welcome&quot;)); // false</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Use <code class="inline">str.replace(/a/g, &quot;A&quot;)</code> on a sample sentence.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const text = &quot;banana pancake&quot;;
+const result = text.replace(/a/g, &quot;A&quot;);
+
+console.log(result); // &quot;bAnAnA pAncAke&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Use <code class="inline">str.match(/\w+/g)</code> to list words in a short sentence.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const sentence = &quot;JavaScript makes the web interactive!&quot;;
+const words = sentence.match(/\w+/g);
+
+console.log(&quot;Extracted words:&quot;, words);
+// [&quot;JavaScript&quot;, &quot;makes&quot;, &quot;the&quot;, &quot;web&quot;, &quot;interactive&quot;]</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>isEmailLite</strong> — Simple pattern: local@domain with at least one dot in the domain (not production-grade). Return boolean.</li>
-          <li><strong>extractHashtags</strong> — From a tweet-like string, return an array of <code class="inline">#tags</code> with <code class="inline">match</code> or <code class="inline">matchAll</code>.</li>
-          <li><strong>redactDigits</strong> — Replace every digit with <code class="inline">*</code> using <code class="inline">replace</code>.</li>
-          <li><strong>escapeUser</strong> — Write <code class="inline">escapeRegExp(s)</code> that escapes special characters, then build <code class="inline">new RegExp(escapeRegExp(user), &quot;i&quot;)</code> and search a haystack.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>isEmailLite</strong> — Simple pattern: local@domain with at least one dot in the domain (not production-grade). Return boolean.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function isEmailLite(email) {
+  // Checks non-empty local part, @, domain name, dot, and TLD
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+console.log(isEmailLite(&quot;user@example.com&quot;)); // true
+console.log(isEmailLite(&quot;invalid-email@&quot;));   // false
+console.log(isEmailLite(&quot;plainaddress&quot;));     // false</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>extractHashtags</strong> — From a tweet-like string, return an array of <code class="inline">#tags</code> with <code class="inline">match</code> or <code class="inline">matchAll</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function extractHashtags(tweet) {
+  const matches = tweet.match(/#\w+/g);
+  return matches || [];
+}
+
+const tweet = &quot;Loving #javascript and #webdevelopment! #2026&quot;;
+console.log(extractHashtags(tweet)); // [&quot;#javascript&quot;, &quot;#webdevelopment&quot;, &quot;#2026&quot;]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>redactDigits</strong> — Replace every digit with <code class="inline">*</code> using <code class="inline">replace</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function redactDigits(card) {
+  return card.replace(/\d/g, &quot;*&quot;);
+}
+
+console.log(redactDigits(&quot;Card: 1234-5678-9012-3456&quot;));
+// &quot;Card: ****-****-****-****&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>escapeUser</strong> — Write <code class="inline">escapeRegExp(s)</code> that escapes special characters, then build <code class="inline">new RegExp(escapeRegExp(user), &quot;i&quot;)</code> and search a haystack.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function escapeRegExp(string) {
+  // Escapes regex special characters: . * + ? ^ $ { } ( ) | [ ] \
+  return string.replace(/[.*+?^${}()|[\]\\]/g, &quot;\\$&amp;&quot;);
+}
+
+const userQuery = &quot;item (v1.0)? [new]&quot;;
+const safeRegex = new RegExp(escapeRegExp(userQuery), &quot;g&quot;);
+console.log(&quot;Escaped pattern:&quot;, safeRegex.source);
+console.log(safeRegex.test(&quot;item (v1.0)? [new]&quot;)); // true</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>lastIndex trap</strong> — Create <code class="inline">const re = /a/g</code>; call <code class="inline">re.test(&quot;ab&quot;)</code> twice; log results and <code class="inline">re.lastIndex</code>. Fix it two ways (reset lastIndex; or drop <code class="inline">g</code> for test).</li>
-          <li><strong>Named or numbered groups</strong> — Parse <code class="inline">&quot;2026-09-08&quot;</code> into year/month/day with a capturing group pattern; log the parts.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>lastIndex trap</strong> — Create <code class="inline">const re = /a/g</code>; call <code class="inline">re.test(&quot;ab&quot;)</code> twice; log results and <code class="inline">re.lastIndex</code>. Fix it two ways (reset lastIndex; or drop <code class="inline">g</code> for test).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const re = /a/g;
+const str = &quot;banana&quot;;
+
+// /g regex instances maintain state via .lastIndex
+console.log(re.test(str), &quot;lastIndex:&quot;, re.lastIndex); // true, lastIndex: 2
+console.log(re.test(str), &quot;lastIndex:&quot;, re.lastIndex); // true, lastIndex: 4
+console.log(re.test(str), &quot;lastIndex:&quot;, re.lastIndex); // true, lastIndex: 6
+console.log(re.test(str), &quot;lastIndex:&quot;, re.lastIndex); // false (resets to 0)
+console.log(&quot;After reset, lastIndex:&quot;, re.lastIndex);  // 0</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Named or numbered groups</strong> — Parse <code class="inline">&quot;2026-09-08&quot;</code> into year/month/day with a capturing group pattern; log the parts.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const dateStr = &quot;2026-09-08&quot;;
+
+// Using named capture groups:
+const dateRegex = /(?&lt;year&gt;\d{4})-(?&lt;month&gt;\d{2})-(?&lt;day&gt;\d{2})/;
+const match = dateStr.match(dateRegex);
+
+if (match) {
+  const { year, month, day } = match.groups;
+  console.log(`Year: ${year}, Month: ${month}, Day: ${day}`);
+  // Year: 2026, Month: 09, Day: 08
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

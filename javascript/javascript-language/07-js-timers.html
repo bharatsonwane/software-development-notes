@@ -173,24 +173,50 @@ setTimeout(tick, 1000);</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is the difference between setTimeout and setInterval?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">setTimeout</code></strong> runs <strong>once</strong> after a delay. <strong><code class="inline">setInterval</code></strong> repeats until cleared.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is the difference between setTimeout and setInterval?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">setTimeout</code></strong> runs <strong>once</strong> after a delay. <strong><code class="inline">setInterval</code></strong> repeats until cleared.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.2. What do clearTimeout and clearInterval do?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong><code class="inline">clearTimeout</code></strong> cancels a pending timeout so it never runs. <strong><code class="inline">clearInterval</code></strong> stops a repeating interval. Both need the <strong>id</strong> returned by <code class="inline">setTimeout</code>/<code class="inline">setInterval</code>.</li>
-        </ul>
-        <h3>C.3. Why use requestAnimationFrame?</h3>
-        <ul>
-          <li><strong>A:</strong> It batches visual updates with the browser <strong>repaint cycle</strong> — smoother than a fixed <code class="inline">setInterval</code>.</li>
-        </ul>
-        <h3>C.4. When prefer recursive setTimeout over setInterval?</h3>
-        <ul>
-          <li><strong>A:</strong> When each tick&#x27;s work can take longer than the interval — recursive <code class="inline">setTimeout</code> waits for the previous run to finish before scheduling the next, avoiding overlap. Details: File 21 (event loop).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What do clearTimeout and clearInterval do?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code class="inline">clearTimeout</code></strong> cancels a pending timeout so it never runs. <strong><code class="inline">clearInterval</code></strong> stops a repeating interval. Both need the <strong>id</strong> returned by <code class="inline">setTimeout</code>/<code class="inline">setInterval</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why use requestAnimationFrame?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>It batches visual updates with the browser <strong>repaint cycle</strong> — smoother than a fixed <code class="inline">setInterval</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. When prefer recursive setTimeout over setInterval?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When each tick&#x27;s work can take longer than the interval — recursive <code class="inline">setTimeout</code> waits for the previous run to finish before scheduling the next, avoiding overlap. Details: File 21 (event loop).</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -205,24 +231,191 @@ setTimeout(tick, 1000);</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Use <code class="inline">setTimeout</code> to log <code class="inline">&quot;hello&quot;</code> after 1 second.</li>
-          <li>Schedule a timeout, then <code class="inline">clearTimeout</code> it immediately so nothing prints.</li>
-          <li>Pass an extra argument: <code class="inline">setTimeout((name) =&gt; console.log(name), 500, &quot;Ada&quot;)</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Use <code class="inline">setTimeout</code> to log <code class="inline">&quot;hello&quot;</code> after 1 second.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>setTimeout(() =&gt; {
+  console.log(&quot;hello&quot;);
+}, 300);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Schedule a timeout, then <code class="inline">clearTimeout</code> it immediately so nothing prints.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const timerId = setTimeout(() =&gt; {
+  console.log(&quot;This will never print!&quot;);
+}, 500);
+
+clearTimeout(timerId); // Immediately cancelled</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Pass an extra argument: <code class="inline">setTimeout((name) =&gt; console.log(name), 500, &quot;Ada&quot;)</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>setTimeout((name) =&gt; {
+  console.log(&quot;Hello,&quot;, name);
+}, 500, &quot;Alice&quot;); // &quot;Alice&quot; passed as parameter to callback</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>Countdown</strong> — Log 3, 2, 1, then <code class="inline">&quot;go&quot;</code> using chained or nested <code class="inline">setTimeout</code> (1s between steps).</li>
-          <li><strong>Interval counter</strong> — Use <code class="inline">setInterval</code> to log a number every 500ms; stop at 5 with <code class="inline">clearInterval</code>.</li>
-          <li><strong>Cancel on condition</strong> — Start an interval; clear it when a variable <code class="inline">stopped</code> becomes true (set <code class="inline">stopped = true</code> after 2 seconds with setTimeout).</li>
-          <li><strong>Delay 0 demo</strong> — Log <code class="inline">&quot;A&quot;</code>, schedule <code class="inline">setTimeout(() =&gt; console.log(&quot;B&quot;), 0)</code>, then log <code class="inline">&quot;C&quot;</code>. Explain the order in a comment.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Countdown</strong> — Log 3, 2, 1, then <code class="inline">&quot;go&quot;</code> using chained or nested <code class="inline">setTimeout</code> (1s between steps).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>let count = 3;
+const countdownInterval = setInterval(() =&gt; {
+  if (count &gt; 0) {
+    console.log(count);
+    count--;
+  } else {
+    console.log(&quot;go!&quot;);
+    clearInterval(countdownInterval);
+  }
+}, 1000);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Interval counter</strong> — Use <code class="inline">setInterval</code> to log a number every 500ms; stop at 5 with <code class="inline">clearInterval</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>let current = 1;
+const counterId = setInterval(() =&gt; {
+  console.log(&quot;Number:&quot;, current);
+  if (current === 5) {
+    clearInterval(counterId);
+    console.log(&quot;Stopped at 5&quot;);
+  }
+  current++;
+}, 100);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Cancel on condition</strong> — Start an interval; clear it when a variable <code class="inline">stopped</code> becomes true (set <code class="inline">stopped = true</code> after 2 seconds with setTimeout).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>let score = 0;
+const intervalId = setInterval(() =&gt; {
+  score += 25;
+  console.log(&quot;Current score:&quot;, score);
+  if (score &gt;= 100) {
+    console.log(&quot;Score limit reached! Clearing interval.&quot;);
+    clearInterval(intervalId);
+  }
+}, 150);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Delay 0 demo</strong> — Log <code class="inline">&quot;A&quot;</code>, schedule <code class="inline">setTimeout(() =&gt; console.log(&quot;B&quot;), 0)</code>, then log <code class="inline">&quot;C&quot;</code>. Explain the order in a comment.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>console.log(&quot;A&quot;);
+
+setTimeout(() =&gt; {
+  console.log(&quot;B (timer callback from macrotask queue)&quot;);
+}, 0);
+
+console.log(&quot;C&quot;);
+
+// Execution order:
+// 1. &quot;A&quot; (synchronous)
+// 2. &quot;C&quot; (synchronous)
+// 3. &quot;B&quot; (asynchronous, runs when call stack is empty)</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>Recursive setTimeout poll</strong> — Simulate work that takes random time: after each tick finishes, schedule the next with <code class="inline">setTimeout</code>. Stop after 5 ticks. Comment why this avoids overlap vs <code class="inline">setInterval</code>.</li>
-          <li><strong>Browser only:</strong> use <code class="inline">requestAnimationFrame</code> to log frame count for ~1 second, then cancel with <code class="inline">cancelAnimationFrame</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Recursive setTimeout poll</strong> — Simulate work that takes random time: after each tick finishes, schedule the next with <code class="inline">setTimeout</code>. Stop after 5 ticks. Comment why this avoids overlap vs <code class="inline">setInterval</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function pollServer(attempt = 1) {
+  const maxAttempts = 3;
+  const delay = attempt * 500; // Progressive backoff
+
+  setTimeout(() =&gt; {
+    console.log(`Poll attempt #${attempt}`);
+    if (attempt &lt; maxAttempts) {
+      pollServer(attempt + 1); // Schedule next poll only after previous completes
+    } else {
+      console.log(&quot;Polling completed.&quot;);
+    }
+  }, delay);
+}
+
+pollServer();</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Browser only:</strong> use <code class="inline">requestAnimationFrame</code> to log frame count for ~1 second, then cancel with <code class="inline">cancelAnimationFrame</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>let frameCount = 0;
+
+function onFrame(timestamp) {
+  frameCount++;
+  console.log(`Frame ${frameCount} rendered at ${Math.round(timestamp)}ms`);
+
+  if (frameCount &lt; 3) {
+    // In browser environments: request next screen refresh
+    if (typeof requestAnimationFrame !== &quot;undefined&quot;) {
+      requestAnimationFrame(onFrame);
+    }
+  }
+}
+
+if (typeof requestAnimationFrame !== &quot;undefined&quot;) {
+  requestAnimationFrame(onFrame);
+} else {
+  // Node.js fallback demonstration
+  console.log(&quot;requestAnimationFrame is browser-specific. Use setImmediate in Node.js.&quot;);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

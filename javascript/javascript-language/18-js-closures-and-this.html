@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="../../public/vendor/codemirror/lib/codemirror.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/eclipse.min.css" />
   <link rel="stylesheet" href="../../public/vendor/codemirror/theme/material-darker.min.css" />
-  O. Closures &amp; this - JavaScript Notes</title>
-  </head>
+  <title>18. Closures &amp; this - JavaScript Notes</title>
+</head>
 <body>
   <div class="layout">
     <aside class="sidebar">
@@ -37,10 +37,10 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./javascript-language.html">JavaScript Language</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span O. Closures &amp; this</span>
+        <span aria-current="page">18. Closures &amp; this</span>
       </nav>
       <header class="hero" id="intro">
-        O. Closures &amp; this</h1>
+        <h1>18. Closures &amp; this</h1>
         <p class="subtitle">File 18 — lexical scope, closures, and dynamic this binding.</p>
         <div class="chip-row"><span class="chip prim">Notes</span><span class="chip obj">Examples</span><span class="chip ref">Practice</span><span class="chip type">Interview</span></div>
       </header>
@@ -580,45 +580,100 @@ sum(1, 2, 3);  // 6</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. What is a closure?</h3>
-        <ul>
-          <li><strong>A:</strong> A function that <strong>remembers</strong> variables from its outer lexical scope, even after the outer function has returned. In JS, functions close over their surrounding environment.</li>
-        </ul>
-        <h3>C.2. What is the difference between scope and closure?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>Scope</strong> is where variables are visible. A <strong>closure</strong> is the mechanism that lets an inner function access outer variables after the outer function finishes executing.</li>
-        </ul>
-        <h3>C.3. What is an IIFE?</h3>
-        <ul>
-          <li><strong>A:</strong> An <strong>Immediately Invoked Function Expression</strong> — <code class="inline">(function () { ... })()</code> runs as soon as it is defined. Historically used for private scope; less needed with <code class="inline">let</code>/<code class="inline">const</code> and modules.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. What is a closure?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A function that <strong>remembers</strong> variables from its outer lexical scope, even after the outer function has returned. In JS, functions close over their surrounding environment.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What is the difference between scope and closure?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Scope</strong> is where variables are visible. A <strong>closure</strong> is the mechanism that lets an inner function access outer variables after the outer function finishes executing.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What is an IIFE?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>An <strong>Immediately Invoked Function Expression</strong> — <code class="inline">(function () { ... })()</code> runs as soon as it is defined. Historically used for private scope; less needed with <code class="inline">let</code>/<code class="inline">const</code> and modules.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.4. What is the difference between <code class="inline">call</code>, <code class="inline">apply</code>, and <code class="inline">bind</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">call</code> and <code class="inline">apply</code> <strong>invoke</strong> the function immediately with a given <code class="inline">this</code>; <code class="inline">call</code> takes args individually, <code class="inline">apply</code> as an array. <code class="inline">bind</code> returns a <strong>new function</strong> with fixed <code class="inline">this</code> (and optional partial args) without calling it yet.</li>
-        </ul>
-        <h3>C.5. Do arrow functions have <code class="inline">this</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> They do not have their <strong>own</strong> <code class="inline">this</code>. They inherit <code class="inline">this</code> from the surrounding scope where the arrow was <strong>defined</strong>.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What is the difference between <code class="inline">call</code>, <code class="inline">apply</code>, and <code class="inline">bind</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">call</code> and <code class="inline">apply</code> <strong>invoke</strong> the function immediately with a given <code class="inline">this</code>; <code class="inline">call</code> takes args individually, <code class="inline">apply</code> as an array. <code class="inline">bind</code> returns a <strong>new function</strong> with fixed <code class="inline">this</code> (and optional partial args) without calling it yet.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Do arrow functions have <code class="inline">this</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>They do not have their <strong>own</strong> <code class="inline">this</code>. They inherit <code class="inline">this</code> from the surrounding scope where the arrow was <strong>defined</strong>.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.6. How is <code class="inline">this</code> determined in JavaScript?</h3>
-        <ul>
-          <li><strong>A:</strong> By <strong>how the function is called</strong>: default (bare call), implicit (<code class="inline">obj.method()</code>), explicit (<code class="inline">call</code>/<code class="inline">apply</code>/<code class="inline">bind</code>), or <code class="inline">new</code>. Arrow functions use <strong>lexical</strong> <code class="inline">this</code> from the enclosing scope.</li>
-        </ul>
-        <h3>C.7. Why does <code class="inline">const fn = obj.method; fn()</code> lose <code class="inline">this</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">this</code> is set by the <strong>call site</strong>. A bare <code class="inline">fn()</code> uses <strong>default binding</strong>, not <code class="inline">obj</code>. Use <code class="inline">fn.call(obj)</code>, <code class="inline">obj.method()</code>, or <code class="inline">obj.method.bind(obj)</code>.</li>
-        </ul>
-        <h3>C.8. Why did <code class="inline">for (var i = 0; ...)</code> break closures in loops?</h3>
-        <ul>
-          <li><strong>A:</strong> <code class="inline">var</code> is function-scoped — one shared <code class="inline">i</code>. All async callbacks see the final value. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, or use an IIFE to capture each value (File 04).</li>
-        </ul>
-        <h3>C.9. Why does <code class="inline">this</code> break inside a callback?</h3>
-        <ul>
-          <li><strong>A:</strong> A nested <code class="inline">function</code> callback gets its own <code class="inline">this</code> (often <code class="inline">undefined</code> in strict mode). Fix with an <strong>arrow</strong> (lexical <code class="inline">this</code>), <code class="inline">.bind(this)</code>, or store <code class="inline">const self = this</code>.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How is <code class="inline">this</code> determined in JavaScript?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>By <strong>how the function is called</strong>: default (bare call), implicit (<code class="inline">obj.method()</code>), explicit (<code class="inline">call</code>/<code class="inline">apply</code>/<code class="inline">bind</code>), or <code class="inline">new</code>. Arrow functions use <strong>lexical</strong> <code class="inline">this</code> from the enclosing scope.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. Why does <code class="inline">const fn = obj.method; fn()</code> lose <code class="inline">this</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">this</code> is set by the <strong>call site</strong>. A bare <code class="inline">fn()</code> uses <strong>default binding</strong>, not <code class="inline">obj</code>. Use <code class="inline">fn.call(obj)</code>, <code class="inline">obj.method()</code>, or <code class="inline">obj.method.bind(obj)</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why did <code class="inline">for (var i = 0; ...)</code> break closures in loops?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">var</code> is function-scoped — one shared <code class="inline">i</code>. All async callbacks see the final value. <code class="inline">let</code> creates a <strong>new binding per iteration</strong>, or use an IIFE to capture each value (File 04).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.9. Why does <code class="inline">this</code> break inside a callback?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A nested <code class="inline">function</code> callback gets its own <code class="inline">this</code> (often <code class="inline">undefined</code> in strict mode). Fix with an <strong>arrow</strong> (lexical <code class="inline">this</code>), <code class="inline">.bind(this)</code>, or store <code class="inline">const self = this</code>.</p>
         <div class="code"><pre>const user = {
   name: &quot;Bharat&quot;,
   delayed() {
@@ -627,6 +682,8 @@ sum(1, 2, 3);  // 6</pre></div>
   },
 };
 user.delayed();</pre></div>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -641,24 +698,222 @@ user.delayed();</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Write a function that returns an inner function closing over a counter.</li>
-          <li>Create a simple makeMultiplier(n) closure.</li>
-          <li>Log <code class="inline">this</code> in a method vs a bare function (non-strict / strict if you can).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write a function that returns an inner function closing over a counter.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function makeCounter() {
+  let count = 0; // Enclosed lexical variable
+  return function() {
+    return ++count;
+  };
+}
+
+const counter = makeCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+console.log(counter()); // 3</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a simple makeMultiplier(n) closure.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function makeMultiplier(n) {
+  return function(x) {
+    return x * n;
+  };
+}
+
+const double = makeMultiplier(2);
+const triple = makeMultiplier(3);
+
+console.log(&quot;double(5):&quot;, double(5)); // 10
+console.log(&quot;triple(5):&quot;, triple(5)); // 15</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Log <code class="inline">this</code> in a method vs a bare function (non-strict / strict if you can).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const user = {
+  name: &quot;Bharat&quot;,
+  showThis() {
+    console.log(&quot;Method this:&quot;, this.name);
+  }
+};
+
+user.showThis(); // Method this: Bharat
+
+function bareFunction() {
+  // In non-strict mode this refers to global/window; in strict mode it is undefined
+  console.log(&quot;Bare function this:&quot;, this);
+}
+
+bareFunction();</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>makeCounter</strong> — <code class="inline">inc</code>/<code class="inline">dec</code>/<code class="inline">value</code> via closure.</li>
-          <li><strong>partialBind</strong> — Use <code class="inline">bind</code> to preset the first argument of a sum function.</li>
-          <li><strong>call vs apply</strong> — Call a function with an explicit this and argument list vs array.</li>
-          <li><strong>arrow vs method</strong> — Object with method and arrow property; show this difference.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>makeCounter</strong> — <code class="inline">inc</code>/<code class="inline">dec</code>/<code class="inline">value</code> via closure.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function makeCounter(initial = 0) {
+  let count = initial;
+  return {
+    inc() { return ++count; },
+    dec() { return --count; },
+    get() { return count; }
+  };
+}
+
+const c = makeCounter(10);
+console.log(&quot;Inc:&quot;, c.inc()); // 11
+console.log(&quot;Inc:&quot;, c.inc()); // 12
+console.log(&quot;Dec:&quot;, c.dec()); // 11
+console.log(&quot;Get:&quot;, c.get()); // 11</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>partialBind</strong> — Use <code class="inline">bind</code> to preset the first argument of a sum function.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function multiply(a, b) {
+  return a * b;
+}
+
+// Preset the first argument (a = 5) using .bind()
+const multiplyBy5 = multiply.bind(null, 5);
+
+console.log(&quot;multiplyBy5(4) =&quot;, multiplyBy5(4)); // 20
+console.log(&quot;multiplyBy5(7) =&quot;, multiplyBy5(7)); // 35</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>call vs apply</strong> — Call a function with an explicit this and argument list vs array.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function introduce(greeting, punctuation) {
+  console.log(`${greeting}, I am ${this.name}${punctuation}`);
+}
+
+const person = { name: &quot;Bharat&quot; };
+
+// call: arguments passed individually
+introduce.call(person, &quot;Hello&quot;, &quot;!&quot;);
+
+// apply: arguments passed as an array
+introduce.apply(person, [&quot;Welcome&quot;, &quot;.&quot;]);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>arrow vs method</strong> — Object with method and arrow property; show this difference.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const obj = {
+  name: &quot;Container&quot;,
+  regularMethod() {
+    console.log(&quot;regularMethod this.name:&quot;, this.name); // &quot;Container&quot;
+  },
+  arrowProperty: () =&gt; {
+    // Arrow functions have lexical this (inherited from surrounding outer scope)
+    console.log(&quot;arrowProperty this:&quot;, typeof this);
+  }
+};
+
+obj.regularMethod();
+obj.arrowProperty();</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>loop closure</strong> — Fix a classic var-in-loop bug with let or an IIFE/bind.</li>
-          <li><strong>once(fn)</strong> — Closure that runs fn only the first time.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>loop closure</strong> — Fix a classic var-in-loop bug with let or an IIFE/bind.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Problem: var in loop shares single hoisted variable
+// Solution 1: using &#x27;let&#x27; (block scoped binding per iteration)
+const funcsWithLet = [];
+for (let i = 0; i &lt; 3; i++) {
+  funcsWithLet.push(() =&gt; i);
+}
+console.log(&quot;With let: &quot;, funcsWithLet.map(fn =&gt; fn())); // [0, 1, 2]
+
+// Solution 2: using IIFE closure with var
+const funcsWithIIFE = [];
+for (var j = 0; j &lt; 3; j++) {
+  funcsWithIIFE.push(((val) =&gt; () =&gt; val)(j));
+}
+console.log(&quot;With IIFE:&quot;, funcsWithIIFE.map(fn =&gt; fn())); // [0, 1, 2]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>once(fn)</strong> — Closure that runs fn only the first time.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function once(fn) {
+  let executed = false;
+  let result;
+  return function(...args) {
+    if (!executed) {
+      executed = true;
+      result = fn.apply(this, args);
+    }
+    return result;
+  };
+}
+
+const initialize = once((msg) =&gt; {
+  console.log(&quot;Running initialization:&quot;, msg);
+  return { status: &quot;ready&quot; };
+});
+
+console.log(initialize(&quot;DB Connected&quot;)); // Logs and returns object
+console.log(initialize(&quot;DB Again&quot;));     // Returns cached result without re-logging</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

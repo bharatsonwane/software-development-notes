@@ -141,15 +141,28 @@ new Intl.NumberFormat(&quot;en-IN&quot;, {
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. How should I store dates in APIs?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>ISO 8601 strings</strong> (<code class="inline">toISOString()</code>) or <strong>epoch milliseconds</strong> — avoid locale-specific strings.</li>
-        </ul>
-        <h3>C.2. What is Intl beyond DateTimeFormat?</h3>
-        <ul>
-          <li><strong>A:</strong> Also <code class="inline">NumberFormat</code>, <code class="inline">Collator</code> (sort), <code class="inline">RelativeTimeFormat</code>, <code class="inline">Segmenter</code>, <code class="inline">ListFormat</code>, and more — prefer these over hand-rolled locale logic.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. How should I store dates in APIs?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>ISO 8601 strings</strong> (<code class="inline">toISOString()</code>) or <strong>epoch milliseconds</strong> — avoid locale-specific strings.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What is Intl beyond DateTimeFormat?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Also <code class="inline">NumberFormat</code>, <code class="inline">Collator</code> (sort), <code class="inline">RelativeTimeFormat</code>, <code class="inline">Segmenter</code>, <code class="inline">ListFormat</code>, and more — prefer these over hand-rolled locale logic.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -164,24 +177,163 @@ new Intl.NumberFormat(&quot;en-IN&quot;, {
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Create <code class="inline">new Date()</code> and log ISO string.</li>
-          <li>Build a date from year/month/day components (remember month is 0-based).</li>
-          <li>Diff two dates in whole days.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create <code class="inline">new Date()</code> and log ISO string.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const now = new Date();
+console.log(&quot;Current ISO string:&quot;, now.toISOString());
+// e.g. 2026-09-13T07:45:00.000Z</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Build a date from year/month/day components (remember month is 0-based).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Month is 0-indexed: 0 = January, 8 = September
+const milestone = new Date(2026, 8, 13); // September 13, 2026
+console.log(&quot;Milestone date:&quot;, milestone.toDateString());</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Diff two dates in whole days.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const d1 = new Date(2026, 0, 1);  // Jan 1, 2026
+const d2 = new Date(2026, 0, 15); // Jan 15, 2026
+
+const diffMs = d2 - d1;
+const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+console.log(&quot;Difference in days:&quot;, diffDays); // 14</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>formatYMD(d)</strong> — Return <code class="inline">YYYY-MM-DD</code> using local getters.</li>
-          <li><strong>addDays(d, n)</strong> — Return a new Date n days later.</li>
-          <li><strong>isWeekend(d)</strong> — Saturday/Sunday check.</li>
-          <li><strong>parseSafe(iso)</strong> — Parse ISO; return null if Invalid Date.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>formatYMD(d)</strong> — Return <code class="inline">YYYY-MM-DD</code> using local getters.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function formatYMD(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, &quot;0&quot;);
+  const day = String(d.getDate()).padStart(2, &quot;0&quot;);
+  return `${year}-${month}-${day}`;
+}
+
+console.log(formatYMD(new Date(2026, 8, 13))); // &quot;2026-09-13&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>addDays(d, n)</strong> — Return a new Date n days later.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function addDays(d, n) {
+  const result = new Date(d);
+  result.setDate(result.getDate() + n);
+  return result;
+}
+
+const today = new Date(2026, 0, 10);
+const tenDaysLater = addDays(today, 10);
+
+console.log(&quot;Original: &quot;, today.toDateString());       // Sat Jan 10 2026
+console.log(&quot;10d later:&quot;, tenDaysLater.toDateString()); // Tue Jan 20 2026</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>isWeekend(d)</strong> — Saturday/Sunday check.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function isWeekend(d) {
+  const day = d.getDay(); // 0 = Sunday, 6 = Saturday
+  return day === 0 || day === 6;
+}
+
+console.log(&quot;Sunday is weekend?   &quot;, isWeekend(new Date(2026, 8, 13))); // true
+console.log(&quot;Wednesday is weekend?&quot;, isWeekend(new Date(2026, 8, 16))); // false</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>parseSafe(iso)</strong> — Parse ISO; return null if Invalid Date.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function parseSafe(iso) {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+console.log(parseSafe(&quot;2026-09-13T12:00:00Z&quot;)); // Valid Date object
+console.log(parseSafe(&quot;not-a-real-date&quot;));       // null</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>month boundary</strong> — Add 1 month to Jan 31 and log what JS does; comment.</li>
-          <li><strong>UTC vs local</strong> — Compare <code class="inline">getHours</code> vs <code class="inline">getUTCHours</code> for the same instant.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>month boundary</strong> — Add 1 month to Jan 31 and log what JS does; comment.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const d = new Date(2026, 0, 31); // Jan 31, 2026
+console.log(&quot;Initial:&quot;, d.toDateString()); // Sat Jan 31 2026
+
+d.setMonth(d.getMonth() + 1); // Add 1 month
+console.log(&quot;After setMonth + 1:&quot;, d.toDateString());
+// Output: Tue Mar 03 2026
+// Explanation: February 2026 has only 28 days. JavaScript overflows the remaining 3 days into March!</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>UTC vs local</strong> — Compare <code class="inline">getHours</code> vs <code class="inline">getUTCHours</code> for the same instant.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const sampleDate = new Date();
+
+console.log(&quot;Local hours: &quot;, sampleDate.getHours());
+console.log(&quot;UTC hours:   &quot;, sampleDate.getUTCHours());
+console.log(&quot;Timezone offset (minutes):&quot;, sampleDate.getTimezoneOffset());</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

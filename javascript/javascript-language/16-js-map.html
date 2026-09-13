@@ -179,24 +179,50 @@ wm.get(obj);  // "metadata"
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. When should I use Map instead of a plain object?</h3>
-        <ul>
-          <li><strong>A:</strong> When keys are <strong>not strings</strong>, you need <strong>insertion order</strong> with non-integer keys, frequent <strong>size</strong> checks, or frequent add/delete without prototype noise.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. When should I use Map instead of a plain object?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When keys are <strong>not strings</strong>, you need <strong>insertion order</strong> with non-integer keys, frequent <strong>size</strong> checks, or frequent add/delete without prototype noise.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.2. What is the difference between WeakMap and Map?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>WeakMap</strong> keys must be objects, holds <strong>weak</strong> references (GC-friendly), is <strong>not iterable</strong>, and has <strong>no <code class="inline">size</code></strong>. <strong>Map</strong> holds keys strongly and supports full iteration.</li>
-        </ul>
-        <h3>C.3. How does Map treat <code class="inline">NaN</code> as a key?</h3>
-        <ul>
-          <li><strong>A:</strong> <strong>SameValueZero</strong> — all <code class="inline">NaN</code> values share one key. <code class="inline">+0</code> and <code class="inline">-0</code> are also the same key.</li>
-        </ul>
-        <h3>C.4. When do I use <code class="inline">Map.groupBy</code> vs <code class="inline">Object.groupBy</code>?</h3>
-        <ul>
-          <li><strong>A:</strong> Use <strong><code class="inline">Map.groupBy</code></strong> when the group key is not a string (objects, numbers, booleans). Use <strong><code class="inline">Object.groupBy</code></strong> for plain string/symbol keys that you want as a record (File 14).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. What is the difference between WeakMap and Map?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>WeakMap</strong> keys must be objects, holds <strong>weak</strong> references (GC-friendly), is <strong>not iterable</strong>, and has <strong>no <code class="inline">size</code></strong>. <strong>Map</strong> holds keys strongly and supports full iteration.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. How does Map treat <code class="inline">NaN</code> as a key?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>SameValueZero</strong> — all <code class="inline">NaN</code> values share one key. <code class="inline">+0</code> and <code class="inline">-0</code> are also the same key.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. When do I use <code class="inline">Map.groupBy</code> vs <code class="inline">Object.groupBy</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Use <strong><code class="inline">Map.groupBy</code></strong> when the group key is not a string (objects, numbers, booleans). Use <strong><code class="inline">Object.groupBy</code></strong> for plain string/symbol keys that you want as a record (File 14).</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -211,24 +237,211 @@ wm.get(obj);  // "metadata"
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Create a Map; <code class="inline">set</code>/<code class="inline">get</code>/<code class="inline">has</code> a few entries.</li>
-          <li>Use an object as a key and retrieve the value.</li>
-          <li>Convert Map to array of pairs with <code class="inline">[...map]</code>.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a Map; <code class="inline">set</code>/<code class="inline">get</code>/<code class="inline">has</code> a few entries.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const map = new Map();
+
+map.set(&quot;name&quot;, &quot;Bharat&quot;);
+map.set(&quot;topic&quot;, &quot;JavaScript Map&quot;);
+
+console.log(&quot;Get name:  &quot;, map.get(&quot;name&quot;)); // &quot;Bharat&quot;
+console.log(&quot;Has topic? &quot;, map.has(&quot;topic&quot;)); // true
+console.log(&quot;Map size:  &quot;, map.size);       // 2
+
+map.delete(&quot;name&quot;);
+console.log(&quot;Has name after delete? &quot;, map.has(&quot;name&quot;)); // false</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Use an object as a key and retrieve the value.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const userKey = { id: 101 };
+const roleMap = new Map();
+
+roleMap.set(userKey, &quot;Administrator&quot;);
+
+console.log(&quot;Look up by object reference:&quot;, roleMap.get(userKey)); // &quot;Administrator&quot;
+console.log(&quot;Look up with new literal:     &quot;, roleMap.get({ id: 101 })); // undefined (different object reference!)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Convert Map to array of pairs with <code class="inline">[...map]</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const scores = new Map([
+  [&quot;Alice&quot;, 95],
+  [&quot;Bob&quot;, 88],
+  [&quot;Charlie&quot;, 92]
+]);
+
+const pairs = [...scores];
+console.log(&quot;Array of pairs:&quot;, pairs);
+// [[&quot;Alice&quot;, 95], [&quot;Bob&quot;, 88], [&quot;Charlie&quot;, 92]]</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>countChars(str)</strong> — Frequency Map of characters.</li>
-          <li><strong>invertMap(m)</strong> — Swap keys/values (assume values are unique).</li>
-          <li><strong>mergeMaps(a, b)</strong> — Later map wins on conflicts.</li>
-          <li><strong>groupToMap(arr, keyFn)</strong> — Map from key to array of items.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>countChars(str)</strong> — Frequency Map of characters.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function countChars(str) {
+  const freq = new Map();
+  for (const ch of str) {
+    freq.set(ch, (freq.get(ch) ?? 0) + 1);
+  }
+  return freq;
+}
+
+const counts = countChars(&quot;javascript&quot;);
+console.log(&quot;Character counts:&quot;, [...counts]);
+// [[&quot;j&quot;, 1], [&quot;a&quot;, 2], [&quot;v&quot;, 1], [&quot;s&quot;, 1], [&quot;c&quot;, 1], [&quot;r&quot;, 1], [&quot;i&quot;, 1], [&quot;p&quot;, 1], [&quot;t&quot;, 1]]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>invertMap(m)</strong> — Swap keys/values (assume values are unique).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function invertMap(m) {
+  const inverted = new Map();
+  for (const [key, value] of m) {
+    inverted.set(value, key);
+  }
+  return inverted;
+}
+
+const original = new Map([[&quot;a&quot;, 1], [&quot;b&quot;, 2], [&quot;c&quot;, 3]]);
+console.log(&quot;Inverted Map:&quot;, [...invertMap(original)]);
+// [[1, &quot;a&quot;], [2, &quot;b&quot;], [3, &quot;c&quot;]]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>mergeMaps(a, b)</strong> — Later map wins on conflicts.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function mergeMaps(a, b) {
+  // Later map (b) overwrites duplicate keys in a
+  return new Map([...a, ...b]);
+}
+
+const mapA = new Map([[&quot;theme&quot;, &quot;light&quot;], [&quot;fontSize&quot;, 12]]);
+const mapB = new Map([[&quot;theme&quot;, &quot;dark&quot;], [&quot;showLineNumbers&quot;, true]]);
+
+console.log(&quot;Merged Map:&quot;, [...mergeMaps(mapA, mapB)]);
+// [[&quot;theme&quot;, &quot;dark&quot;], [&quot;fontSize&quot;, 12], [&quot;showLineNumbers&quot;, true]]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>groupToMap(arr, keyFn)</strong> — Map from key to array of items.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function groupToMap(arr, keyFn) {
+  const map = new Map();
+  for (const item of arr) {
+    const key = keyFn(item);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(item);
+  }
+  return map;
+}
+
+const fruits = [&quot;apple&quot;, &quot;apricot&quot;, &quot;banana&quot;, &quot;blueberry&quot;, &quot;cherry&quot;];
+const grouped = groupToMap(fruits, f =&gt; f[0]);
+
+for (const [letter, list] of grouped) {
+  console.log(`${letter} -&gt; ${list.join(&quot;, &quot;)}`);
+}
+// a -&gt; apple, apricot
+// b -&gt; banana, blueberry
+// c -&gt; cherry</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>Map vs object</strong> — Demo why <code class="inline">&quot;__proto__&quot;</code> / inherited keys make objects awkward as dictionaries.</li>
-          <li><strong>WeakMap note</strong> — Write a short comment (or tiny example) of a private-data WeakMap pattern.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Map vs object</strong> — Demo why <code class="inline">&quot;__proto__&quot;</code> / inherited keys make objects awkward as dictionaries.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Plain Object Pitfall: prototype pollution and key collisions
+const plainObj = {};
+console.log(&quot;toString in plainObj:&quot;, &quot;toString&quot; in plainObj); // true (inherited from Object.prototype!)
+
+// Map Safety: keys are strictly isolated without prototype pollution
+const safeMap = new Map();
+console.log(&quot;safeMap.has(&#x27;toString&#x27;):&quot;, safeMap.has(&quot;toString&quot;)); // false
+safeMap.set(&quot;__proto__&quot;, &quot;Safe custom key&quot;);
+console.log(safeMap.get(&quot;__proto__&quot;)); // &quot;Safe custom key&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>WeakMap note</strong> — Write a short comment (or tiny example) of a private-data WeakMap pattern.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Private state management using WeakMap
+const privateData = new WeakMap();
+
+class UserSession {
+  constructor(userId, token) {
+    privateData.set(this, { userId, token });
+  }
+
+  getUserId() {
+    return privateData.get(this).userId;
+  }
+}
+
+let session = new UserSession(42, &quot;secret-token-xyz&quot;);
+console.log(&quot;User ID:&quot;, session.getUserId()); // 42
+console.log(&quot;Token directly exposed?&quot;, session.token); // undefined
+
+// When session is nullified, its private data is eligible for garbage collection
+session = null;</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

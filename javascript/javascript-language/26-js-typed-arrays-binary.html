@@ -184,20 +184,40 @@ dv.getUint16(0, false);         // 0x1234</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Array vs TypedArray?</h3>
-        <ul>
-          <li><strong>A:</strong> Arrays hold any values and grow. TypedArrays are fixed-type numeric views over bytes — faster and required for many binary APIs.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Array vs TypedArray?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Arrays hold any values and grow. TypedArrays are fixed-type numeric views over bytes — faster and required for many binary APIs.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.2. When do I use DataView?</h3>
-        <ul>
-          <li><strong>A:</strong> When parsing/writing mixed field widths or when you must control endianness. Prefer a single TypedArray when the buffer is homogeneous.</li>
-        </ul>
-        <h3>C.3. What is a transferable?</h3>
-        <ul>
-          <li><strong>A:</strong> An object (e.g. <code class="inline">ArrayBuffer</code>) that can move ownership to another context without copying — original becomes detached.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. When do I use DataView?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When parsing/writing mixed field widths or when you must control endianness. Prefer a single TypedArray when the buffer is homogeneous.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What is a transferable?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>An object (e.g. <code class="inline">ArrayBuffer</code>) that can move ownership to another context without copying — original becomes detached.</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -212,24 +232,202 @@ dv.getUint16(0, false);         // 0x1234</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Create an ArrayBuffer of 16 bytes and a Uint8Array view.</li>
-          <li>Write values into Uint8Array; read them back.</li>
-          <li>Create a DataView and setUint16 with little-endian true/false; compare bytes.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create an ArrayBuffer of 16 bytes and a Uint8Array view.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Create 16-byte raw memory buffer
+const buffer = new ArrayBuffer(16);
+console.log(&quot;Buffer byte length:&quot;, buffer.byteLength); // 16
+
+// Create 8-bit unsigned integer view over the buffer
+const uint8View = new Uint8Array(buffer);
+console.log(&quot;Uint8Array element count:&quot;, uint8View.length); // 16</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Write values into Uint8Array; read them back.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const buffer = new ArrayBuffer(4);
+const view = new Uint8Array(buffer);
+
+view[0] = 10;
+view[1] = 255;
+view[2] = 128;
+view[3] = 42;
+
+console.log(&quot;Index 0:&quot;, view[0]); // 10
+console.log(&quot;Index 1:&quot;, view[1]); // 255
+console.log(&quot;All bytes:&quot;, Array.from(view)); // [10, 255, 128, 42]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create a DataView and setUint16 with little-endian true/false; compare bytes.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const buffer = new ArrayBuffer(4);
+const dv = new DataView(buffer);
+
+// 0x1234 = 4660 in decimal
+// Little-endian (true): least significant byte stored first -&gt; [0x34, 0x12]
+dv.setUint16(0, 0x1234, true);
+
+// Big-endian (false): most significant byte stored first -&gt; [0x12, 0x34]
+dv.setUint16(2, 0x1234, false);
+
+const bytes = new Uint8Array(buffer);
+console.log(&quot;Little-endian bytes (index 0,1):&quot;, [bytes[0].toString(16), bytes[1].toString(16)]); // [&quot;34&quot;, &quot;12&quot;]
+console.log(&quot;Big-endian bytes    (index 2,3):&quot;, [bytes[2].toString(16), bytes[3].toString(16)]); // [&quot;12&quot;, &quot;34&quot;]</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>bytes to hex</strong> — Format Uint8Array as hex string.</li>
-          <li><strong>copy buffer</strong> — Copy a slice of a buffer into a new one.</li>
-          <li><strong>float bits</strong> — Use DataView setFloat32/getFloat32 round-trip.</li>
-          <li><strong>shared views</strong> — Two typed views on same buffer; show aliasing.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>bytes to hex</strong> — Format Uint8Array as hex string.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>function bytesToHex(uint8Array) {
+  return Array.from(uint8Array)
+    .map((b) =&gt; b.toString(16).padStart(2, &quot;0&quot;))
+    .join(&quot;&quot;);
+}
+
+const data = new Uint8Array([0xde, 0xad, 0xbe, 0xef]);
+console.log(&quot;Hex string:&quot;, bytesToHex(data)); // &quot;deadbeef&quot;</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>copy buffer</strong> — Copy a slice of a buffer into a new one.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const original = new Uint8Array([10, 20, 30, 40, 50]);
+
+// Slice creates a new ArrayBuffer copy
+const clonedView = new Uint8Array(original.buffer.slice(1, 4));
+clonedView[0] = 99;
+
+console.log(&quot;Cloned view:  &quot;, Array.from(clonedView)); // [99, 30, 40]
+console.log(&quot;Original view:&quot;, Array.from(original));   // [10, 20, 30, 40, 50] (unmutated)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>float bits</strong> — Use DataView setFloat32/getFloat32 round-trip.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const buf = new ArrayBuffer(4);
+const dv = new DataView(buf);
+
+const originalFloat = 3.1415927;
+dv.setFloat32(0, originalFloat, true); // Little endian
+
+const readFloat = dv.getFloat32(0, true);
+console.log(&quot;Original float:&quot;, originalFloat);
+console.log(&quot;Read back:     &quot;, readFloat);
+console.log(&quot;Match:         &quot;, Math.abs(originalFloat - readFloat) &lt; 0.0001); // true</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>shared views</strong> — Two typed views on same buffer; show aliasing.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const sharedBuf = new ArrayBuffer(4);
+
+const u8 = new Uint8Array(sharedBuf);
+const u16 = new Uint16Array(sharedBuf);
+
+// Mutating via 16-bit view
+u16[0] = 0x0501; // 1 in low byte, 5 in high byte (little-endian)
+
+// Aliased 8-bit view automatically reflects changes:
+console.log(&quot;u8[0]:&quot;, u8[0]); // 1
+console.log(&quot;u8[1]:&quot;, u8[1]); // 5</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>pack header</strong> — Pack version:u8, flags:u8, length:u16 into a buffer.</li>
-          <li><strong>TextEncoder</strong> — Encode a string to Uint8Array and decode back (browser/Node util).</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>pack header</strong> — Pack version:u8, flags:u8, length:u16 into a buffer.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Packet Header Spec:
+// [0]   version: uint8 (1 byte)
+// [1]   flags:   uint8 (1 byte)
+// [2-3] length:  uint16 (2 bytes, little-endian)
+function packHeader(version, flags, length) {
+  const buf = new ArrayBuffer(4);
+  const dv = new DataView(buf);
+
+  dv.setUint8(0, version);
+  dv.setUint8(1, flags);
+  dv.setUint16(2, length, true);
+
+  return new Uint8Array(buf);
+}
+
+const headerBytes = packHeader(1, 0x80, 1024);
+console.log(&quot;Packed header bytes:&quot;, Array.from(headerBytes));
+// [1, 128, 0, 4] (1024 = 0x0400 -&gt; 0x00, 0x04 in little-endian)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>TextEncoder</strong> — Encode a string to Uint8Array and decode back (browser/Node util).</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>const text = &quot;Hello, WebAssembly &amp; Binary JS!&quot;;
+
+// Encode string to UTF-8 Uint8Array:
+const encoder = new TextEncoder();
+const encoded = encoder.encode(text);
+console.log(&quot;Encoded byte length:&quot;, encoded.byteLength);
+
+// Decode back to string:
+const decoder = new TextDecoder();
+const decoded = decoder.decode(encoded);
+console.log(&quot;Decoded string:     &quot;, decoded);</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

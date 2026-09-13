@@ -184,16 +184,30 @@ customElements.define(&quot;x-card&quot;, Card);</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>C.1. Why require a hyphen in the tag name?</h3>
-        <ul>
-          <li><strong>A:</strong> Spec rule so custom tags never collide with future HTML elements.</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. Why require a hyphen in the tag name?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Spec rule so custom tags never collide with future HTML elements.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>C.2. Shadow DOM vs iframe?</h3>
-        <ul>
-          <li><strong>A:</strong> Shadow DOM is style/DOM encapsulation inside the same document and JS realm. iframes are separate documents (heavier; true process isolation only with care).</li>
-        </ul>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Shadow DOM vs iframe?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Shadow DOM is style/DOM encapsulation inside the same document and JS realm. iframes are separate documents (heavier; true process isolation only with care).</p>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -208,24 +222,264 @@ customElements.define(&quot;x-card&quot;, Card);</pre></div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
-          <li>Define a custom element that renders Hello in connectedCallback.</li>
-          <li>Observe an attribute and react in attributeChangedCallback.</li>
-          <li>Attach an open shadow root and style a button inside.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Define a custom element that renders Hello in connectedCallback.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Custom Element definition:
+class SimpleHello extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  connectedCallback() {
+    this.textContent = &quot;Hello from Web Component!&quot;;
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;simple-hello&quot;)) {
+  customElements.define(&quot;simple-hello&quot;, SimpleHello);
+}
+console.log(&quot;Custom element &lt;simple-hello&gt; defined.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Observe an attribute and react in attributeChangedCallback.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class LabeledCounter extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  static get observedAttributes() {
+    return [&quot;count&quot;];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(`Attribute &quot;${name}&quot; changed from &quot;${oldValue}&quot; to &quot;${newValue}&quot;`);
+    if (this.isConnected) {
+      this.textContent = `Count: ${newValue}`;
+    }
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;labeled-counter&quot;)) {
+  customElements.define(&quot;labeled-counter&quot;, LabeledCounter);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Attach an open shadow root and style a button inside.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class StyledButton extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  constructor() {
+    super();
+    if (this.attachShadow) {
+      const shadow = this.attachShadow({ mode: &quot;open&quot; });
+      shadow.innerHTML = `
+        &lt;style&gt;
+          button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+        &lt;/style&gt;
+        &lt;button&gt;&lt;slot&gt;Click me&lt;/slot&gt;&lt;/button&gt;
+      `;
+    }
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;styled-button&quot;)) {
+  customElements.define(&quot;styled-button&quot;, StyledButton);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.2. Core tasks</h3>
         <ol>
-          <li><strong>&lt;fancy-greeting&gt;</strong> — Reflect name attribute to shadow text.</li>
-          <li><strong>slot content</strong> — Light DOM children projected via slot.</li>
-          <li><strong>events</strong> — Dispatch a CustomEvent when clicked.</li>
-          <li><strong>disconnectedCallback</strong> — Clear a timer started on connect.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>&lt;fancy-greeting&gt;</strong> — Reflect name attribute to shadow text.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class FancyGreeting extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  static get observedAttributes() {
+    return [&quot;name&quot;];
+  }
+
+  constructor() {
+    super();
+    if (this.attachShadow) {
+      this.attachShadow({ mode: &quot;open&quot; });
+      this.shadowRoot.innerHTML = `&lt;p&gt;Welcome, &lt;span id=&quot;target&quot;&gt;Guest&lt;/span&gt;!&lt;/p&gt;`;
+    }
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === &quot;name&quot; &amp;&amp; this.shadowRoot) {
+      this.shadowRoot.querySelector(&quot;#target&quot;).textContent = newValue || &quot;Guest&quot;;
+    }
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;fancy-greeting&quot;)) {
+  customElements.define(&quot;fancy-greeting&quot;, FancyGreeting);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>slot content</strong> — Light DOM children projected via slot.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class CardComponent extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  constructor() {
+    super();
+    if (this.attachShadow) {
+      this.attachShadow({ mode: &quot;open&quot; });
+      this.shadowRoot.innerHTML = `
+        &lt;div class=&quot;card&quot;&gt;
+          &lt;header&gt;&lt;slot name=&quot;header&quot;&gt;Default Header&lt;/slot&gt;&lt;/header&gt;
+          &lt;main&gt;&lt;slot&gt;Default body text goes here.&lt;/slot&gt;&lt;/main&gt;
+        &lt;/div&gt;
+      `;
+    }
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;card-component&quot;)) {
+  customElements.define(&quot;card-component&quot;, CardComponent);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>events</strong> — Dispatch a CustomEvent when clicked.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class ActionButton extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  connectedCallback() {
+    this.addEventListener(&quot;click&quot;, () =&gt; {
+      this.dispatchEvent(new CustomEvent(&quot;action-triggered&quot;, {
+        bubbles: true,
+        composed: true, // Allows crossing Shadow DOM boundary
+        detail: { actionId: &quot;submit_form&quot;, timestamp: Date.now() }
+      }));
+    });
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;action-button&quot;)) {
+  customElements.define(&quot;action-button&quot;, ActionButton);
+}</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>disconnectedCallback</strong> — Clear a timer started on connect.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class TickingClock extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  connectedCallback() {
+    this.timerId = setInterval(() =&gt; {
+      console.log(&quot;Clock tick:&quot;, new Date().toLocaleTimeString());
+    }, 1000);
+  }
+
+  disconnectedCallback() {
+    // Critical: prevent memory leaks when element is removed from DOM
+    clearInterval(this.timerId);
+    console.log(&quot;Clock removed from DOM: timer cleared.&quot;);
+  }
+}
+
+if (typeof customElements !== &quot;undefined&quot; &amp;&amp; !customElements.get(&quot;ticking-clock&quot;)) {
+  customElements.define(&quot;ticking-clock&quot;, TickingClock);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
-          <li><strong>form-associated sketch</strong> — Comment or implement a minimal custom input pattern.</li>
-          <li><strong>closed vs open shadow</strong> — Demo accessibility to shadowRoot from outside.</li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>form-associated sketch</strong> — Comment or implement a minimal custom input pattern.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>/*
+Form-Associated Custom Element Pattern (ElementInternals API):
+- Allows custom elements to participate in standard HTML &lt;form&gt; submission, validation, and resets.
+*/
+class CustomInput extends (typeof HTMLElement !== &quot;undefined&quot; ? HTMLElement : Object) {
+  static formAssociated = true;
+
+  constructor() {
+    super();
+    if (this.attachInternals) {
+      this.internals_ = this.attachInternals();
+    }
+  }
+
+  set value(val) {
+    this.internals_?.setFormValue(val);
+  }
+}
+
+console.log(&quot;Form-associated custom input pattern defined.&quot;);</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>closed vs open shadow</strong> — Demo accessibility to shadowRoot from outside.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>// Open vs Closed Shadow DOM demonstration:
+if (typeof document !== &quot;undefined&quot;) {
+  // 1. Open Shadow DOM:
+  const openHost = document.createElement(&quot;div&quot;);
+  const openShadow = openHost.attachShadow({ mode: &quot;open&quot; });
+  console.log(&quot;openHost.shadowRoot === openShadow:&quot;, openHost.shadowRoot === openShadow); // true
+
+  // 2. Closed Shadow DOM:
+  const closedHost = document.createElement(&quot;div&quot;);
+  closedHost.attachShadow({ mode: &quot;closed&quot; });
+  console.log(&quot;closedHost.shadowRoot:&quot;, closedHost.shadowRoot); // null (inaccessible from outside)
+} else {
+  console.log(&quot;Open vs Closed: host.shadowRoot returns the root if mode === &#x27;open&#x27;, null if mode === &#x27;closed&#x27;.&quot;);
+}</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>
