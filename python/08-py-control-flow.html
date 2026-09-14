@@ -23,7 +23,7 @@
         <a href="#3-iterative-statements-for-while-range">3. Iterative statements (for, while, range)</a>
         <a href="#4-transfer-statements-break-continue-pass">4. Transfer statements (break, continue, pass)</a>
         <a href="#5-pattern-programs">5. Pattern programs</a>
-        <a href="#6-number-to-word-mini-project-outline">6. Number-to-word mini project (outline)</a>
+        <a href="#6-number-to-word-mini-project-outline">6. Number-to-word mini project</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -42,13 +42,19 @@
       </nav>
       <header class="hero" id="intro">
         <h1>08. Control Flow</h1>
-        <p class="subtitle">File 08 — conditionals, loops, transfer statements, pattern programs.</p>
+        <p class="subtitle">File 08 — conditional statements (if, elif, else), iterative loops (for, while), loop transfer control (break, continue, pass, else-suite), pattern programs, and mini-applications.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">if / elif / else</span>
+          <span class="chip">for &amp; while</span>
+          <span class="chip">range()</span>
+          <span class="chip">break &amp; continue</span>
+          <span class="chip">pass</span>
+          <span class="chip">for-else</span>
+          <span class="chip">Patterns</span>
+          <span class="chip">Number to Words</span>
         </div>
       </header>
+
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -59,27 +65,36 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Control Flow</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>By default, a Python interpreter executes statements sequentially from top to bottom. <strong>Control Flow statements</strong> break this linear progression by branching decisions, repeating code blocks, or jumping to alternative locations.</li>
+          <li>Python categorizes flow control statements into three primary families:
+            <ol>
+              <li><strong>Conditional / Selection Statements:</strong> <code class="inline">if</code>, <code class="inline">if-else</code>, <code class="inline">if-elif-else</code>, and structural pattern matching (<code class="inline">match-case</code> in Python 3.10+).</li>
+              <li><strong>Iterative / Looping Statements:</strong> <code class="inline">for</code> (definite iteration over collections) and <code class="inline">while</code> (indefinite iteration controlled by a condition).</li>
+              <li><strong>Transfer / Jump Statements:</strong> <code class="inline">break</code>, <code class="inline">continue</code>, and <code class="inline">pass</code>.</li>
+            </ol>
+          </li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">08-practice.py</code> before File 09. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. The Indentation Philosophy in Python</h3>
+        <div class="callout">
+          <strong>Syntactic Rule:</strong> Unlike languages that use curly braces (<code class="inline">{ }</code>) or keywords (<code class="inline">begin...end</code>), Python defines code blocks strictly using <strong>whitespace indentation</strong> (4 spaces per PEP 8). A colon (<code class="inline">:</code>) at the end of a line signals the header of an indented block.
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Conditional statements (if / elif / else)</strong></li>
-          <li><strong>Iterative statements (for, while, range)</strong></li>
-          <li><strong>Transfer statements (break, continue, pass)</strong></li>
-          <li><strong>Pattern programs</strong></li>
-          <li><strong>Number-to-word mini project (outline)</strong></li>
+          <li><strong>Conditional statements (if / elif / else)</strong> — selection, ladders, nesting, and match-case</li>
+          <li><strong>Iterative statements (for, while, range)</strong> — sequence iteration, range mechanics, and infinite loops</li>
+          <li><strong>Transfer statements (break, continue, pass)</strong> — jump statements and the unique loop <code class="inline">else</code> suite</li>
+          <li><strong>Pattern programs</strong> — systematic matrix approach to star, number, and character pyramids</li>
+          <li><strong>Number-to-word mini project</strong> — end-to-end working English number converter</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
       <section id="2-conditional-statements-if-elif-else">
         <div class="heading-with-levels">
           <h2>2. Conditional statements (if / elif / else)</h2>
@@ -88,14 +103,83 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-conditional-statements-if-elif-else-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Simple if Statement</h3>
+        <p>Executes a block of code only when the specified condition evaluates to truthy.</p>
+        <div class="code"><pre>age = 19
+if age &gt;= 18:
+    print("Eligible to vote")</pre></div>
+
+        <h3>2.2. if-else Statement</h3>
+        <p>Provides two mutually exclusive execution paths: one when the condition is truthy, and one when it is falsy.</p>
+        <div class="code"><pre>n = 15
+if n % 2 == 0:
+    print(f"{n} is Even")
+else:
+    print(f"{n} is Odd")</pre></div>
+
+        <h3>2.3. if-elif-else Ladder</h3>
+        <p>Handles multiple mutually exclusive conditions. Python tests conditions sequentially from top to bottom and executes <em>only the first</em> branch whose condition is truthy.</p>
+        <div class="code"><pre>score = 82
+
+if score &gt;= 90:
+    grade = "A+"
+elif score &gt;= 80:
+    grade = "A"
+elif score &gt;= 70:
+    grade = "B"
+elif score &gt;= 50:
+    grade = "C"
+else:
+    grade = "F (Fail)"
+
+print(f"Score: {score} -&gt; Grade: {grade}")  # Grade: A</pre></div>
+
+        <h3 id="2-conditional-statements-if-elif-else-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.4. Nested Conditional Statements</h3>
+        <p>An <code class="inline">if</code> statement placed inside another <code class="inline">if</code> statement allows hierarchical decision making.</p>
+        <div class="code"><pre>num = 12
+if num &gt; 0:
+    if num % 2 == 0:
+        print("Positive Even number")
+    else:
+        print("Positive Odd number")
+elif num == 0:
+    print("Zero")
+else:
+    print("Negative number")</pre></div>
+
+        <h3>2.5. Structural Pattern Matching: match-case (Python 3.10+)</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Conditional statements (if / elif / else)</strong>.</li>
-          <li>Write small demos in <code class="inline">08-practice.py</code> covering this section.</li>
+          <li>Python historically lacked a <code class="inline">switch-case</code> statement, relying instead on <code class="inline">if-elif-else</code> or dictionary lookups.</li>
+          <li>Python 3.10 introduced <strong>Structural Pattern Matching</strong> via <code class="inline">match</code> and <code class="inline">case</code>, supporting value matching, wildcard defaults (<code class="inline">case _</code>), and sequence destructuring.</li>
+        </ul>
+        <div class="code"><pre>def handle_command(cmd):
+    match cmd.split():
+        case ["quit"]:
+            return "Exiting system"
+        case ["load", filename]:
+            return f"Loading file: {filename}"
+        case ["save", filename, "force"]:
+            return f"Force saving to {filename}"
+        case _:
+            return "Unknown command"</pre></div>
+
+        <h3>2.6. Common Conditional Pitfalls</h3>
+        <ul>
+          <li><strong>The Multi-Value Comparison Trap:</strong>
+            <br /><code class="inline">if x == 1 or 2 or 3:</code> does NOT check if <code class="inline">x</code> is 1, 2, or 3. Because <code class="inline">2</code> is truthy, the condition is always <code class="inline">True</code>.
+            <br /><em>Correct:</em> <code class="inline">if x in (1, 2, 3):</code>.
+          </li>
+          <li><strong>Redundant Boolean Equality Checks:</strong>
+            <br />Writing <code class="inline">if is_valid == True:</code> is unpythonic and prone to bugs with custom types.
+            <br /><em>Correct:</em> <code class="inline">if is_valid:</code>.
+          </li>
         </ul>
       </section>
+
       <section id="3-iterative-statements-for-while-range">
         <div class="heading-with-levels">
           <h2>3. Iterative statements (for, while, range)</h2>
@@ -104,14 +188,106 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-iterative-statements-for-while-range-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Iterative statements (for, while, range)</strong>.</li>
-          <li>Write small demos in <code class="inline">08-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. The for Loop</h3>
+        <p>In Python, the <code class="inline">for</code> loop is fundamentally a <strong>collection iterator</strong>. It iterates across elements of an iterable sequence (string, list, tuple, set, dict, or generator) directly, without requiring manual index counters.</p>
+
+        <div class="code"><pre># 1. Iterating over a string:
+for char in "PYTHON":
+    print(char, end="-")  # P-Y-T-H-O-N-
+print()
+
+# 2. Iterating over a list:
+names = ["Alice", "Bob", "Charlie"]
+for name in names:
+    print(f"Hello, {name}")
+
+# 3. Iterating over a dictionary (keys, values, items):
+person = {"name": "Bharat", "role": "Engineer"}
+for key, val in person.items():
+    print(f"{key} -&gt; {val}")</pre></div>
+
+        <h3>3.2. Deep Dive into range()</h3>
+        <p><code class="inline">range</code> generates an immutable sequence of numbers on-demand (lazy evaluation, requiring $O(1)$ memory regardless of size).</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Syntax Form</th>
+              <th>Arguments</th>
+              <th>Generated Sequence</th>
+              <th>Example Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">range(stop)</code></td>
+              <td>Starts at 0, steps by 1, up to <code class="inline">stop - 1</code></td>
+              <td><code class="inline">0, 1, 2, ..., stop - 1</code></td>
+              <td><code class="inline">range(5) → 0, 1, 2, 3, 4</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">range(start, stop)</code></td>
+              <td>Starts at <code class="inline">start</code>, steps by 1, up to <code class="inline">stop - 1</code></td>
+              <td><code class="inline">start, start+1, ..., stop - 1</code></td>
+              <td><code class="inline">range(2, 6) → 2, 3, 4, 5</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">range(start, stop, step)</code></td>
+              <td>Increments by <code class="inline">step</code> (can be negative for countdown)</td>
+              <td><code class="inline">start, start+step, ...</code></td>
+              <td><code class="inline">range(10, 0, -2) → 10, 8, 6, 4, 2</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Sum of first 100 positive integers:
+total = sum(range(1, 101))
+print("Sum 1..100:", total)  # 5050
+
+# Countdown loop:
+for t in range(5, 0, -1):
+    print(t, end=" ")  # 5 4 3 2 1
+print("Blastoff!")</pre></div>
+
+        <h3>3.3. The while Loop</h3>
+        <p>A <code class="inline">while</code> loop executes its body repeatedly as long as its condition evaluates to truthy. It is primarily used when the total number of iterations is <strong>not known in advance</strong> (indefinite iteration).</p>
+
+        <div class="code"><pre># Sum digits of a number:
+num = 12345
+digit_sum = 0
+while num &gt; 0:
+    digit_sum += num % 10
+    num //= 10
+print("Sum of digits:", digit_sum)  # 15</pre></div>
+
+        <h3 id="3-iterative-statements-for-while-range-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.4. Infinite Loops and Safe Exit Patterns</h3>
+        <p>Creating an intentional infinite loop using <code class="inline">while True:</code> is standard practice for CLI menus, listener sockets, or polling jobs. The loop terminates when an internal <code class="inline">break</code> condition is satisfied.</p>
+
+        <div class="code"><pre># Sentinel loop pattern:
+while True:
+    entry = input("Enter number (or 'done' to finish): ").strip()
+    if entry.lower() == "done":
+        print("Finished processing.")
+        break
+    if not entry.isdigit():
+        print("Invalid input, please enter digits.")
+        continue
+    print(f"Square of {entry} is {int(entry) ** 2}")</pre></div>
+
+        <h3>3.5. Nested Loops &amp; 2D Matrix Traversal</h3>
+        <p>When loops are nested, the inner loop executes its entire cycle for every single iteration of the outer loop ($N \times M$ total iterations).</p>
+
+        <div class="code"><pre># Multiplication table (1 to 3):
+for row in range(1, 4):
+    for col in range(1, 4):
+        print(f"{row * col:2d}", end=" ")
+    print()  # Newline after each row</pre></div>
       </section>
+
       <section id="4-transfer-statements-break-continue-pass">
         <div class="heading-with-levels">
           <h2>4. Transfer statements (break, continue, pass)</h2>
@@ -120,14 +296,74 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-transfer-statements-break-continue-pass-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. The break Statement</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Transfer statements (break, continue, pass)</strong>.</li>
-          <li>Write small demos in <code class="inline">08-practice.py</code> covering this section.</li>
+          <li>Immediately terminates the execution of the <strong>innermost enclosing loop</strong>.</li>
+          <li>Program control jumps directly to the first statement immediately following the loop block.</li>
+          <li>Commonly used for early search termination once a target item is found.</li>
         </ul>
+
+        <div class="code"><pre># Linear search with early exit:
+target = 42
+numbers = [10, 25, 33, 42, 59, 80]
+
+for idx, val in enumerate(numbers):
+    if val == target:
+        print(f"Found target {target} at index {idx}")
+        break  # No need to scan remaining numbers</pre></div>
+
+        <h3>4.2. The continue Statement</h3>
+        <ul>
+          <li>Skips the remainder of the <strong>current iteration</strong> only.</li>
+          <li>Program control jumps to the next iteration (in <code class="inline">for</code>, it fetches the next item; in <code class="inline">while</code>, it re-evaluates the condition).</li>
+          <li>Used as a filter to bypass invalid or unwanted records without deeply nesting <code class="inline">if</code> blocks.</li>
+        </ul>
+
+        <div class="code"><pre># Print only odd numbers, skip negatives:
+data = [-4, 7, 12, 15, -2, 9, 20]
+for x in data:
+    if x &lt;= 0 or x % 2 == 0:
+        continue  # Skip negatives and evens
+    print(f"Valid odd number: {x}")</pre></div>
+
+        <h3>4.3. The pass Statement</h3>
+        <ul>
+          <li><code class="inline">pass</code> is a syntactic <strong>no-op (null operation)</strong> statement.</li>
+          <li>Python requires non-empty code blocks under headers like <code class="inline">if</code>, <code class="inline">for</code>, <code class="inline">def</code>, and <code class="inline">class</code>. <code class="inline">pass</code> satisfies the parser when logic is intentionally stubbed for future implementation.</li>
+        </ul>
+
+        <div class="code"><pre># Empty class or function stub:
+class NetworkManager:
+    pass
+
+def handle_timeout():
+    pass  # To be implemented</pre></div>
+
+        <h3 id="4-transfer-statements-break-continue-pass-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.4. The Loop else Suite (for-else / while-else)</h3>
+        <div class="callout">
+          <strong>Key Interview Concept:</strong> Python uniquely supports an <code class="inline">else</code> block on both <code class="inline">for</code> and <code class="inline">while</code> loops! The <code class="inline">else</code> block executes <strong>if and only if the loop completed naturally without hitting a <code class="inline">break</code> statement</strong>.
+        </div>
+
+        <div class="code"><pre># Flag-free prime number check using for-else:
+def is_prime(n):
+    if n &lt; 2:
+        return False
+    for d in range(2, int(n ** 0.5) + 1):
+        if n % d == 0:
+            print(f"{n} is divisible by {d} -&gt; Not Prime")
+            break  # Break bypasses the else block!
+    else:
+        # Executes ONLY if no divisor was found (loop completed without break)
+        print(f"{n} is a PRIME number!")
+
+is_prime(17)  # Prints: 17 is a PRIME number!
+is_prime(15)  # Prints: 15 is divisible by 3 -&gt; Not Prime</pre></div>
       </section>
+
       <section id="5-pattern-programs">
         <div class="heading-with-levels">
           <h2>5. Pattern programs</h2>
@@ -136,30 +372,148 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-pattern-programs-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+
+        <h3>5.1. The Matrix Methodology for Pattern Generation</h3>
+        <p>Pattern programs develop nested loop mastery and spatial indexing. Every grid pattern is decomposed into:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Pattern programs</strong>.</li>
-          <li>Write small demos in <code class="inline">08-practice.py</code> covering this section.</li>
+          <li><strong>Outer Loop (<code class="inline">i</code>):</strong> Controls row count from top to bottom (<code class="inline">1</code> to <code class="inline">n</code>).</li>
+          <li><strong>Inner Loop (<code class="inline">j</code>):</strong> Controls column count, determining what gets printed in row <code class="inline">i</code>.</li>
         </ul>
+
+        <div class="code"><pre># 1. Solid Square Pattern (n x n):
+n = 4
+for i in range(n):
+    print("* " * n)
+# Output:
+# * * * * 
+# * * * * 
+# * * * * 
+# * * * * 
+
+# 2. Right-Angled Star Triangle:
+n = 5
+for i in range(1, n + 1):
+    print("* " * i)
+# Output:
+# * 
+# * * 
+# * * * 
+# * * * * 
+# * * * * * 
+
+# 3. Inverted Right-Angled Triangle:
+for i in range(n, 0, -1):
+    print("* " * i)
+# Output:
+# * * * * * 
+# * * * * 
+# * * * 
+# * * 
+# * </pre></div>
+
+        <h3 id="5-pattern-programs-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Numerical and Centered Pyramid Patterns</h3>
+        <div class="code"><pre># 4. Number Incremental Triangle:
+n = 4
+for i in range(1, n + 1):
+    for j in range(1, i + 1):
+        print(j, end=" ")
+    print()
+# Output:
+# 1 
+# 1 2 
+# 1 2 3 
+# 1 2 3 4 
+
+# 5. Full Equilateral Pyramid:
+n = 4
+for i in range(1, n + 1):
+    spaces = " " * (n - i)
+    stars = "* " * i
+    print(spaces + stars)
+# Output:
+#    * 
+#   * * 
+#  * * * 
+# * * * * 
+
+# 6. Alphabet / Character Triangle:
+for i in range(1, 5):
+    for j in range(i):
+        print(chr(65 + j), end=" ")  # 65 is 'A'
+    print()
+# Output:
+# A 
+# A B 
+# A B C 
+# A B C D </pre></div>
       </section>
+
       <section id="6-number-to-word-mini-project-outline">
         <div class="heading-with-levels">
-          <h2>6. Number-to-word mini project (outline)</h2>
+          <h2>6. Number-to-word mini project</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-number-to-word-mini-project-outline-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Number-to-word mini project (outline)</strong>.</li>
-          <li>Write small demos in <code class="inline">08-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>6.1. Problem Statement &amp; Design</h3>
+        <p>A classic computer science challenge testing control flow, integer arithmetic, and string mapping: convert any integer from <code class="inline">0</code> up to <code class="inline">99,999</code> into its standard English spoken word representation.</p>
+
+        <h3 id="6-number-to-word-mini-project-outline-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>6.2. Complete Python Implementation</h3>
+        <div class="code"><pre>def number_to_words(num: int) -&gt; str:
+    """Convert integer between 0 and 99,999 into English words."""
+    if num == 0:
+        return "Zero"
+
+    units = [
+        "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+        "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+        "Seventeen", "Eighteen", "Nineteen"
+    ]
+    tens = [
+        "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    ]
+
+    def convert_hundred(n: int) -&gt; str:
+        """Helper to convert 1 to 999."""
+        words = []
+        if n &gt;= 100:
+            words.append(units[n // 100] + " Hundred")
+            n %= 100
+        if 1 &lt;= n &lt;= 19:
+            words.append(units[n])
+        elif n &gt;= 20:
+            ten_part = tens[n // 10]
+            unit_part = units[n % 10]
+            words.append(f"{ten_part} {unit_part}".strip())
+        return " ".join(words)
+
+    result = []
+    # Process Thousands:
+    thousands_val = num // 1000
+    if thousands_val &gt; 0:
+        result.append(convert_hundred(thousands_val) + " Thousand")
+        num %= 1000
+
+    # Process Remaining Hundreds:
+    if num &gt; 0:
+        result.append(convert_hundred(num))
+
+    return " ".join(result)
+
+# Verification demonstrations:
+test_cases = [0, 7, 19, 42, 105, 512, 1000, 4520, 24050, 99999]
+for val in test_cases:
+    print(f"{val:&gt;6d} -&gt; {number_to_words(val)}")</pre></div>
       </section>
+
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -173,44 +527,97 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Conditional statements (if / elif / else)?</span>
+            <span class="qa-question-title">C.1. What is the difference between <code class="inline">break</code>, <code class="inline">continue</code>, and <code class="inline">pass</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">break</code>:</strong> Immediately exits the enclosing loop entirely; no further iterations occur.</li>
+              <li><strong><code class="inline">continue</code>:</strong> Aborts only the <em>current</em> iteration and proceeds immediately to the next iteration of the loop.</li>
+              <li><strong><code class="inline">pass</code>:</strong> A null operation (no-op) that does nothing. It acts as a syntactic placeholder so an empty block parses without error.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Iterative statements (for, while, range)?</span>
+            <span class="qa-question-title">C.2. How does the <code class="inline">else</code> block in <code class="inline">for-else</code> and <code class="inline">while-else</code> work?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The loop <code class="inline">else</code> block executes <strong>if and only if the loop completes all iterations normally</strong> without encountering a <code class="inline">break</code> statement. If a <code class="inline">break</code> occurs, the <code class="inline">else</code> block is completely skipped. It is ideal for search algorithms where you want fallback behavior if no target was found.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Transfer statements (break, continue, pass)?</span>
+            <span class="qa-question-title">C.3. Why does Python NOT have a traditional C-style for loop (<code class="inline">for (int i=0; i&lt;n; i++)</code>)?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Python's <code class="inline">for</code> loop is designed around the <strong>iterator protocol</strong> (PEP 234). Instead of managing low-level index arithmetic (which is prone to off-by-one errors and array bounds violations), Python loops iterate directly over the elements of any iterable object. When numeric indices are required, <code class="inline">range()</code> or <code class="inline">enumerate()</code> cleanly provides them.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What happens if you modify a list while iterating over it with a <code class="inline">for</code> loop?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Modifying a list in-place (e.g. via <code class="inline">remove()</code> or <code class="inline">del</code>) while looping over it alters the underlying index offsets, causing the loop to <strong>skip elements</strong> or process items multiple times unexpectedly.
+            <br /><em>Correct Approach:</em> Iterate over a shallow copy of the list (<code class="inline">for x in items[:]:</code>) or construct a new filtered list using a list comprehension (<code class="inline">items = [x for x in items if keep(x)]</code>).</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Pattern programs?</span>
+            <span class="qa-question-title">C.5. How can you break out of multiple nested loops in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Since <code class="inline">break</code> only terminates the innermost loop, breaking out of multiple nested loops can be achieved cleanly in three ways:
+            <ol>
+              <li><strong>Refactor into a function:</strong> Use a <code class="inline">return</code> statement to exit all loops simultaneously (recommended).</li>
+              <li><strong>Use loop else with break:</strong> Have the inner loop break, and check a flag in the outer loop or re-trigger a break in the outer loop.</li>
+              <li><strong>Raise an exception:</strong> Catch a custom exception outside the outer loop.</li>
+            </ol></p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the difference between <code class="inline">pass</code> and <code class="inline">...</code> (Ellipsis)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">pass</code> is a statement that does nothing. <code class="inline">...</code> (Ellipsis) is an actual singleton object of type <code class="inline">ellipsis</code>. While both can syntactically serve as empty body placeholders, <code class="inline">...</code> is also used in type annotations (<code class="inline">Callable[..., int]</code>) and multidimensional slicing in NumPy.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. Why is <code class="inline">range(1000000000)</code> memory efficient in Python 3?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In Python 3, <code class="inline">range</code> is an immutable sequence type that calculates numbers dynamically on-demand using arithmetic (storing only <code class="inline">start</code>, <code class="inline">stop</code>, and <code class="inline">step</code>). It consumes only <strong>48 bytes</strong> of memory regardless of whether the range contains 10 items or 10 billion items (unlike Python 2's <code class="inline">range()</code> which eagerly created an entire list in RAM).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How does Python's <code class="inline">match-case</code> differ from C/Java's <code class="inline">switch</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python's <code class="inline">match-case</code> does not have implicit fall-through (no <code class="inline">break</code> is needed between cases). More importantly, it performs <strong>structural destructuring</strong>: it can unpack lists, tuples, and objects, match nested types, and bind sub-components to local variables in a single expression.</p>
           </div>
         </details>
       </section>
+
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,222 +626,98 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">08-practice.py</code>. Run with <code class="inline">python3 08-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Implement solutions in your practice file. Predict the output before running.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Conditional statements (if / elif / else)</strong>.</span>
+                <span class="qa-question-title">Task 1: Even/Odd Classifier with Sentinel Loop — Read numbers in a while loop until the user types -1.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Conditional Statements:
-# 1. Python uses if, elif, and else to branch code based on boolean expressions.
-# 2. Blocks are delimited strictly by indentation (PEP 8 recommends 4 spaces).
-# 3. Short-circuiting evaluation applies to compound conditional operators (and / or).</pre></div>
+                <div class="code"><pre>inputs = [14, 7, 22, 9, -1]
+for val in inputs:
+    if val == -1:
+        print("Sentinel -1 encountered. Stopping.")
+        break
+    status = "Even" if val % 2 == 0 else "Odd"
+    print(f"Number {val} is {status}")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Iterative statements (for, while, range)</strong> and print the result.</span>
+                <span class="qa-question-title">Task 2: Multiplication Grid — Generate a formatted 5x5 multiplication table using nested for loops.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Iterative statements with for, while, and range:
-print(&quot;for loop over range:&quot;)
-for num in range(1, 6):
-    print(num, end=&quot; &quot;)
-print()
-
-print(&quot;while loop countdown:&quot;)
-count = 3
-while count &gt; 0:
-    print(count, end=&quot;... &quot;)
-    count -= 1
-print(&quot;Launch!&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Control Flow &amp; Decision Making in Python.
-
-Goal: Master branch logic with if/elif/else, looping constructs with for and while,
-loop transfer control (break, continue, pass), and nested pattern generation.
-&quot;&quot;&quot;</pre></div>
-              </div>
-            </details>
-          </li>
-        </ol>
-        <h3>P.2. Core tasks</h3>
-        <ol>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Conditional statements (if / elif / else)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Conditional statements (if / elif / else)
-def grade_student(score):
-    if not (0 &lt;= score &lt;= 100):
-        return &quot;Invalid Score&quot;
-    elif score &gt;= 90:
-        return &quot;A+ (Outstanding)&quot;
-    elif score &gt;= 80:
-        return &quot;A (Excellent)&quot;
-    elif score &gt;= 70:
-        return &quot;B (Good)&quot;
-    elif score &gt;= 50:
-        return &quot;C (Pass)&quot;
-    else:
-        return &quot;F (Fail)&quot;
-
-for test_score in [95, 82, 73, 58, 42, -5]:
-    print(f&quot;Score {test_score}: Grade = {grade_student(test_score)}&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Iterative statements (for, while, range)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Iterative statements (for, while, range)
-# Sum of first N odd numbers using for and range:
-n = 5
-odd_sum = 0
-for i in range(1, 2 * n, 2):
-    odd_sum += i
-print(f&quot;Sum of first {n} odd numbers:&quot;, odd_sum)
-
-# Fibonacci sequence using while loop:
-a, b = 0, 1
-fib_series = []
-while len(fib_series) &lt; 8:
-    fib_series.append(a)
-    a, b = b, a + b
-print(&quot;First 8 Fibonacci numbers:&quot;, fib_series)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Transfer statements (break, continue, pass)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Transfer statements (break, continue, pass)
-# Find first multiple of 7, skip even numbers, use pass as placeholder
-print(&quot;Demonstrating transfer statements:&quot;)
-for num in range(1, 30):
-    if num % 2 == 0:
-        continue  # Skip even numbers
-    if num % 7 == 0:
-        print(f&quot;Found first odd multiple of 7: {num}&quot;)
-        break  # Exit loop immediately
-    pass  # Placeholder for future logic</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Pattern programs</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Pattern programs
-# Pyramid of stars:
-rows = 5
-for i in range(1, rows + 1):
-    spaces = &quot; &quot; * (rows - i)
-    stars = &quot;*&quot; * (2 * i - 1)
-    print(f&quot;{spaces}{stars}&quot;)
-
-# Number triangle:
-for i in range(1, rows + 1):
-    for j in range(1, i + 1):
-        print(j, end=&quot; &quot;)
+                <div class="code"><pre>print("--- 5x5 Multiplication Table ---")
+for r in range(1, 6):
+    for c in range(1, 6):
+        print(f"{r * c:3d}", end=" ")
     print()</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Control Flow.</span>
+                <span class="qa-question-title">Task 3: Prime Number Search with for-else — Find all prime numbers between 2 and 50 using for-else without flag variables.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Prime Number Analyzer &amp; Statistics Generator
-def analyze_primes(limit):
-    primes = []
-    for candidate in range(2, limit + 1):
-        is_prime = True
-        for divisor in range(2, int(candidate ** 0.5) + 1):
-            if candidate % divisor == 0:
-                is_prime = False
-                break
-        if is_prime:
-            primes.append(candidate)
-    
-    print(f&quot;Primes up to {limit}: {primes}&quot;)
-    print(f&quot;Total count: {len(primes)}, Largest prime: {primes[-1] if primes else None}&quot;)
+                <div class="code"><pre>primes = []
+for n in range(2, 51):
+    for d in range(2, int(n ** 0.5) + 1):
+        if n % d == 0:
+            break
+    else:
+        primes.append(n)
 
-analyze_primes(30)</pre></div>
+print("Primes between 2 and 50:", primes)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Task 4: Diamond Pattern Generator — Print a symmetric diamond of stars for odd height n.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Control Flow Pitfalls &amp; Edge Cases:
-# 1. Off-by-one error with range(start, stop):
-# range(1, 5) generates 1, 2, 3, 4 (stops BEFORE 5)
-print(&quot;range(1, 5):&quot;, list(range(1, 5)))
+                <div class="code"><pre>n = 5  # Total rows
+mid = n // 2
 
-# 2. Modifying a collection while iterating over it (causes skipped elements):
-# Safe way: iterate over a copy
-items = [1, 2, 3, 4, 5, 6]
-for x in items[:]:  # Slicing creates a shallow copy
-    if x % 2 == 0:
-        items.remove(x)
-print(&quot;Filtered odd items:&quot;, items)
+# Upper pyramid:
+for i in range(mid + 1):
+    print(" " * (mid - i) + "* " * (i + 1))
 
-# 3. Forgetting while loop increment -&gt; infinite loop.</pre></div>
+# Lower inverted pyramid:
+for i in range(mid - 1, -1, -1):
+    print(" " * (mid - i) + "* " * (i + 1))</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+
+        <h3>P.3. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Control Flow) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain the difference between <code class="inline">break</code>, <code class="inline">continue</code>, and <code class="inline">pass</code>.</li>
+          <li>I understand when the loop <code class="inline">else</code> suite executes and how <code class="inline">break</code> cancels it.</li>
+          <li>I can construct nested loops for matrix traversal and pyramid star patterns.</li>
+          <li>I know how <code class="inline">range(start, stop, step)</code> generates numbers lazily in Python 3.</li>
         </ul>
       </section>
-      <footer>Python Notes File 07. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 08. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
