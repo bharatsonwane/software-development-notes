@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
-  <title>24. Multithreading - Python Notes</title>
+  <title>18. File Handling - Python Notes</title>
 </head>
 <body>
   <div class="layout">
@@ -19,13 +19,12 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-to-multithreading">2. Introduction to multithreading</a>
-        <a href="#3-creating-and-starting-threads">3. Creating and starting threads</a>
-        <a href="#4-thread-names-and-related-methods">4. Thread names and related methods</a>
-        <a href="#5-daemon-threads">5. Daemon threads</a>
-        <a href="#6-synchronization-lock-rlock-semaphore">6. Synchronization (Lock, RLock, Semaphore)</a>
-        <a href="#7-inter-thread-communication-event-condition-queue">7. Inter-thread communication (Event, Condition, Queue)</a>
-        <a href="#8-good-practices-and-summary">8. Good practices and summary</a>
+        <a href="#2-file-types-open-close-modes-properties">2. File types, open/close, modes, properties</a>
+        <a href="#3-write-and-read-operations">3. Write and read operations</a>
+        <a href="#4-with-statement-seek-and-tell">4. with statement; seek() and tell()</a>
+        <a href="#5-binary-csv-and-zip-files">5. Binary, CSV, and ZIP files</a>
+        <a href="#6-directories-with-os-file-statistics">6. Directories with os; file statistics</a>
+        <a href="#7-running-other-programs-from-python">7. Running other programs from Python</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -40,11 +39,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./python.html">Python</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">24. Multithreading</span>
+        <span aria-current="page">18. File Handling</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>24. Multithreading</h1>
-        <p class="subtitle">File 24 — Thread, daemon, Lock, RLock, Semaphore, Event, Queue.</p>
+        <h1>18. File Handling</h1>
+        <p class="subtitle">File 18 — modes, read/write, with, seek/tell, binary/CSV/ZIP, directories.</p>
         <div class="chip-row">
           <span class="chip">Outline</span>
           <span class="chip">Practice</span>
@@ -61,139 +60,122 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Multithreading</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>This chapter covers <strong>File Handling</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
         </ul>
         <h3>1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
         <ul>
-          <li>After reading sections 2–8 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">24-practice.py</code> before File 25. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–7 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">18-practice.py</code> before File 19. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to multithreading</strong></li>
-          <li><strong>Creating and starting threads</strong></li>
-          <li><strong>Thread names and related methods</strong></li>
-          <li><strong>Daemon threads</strong></li>
-          <li><strong>Synchronization (Lock, RLock, Semaphore)</strong></li>
-          <li><strong>Inter-thread communication (Event, Condition, Queue)</strong></li>
-          <li><strong>Good practices and summary</strong></li>
+          <li><strong>File types, open/close, modes, properties</strong></li>
+          <li><strong>Write and read operations</strong></li>
+          <li><strong>with statement; seek() and tell()</strong></li>
+          <li><strong>Binary, CSV, and ZIP files</strong></li>
+          <li><strong>Directories with os; file statistics</strong></li>
+          <li><strong>Running other programs from Python</strong></li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="2-introduction-to-multithreading">
+      <section id="2-file-types-open-close-modes-properties">
         <div class="heading-with-levels">
-          <h2>2. Introduction to multithreading</h2>
+          <h2>2. File types, open/close, modes, properties</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="2-introduction-to-multithreading-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-file-types-open-close-modes-properties-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Introduction to multithreading</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>File types, open/close, modes, properties</strong>.</li>
+          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="3-creating-and-starting-threads">
+      <section id="3-write-and-read-operations">
         <div class="heading-with-levels">
-          <h2>3. Creating and starting threads</h2>
+          <h2>3. Write and read operations</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="3-creating-and-starting-threads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-write-and-read-operations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Creating and starting threads</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Write and read operations</strong>.</li>
+          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="4-thread-names-and-related-methods">
+      <section id="4-with-statement-seek-and-tell">
         <div class="heading-with-levels">
-          <h2>4. Thread names and related methods</h2>
+          <h2>4. with statement; seek() and tell()</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="4-thread-names-and-related-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-with-statement-seek-and-tell-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Thread names and related methods</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>with statement; seek() and tell()</strong>.</li>
+          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="5-daemon-threads">
+      <section id="5-binary-csv-and-zip-files">
         <div class="heading-with-levels">
-          <h2>5. Daemon threads</h2>
+          <h2>5. Binary, CSV, and ZIP files</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="5-daemon-threads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-binary-csv-and-zip-files-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Daemon threads</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Binary, CSV, and ZIP files</strong>.</li>
+          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="6-synchronization-lock-rlock-semaphore">
+      <section id="6-directories-with-os-file-statistics">
         <div class="heading-with-levels">
-          <h2>6. Synchronization (Lock, RLock, Semaphore)</h2>
+          <h2>6. Directories with os; file statistics</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="6-synchronization-lock-rlock-semaphore-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="6-directories-with-os-file-statistics-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Synchronization (Lock, RLock, Semaphore)</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Directories with os; file statistics</strong>.</li>
+          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="7-inter-thread-communication-event-condition-queue">
+      <section id="7-running-other-programs-from-python">
         <div class="heading-with-levels">
-          <h2>7. Inter-thread communication (Event, Condition, Queue)</h2>
+          <h2>7. Running other programs from Python</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="7-inter-thread-communication-event-condition-queue-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="7-running-other-programs-from-python-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>7.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Inter-thread communication (Event, Condition, Queue)</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
-      </section>
-      <section id="8-good-practices-and-summary">
-        <div class="heading-with-levels">
-          <h2>8. Good practices and summary</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
-          </div>
-        </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="8-good-practices-and-summary-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Good practices and summary</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Running other programs from Python</strong>.</li>
+          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -209,7 +191,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction to multithreading?</span>
+            <span class="qa-question-title">C.1. What should I know about File types, open/close, modes, properties?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -219,7 +201,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Creating and starting threads?</span>
+            <span class="qa-question-title">C.2. What should I know about Write and read operations?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -229,7 +211,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Thread names and related methods?</span>
+            <span class="qa-question-title">C.3. What should I know about with statement; seek() and tell()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -239,7 +221,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Daemon threads?</span>
+            <span class="qa-question-title">C.4. What should I know about Binary, CSV, and ZIP files?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -255,43 +237,43 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">24-practice.py</code>. Run with <code class="inline">python3 24-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">18-practice.py</code>. Run with <code class="inline">python3 18-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction to multithreading</strong>.</span>
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>File types, open/close, modes, properties</strong>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Introduction to Multithreading:
-# 1. A thread is a separate flow of execution within the same process sharing address space.
-# 2. Python&#x27;s &#x27;threading&#x27; module provides thread creation and synchronization primitives.
-# 3. CPython uses the Global Interpreter Lock (GIL), making threads ideal for I/O-bound tasks, while multiprocessing is used for CPU-bound tasks.</pre></div>
+                <div class="code"><pre># Summary of File Types, Modes, and Properties:
+# 1. Files are opened with open(filename, mode) where modes include &#x27;r&#x27;, &#x27;w&#x27;, &#x27;a&#x27;, &#x27;r+&#x27;, &#x27;b&#x27; (binary).
+# 2. Files must always be closed to flush buffers and release operating system file descriptors.
+# 3. Built-in file object properties include: f.name, f.mode, f.closed, f.readable(), f.writable().</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Creating and starting threads</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example related to <strong>Write and read operations</strong> and print the result.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Creating and starting threads:
-import threading
-import time
+                <div class="code"><pre># Write and read operations:
+# Writing text to a file:
+with open(&quot;sample_demo.txt&quot;, &quot;w&quot;) as f:
+    f.write(&quot;Line 1: Hello Python\nLine 2: File Handling Basics\n&quot;)
 
-def print_worker(message):
-    time.sleep(0.05)
-    print(f&quot;[Thread {threading.current_thread().name}] says: {message}&quot;)
+# Reading lines from the file:
+with open(&quot;sample_demo.txt&quot;, &quot;r&quot;) as f:
+    content = f.read()
+    print(&quot;File Content:\n&quot; + content)
 
-t = threading.Thread(target=print_worker, args=(&quot;Hello Multithreading!&quot;,), name=&quot;Worker-1&quot;)
-t.start()
-t.join()
-print(&quot;Worker thread completed.&quot;)</pre></div>
+import os
+os.remove(&quot;sample_demo.txt&quot;)  # Clean up demo file</pre></div>
               </div>
             </details>
           </li>
@@ -302,10 +284,10 @@ print(&quot;Worker thread completed.&quot;)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Multithreading and Concurrency.
+                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python File Handling &amp; I/O Streams.
 
-Goal: Master thread creation (functional &amp; subclassing), thread lifecycle (start, join),
-thread naming, daemon threads, and synchronization locks.
+Goal: Master opening/closing modes, buffer management via context managers (with),
+stream positioning (seek/tell), and binary/CSV file operations.
 &quot;&quot;&quot;</pre></div>
               </div>
             </details>
@@ -316,104 +298,117 @@ thread naming, daemon threads, and synchronization locks.
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction to multithreading</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: File types, open/close, modes, properties</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction to multithreading
-import threading
-import time
+                <div class="code"><pre># Task 1: File types, open/close, modes, properties
+filename = &quot;properties_test.txt&quot;
+with open(filename, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+    f.write(&quot;Exploring file properties\n&quot;)
+    print(f&quot;File Name: {f.name}&quot;)
+    print(f&quot;Mode: {f.mode}&quot;)
+    print(f&quot;Readable: {f.readable()}&quot;)
+    print(f&quot;Writable: {f.writable()}&quot;)
+    print(f&quot;Closed inside with block: {f.closed}&quot;)
 
-def worker(num):
-    print(f&quot;Task {num} started on {threading.current_thread().name}&quot;)
-    time.sleep(0.02)
-    print(f&quot;Task {num} finished&quot;)
+print(f&quot;Closed outside with block: {f.closed}&quot;)
 
-threads = []
-for i in range(3):
-    th = threading.Thread(target=worker, args=(i+1,))
-    threads.append(th)
-    th.start()
-
-for th in threads:
-    th.join()
-print(&quot;All tasks completed concurrently.&quot;)</pre></div>
+import os
+os.remove(filename)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Creating and starting threads</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Write and read operations</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Creating threads by subclassing threading.Thread
-import threading
-import time
+                <div class="code"><pre># Task 2: Write and read operations
+lines = [
+    &quot;First line of log\n&quot;,
+    &quot;Second line of log\n&quot;,
+    &quot;Third line of log\n&quot;
+]
 
-class CustomWorkerThread(threading.Thread):
-    def __init__(self, thread_id, duration):
-        super().__init__()
-        self.thread_id = thread_id
-        self.duration = duration
+with open(&quot;log_test.txt&quot;, &quot;w&quot;) as f:
+    f.writelines(lines)
+
+with open(&quot;log_test.txt&quot;, &quot;r&quot;) as f:
+    # readline() reads single line; readlines() reads list of lines
+    print(&quot;First line:&quot;, f.readline().strip())
+    print(&quot;Remaining lines:&quot;, [line.strip() for line in f.readlines()])
+
+import os
+os.remove(&quot;log_test.txt&quot;)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 3: with statement; seek() and tell()</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 3: with statement; seek() and tell()
+with open(&quot;seek_demo.txt&quot;, &quot;w+&quot;) as f:
+    f.write(&quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;)
+    print(&quot;Position after writing:&quot;, f.tell())  # 36
     
-    def run(self):
-        print(f&quot;Custom thread #{self.thread_id} running...&quot;)
-        time.sleep(self.duration)
-        print(f&quot;Custom thread #{self.thread_id} finished after {self.duration}s&quot;)
+    # Reposition pointer to index 10:
+    f.seek(10)
+    print(&quot;Position after seek(10):&quot;, f.tell())
+    print(&quot;Read 5 chars:&quot;, f.read(5))  # &#x27;ABCDE&#x27;
+    print(&quot;Position after reading:&quot;, f.tell())  # 15
+    
+    # Seek back to start:
+    f.seek(0)
+    print(&quot;Read first 4 chars:&quot;, f.read(4))  # &#x27;0123&#x27;
 
-worker_inst = CustomWorkerThread(thread_id=42, duration=0.03)
-worker_inst.start()
-worker_inst.join()</pre></div>
+import os
+os.remove(&quot;seek_demo.txt&quot;)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Thread names and related methods</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 4: Binary, CSV, and ZIP files</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Thread names and related methods
-import threading
+                <div class="code"><pre># Task 4: Binary, CSV, and ZIP files
+import csv
+import zipfile
+import os
 
-def identify_thread():
-    curr = threading.current_thread()
-    print(f&quot;Thread Name: {curr.name}&quot;)
-    print(f&quot;Thread Ident: {curr.ident}&quot;)
-    print(f&quot;Is Alive: {curr.is_alive()}&quot;)
-    print(f&quot;Is Daemon: {curr.daemon}&quot;)
+# 1. Writing CSV:
+csv_file = &quot;employees.csv&quot;
+with open(csv_file, &quot;w&quot;, newline=&quot;&quot;) as f:
+    writer = csv.writer(f)
+    writer.writerow([&quot;ID&quot;, &quot;Name&quot;, &quot;Dept&quot;])
+    writer.writerow([101, &quot;Alice&quot;, &quot;Dev&quot;])
+    writer.writerow([102, &quot;Bob&quot;, &quot;QA&quot;])
 
-t = threading.Thread(target=identify_thread, name=&quot;Worker-Named-Alpha&quot;)
-t.start()
-t.join()
-print(&quot;Active thread count:&quot;, threading.active_count())</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Daemon threads</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Daemon threads
-import threading
-import time
+# 2. Reading CSV:
+with open(csv_file, &quot;r&quot;) as f:
+    reader = csv.reader(f)
+    print(&quot;CSV Contents:&quot;)
+    for row in reader:
+        print(&quot; &quot;, row)
 
-def background_service():
-    print(&quot;Daemon background monitor started.&quot;)
-    time.sleep(0.05)
-    print(&quot;Daemon background monitor completed.&quot;)
+# 3. Creating ZIP archive:
+zip_name = &quot;archive.zip&quot;
+with zipfile.ZipFile(zip_name, &quot;w&quot;) as zipf:
+    zipf.write(csv_file)
+print(f&quot;Created {zip_name} containing {csv_file}&quot;)
 
-# Daemon threads terminate automatically when main thread terminates
-d_thread = threading.Thread(target=background_service, daemon=True)
-print(&quot;Is daemon thread:&quot;, d_thread.daemon)
-d_thread.start()
-d_thread.join()</pre></div>
+# Clean up
+os.remove(csv_file)
+os.remove(zip_name)</pre></div>
               </div>
             </details>
           </li>
@@ -424,34 +419,31 @@ d_thread.join()</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Multithreading.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to File Handling.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Thread-Safe Counter with threading.Lock
-import threading
+                <div class="code"><pre># Mini Project: Safe Log Rotator &amp; Word Counter
+import os
 
-class ThreadSafeCounter:
-    def __init__(self):
-        self.count = 0
-        self.lock = threading.Lock()
+def analyze_and_backup_log(log_filename):
+    # Create sample log if not exists:
+    with open(log_filename, &quot;w&quot;) as f:
+        f.write(&quot;ERROR 2026-09-13 Database timeout\n&quot;)
+        f.write(&quot;INFO  2026-09-13 Server started\n&quot;)
+        f.write(&quot;ERROR 2026-09-13 Connection refused\n&quot;)
     
-    def increment(self):
-        with self.lock:
-            # Critical section protected against race conditions
-            self.count += 1
+    # Analyze lines:
+    error_count = 0
+    with open(log_filename, &quot;r&quot;) as f:
+        for line in f:
+            if &quot;ERROR&quot; in line:
+                error_count += 1
+    
+    print(f&quot;Log analysis for {log_filename}: {error_count} error events detected.&quot;)
+    os.remove(log_filename)
 
-counter = ThreadSafeCounter()
-threads = []
-for _ in range(50):
-    t = threading.Thread(target=counter.increment)
-    threads.append(t)
-    t.start()
-
-for t in threads:
-    t.join()
-
-print(&quot;Final synchronized counter value:&quot;, counter.count)</pre></div>
+analyze_and_backup_log(&quot;server.log&quot;)</pre></div>
               </div>
             </details>
           </li>
@@ -462,24 +454,30 @@ print(&quot;Final synchronized counter value:&quot;, counter.count)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Multithreading Pitfalls &amp; Edge Cases:
-# 1. Race Conditions: Multiple threads mutating shared data without a Lock leads to corrupted state.
+                <div class="code"><pre># File Handling Pitfalls &amp; Edge Cases:
+# 1. Not using context manager (&#x27;with&#x27;):
+# Forgetting f.close() leaks OS file handles and may result in unflushed data.
 
-# 2. Deadlock: Two threads waiting on each other&#x27;s locks. Always acquire locks in the same order.
+# 2. FileNotFoundError when opening nonexistent file in &#x27;r&#x27; mode. Always handle with try/except:
+try:
+    with open(&quot;non_existent_file.txt&quot;, &quot;r&quot;) as f:
+        pass
+except FileNotFoundError as err:
+    print(&quot;Safely caught:&quot;, err)
 
-# 3. CPU-bound concurrency: Threads won&#x27;t speed up pure CPU number-crunching in CPython due to the GIL; use multiprocessing instead.</pre></div>
+# 3. Always specify encoding=&#x27;utf-8&#x27; on Windows to avoid platform-dependent CP1252 decoding errors.</pre></div>
               </div>
             </details>
           </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Multithreading) is for.</li>
+          <li>I can explain what this chapter (File Handling) is for.</li>
           <li>I ran at least the warm-up and one core task myself.</li>
           <li>I know which later file builds on this topic (see Python index).</li>
         </ul>
       </section>
-      <footer>Python Notes File 24. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>Python Notes File 17. Structure ready; expand section notes over time. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

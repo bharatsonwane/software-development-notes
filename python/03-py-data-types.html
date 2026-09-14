@@ -19,11 +19,10 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-overview">2. Fundamental data types overview</a>
-        <a href="#3-fundamentals">3. int, float, complex, bool, None</a>
-        <a href="#4-immutability">4. Immutability concepts and the id() function</a>
-        <a href="#5-range">5. range and sequence forms</a>
-        <a href="#6-bytes">6. Bytes / bytearray (intro)</a>
+        <a href="#2-overview">2. Data types overview</a>
+        <a href="#3-immutability">3. Immutability concepts and the id() function</a>
+        <a href="#4-range">4. range and sequence forms</a>
+        <a href="#5-bytes">5. Bytes / bytearray (intro)</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -42,16 +41,17 @@
       </nav>
       <header class="hero" id="intro">
         <h1>03. Data Types and Immutability</h1>
-        <p class="subtitle">File 03 — fundamental types, mutability, range, bytes intro.</p>
+        <p class="subtitle">File 03 — high-level data types overview, immutability, id() function, range, and bytes intro.</p>
         <div class="chip-row">
-          <span class="chip">int / float</span>
-          <span class="chip">bool / None</span>
-          <span class="chip">Immutable</span>
+          <span class="chip">Data Types Overview</span>
+          <span class="chip">Immutability</span>
+          <span class="chip">id() function</span>
           <span class="chip">range</span>
+          <span class="chip">bytes</span>
         </div>
       </header>
 
-            <section id="1-introduction">
+      <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
           <div class="h2-levels">
@@ -61,21 +61,21 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>Every value in Python has a <strong>type</strong>. Types are checked at runtime. Collections (<code class="inline">str</code>, <code class="inline">list</code>, …) get deep coverage in Files 08–12; this file focuses on <strong>fundamentals</strong> and <strong>immutability</strong>.</li>
+          <li>Every value in Python has a <strong>type</strong>. Types are checked dynamically at runtime. This file provides an <strong>overview of Python data types</strong> and focuses in-depth on <strong>immutability</strong>, <strong>memory identity (<code class="inline">id()</code>)</strong>, <strong><code class="inline">range</code></strong>, and <strong>binary sequences</strong>.</li>
+          <li>For an in-depth breakdown of individual scalar types (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>, <code class="inline">bool</code>, <code class="inline">None</code>), see <a href="./04-py-basic-data-type.html"><strong>04. Basic Data Types</strong></a>.</li>
         </ul>
         <h3>1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> use <code class="inline">type(x)</code> / <code class="inline">isinstance</code> when debugging; treat <code class="inline">int</code>/<code class="inline">str</code>/<code class="inline">tuple</code> as immutable — “change” means create a new object.</div>
         <ul>
-          <li>After reading sections 2–6, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">03-practice.py</code> before File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">03-practice.py</code> before File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Fundamental data types overview</strong></li>
-          <li><strong>int, float, complex, bool, None</strong></li>
-          <li><strong>Immutability concepts and the id() function</strong></li>
-          <li><strong>range and sequence forms</strong></li>
-          <li><strong>Bytes / bytearray (intro)</strong></li>
+          <li><strong>Data types overview</strong> — high-level categorization and mutability matrix</li>
+          <li><strong>Immutability concepts and the id() function</strong> — identity, memory addresses, and interning</li>
+          <li><strong>range and sequence forms</strong> — lazy sequence generation</li>
+          <li><strong>Bytes / bytearray (intro)</strong> — binary sequences</li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
@@ -85,7 +85,7 @@
 
       <section id="2-overview">
         <div class="heading-with-levels">
-          <h2>2. Fundamental data types overview</h2>
+          <h2>2. Data types overview</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
@@ -98,7 +98,6 @@
               <th>Category</th>
               <th>Mutability</th>
               <th>Example Literal / Syntax</th>
-              <th>Notes File</th>
             </tr>
           </thead>
           <tbody>
@@ -107,321 +106,113 @@
               <td>Numeric</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">42</code>, <code class="inline">-10</code>, <code class="inline">0b1010</code>, <code class="inline">0xFF</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">float</code></td>
               <td>Numeric</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">3.14</code>, <code class="inline">-0.001</code>, <code class="inline">2.5e3</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">complex</code></td>
               <td>Numeric</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">2 + 3j</code>, <code class="inline">4j</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">bool</code></td>
               <td>Boolean</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">True</code>, <code class="inline">False</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">NoneType</code></td>
               <td>Singleton / Null</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">None</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">str</code></td>
               <td>Text Sequence</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">"hello"</code>, <code class="inline">'Python'</code>, <code class="inline">"""multiline"""</code></td>
-              <td><a href="08-py-strings.html">File 08: Strings</a></td>
             </tr>
             <tr>
               <td><code class="inline">list</code></td>
               <td>Sequence</td>
               <td><span class="chip tier-l2">Mutable</span></td>
               <td><code class="inline">[1, 2, "apple"]</code>, <code class="inline">[]</code></td>
-              <td><a href="09-py-lists.html">File 09: Lists</a></td>
             </tr>
             <tr>
               <td><code class="inline">tuple</code></td>
               <td>Sequence</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">(1, 2, 3)</code>, <code class="inline">(42,)</code></td>
-              <td><a href="10-py-tuples.html">File 10: Tuples</a></td>
             </tr>
             <tr>
               <td><code class="inline">range</code></td>
               <td>Sequence</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">range(0, 10, 2)</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">dict</code></td>
               <td>Mapping</td>
               <td><span class="chip tier-l2">Mutable</span></td>
               <td><code class="inline">{"name": "Alice", "age": 30}</code></td>
-              <td><a href="12-py-dictionaries.html">File 12: Dictionaries</a></td>
             </tr>
             <tr>
               <td><code class="inline">set</code></td>
               <td>Set</td>
               <td><span class="chip tier-l2">Mutable</span></td>
               <td><code class="inline">{1, 2, 3}</code>, <code class="inline">set()</code></td>
-              <td><a href="11-py-sets.html">File 11: Sets</a></td>
             </tr>
             <tr>
               <td><code class="inline">frozenset</code></td>
               <td>Set</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">frozenset({1, 2, 3})</code></td>
-              <td><a href="11-py-sets.html">File 11: Sets</a></td>
             </tr>
             <tr>
               <td><code class="inline">bytes</code></td>
               <td>Binary Sequence</td>
               <td><span class="chip tier-l1">Immutable</span></td>
               <td><code class="inline">b"hello"</code>, <code class="inline">bytes([65, 66])</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">bytearray</code></td>
               <td>Binary Sequence</td>
               <td><span class="chip tier-l2">Mutable</span></td>
               <td><code class="inline">bytearray(b"hello")</code></td>
-              <td>File 03 (here)</td>
             </tr>
             <tr>
               <td><code class="inline">memoryview</code></td>
               <td>Binary Memory View</td>
               <td><span class="chip tier-l2">Depends on buffer</span></td>
               <td><code class="inline">memoryview(b"abc")</code></td>
-              <td>File 03 (here)</td>
             </tr>
           </tbody>
         </table>
+        <div class="callout">
+          <strong>Detailed Discussion on Basic Types:</strong>
+          For in-depth explanations, number systems (binary, octal, hex), base conversion functions (<code class="inline">bin()</code>, <code class="inline">oct()</code>, <code class="inline">hex()</code>), IEEE 754 float quirks, complex numbers, truthy/falsy rules, and <code class="inline">None</code>, please refer to <a href="./04-py-basic-data-type.html"><strong>04. Basic Data Types</strong></a>.
+        </div>
         <div class="code"><pre>x = 10
 type(x)              # &lt;class 'int'&gt;
 isinstance(x, int)   # True</pre></div>
       </section>
 
-      <section id="3-fundamentals">
+      <section id="3-immutability">
         <div class="heading-with-levels">
-          <h2>3. int, float, complex, bool, None</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-          </div>
-        </div>
-        <h3 id="3-fundamentals-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. int (Integer Data Type)</h3>
-        <ul>
-          <li><strong>Arbitrary precision:</strong> In Python 3, <code class="inline">int</code> values have unlimited precision (no fixed 32-bit or 64-bit overflow limit; constrained only by available system RAM).</li>
-        </ul>
-
-        <h4>❖ Types of Representation for int Literal Values (Number Systems)</h4>
-        <p>In Python, programmers can represent integer values in <strong>4 different number systems</strong> (bases):</p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Form / Number System</th>
-              <th>Base</th>
-              <th>Allowed Digits</th>
-              <th>Required Prefix</th>
-              <th>Valid Examples</th>
-              <th>SyntaxError Pitfall</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>1. Decimal Form</strong></td>
-              <td>Base 10</td>
-              <td><code class="inline">0 to 9</code></td>
-              <td><em>None</em> (Default)</td>
-              <td><code class="inline">a = 10</code>, <code class="inline">count = 789</code></td>
-              <td>Cannot start with leading zero (e.g. <code class="inline">0123</code> is invalid in Python 3)</td>
-            </tr>
-            <tr>
-              <td><strong>2. Binary Form</strong></td>
-              <td>Base 2</td>
-              <td><code class="inline">0, 1</code></td>
-              <td><code class="inline">0b</code> or <code class="inline">0B</code></td>
-              <td><code class="inline">a = 0b1111</code> (15), <code class="inline">b = 0B11</code> (3)</td>
-              <td><code class="inline">c = 0B112</code> (<code class="inline">2</code> is not allowed in binary)</td>
-            </tr>
-            <tr>
-              <td><strong>3. Octal Form</strong></td>
-              <td>Base 8</td>
-              <td><code class="inline">0 to 7</code></td>
-              <td><code class="inline">0o</code> or <code class="inline">0O</code></td>
-              <td><code class="inline">a = 0o123</code> (83), <code class="inline">b = 0O567</code> (375)</td>
-              <td><code class="inline">c = 0O786</code> (<code class="inline">8</code> is not allowed in octal)</td>
-            </tr>
-            <tr>
-              <td><strong>4. Hexadecimal Form</strong></td>
-              <td>Base 16</td>
-              <td><code class="inline">0 to 9</code> &amp; <code class="inline">a to f</code> / <code class="inline">A to F</code></td>
-              <td><code class="inline">0x</code> or <code class="inline">0X</code></td>
-              <td><code class="inline">a = 0xface</code> (64206), <code class="inline">b = 0XBee5</code> (48869)</td>
-              <td><code class="inline">c = 0xBeer</code> (<code class="inline">'r'</code> is not in hex range <code class="inline">a-f</code>)</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="callout">
-          <strong>Key Rule on PVM Output:</strong>
-          As a programmer, you can declare integer literals in <strong>decimal, binary, octal, or hexadecimal</strong> forms. However, the <strong>Python Virtual Machine (PVM) will always print and return numbers in decimal (base-10) form by default</strong>!
-        </div>
-
-        <div class="code"><pre># --- 1. Decimal Form (Base-10, Default) ---
-a = 10
-print("Decimal:", a)  # 10
-
-# --- 2. Binary Form (Base-2, Prefix 0b / 0B) ---
-a = 0b1111
-b = 0B11
-print("0b1111 -&gt;", a)  # 15 (PVM output is decimal)
-print("0B11   -&gt;", b)  # 3
-# c = 0B112            # SyntaxError: invalid digit '2' in binary literal
-
-# --- 3. Octal Form (Base-8, Prefix 0o / 0O) ---
-a = 0o123
-b = 0O567
-print("0o123  -&gt;", a)  # 83
-print("0O567  -&gt;", b)  # 375
-# c = 0O786            # SyntaxError: invalid digit '8' in octal literal
-
-# --- 4. Hexadecimal Form (Base-16, Prefix 0x / 0X) ---
-a = 0xface
-b = 0XBee5
-print("0xface -&gt;", a)  # 64206
-print("0XBee5 -&gt;", b)  # 48869
-# c = 0xBeer           # SyntaxError: invalid hexadecimal literal ('r' is invalid)</pre></div>
-
-        <h4>❖ Base Conversion Functions: bin(), oct(), hex()</h4>
-        <p>Python provides built-in conversion functions to convert an integer value from <strong>any base</strong> (decimal, binary, octal, or hexadecimal) into its corresponding binary, octal, or hexadecimal string representation.</p>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Conversion Function</th>
-              <th>Target Base</th>
-              <th>Description</th>
-              <th>Prefix in Output String</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code class="inline">bin(x)</code></td>
-              <td>Base 2 (Binary)</td>
-              <td>Converts any integer (decimal, octal, hex) into a binary string representation.</td>
-              <td><code class="inline">'0b'</code></td>
-            </tr>
-            <tr>
-              <td><code class="inline">oct(x)</code></td>
-              <td>Base 8 (Octal)</td>
-              <td>Converts any integer (decimal, binary, hex) into an octal string representation.</td>
-              <td><code class="inline">'0o'</code></td>
-            </tr>
-            <tr>
-              <td><code class="inline">hex(x)</code></td>
-              <td>Base 16 (Hexadecimal)</td>
-              <td>Converts any integer (decimal, binary, octal) into a hexadecimal string representation.</td>
-              <td><code class="inline">'0x'</code></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="code"><pre># ==========================================================
-# 1. bin() - Convert from ANY base to Binary
-# ==========================================================
-# From Decimal:
-print(bin(15))       # '0b1111'
-
-# From Octal:
-print(bin(0o11))     # '0b1001' (0o11 is 9 in decimal -&gt; 0b1001)
-
-# From Hexadecimal:
-print(bin(0X10))     # '0b10000' (0x10 is 16 in decimal -&gt; 0b10000)
-
-# ==========================================================
-# 2. oct() - Convert from ANY base to Octal
-# ==========================================================
-# From Decimal:
-print(oct(10))       # '0o12'
-
-# From Binary:
-print(oct(0B1111))   # '0o17' (0b1111 is 15 in decimal -&gt; 0o17)
-
-# From Hexadecimal:
-print(oct(0X123))    # '0o443' (0x123 is 291 in decimal -&gt; 0o443)
-
-# ==========================================================
-# 3. hex() - Convert from ANY base to Hexadecimal
-# ==========================================================
-# From Decimal:
-print(hex(100))      # '0x64'
-
-# From Binary:
-print(hex(0B111111)) # '0x3f' (0b111111 is 63 in decimal -&gt; 0x3f)
-
-# From Octal:
-print(hex(0o12345))  # '0x14e5' (0o12345 is 5349 in decimal -&gt; 0x14e5)
-
-# ==========================================================
-# 4. Bonus: int(string, base) - Convert strings back to Decimal
-# ==========================================================
-print(int("0b1111", 2))   # 15
-print(int("0o123", 8))    # 83
-print(int("0xface", 16))  # 64206</pre></div>
-        <h3>3.2. float</h3>
-        <ul>
-          <li>IEEE floating point — approximate decimals.</li>
-        </ul>
-        <div class="code"><pre>x = 3.14
-y = 1.5e2       # 150.0
-0.1 + 0.2       # 0.30000000000000004 — classic float quirk</pre></div>
-        <h3>3.3. complex</h3>
-        <div class="code"><pre>z = 2 + 3j
-z.real          # 2.0
-z.imag          # 3.0</pre></div>
-        <h3>3.4. bool</h3>
-        <ul>
-          <li>Subclass of <code class="inline">int</code>: <code class="inline">True == 1</code>, <code class="inline">False == 0</code>.</li>
-        </ul>
-        <div class="code"><pre>True + True     # 2
-bool(0)         # False
-bool("hi")      # True
-bool("")        # False</pre></div>
-        <h3>3.5. None</h3>
-        <ul>
-          <li>Singleton meaning “no value.” Default return of functions with no <code class="inline">return</code>.</li>
-        </ul>
-        <div class="code"><pre>x = None
-x is None       # True — preferred check
-# x == None     # works but prefer `is`</pre></div>
-      </section>
-
-      <section id="4-immutability">
-        <div class="heading-with-levels">
-          <h2>4. Immutability concepts and the id() function</h2>
+          <h2>3. Immutability concepts and the id() function</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="4-immutability-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-immutability-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>4.1. What is the id() function?</h3>
+        <h3>3.1. What is the id() function?</h3>
         <ul>
           <li><code class="inline">id(object)</code> is a built-in Python function that returns the <strong>unique identity</strong> of an object as an integer.</li>
           <li><strong>Unique &amp; Constant:</strong> An object's ID is guaranteed to be unique and remain completely constant for that object throughout its entire lifetime in memory.</li>
@@ -436,7 +227,7 @@ print("Decimal ID:    ", id(name))        # e.g., 4376483504
 print("Hex Memory Addr:", hex(id(name)))  # e.g., 0x104dd2eb0
 print("Number ID:      ", hex(id(num)))   # e.g., 0x104b50d50</pre></div>
 
-        <h3>4.2. Relationship between id(), the 'is' operator, and '=='</h3>
+        <h3>3.2. Relationship between id(), the 'is' operator, and '=='</h3>
         <p>Understanding <code class="inline">id()</code> is essential for grasping the difference between <strong>equality</strong> and <strong>identity</strong>:</p>
         <table>
           <thead>
@@ -474,7 +265,7 @@ print("id(list1) == id(list2):", id(list1) == id(list2))  # False
 print("list1 is list3:", list1 is list3)  # True  (same object)
 print("id(list1) == id(list3):", id(list1) == id(list3))  # True</pre></div>
 
-        <h3>4.3. Proving Mutability vs. Immutability with id()</h3>
+        <h3>3.3. Proving Mutability vs. Immutability with id()</h3>
         <ul>
           <li><strong>Immutable Types</strong> (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">bool</code>, <code class="inline">str</code>, <code class="inline">tuple</code>, <code class="inline">frozenset</code>, <code class="inline">bytes</code>):
             Any operation that appears to "modify" the value actually constructs a <strong>brand new object</strong> in memory with a <strong>new <code class="inline">id()</code></strong>.
@@ -502,9 +293,9 @@ print("Initial nums ID:", hex(id(nums)))
 nums.append(3)  # Mutates the existing list in-place
 print("After append ID:  ", hex(id(nums)))  # EXACT SAME memory address!</pre></div>
 
-        <h3 id="4-immutability-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="3-immutability-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>4.4. CPython Memory Optimization: Interning &amp; Singletons</h3>
+        <h3>3.4. CPython Memory Optimization: Interning &amp; Singletons</h3>
         <p>Because creating millions of tiny immutable objects would be slow and waste RAM, CPython employs <strong>memory interning</strong> and pre-allocated singleton pools:</p>
         <ul>
           <li><strong>Small Integer Caching (-5 to 256):</strong> CPython pre-allocates an array of integer objects for values between <code class="inline">-5</code> and <code class="inline">256</code> at startup. Any variable holding a value in this range shares the <em>exact same object and ID</em>.</li>
@@ -529,7 +320,7 @@ print("c == d (values equal):", c == d)      # True
 val = None
 print("val is None:", val is None)            # True (checks id(val) == id(None))</pre></div>
 
-        <h3>4.5. The ID Recycling Gotcha (Temporary Objects)</h3>
+        <h3>3.5. The ID Recycling Gotcha (Temporary Objects)</h3>
         <div class="callout">
           <strong>Crucial Pitfall — Lifetime and ID Reuse:</strong>
           An object's ID is only guaranteed unique <em>while the object is alive</em>. Once an object has no remaining references, Python's garbage collector deallocates it. The memory allocator can then immediately reuse that same memory address for a new object!
@@ -547,15 +338,15 @@ print(id(obj_a) == id(obj_b))    # Always False!
 print(obj_a is obj_b)            # Always False!</pre></div>
       </section>
 
-      <section id="5-range">
+      <section id="4-range">
         <div class="heading-with-levels">
-          <h2>5. range and sequence forms</h2>
+          <h2>4. range and sequence forms</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-range-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-range-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><code class="inline">range</code> is an immutable sequence of integers — lazy (does not build a full list).</li>
         </ul>
@@ -563,7 +354,7 @@ print(obj_a is obj_b)            # Always False!</pre></div>
 range(1, 5)       # 1..4
 range(1, 10, 2)   # 1, 3, 5, 7, 9
 list(range(3))    # [0, 1, 2]</pre></div>
-        <h3 id="5-range-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="4-range-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
           <li>Forms: <code class="inline">range(stop)</code>, <code class="inline">range(start, stop)</code>, <code class="inline">range(start, stop, step)</code>. <code class="inline">stop</code> is exclusive. Negative step allowed.</li>
         </ul>
@@ -571,15 +362,15 @@ list(range(3))    # [0, 1, 2]</pre></div>
 len(range(1_000_000))  # cheap — no million-element list</pre></div>
       </section>
 
-      <section id="6-bytes">
+      <section id="5-bytes">
         <div class="heading-with-levels">
-          <h2>6. Bytes / bytearray (intro)</h2>
+          <h2>5. Bytes / bytearray (intro)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="6-bytes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-bytes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <ul>
           <li><code class="inline">bytes</code> — immutable sequence of bytes (0–255). <code class="inline">bytearray</code> — mutable version.</li>
         </ul>
@@ -587,9 +378,9 @@ len(range(1_000_000))  # cheap — no million-element list</pre></div>
 ba = bytearray(b"hi")
 ba[0] = ord("H")
 print(ba)          # bytearray(b'Hi')</pre></div>
-        <h3 id="6-bytes-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="5-bytes-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
-          <li>Text uses <code class="inline">str</code>; binary files / protocols use bytes. Encode/decode: <code class="inline">"hi".encode("utf-8")</code>, <code class="inline">b"hi".decode("utf-8")</code>. More in Files 08 and 17.</li>
+          <li>Text uses <code class="inline">str</code>; binary files / protocols use bytes. Encode/decode: <code class="inline">"hi".encode("utf-8")</code>, <code class="inline">b"hi".decode("utf-8")</code>. More in Files 09 and 18.</li>
         </ul>
       </section>
 

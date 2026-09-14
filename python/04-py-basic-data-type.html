@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en" data-notes-lang="python">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="../public/styles/common.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/lib/codemirror.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
+  <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
+  <title>04. Basic Data Types - Python Notes</title>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="dot"></span> Python Notes</div>
+      <nav class="nav">
+        <a href="../index.html">← Home</a>
+        <a href="./python.html">← Python</a>
+        <a href="#1-introduction">1. Introduction</a>
+        <a href="#2-int">2. int &amp; Number Systems</a>
+        <a href="#3-float">3. float (Floating Point)</a>
+        <a href="#4-complex">4. complex (Complex Numbers)</a>
+        <a href="#5-bool">5. bool &amp; Truthiness</a>
+        <a href="#6-none">6. None (NoneType)</a>
+        <a href="#c-common-questions">C. Common questions</a>
+        <a href="#p-practice">P. Practical Assignment</a>
+      </nav>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span class="icon" id="theme-icon">🌙</span>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </aside>
+    <main>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../index.html">Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="./python.html">Python</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span aria-current="page">04. Basic Data Types</span>
+      </nav>
+      <header class="hero" id="intro">
+        <h1>04. Basic Data Types</h1>
+        <p class="subtitle">File 04 — deep dive into fundamental types: int (bases &amp; conversions), float, complex, bool, and None.</p>
+        <div class="chip-row">
+          <span class="chip">int</span>
+          <span class="chip">float</span>
+          <span class="chip">complex</span>
+          <span class="chip">bool</span>
+          <span class="chip">None</span>
+        </div>
+      </header>
+
+      <section id="1-introduction">
+        <div class="heading-with-levels">
+          <h2>1. Introduction</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>1.1. Overview</h3>
+        <ul>
+          <li>Python has five core <strong>fundamental (scalar/primitive) data types</strong>: <code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>, <code class="inline">bool</code>, and <code class="inline">NoneType</code>.</li>
+          <li>Every value in Python is an <strong>object</strong>. Even simple integer literals like <code class="inline">42</code> or boolean literals like <code class="inline">True</code> are complete heap-allocated objects with methods, attributes, and internal descriptors.</li>
+          <li><strong>Universal Immutability:</strong> All five fundamental types are strictly <strong>immutable</strong>. Once constructed in memory, their internal value can never change. Reassigning a variable simply rebinds the identifier to a different object.</li>
+        </ul>
+
+        <h3>1.2. Section Map</h3>
+        <ol>
+          <li><strong>Introduction</strong> — this section</li>
+          <li><strong>int &amp; Number Systems</strong> — decimal, binary, octal, hex representations and conversion functions</li>
+          <li><strong>float</strong> — IEEE 754 representation, exponential syntax, precision quirks, inf/nan</li>
+          <li><strong>complex</strong> — real/imaginary parts, complex arithmetic, conjugate</li>
+          <li><strong>bool</strong> — integer inheritance, truthy vs. falsy values in boolean contexts</li>
+          <li><strong>None (NoneType)</strong> — singleton semantics and identity comparisons</li>
+        </ol>
+        <ul>
+          <li><strong>C.</strong> Common questions &amp; interview topics</li>
+          <li><strong>P.</strong> Practical Assignment</li>
+        </ul>
+      </section>
+
+      <section id="2-int">
+        <div class="heading-with-levels">
+          <h2>2. int (Integer Data Type) &amp; Number Systems</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="2-int-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
+        <h3>2.1. Arbitrary Precision</h3>
+        <ul>
+          <li>In Python 3, <code class="inline">int</code> values have <strong>arbitrary precision</strong> (unlimited size). Unlike C/Java, there is no 32-bit or 64-bit integer overflow limit; an integer can grow as large as available computer memory permits.</li>
+        </ul>
+
+        <div class="code"><pre>big_num = 10 ** 40
+print(big_num)  # 10000000000000000000000000000000000000000
+print(type(big_num))  # &lt;class 'int'&gt; (no overflow!)</pre></div>
+
+        <h3>2.2. Types of Representation for int Literal Values (Number Systems)</h3>
+        <p>In Python, programmers can represent integer values in <strong>4 different number systems</strong> (bases):</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Form / Number System</th>
+              <th>Base</th>
+              <th>Allowed Digits</th>
+              <th>Required Prefix</th>
+              <th>Valid Examples</th>
+              <th>SyntaxError Pitfall</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Decimal Form</strong></td>
+              <td>Base 10</td>
+              <td><code class="inline">0 to 9</code></td>
+              <td><em>None</em> (Default)</td>
+              <td><code class="inline">a = 10</code>, <code class="inline">count = 789</code></td>
+              <td>Cannot start with leading zero (e.g. <code class="inline">0123</code> is invalid in Python 3)</td>
+            </tr>
+            <tr>
+              <td><strong>2. Binary Form</strong></td>
+              <td>Base 2</td>
+              <td><code class="inline">0, 1</code></td>
+              <td><code class="inline">0b</code> or <code class="inline">0B</code></td>
+              <td><code class="inline">a = 0b1111</code> (15), <code class="inline">b = 0B11</code> (3)</td>
+              <td><code class="inline">c = 0B112</code> (<code class="inline">2</code> is not allowed in binary)</td>
+            </tr>
+            <tr>
+              <td><strong>3. Octal Form</strong></td>
+              <td>Base 8</td>
+              <td><code class="inline">0 to 7</code></td>
+              <td><code class="inline">0o</code> or <code class="inline">0O</code></td>
+              <td><code class="inline">a = 0o123</code> (83), <code class="inline">b = 0O567</code> (375)</td>
+              <td><code class="inline">c = 0O786</code> (<code class="inline">8</code> is not allowed in octal)</td>
+            </tr>
+            <tr>
+              <td><strong>4. Hexadecimal Form</strong></td>
+              <td>Base 16</td>
+              <td><code class="inline">0 to 9</code> &amp; <code class="inline">a to f</code> / <code class="inline">A to F</code></td>
+              <td><code class="inline">0x</code> or <code class="inline">0X</code></td>
+              <td><code class="inline">a = 0xface</code> (64206), <code class="inline">b = 0XBee5</code> (48869)</td>
+              <td><code class="inline">c = 0xBeer</code> (<code class="inline">'r'</code> is not in hex range <code class="inline">a-f</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Key Rule on PVM Output:</strong>
+          As a programmer, you can declare integer literals in <strong>decimal, binary, octal, or hexadecimal</strong> forms. However, the <strong>Python Virtual Machine (PVM) will always print and return numbers in decimal (base-10) form by default</strong>!
+        </div>
+
+        <div class="code"><pre># --- 1. Decimal Form (Base-10, Default) ---
+a = 10
+print("Decimal:", a)  # 10
+
+# --- 2. Binary Form (Base-2, Prefix 0b / 0B) ---
+a = 0b1111
+b = 0B11
+print("0b1111 -&gt;", a)  # 15 (PVM output is decimal)
+print("0B11   -&gt;", b)  # 3
+# c = 0B112            # SyntaxError: invalid digit '2' in binary literal
+
+# --- 3. Octal Form (Base-8, Prefix 0o / 0O) ---
+a = 0o123
+b = 0O567
+print("0o123  -&gt;", a)  # 83
+print("0O567  -&gt;", b)  # 375
+# c = 0O786            # SyntaxError: invalid digit '8' in octal literal
+
+# --- 4. Hexadecimal Form (Base-16, Prefix 0x / 0X) ---
+a = 0xface
+b = 0XBee5
+print("0xface -&gt;", a)  # 64206
+print("0XBee5 -&gt;", b)  # 48869
+# c = 0xBeer           # SyntaxError: invalid hexadecimal literal ('r' is invalid)</pre></div>
+
+        <h3 id="2-int-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.3. Base Conversion Functions: bin(), oct(), hex()</h3>
+        <p>Python provides built-in conversion functions to convert an integer value from <strong>any base</strong> (decimal, binary, octal, or hexadecimal) into its corresponding binary, octal, or hexadecimal string representation.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Conversion Function</th>
+              <th>Target Base</th>
+              <th>Description</th>
+              <th>Prefix in Output String</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">bin(x)</code></td>
+              <td>Base 2 (Binary)</td>
+              <td>Converts any integer (decimal, octal, hex) into a binary string representation.</td>
+              <td><code class="inline">'0b'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">oct(x)</code></td>
+              <td>Base 8 (Octal)</td>
+              <td>Converts any integer (decimal, binary, hex) into an octal string representation.</td>
+              <td><code class="inline">'0o'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">hex(x)</code></td>
+              <td>Base 16 (Hexadecimal)</td>
+              <td>Converts any integer (decimal, binary, octal) into a hexadecimal string representation.</td>
+              <td><code class="inline">'0x'</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># ==========================================================
+# 1. bin() - Convert from ANY base to Binary
+# ==========================================================
+# From Decimal:
+print(bin(15))       # '0b1111'
+
+# From Octal:
+print(bin(0o11))     # '0b1001' (0o11 is 9 in decimal -&gt; 0b1001)
+
+# From Hexadecimal:
+print(bin(0X10))     # '0b10000' (0x10 is 16 in decimal -&gt; 0b10000)
+
+# ==========================================================
+# 2. oct() - Convert from ANY base to Octal
+# ==========================================================
+# From Decimal:
+print(oct(10))       # '0o12'
+
+# From Binary:
+print(oct(0B1111))   # '0o17' (0b1111 is 15 in decimal -&gt; 0o17)
+
+# From Hexadecimal:
+print(oct(0X123))    # '0o443' (0x123 is 291 in decimal -&gt; 0o443)
+
+# ==========================================================
+# 3. hex() - Convert from ANY base to Hexadecimal
+# ==========================================================
+# From Decimal:
+print(hex(100))      # '0x64'
+
+# From Binary:
+print(hex(0B111111)) # '0x3f' (0b111111 is 63 in decimal -&gt; 0x3f)
+
+# From Octal:
+print(hex(0o12345))  # '0x14e5' (0o12345 is 5349 in decimal -&gt; 0x14e5)
+
+# ==========================================================
+# 4. int(string, base) - Convert strings back to Decimal
+# ==========================================================
+print(int("0b1111", 2))   # 15
+print(int("0o123", 8))    # 83
+print(int("0xface", 16))  # 64206</pre></div>
+      </section>
+
+      <section id="3-float">
+        <div class="heading-with-levels">
+          <h2>3. float (Floating-Point Numbers)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="3-float-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>3.1. Representation &amp; Exponential Notation</h3>
+        <ul>
+          <li>The <code class="inline">float</code> type in Python represents IEEE 754 double-precision floating-point numbers (64-bit float in C).</li>
+          <li>You can write floating-point numbers in <strong>fractional form</strong> or <strong>exponential (scientific) form</strong> using <code class="inline">e</code> or <code class="inline">E</code>.</li>
+        </ul>
+
+        <div class="code"><pre>pi = 3.14159
+rate = -0.0025
+
+# Exponential / Scientific notation:
+big_val = 1.2e3     # 1.2 * 10^3 = 1200.0
+tiny_val = 2.5E-4   # 2.5 * 10^-4 = 0.00025
+print(big_val, tiny_val)</pre></div>
+
+        <h3 id="3-float-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Floating-Point Precision Quirk &amp; Comparisons</h3>
+        <ul>
+          <li>Computers store floats as binary fractions. Some decimal fractions (like <code class="inline">0.1</code>) cannot be represented exactly in binary, leading to tiny rounding discrepancies.</li>
+          <li>Never compare floats using exact equality (<code class="inline">==</code>). Use <code class="inline">math.isclose()</code> instead.</li>
+        </ul>
+
+        <div class="code"><pre>import math
+
+print(0.1 + 0.2)             # 0.30000000000000004
+print(0.1 + 0.2 == 0.3)      # False (classic float quirk!)
+
+# Correct way to compare floating-point numbers:
+print(math.isclose(0.1 + 0.2, 0.3))  # True
+
+# Special float values:
+pos_inf = float("inf")
+neg_inf = float("-inf")
+not_a_num = float("nan")
+
+print(pos_inf > 10**100)     # True
+print(math.isnan(not_a_num)) # True</pre></div>
+      </section>
+
+      <section id="4-complex">
+        <div class="heading-with-levels">
+          <h2>4. complex (Complex Numbers)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="4-complex-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>4.1. Syntax &amp; Properties</h3>
+        <ul>
+          <li>Python has built-in support for complex numbers in the form <code class="inline">a + bj</code>, where <code class="inline">a</code> is the real part, <code class="inline">b</code> is the imaginary part, and <code class="inline">j</code> (or <code class="inline">J</code>) represents $\sqrt{-1}$.</li>
+          <li>Both the real and imaginary parts are internally stored as <code class="inline">float</code> numbers.</li>
+          <li>Attributes: <code class="inline">.real</code>, <code class="inline">.imag</code>, and method <code class="inline">.conjugate()</code>.</li>
+        </ul>
+
+        <div class="code"><pre>z1 = 3 + 4j
+z2 = 1 - 2j
+
+print("Real part:     ", z1.real)       # 3.0 (float)
+print("Imaginary part:", z1.imag)       # 4.0 (float)
+print("Conjugate:     ", z1.conjugate())# (3-4j)
+
+# Arithmetic operations:
+print("Addition:      ", z1 + z2)       # (4+2j)
+print("Multiplication:", z1 * z2)       # (11-2j)</pre></div>
+      </section>
+
+      <section id="5-bool">
+        <div class="heading-with-levels">
+          <h2>5. bool (Boolean Values &amp; Truthiness)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-bool-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. Overview &amp; Subclassing int</h3>
+        <ul>
+          <li><code class="inline">bool</code> has exactly two literal values: <code class="inline">True</code> and <code class="inline">False</code>. Both are permanent singletons.</li>
+          <li>In Python, <code class="inline">bool</code> is an explicit subclass of <code class="inline">int</code>:
+            <br /><code class="inline">True == 1</code> and <code class="inline">False == 0</code>.
+          </li>
+          <li>Booleans participate directly in integer arithmetic: <code class="inline">True + True == 2</code>, <code class="inline">True * 10 == 10</code>.</li>
+        </ul>
+
+        <div class="code"><pre>print(True + True)            # 2
+print(True - False)           # 1
+print(isinstance(True, int))  # True
+print(issubclass(bool, int))  # True</pre></div>
+
+        <h3 id="5-bool-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.2. Truthy and Falsy Values in Python</h3>
+        <p>In Python, every object can be tested for truth value (evaluated in an <code class="inline">if</code> condition or passed to <code class="inline">bool()</code>).</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Falsy Values (Evaluate to <code class="inline">False</code>)</th>
+              <th>Truthy Values (Evaluate to <code class="inline">True</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Constants</strong></td>
+              <td><code class="inline">False</code>, <code class="inline">None</code></td>
+              <td><code class="inline">True</code></td>
+            </tr>
+            <tr>
+              <td><strong>Numbers</strong></td>
+              <td>Zero: <code class="inline">0</code>, <code class="inline">0.0</code>, <code class="inline">0j</code></td>
+              <td>Any non-zero number (<code class="inline">1</code>, <code class="inline">-5</code>, <code class="inline">3.14</code>)</td>
+            </tr>
+            <tr>
+              <td><strong>Strings</strong></td>
+              <td>Empty string: <code class="inline">""</code>, <code class="inline">''</code></td>
+              <td>Non-empty strings (<code class="inline">"hello"</code>, <code class="inline">" "</code>, <code class="inline">"0"</code>, <code class="inline">"False"</code>)</td>
+            </tr>
+            <tr>
+              <td><strong>Collections / Sequences</strong></td>
+              <td>Empty collections: <code class="inline">[]</code>, <code class="inline">()</code>, <code class="inline">{}</code>, <code class="inline">set()</code>, <code class="inline">range(0)</code></td>
+              <td>Non-empty collections (<code class="inline">[0]</code>, <code class="inline">{"a": 1}</code>, <code class="inline">(None,)</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Pitfall Alert:</strong>
+          String <code class="inline">"False"</code> and string <code class="inline">"0"</code> are <strong>Truthy</strong> because they are non-empty strings! Only the truly empty string <code class="inline">""</code> is falsy.
+        </div>
+
+        <div class="code"><pre># Falsy examples:
+print(bool(0))        # False
+print(bool(0.0))      # False
+print(bool(None))     # False
+print(bool(""))       # False
+print(bool([]))       # False
+print(bool({}))       # False
+print(bool(set()))    # False
+
+# Truthy examples:
+print(bool("hello"))  # True
+print(bool("False"))  # True  (non-empty string!)
+print(bool("0"))      # True  (non-empty string!)
+print(bool([0]))      # True  (non-empty list!)
+print(bool(-10))      # True  (non-zero number!)</pre></div>
+      </section>
+
+      <section id="6-none">
+        <div class="heading-with-levels">
+          <h2>6. NoneType (None)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+          </div>
+        </div>
+        <h3 id="6-none-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. The None Singleton</h3>
+        <ul>
+          <li><code class="inline">None</code> is an object that represents the absence of a value or null state.</li>
+          <li>It is an instance of <code class="inline">NoneType</code>. There is only ever <strong>one instance</strong> of <code class="inline">None</code> in Python's memory (singleton).</li>
+          <li>Functions without an explicit <code class="inline">return</code> statement implicitly return <code class="inline">None</code>.</li>
+        </ul>
+
+        <h3>6.2. Identity Comparison: is None vs == None</h3>
+        <ul>
+          <li>Always use the <strong>identity operator</strong> <code class="inline">is None</code> or <code class="inline">is not None</code> rather than equality <code class="inline">== None</code>.</li>
+          <li><code class="inline">is</code> compares memory pointer addresses and cannot be overridden by user classes; <code class="inline">==</code> calls <code class="inline">__eq__</code>, which can be modified or slow.</li>
+        </ul>
+
+        <div class="code"><pre>x = None
+
+# Best Practice:
+if x is None:
+    print("x has no value")
+
+# Return value of void function:
+def greet():
+    print("Hello!")
+
+result = greet()
+print("Return value:", result)       # None
+print("Is None?     ", result is None)  # True</pre></div>
+      </section>
+
+      <section id="c-common-questions">
+        <div class="heading-with-levels">
+          <h2>C. Common questions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+
+        <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.1. How large can an integer be in Python 3?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In Python 3, integers have <strong>arbitrary precision</strong> (no fixed 32-bit or 64-bit limit). They can expand to fill any amount of available RAM on the host machine.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.2. Why does <code class="inline">print(0b1111)</code> output <code class="inline">15</code> instead of <code class="inline">0b1111</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python allows declaring integers in 4 bases (decimal, binary, octal, hex), but the Python Virtual Machine (PVM) always evaluates and displays integers in base-10 decimal by default. To display as binary, explicitly use <code class="inline">bin(x)</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why is <code class="inline">bool("False")</code> True?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python determines the truthiness of strings strictly by length. Any non-empty string has length &gt; 0 and is truthy. The string <code class="inline">"False"</code> contains 5 characters, so <code class="inline">bool("False")</code> evaluates to <code class="inline">True</code>. Only the empty string <code class="inline">""</code> is falsy.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Why should I use <code class="inline">is None</code> instead of <code class="inline">== None</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">is</code> checks exact object identity in memory (pointer check). Since <code class="inline">None</code> is guaranteed to be a singleton, <code class="inline">x is None</code> is faster and immune to custom classes that might override the <code class="inline">__eq__</code> method to return unusual values.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why does <code class="inline">0.1 + 0.2 != 0.3</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Computers represent floating-point numbers in base 2 (IEEE 754). Numbers like <code class="inline">0.1</code> and <code class="inline">0.2</code> are repeating infinite fractions in binary, causing tiny precision inaccuracies during addition (<code class="inline">0.30000000000000004</code>). Use <code class="inline">math.isclose()</code> for float equality comparisons.</p>
+          </div>
+        </details>
+      </section>
+
+      <section id="p-practice">
+        <div class="heading-with-levels">
+          <h2>P. Practical Assignment</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Write and verify your solutions interactively or in your Python terminal.</div>
+        <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>P.1. Warm-up</h3>
+        <ol>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Create variables representing decimal 25 in Binary, Octal, and Hexadecimal. Print their values.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># 25 in different bases:
+b_val = 0b11001
+o_val = 0o31
+h_val = 0x19
+
+print("Binary: ", b_val)  # 25
+print("Octal:  ", o_val)  # 25
+print("Hex:    ", h_val)  # 25</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Convert decimal number 160 into binary, octal, and hexadecimal strings using built-in functions.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>n = 160
+print("bin:", bin(n))  # '0b10100000'
+print("oct:", oct(n))  # '0o240'
+print("hex:", hex(n))  # '0xa0'</pre></div>
+              </div>
+            </details>
+          </li>
+        </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.2. Core tasks</h3>
+        <ol>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Truthiness Loop</strong> — Iterate over a list containing <code class="inline">[0, 1, 0.0, "", "hello", [], [0], None, set()]</code> and print each element's truth value.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>items = [0, 1, 0.0, "", "hello", [], [0], None, set()]
+for item in items:
+    print(f"bool({repr(item):10}) -&gt; {bool(item)}")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Float Equality &amp; math.isclose</strong> — Demonstrate why <code class="inline">0.1 + 0.2 == 0.3</code> fails and verify it correctly using <code class="inline">math.isclose</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import math
+
+val = 0.1 + 0.2
+print("Calculated val:", val)
+print("val == 0.3:    ", val == 0.3)             # False
+print("math.isclose:  ", math.isclose(val, 0.3))  # True</pre></div>
+              </div>
+            </details>
+          </li>
+        </ol>
+      </section>
+    </main>
+  </div>
+  <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
+  <script src="../public/vendor/codemirror/mode/python/python.min.js"></script>
+  <script src="../public/scripts/common.js"></script>
+</body>
+</html>

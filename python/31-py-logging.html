@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
-  <title>19. Inheritance and Relationships - Python Notes</title>
+  <title>31. Logging - Python Notes</title>
 </head>
 <body>
   <div class="layout">
@@ -19,11 +19,11 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-has-a-relationship-composition-aggregation">2. HAS-A relationship (composition / aggregation)</a>
-        <a href="#3-is-a-relationship-inheritance">3. IS-A relationship (inheritance)</a>
-        <a href="#4-types-of-inheritance">4. Types of inheritance</a>
-        <a href="#5-method-resolution-order-mro">5. Method Resolution Order (MRO)</a>
-        <a href="#6-super-function">6. super() function</a>
+        <a href="#2-introduction-levels-and-basic-demo">2. Introduction, levels, and basic demo</a>
+        <a href="#3-formatting-messages-logging-exceptions">3. Formatting messages; logging exceptions</a>
+        <a href="#4-custom-logger-patterns">4. Custom logger patterns</a>
+        <a href="#5-per-module-logs-and-inspect">5. Per-module logs and inspect</a>
+        <a href="#6-generic-logger-and-config-file">6. Generic logger and config file</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -38,11 +38,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./python.html">Python</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">19. Inheritance and Relationships</span>
+        <span aria-current="page">31. Logging</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>19. Inheritance and Relationships</h1>
-        <p class="subtitle">File 19 — HAS-A, IS-A, inheritance types, MRO, super().</p>
+        <h1>31. Logging</h1>
+        <p class="subtitle">File 31 — logging levels, formatters, custom loggers, config.</p>
         <div class="chip-row">
           <span class="chip">Outline</span>
           <span class="chip">Practice</span>
@@ -59,105 +59,105 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Inheritance and Relationships</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>This chapter covers <strong>Logging</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
         </ul>
         <h3>1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
         <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">19-practice.py</code> before File 20. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">31-practice.py</code> before File 32. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>HAS-A relationship (composition / aggregation)</strong></li>
-          <li><strong>IS-A relationship (inheritance)</strong></li>
-          <li><strong>Types of inheritance</strong></li>
-          <li><strong>Method Resolution Order (MRO)</strong></li>
-          <li><strong>super() function</strong></li>
+          <li><strong>Introduction, levels, and basic demo</strong></li>
+          <li><strong>Formatting messages; logging exceptions</strong></li>
+          <li><strong>Custom logger patterns</strong></li>
+          <li><strong>Per-module logs and inspect</strong></li>
+          <li><strong>Generic logger and config file</strong></li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="2-has-a-relationship-composition-aggregation">
+      <section id="2-introduction-levels-and-basic-demo">
         <div class="heading-with-levels">
-          <h2>2. HAS-A relationship (composition / aggregation)</h2>
+          <h2>2. Introduction, levels, and basic demo</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="2-has-a-relationship-composition-aggregation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-introduction-levels-and-basic-demo-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>HAS-A relationship (composition / aggregation)</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Introduction, levels, and basic demo</strong>.</li>
+          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="3-is-a-relationship-inheritance">
+      <section id="3-formatting-messages-logging-exceptions">
         <div class="heading-with-levels">
-          <h2>3. IS-A relationship (inheritance)</h2>
+          <h2>3. Formatting messages; logging exceptions</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="3-is-a-relationship-inheritance-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-formatting-messages-logging-exceptions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>IS-A relationship (inheritance)</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Formatting messages; logging exceptions</strong>.</li>
+          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="4-types-of-inheritance">
+      <section id="4-custom-logger-patterns">
         <div class="heading-with-levels">
-          <h2>4. Types of inheritance</h2>
+          <h2>4. Custom logger patterns</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="4-types-of-inheritance-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-custom-logger-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Types of inheritance</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Custom logger patterns</strong>.</li>
+          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="5-method-resolution-order-mro">
+      <section id="5-per-module-logs-and-inspect">
         <div class="heading-with-levels">
-          <h2>5. Method Resolution Order (MRO)</h2>
+          <h2>5. Per-module logs and inspect</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="5-method-resolution-order-mro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-per-module-logs-and-inspect-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Method Resolution Order (MRO)</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Per-module logs and inspect</strong>.</li>
+          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="6-super-function">
+      <section id="6-generic-logger-and-config-file">
         <div class="heading-with-levels">
-          <h2>6. super() function</h2>
+          <h2>6. Generic logger and config file</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="6-super-function-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="6-generic-logger-and-config-file-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>super() function</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Generic logger and config file</strong>.</li>
+          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -173,7 +173,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about HAS-A relationship (composition / aggregation)?</span>
+            <span class="qa-question-title">C.1. What should I know about Introduction, levels, and basic demo?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -183,7 +183,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about IS-A relationship (inheritance)?</span>
+            <span class="qa-question-title">C.2. What should I know about Formatting messages; logging exceptions?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -193,7 +193,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Types of inheritance?</span>
+            <span class="qa-question-title">C.3. What should I know about Custom logger patterns?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -203,7 +203,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Method Resolution Order (MRO)?</span>
+            <span class="qa-question-title">C.4. What should I know about Per-module logs and inspect?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -219,44 +219,41 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">19-practice.py</code>. Run with <code class="inline">python3 19-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">31-practice.py</code>. Run with <code class="inline">python3 31-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>HAS-A relationship (composition / aggregation)</strong>.</span>
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction, levels, and basic demo</strong>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of HAS-A Relationship (Composition / Aggregation):
-# 1. HAS-A models composition where a class contains references to instances of other classes.
-# 2. Promotes loose coupling and reuse without creating deep, brittle inheritance hierarchies.
-# 3. Principle: &#x27;Favor composition over inheritance&#x27; whenever possible.</pre></div>
+                <div class="code"><pre># Summary of Logging Levels and Basic Setup:
+# 1. Python&#x27;s &#x27;logging&#x27; standard library tracks events during application runtime.
+# 2. Five standard severity levels: DEBUG (10) &lt; INFO (20) &lt; WARNING (30) &lt; ERROR (40) &lt; CRITICAL (50).
+# 3. Default logging level is WARNING; events below WARNING are ignored unless configured via basicConfig.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>IS-A relationship (inheritance)</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example related to <strong>Formatting messages; logging exceptions</strong> and print the result.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># IS-A Relationship (Inheritance):
-class Animal:
-    def breathe(self):
-        return &quot;Breathing oxygen&quot;
+                <div class="code"><pre># Formatting messages and logging exceptions:
+import logging
 
-class Dog(Animal):  # Dog IS-A Animal
-    def bark(self):
-        return &quot;Woof!&quot;
+logging.basicConfig(level=logging.INFO, format=&quot;%(asctime)s [%(levelname)s] %(message)s&quot;)
+logging.info(&quot;Application initialized.&quot;)
 
-d = Dog()
-print(&quot;Dog breathing:&quot;, d.breathe())
-print(&quot;Dog barking:&quot;, d.bark())
-print(&quot;isinstance(d, Animal):&quot;, isinstance(d, Animal))</pre></div>
+try:
+    1 / 0
+except ZeroDivisionError:
+    logging.exception(&quot;Operation encountered a fatal division error:&quot;)</pre></div>
               </div>
             </details>
           </li>
@@ -267,10 +264,10 @@ print(&quot;isinstance(d, Animal):&quot;, isinstance(d, Animal))</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: OOP Inheritance, Composition, and Method Resolution.
+                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Logging System.
 
-Goal: Master IS-A vs HAS-A design patterns, single/multiple/multilevel/hierarchical
-inheritance, the super() proxy, and C3 Linearization (MRO).
+Goal: Master logging levels, root vs custom logger hierarchies, Handlers,
+Formatters, exception traceback logging, and file rotation patterns.
 &quot;&quot;&quot;</pre></div>
               </div>
             </details>
@@ -281,114 +278,102 @@ inheritance, the super() proxy, and C3 Linearization (MRO).
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: HAS-A relationship (composition / aggregation)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Introduction, levels, and basic demo</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: HAS-A relationship (composition / aggregation)
-class Engine:
-    def start(self):
-        return &quot;V8 Engine started rumbling.&quot;
+                <div class="code"><pre># Task 1: Introduction, levels, and basic demo
+import logging
 
-class Car:
-    def __init__(self, brand):
-        self.brand = brand
-        self.engine = Engine()  # Car HAS-A Engine
-    
-    def drive(self):
-        status = self.engine.start()
-        return f&quot;{self.brand} is moving. {status}&quot;
+logger = logging.getLogger(&quot;demo_logger&quot;)
+logger.setLevel(logging.DEBUG)
 
-c = Car(&quot;Mustang&quot;)
-print(c.drive())</pre></div>
+# Console handler:
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter(&quot;%(levelname)s: %(message)s&quot;)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+logger.debug(&quot;Detailed diagnostic information (DEBUG)&quot;)
+logger.info(&quot;Normal lifecycle milestone (INFO)&quot;)
+logger.warning(&quot;Unusual condition that requires attention (WARNING)&quot;)
+logger.error(&quot;Operation failed (ERROR)&quot;)
+logger.critical(&quot;System failure / imminent shutdown (CRITICAL)&quot;)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: IS-A relationship (inheritance)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Formatting messages; logging exceptions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: IS-A relationship with super() constructor chaining
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-    
-    def get_info(self):
-        return f&quot;{self.name}, Age {self.age}&quot;
+                <div class="code"><pre># Task 2: Formatting messages and logging exceptions
+import logging
 
-class SoftwareEngineer(Person):
-    def __init__(self, name, age, tech_stack):
-        super().__init__(name, age)  # Call parent constructor
-        self.tech_stack = tech_stack
-    
-    def get_info(self):
-        base = super().get_info()
-        return f&quot;{base} | Stack: {&#x27;, &#x27;.join(self.tech_stack)}&quot;
-
-eng = SoftwareEngineer(&quot;Bharat&quot;, 30, [&quot;Python&quot;, &quot;TypeScript&quot;, &quot;React&quot;])
-print(eng.get_info())</pre></div>
+formatter = logging.Formatter(
+    fmt=&quot;%(asctime)s | %(name)s | %(levelname)-8s | %(filename)s:%(lineno)d | %(message)s&quot;,
+    datefmt=&quot;%Y-%m-%d %H:%M:%S&quot;
+)
+record = logging.LogRecord(
+    name=&quot;payment_service&quot;, level=logging.ERROR, pathname=&quot;payment.py&quot;,
+    lineno=42, msg=&quot;Card declined: insufficient funds&quot;, args=(), exc_info=None
+)
+print(&quot;Formatted Log Line:&quot;)
+print(formatter.format(record))</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Types of inheritance</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Custom logger patterns</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Types of inheritance
-# 1. Single: Child(Parent)
-# 2. Multilevel: C(B), B(A)
-# 3. Hierarchical: B(A), C(A)
-# 4. Multiple: Child(ParentA, ParentB)
+                <div class="code"><pre># Task 3: Custom logger patterns (File and Console handlers)
+import logging
+import os
 
-class Swimmer:
-    def swim(self):
-        return &quot;Swimming in water.&quot;
+app_logger = logging.getLogger(&quot;app.service&quot;)
+app_logger.setLevel(logging.INFO)
 
-class Flyer:
-    def fly(self):
-        return &quot;Flying in the air.&quot;
+log_filename = &quot;app_activity.log&quot;
+file_handler = logging.FileHandler(log_filename, mode=&quot;w&quot;)
+file_handler.setFormatter(logging.Formatter(&quot;[%(asctime)s] %(levelname)s - %(message)s&quot;))
 
-class Duck(Swimmer, Flyer):  # Multiple inheritance
-    pass
+app_logger.addHandler(file_handler)
+app_logger.info(&quot;Service started successfully.&quot;)
+app_logger.info(&quot;Processing queue batch #104.&quot;)
 
-donald = Duck()
-print(donald.swim())
-print(donald.fly())</pre></div>
+file_handler.close()
+with open(log_filename) as f:
+    print(&quot;Log file output:\n&quot; + f.read())
+os.remove(log_filename)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Method Resolution Order (MRO)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 4: Per-module logs and inspect</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Method Resolution Order (MRO)
-class A:
-    def ping(self): print(&quot;A.ping&quot;)
+                <div class="code"><pre># Task 4: Per-module logs and inspect
+import logging
 
-class B(A):
-    def ping(self): print(&quot;B.ping&quot;)
+# Hierarchical logger naming:
+auth_logger = logging.getLogger(&quot;app.auth&quot;)
+db_logger = logging.getLogger(&quot;app.database&quot;)
 
-class C(A):
-    def ping(self): print(&quot;C.ping&quot;)
+print(&quot;auth_logger name:&quot;, auth_logger.name)
+print(&quot;db_logger parent:&quot;, db_logger.parent.name)
 
-class D(B, C):
-    pass
-
-d = D()
-d.ping()  # Resolves to B.ping (first in MRO)
-print(&quot;MRO for class D:&quot;)
-for cls in D.mro():
-    print(&quot; &quot;, cls.__name__)</pre></div>
+# Child loggers inherit effective level from parent unless explicitly overridden
+print(&quot;Effective level:&quot;, auth_logger.getEffectiveLevel())</pre></div>
               </div>
             </details>
           </li>
@@ -399,41 +384,34 @@ for cls in D.mro():
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Inheritance and Relationships.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Logging.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: UI Component Hierarchy with Composite Rendering
-class UIComponent:
-    def __init__(self, component_id):
-        self.component_id = component_id
-    
-    def render(self):
-        raise NotImplementedError
+                <div class="code"><pre># Mini Project: Robust Request Logging Middleware Simulator
+import logging
+import time
 
-class Button(UIComponent):
-    def __init__(self, component_id, label):
-        super().__init__(component_id)
-        self.label = label
-    def render(self):
-        return f&quot;&lt;button id=&#x27;{self.component_id}&#x27;&gt;{self.label}&lt;/button&gt;&quot;
+logger = logging.getLogger(&quot;api_middleware&quot;)
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(&quot;%(asctime)s [%(levelname)s] %(message)s&quot;))
+logger.addHandler(handler)
 
-class Panel(UIComponent):
-    def __init__(self, component_id):
-        super().__init__(component_id)
-        self.children = []  # Composition
-    
-    def add(self, child):
-        self.children.append(child)
-    
-    def render(self):
-        inner = &quot;\n  &quot;.join(child.render() for child in self.children)
-        return f&quot;&lt;div id=&#x27;{self.component_id}&#x27;&gt;\n  {inner}\n&lt;/div&gt;&quot;
+def log_api_request(endpoint, handler_fn):
+    start = time.perf_counter()
+    logger.info(f&quot;Incoming Request -&gt; {endpoint}&quot;)
+    try:
+        response = handler_fn()
+        elapsed = (time.perf_counter() - start) * 1000
+        logger.info(f&quot;Completed {endpoint} in {elapsed:.2f}ms with status 200 OK&quot;)
+        return response
+    except Exception as err:
+        logger.error(f&quot;Failed {endpoint}: {err}&quot;, exc_info=True)
+        return {&quot;error&quot;: str(err), &quot;status&quot;: 500}
 
-panel = Panel(&quot;main-container&quot;)
-panel.add(Button(&quot;btn-submit&quot;, &quot;Submit&quot;))
-panel.add(Button(&quot;btn-cancel&quot;, &quot;Cancel&quot;))
-print(&quot;Rendered Tree:\n&quot; + panel.render())</pre></div>
+# Simulate successful request:
+log_api_request(&quot;/api/v1/health&quot;, lambda: {&quot;status&quot;: &quot;healthy&quot;})</pre></div>
               </div>
             </details>
           </li>
@@ -444,29 +422,24 @@ print(&quot;Rendered Tree:\n&quot; + panel.render())</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Inheritance Pitfalls &amp; Edge Cases:
-# 1. The Diamond Problem in multiple inheritance:
-# Solved gracefully in Python via C3 Linearization MRO algorithm.
+                <div class="code"><pre># Logging Pitfalls &amp; Edge Cases:
+# 1. Calling logging.basicConfig() after root logger already has handlers does nothing (ignored).
 
-# 2. Forgetting super().__init__() leads to uninitialized parent attributes:
-# class Child(Parent):
-#     def __init__(self):
-#         # Without super().__init__(), parent fields are missing!
-#         pass
+# 2. Duplicate log lines: Adding handlers multiple times (e.g. inside a function called repeatedly).
 
-# 3. Inconsistent MRO hierarchy raises TypeError: Cannot create a consistent method resolution order (MRO).</pre></div>
+# 3. String formatting overhead: Prefer logger.info(&quot;User %s&quot;, user) over logger.info(f&quot;User {user}&quot;) so formatting only occurs if level is active.</pre></div>
               </div>
             </details>
           </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Inheritance and Relationships) is for.</li>
+          <li>I can explain what this chapter (Logging) is for.</li>
           <li>I ran at least the warm-up and one core task myself.</li>
           <li>I know which later file builds on this topic (see Python index).</li>
         </ul>
       </section>
-      <footer>Python Notes File 19. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>Python Notes File 30. Structure ready; expand section notes over time. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

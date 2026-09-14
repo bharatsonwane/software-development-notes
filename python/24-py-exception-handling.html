@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
-  <title>30. Logging - Python Notes</title>
+  <title>24. Exception Handling - Python Notes</title>
 </head>
 <body>
   <div class="layout">
@@ -19,11 +19,12 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-levels-and-basic-demo">2. Introduction, levels, and basic demo</a>
-        <a href="#3-formatting-messages-logging-exceptions">3. Formatting messages; logging exceptions</a>
-        <a href="#4-custom-logger-patterns">4. Custom logger patterns</a>
-        <a href="#5-per-module-logs-and-inspect">5. Per-module logs and inspect</a>
-        <a href="#6-generic-logger-and-config-file">6. Generic logger and config file</a>
+        <a href="#2-introduction-and-default-exception-handling">2. Introduction and default exception handling</a>
+        <a href="#3-exception-hierarchy-try-except">3. Exception hierarchy; try/except</a>
+        <a href="#4-else-and-finally-blocks">4. else and finally blocks</a>
+        <a href="#5-nested-try-except-finally-control-flow">5. Nested try-except-finally control flow</a>
+        <a href="#6-combinations-of-try-except-else-finally">6. Combinations of try/except/else/finally</a>
+        <a href="#7-customized-user-defined-exceptions">7. Customized / user-defined exceptions</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -38,11 +39,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./python.html">Python</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">30. Logging</span>
+        <span aria-current="page">24. Exception Handling</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>30. Logging</h1>
-        <p class="subtitle">File 30 — logging levels, formatters, custom loggers, config.</p>
+        <h1>24. Exception Handling</h1>
+        <p class="subtitle">File 24 — hierarchy, try/except/else/finally, custom exceptions.</p>
         <div class="chip-row">
           <span class="chip">Outline</span>
           <span class="chip">Practice</span>
@@ -59,105 +60,122 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Logging</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>This chapter covers <strong>Exception Handling</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
         </ul>
         <h3>1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
         <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">30-practice.py</code> before File 31. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–7 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">24-practice.py</code> before File 25. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction, levels, and basic demo</strong></li>
-          <li><strong>Formatting messages; logging exceptions</strong></li>
-          <li><strong>Custom logger patterns</strong></li>
-          <li><strong>Per-module logs and inspect</strong></li>
-          <li><strong>Generic logger and config file</strong></li>
+          <li><strong>Introduction and default exception handling</strong></li>
+          <li><strong>Exception hierarchy; try/except</strong></li>
+          <li><strong>else and finally blocks</strong></li>
+          <li><strong>Nested try-except-finally control flow</strong></li>
+          <li><strong>Combinations of try/except/else/finally</strong></li>
+          <li><strong>Customized / user-defined exceptions</strong></li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="2-introduction-levels-and-basic-demo">
+      <section id="2-introduction-and-default-exception-handling">
         <div class="heading-with-levels">
-          <h2>2. Introduction, levels, and basic demo</h2>
+          <h2>2. Introduction and default exception handling</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="2-introduction-levels-and-basic-demo-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-introduction-and-default-exception-handling-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Introduction, levels, and basic demo</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Introduction and default exception handling</strong>.</li>
+          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="3-formatting-messages-logging-exceptions">
+      <section id="3-exception-hierarchy-try-except">
         <div class="heading-with-levels">
-          <h2>3. Formatting messages; logging exceptions</h2>
+          <h2>3. Exception hierarchy; try/except</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="3-formatting-messages-logging-exceptions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-exception-hierarchy-try-except-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Formatting messages; logging exceptions</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Exception hierarchy; try/except</strong>.</li>
+          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="4-custom-logger-patterns">
+      <section id="4-else-and-finally-blocks">
         <div class="heading-with-levels">
-          <h2>4. Custom logger patterns</h2>
+          <h2>4. else and finally blocks</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="4-custom-logger-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-else-and-finally-blocks-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Custom logger patterns</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>else and finally blocks</strong>.</li>
+          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="5-per-module-logs-and-inspect">
+      <section id="5-nested-try-except-finally-control-flow">
         <div class="heading-with-levels">
-          <h2>5. Per-module logs and inspect</h2>
+          <h2>5. Nested try-except-finally control flow</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="5-per-module-logs-and-inspect-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-nested-try-except-finally-control-flow-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Per-module logs and inspect</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Nested try-except-finally control flow</strong>.</li>
+          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="6-generic-logger-and-config-file">
+      <section id="6-combinations-of-try-except-else-finally">
         <div class="heading-with-levels">
-          <h2>6. Generic logger and config file</h2>
+          <h2>6. Combinations of try/except/else/finally</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="6-generic-logger-and-config-file-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="6-combinations-of-try-except-else-finally-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>6.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Generic logger and config file</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Combinations of try/except/else/finally</strong>.</li>
+          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
+        </ul>
+      </section>
+      <section id="7-customized-user-defined-exceptions">
+        <div class="heading-with-levels">
+          <h2>7. Customized / user-defined exceptions</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+        <h3 id="7-customized-user-defined-exceptions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>7.1. Goals</h3>
+        <ul>
+          <li>Understand the main ideas in <strong>Customized / user-defined exceptions</strong>.</li>
+          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -173,7 +191,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction, levels, and basic demo?</span>
+            <span class="qa-question-title">C.1. What should I know about Introduction and default exception handling?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -183,7 +201,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Formatting messages; logging exceptions?</span>
+            <span class="qa-question-title">C.2. What should I know about Exception hierarchy; try/except?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -193,7 +211,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Custom logger patterns?</span>
+            <span class="qa-question-title">C.3. What should I know about else and finally blocks?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -203,7 +221,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Per-module logs and inspect?</span>
+            <span class="qa-question-title">C.4. What should I know about Nested try-except-finally control flow?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -219,41 +237,38 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">30-practice.py</code>. Run with <code class="inline">python3 30-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">24-practice.py</code>. Run with <code class="inline">python3 24-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction, levels, and basic demo</strong>.</span>
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction and default exception handling</strong>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Logging Levels and Basic Setup:
-# 1. Python&#x27;s &#x27;logging&#x27; standard library tracks events during application runtime.
-# 2. Five standard severity levels: DEBUG (10) &lt; INFO (20) &lt; WARNING (30) &lt; ERROR (40) &lt; CRITICAL (50).
-# 3. Default logging level is WARNING; events below WARNING are ignored unless configured via basicConfig.</pre></div>
+                <div class="code"><pre># Summary of Introduction and Default Exception Handling:
+# 1. An exception is a runtime event that disrupts the normal program instruction flow.
+# 2. If unhandled, Python terminates the thread and outputs a traceback with the exception type and details.
+# 3. Handled via try-except blocks, ensuring graceful recovery and resource cleanup.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Formatting messages; logging exceptions</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example related to <strong>Exception hierarchy; try/except</strong> and print the result.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Formatting messages and logging exceptions:
-import logging
-
-logging.basicConfig(level=logging.INFO, format=&quot;%(asctime)s [%(levelname)s] %(message)s&quot;)
-logging.info(&quot;Application initialized.&quot;)
-
+                <div class="code"><pre># Exception hierarchy and try/except:
 try:
-    1 / 0
-except ZeroDivisionError:
-    logging.exception(&quot;Operation encountered a fatal division error:&quot;)</pre></div>
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f&quot;Caught specific division error: {e}&quot;)
+except Exception as e:
+    print(f&quot;Caught generic error: {e}&quot;)</pre></div>
               </div>
             </details>
           </li>
@@ -264,10 +279,10 @@ except ZeroDivisionError:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Logging System.
+                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Exception Handling &amp; Robustness.
 
-Goal: Master logging levels, root vs custom logger hierarchies, Handlers,
-Formatters, exception traceback logging, and file rotation patterns.
+Goal: Master try, except, else, finally control flow, built-in exception hierarchy,
+custom exception definitions, and context manager cleanup.
 &quot;&quot;&quot;</pre></div>
               </div>
             </details>
@@ -278,102 +293,98 @@ Formatters, exception traceback logging, and file rotation patterns.
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction, levels, and basic demo</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Introduction and default exception handling</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction, levels, and basic demo
-import logging
+                <div class="code"><pre># Task 1: Introduction and default exception handling
+# Demonstrating graceful error interception:
+def divide_safe(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        print(&quot;[Error] Cannot divide by zero. Returning fallback 0.0.&quot;)
+        return 0.0
 
-logger = logging.getLogger(&quot;demo_logger&quot;)
-logger.setLevel(logging.DEBUG)
-
-# Console handler:
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter(&quot;%(levelname)s: %(message)s&quot;)
-ch.setFormatter(formatter)
-logger.addHandler(ch)
-
-logger.debug(&quot;Detailed diagnostic information (DEBUG)&quot;)
-logger.info(&quot;Normal lifecycle milestone (INFO)&quot;)
-logger.warning(&quot;Unusual condition that requires attention (WARNING)&quot;)
-logger.error(&quot;Operation failed (ERROR)&quot;)
-logger.critical(&quot;System failure / imminent shutdown (CRITICAL)&quot;)</pre></div>
+print(&quot;divide_safe(10, 2):&quot;, divide_safe(10, 2))
+print(&quot;divide_safe(10, 0):&quot;, divide_safe(10, 0))</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Formatting messages; logging exceptions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Exception hierarchy; try/except</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Formatting messages and logging exceptions
-import logging
+                <div class="code"><pre># Task 2: Exception hierarchy; multiple except blocks
+def process_data(val):
+    try:
+        num = int(val)
+        return 100 / num
+    except ValueError:
+        print(f&quot;ValueError: &#x27;{val}&#x27; is not a valid integer&quot;)
+    except ZeroDivisionError:
+        print(&quot;ZeroDivisionError: denominator cannot be zero&quot;)
+    except Exception as general_err:
+        print(f&quot;Unexpected error: {type(general_err).__name__}&quot;)
 
-formatter = logging.Formatter(
-    fmt=&quot;%(asctime)s | %(name)s | %(levelname)-8s | %(filename)s:%(lineno)d | %(message)s&quot;,
-    datefmt=&quot;%Y-%m-%d %H:%M:%S&quot;
-)
-record = logging.LogRecord(
-    name=&quot;payment_service&quot;, level=logging.ERROR, pathname=&quot;payment.py&quot;,
-    lineno=42, msg=&quot;Card declined: insufficient funds&quot;, args=(), exc_info=None
-)
-print(&quot;Formatted Log Line:&quot;)
-print(formatter.format(record))</pre></div>
+process_data(&quot;abc&quot;)
+process_data(0)
+print(&quot;Valid:&quot;, process_data(5))</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Custom logger patterns</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: else and finally blocks</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Custom logger patterns (File and Console handlers)
-import logging
-import os
+                <div class="code"><pre># Task 3: else and finally blocks
+def open_and_process(data):
+    try:
+        print(&quot;[try] Attempting calculation&quot;)
+        res = 50 / data
+    except ZeroDivisionError:
+        print(&quot;[except] Handled zero division&quot;)
+    else:
+        print(f&quot;[else] Succeeded! Result: {res}&quot;)
+    finally:
+        print(&quot;[finally] Cleanup always executes (guaranteed)&quot;)
 
-app_logger = logging.getLogger(&quot;app.service&quot;)
-app_logger.setLevel(logging.INFO)
-
-log_filename = &quot;app_activity.log&quot;
-file_handler = logging.FileHandler(log_filename, mode=&quot;w&quot;)
-file_handler.setFormatter(logging.Formatter(&quot;[%(asctime)s] %(levelname)s - %(message)s&quot;))
-
-app_logger.addHandler(file_handler)
-app_logger.info(&quot;Service started successfully.&quot;)
-app_logger.info(&quot;Processing queue batch #104.&quot;)
-
-file_handler.close()
-with open(log_filename) as f:
-    print(&quot;Log file output:\n&quot; + f.read())
-os.remove(log_filename)</pre></div>
+open_and_process(10)
+print(&quot;-&quot; * 30)
+open_and_process(0)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Per-module logs and inspect</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 4: Nested try-except-finally control flow</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Per-module logs and inspect
-import logging
+                <div class="code"><pre># Task 4: Nested try-except-finally control flow
+def nested_demo():
+    try:
+        print(&quot;Outer try start&quot;)
+        try:
+            print(&quot;  Inner try executing&quot;)
+            val = int(&quot;invalid_number&quot;)
+        except ValueError:
+            print(&quot;  Inner except: caught ValueError&quot;)
+        finally:
+            print(&quot;  Inner finally: executed&quot;)
+        
+        print(&quot;Outer try resumes smoothly&quot;)
+    finally:
+        print(&quot;Outer finally: complete cleanup&quot;)
 
-# Hierarchical logger naming:
-auth_logger = logging.getLogger(&quot;app.auth&quot;)
-db_logger = logging.getLogger(&quot;app.database&quot;)
-
-print(&quot;auth_logger name:&quot;, auth_logger.name)
-print(&quot;db_logger parent:&quot;, db_logger.parent.name)
-
-# Child loggers inherit effective level from parent unless explicitly overridden
-print(&quot;Effective level:&quot;, auth_logger.getEffectiveLevel())</pre></div>
+nested_demo()</pre></div>
               </div>
             </details>
           </li>
@@ -384,34 +395,35 @@ print(&quot;Effective level:&quot;, auth_logger.getEffectiveLevel())</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Logging.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Exception Handling.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Robust Request Logging Middleware Simulator
-import logging
-import time
+                <div class="code"><pre># Mini Project: Custom Exception Hierarchy for Banking API
+class BankingError(Exception):
+    &quot;&quot;&quot;Base exception for all banking errors.&quot;&quot;&quot;
+    pass
 
-logger = logging.getLogger(&quot;api_middleware&quot;)
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter(&quot;%(asctime)s [%(levelname)s] %(message)s&quot;))
-logger.addHandler(handler)
+class InsufficientFundsError(BankingError):
+    def __init__(self, balance, amount):
+        super().__init__(f&quot;Cannot withdraw ${amount:.2f}; balance is only ${balance:.2f}&quot;)
+        self.balance = balance
+        self.amount = amount
 
-def log_api_request(endpoint, handler_fn):
-    start = time.perf_counter()
-    logger.info(f&quot;Incoming Request -&gt; {endpoint}&quot;)
-    try:
-        response = handler_fn()
-        elapsed = (time.perf_counter() - start) * 1000
-        logger.info(f&quot;Completed {endpoint} in {elapsed:.2f}ms with status 200 OK&quot;)
-        return response
-    except Exception as err:
-        logger.error(f&quot;Failed {endpoint}: {err}&quot;, exc_info=True)
-        return {&quot;error&quot;: str(err), &quot;status&quot;: 500}
+class AccountLockedError(BankingError):
+    pass
 
-# Simulate successful request:
-log_api_request(&quot;/api/v1/health&quot;, lambda: {&quot;status&quot;: &quot;healthy&quot;})</pre></div>
+def withdraw_money(balance, amount, is_locked=False):
+    if is_locked:
+        raise AccountLockedError(&quot;Account is locked due to security policy.&quot;)
+    if amount &gt; balance:
+        raise InsufficientFundsError(balance, amount)
+    return balance - amount
+
+try:
+    withdraw_money(100.0, 250.0)
+except InsufficientFundsError as err:
+    print(f&quot;Handled error: {err}&quot;)</pre></div>
               </div>
             </details>
           </li>
@@ -422,24 +434,26 @@ log_api_request(&quot;/api/v1/health&quot;, lambda: {&quot;status&quot;: &quot;h
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Logging Pitfalls &amp; Edge Cases:
-# 1. Calling logging.basicConfig() after root logger already has handlers does nothing (ignored).
+                <div class="code"><pre># Exception Handling Pitfalls &amp; Edge Cases:
+# 1. Bare except: &#x27;except:&#x27; catches KeyboardInterrupt and SystemExit!
+# Always use &#x27;except Exception:&#x27; instead of bare &#x27;except:&#x27;.
 
-# 2. Duplicate log lines: Adding handlers multiple times (e.g. inside a function called repeatedly).
+# 2. Catching general Exception BEFORE specific subclasses shadows them:
+# try: ... except Exception: ... except ValueError: (ValueError will NEVER run!)
 
-# 3. String formatting overhead: Prefer logger.info(&quot;User %s&quot;, user) over logger.info(f&quot;User {user}&quot;) so formatting only occurs if level is active.</pre></div>
+# 3. Using exceptions for regular control flow is anti-pattern (slower than checking).</pre></div>
               </div>
             </details>
           </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Logging) is for.</li>
+          <li>I can explain what this chapter (Exception Handling) is for.</li>
           <li>I ran at least the warm-up and one core task myself.</li>
           <li>I know which later file builds on this topic (see Python index).</li>
         </ul>
       </section>
-      <footer>Python Notes File 30. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>Python Notes File 23. Structure ready; expand section notes over time. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

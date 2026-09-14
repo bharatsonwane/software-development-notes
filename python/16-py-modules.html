@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
-  <title>29. Serialization (pickle, JSON, YAML) - Python Notes</title>
+  <title>16. Modules - Python Notes</title>
 </head>
 <body>
   <div class="layout">
@@ -19,10 +19,11 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-object-serialization-with-pickle">2. Object serialization with pickle</a>
-        <a href="#3-json-serialization-deserialization">3. JSON serialization / deserialization</a>
-        <a href="#4-jsonpickle-and-api-json-examples">4. jsonpickle and API JSON examples</a>
-        <a href="#5-yaml-serialization">5. YAML serialization</a>
+        <a href="#2-introduction-to-modules">2. Introduction to modules</a>
+        <a href="#3-import-forms-naming-conflicts-reloading">3. import forms, naming conflicts, reloading</a>
+        <a href="#4-dir-help-doc-file-name">4. dir(), help(), __doc__, __file__, __name__</a>
+        <a href="#5-random-module-and-applications">5. random module and applications</a>
+        <a href="#6-math-module">6. math module</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -37,11 +38,11 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./python.html">Python</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">29. Serialization (pickle, JSON, YAML)</span>
+        <span aria-current="page">16. Modules</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>29. Serialization (pickle, JSON, YAML)</h1>
-        <p class="subtitle">File 29 — pickle, JSON, jsonpickle, YAML.</p>
+        <h1>16. Modules</h1>
+        <p class="subtitle">File 16 — import forms, dir/help, random, math.</p>
         <div class="chip-row">
           <span class="chip">Outline</span>
           <span class="chip">Practice</span>
@@ -58,88 +59,105 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Serialization (pickle, JSON, YAML)</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>This chapter covers <strong>Modules</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
         </ul>
         <h3>1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">29-practice.py</code> before File 30. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">16-practice.py</code> before File 17. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Object serialization with pickle</strong></li>
-          <li><strong>JSON serialization / deserialization</strong></li>
-          <li><strong>jsonpickle and API JSON examples</strong></li>
-          <li><strong>YAML serialization</strong></li>
+          <li><strong>Introduction to modules</strong></li>
+          <li><strong>import forms, naming conflicts, reloading</strong></li>
+          <li><strong>dir(), help(), __doc__, __file__, __name__</strong></li>
+          <li><strong>random module and applications</strong></li>
+          <li><strong>math module</strong></li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="2-object-serialization-with-pickle">
+      <section id="2-introduction-to-modules">
         <div class="heading-with-levels">
-          <h2>2. Object serialization with pickle</h2>
+          <h2>2. Introduction to modules</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="2-object-serialization-with-pickle-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="2-introduction-to-modules-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Object serialization with pickle</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>Introduction to modules</strong>.</li>
+          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="3-json-serialization-deserialization">
+      <section id="3-import-forms-naming-conflicts-reloading">
         <div class="heading-with-levels">
-          <h2>3. JSON serialization / deserialization</h2>
+          <h2>3. import forms, naming conflicts, reloading</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="3-json-serialization-deserialization-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="3-import-forms-naming-conflicts-reloading-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>JSON serialization / deserialization</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>import forms, naming conflicts, reloading</strong>.</li>
+          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="4-jsonpickle-and-api-json-examples">
+      <section id="4-dir-help-doc-file-name">
         <div class="heading-with-levels">
-          <h2>4. jsonpickle and API JSON examples</h2>
+          <h2>4. dir(), help(), __doc__, __file__, __name__</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="4-jsonpickle-and-api-json-examples-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="4-dir-help-doc-file-name-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>jsonpickle and API JSON examples</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>dir(), help(), __doc__, __file__, __name__</strong>.</li>
+          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
         </ul>
       </section>
-      <section id="5-yaml-serialization">
+      <section id="5-random-module-and-applications">
         <div class="heading-with-levels">
-          <h2>5. YAML serialization</h2>
+          <h2>5. random module and applications</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
         <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="5-yaml-serialization-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="5-random-module-and-applications-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>5.1. Goals</h3>
         <ul>
-          <li>Understand the main ideas in <strong>YAML serialization</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
+          <li>Understand the main ideas in <strong>random module and applications</strong>.</li>
+          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
+        </ul>
+      </section>
+      <section id="6-math-module">
+        <div class="heading-with-levels">
+          <h2>6. math module</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+        <h3 id="6-math-module-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>6.1. Goals</h3>
+        <ul>
+          <li>Understand the main ideas in <strong>math module</strong>.</li>
+          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -155,7 +173,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Object serialization with pickle?</span>
+            <span class="qa-question-title">C.1. What should I know about Introduction to modules?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -165,7 +183,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about JSON serialization / deserialization?</span>
+            <span class="qa-question-title">C.2. What should I know about import forms, naming conflicts, reloading?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -175,7 +193,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about jsonpickle and API JSON examples?</span>
+            <span class="qa-question-title">C.3. What should I know about dir(), help(), __doc__, __file__, __name__?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -185,7 +203,7 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about YAML serialization?</span>
+            <span class="qa-question-title">C.4. What should I know about random module and applications?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
@@ -201,43 +219,39 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">29-practice.py</code>. Run with <code class="inline">python3 29-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">16-practice.py</code>. Run with <code class="inline">python3 16-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Object serialization with pickle</strong>.</span>
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction to modules</strong>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Object Serialization with Pickle:
-# 1. Serialization (pickling) converts in-memory Python object hierarchies into byte streams.
-# 2. Deserialization (unpickling) reconstructs the Python object from the byte stream.
-# 3. CAUTION: &#x27;pickle&#x27; is Python-specific and NOT secure against malicious data. Never unpickle untrusted bytes.</pre></div>
+                <div class="code"><pre># Summary of Introduction to Modules:
+# 1. A module is simply a Python source file (.py) containing definitions, classes, and statements.
+# 2. Modules encourage code reusability, organization, and namespace isolation.
+# 3. Python searches for modules in sys.path (current directory, PYTHONPATH, standard library, site-packages).</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>JSON serialization / deserialization</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example related to <strong>import forms, naming conflicts, reloading</strong> and print the result.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># JSON serialization / deserialization:
-import json
+                <div class="code"><pre># Import forms and avoiding conflicts:
+import math as m          # Aliasing
+from math import sqrt, pi # Specific members
+from math import gcd as math_gcd # Renaming to prevent collision
 
-data = {&quot;project&quot;: &quot;Python Notes&quot;, &quot;version&quot;: 3.12, &quot;active&quot;: True, &quot;tags&quot;: [&quot;backend&quot;, &quot;docs&quot;]}
-
-# Serialization to string:
-json_str = json.dumps(data, indent=2)
-print(&quot;Serialized JSON:\n&quot; + json_str)
-
-# Deserialization from string:
-parsed_data = json.loads(json_str)
-print(&quot;Deserialized title:&quot;, parsed_data[&quot;project&quot;])</pre></div>
+print(&quot;sqrt(16):&quot;, sqrt(16))
+print(&quot;pi:&quot;, pi)
+print(&quot;gcd(24, 36):&quot;, math_gcd(24, 36))</pre></div>
               </div>
             </details>
           </li>
@@ -248,10 +262,10 @@ print(&quot;Deserialized title:&quot;, parsed_data[&quot;project&quot;])</pre></
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Object Serialization (pickle, json, jsonpickle, yaml).
+                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Modules and Code Architecture.
 
-Goal: Master object conversion formats, pickle security concerns, JSON marshaling,
-custom encoders/decoders, and multi-platform data interchange.
+Goal: Master module import syntax, namespace management, standard introspection tools
+(__name__, __file__, dir(), help()), and the random module.
 &quot;&quot;&quot;</pre></div>
               </div>
             </details>
@@ -262,118 +276,88 @@ custom encoders/decoders, and multi-platform data interchange.
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Object serialization with pickle</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Introduction to modules</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Object serialization with pickle
-import pickle
+                <div class="code"><pre># Task 1: Introduction to modules
+# Exploring standard library modules (os, sys, platform):
+import sys
+import platform
 
-class Player:
-    def __init__(self, username, level, score):
-        self.username = username
-        self.level = level
-        self.score = score
-
-player = Player(&quot;GamerOne&quot;, 15, 9420)
-
-# Serialize to bytes:
-pickled_bytes = pickle.dumps(player)
-print(f&quot;Pickled bytes length: {len(pickled_bytes)}&quot;)
-
-# Deserialize from bytes:
-restored_player = pickle.loads(pickled_bytes)
-print(f&quot;Restored Player: {restored_player.username}, Level: {restored_player.level}, Score: {restored_player.score}&quot;)</pre></div>
+print(&quot;Python Version:&quot;, platform.python_version())
+print(&quot;Operating System:&quot;, platform.system())
+print(&quot;Architecture:&quot;, platform.machine())
+print(&quot;Loaded modules count:&quot;, len(sys.modules))</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: JSON serialization / deserialization</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: import forms, naming conflicts, reloading</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: JSON serialization / deserialization
-import json
+                <div class="code"><pre># Task 2: Import forms, naming conflicts, reloading
+import importlib
+import math
 
-payload = {
-    &quot;server&quot;: &quot;api.production.internal&quot;,
-    &quot;port&quot;: 443,
-    &quot;ssl&quot;: True,
-    &quot;endpoints&quot;: [&quot;/auth&quot;, &quot;/users&quot;, &quot;/metrics&quot;]
-}
+# Direct alias:
+from datetime import datetime as dt
+now = dt.now()
+print(&quot;Current timestamp:&quot;, now.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))
 
-# Write to JSON file:
-filename = &quot;config_sample.json&quot;
-with open(filename, &quot;w&quot;) as f:
-    json.dump(payload, f, indent=4)
-
-# Read from JSON file:
-with open(filename, &quot;r&quot;) as f:
-    loaded = json.load(f)
-
-print(&quot;Loaded endpoints from file:&quot;, loaded[&quot;endpoints&quot;])
-
-import os
-os.remove(filename)</pre></div>
+# Reloading a module dynamically at runtime:
+importlib.reload(math)
+print(&quot;Module math reloaded successfully.&quot;)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: jsonpickle and API JSON examples</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: dir(), help(), __doc__, __file__, __name__</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Custom JSON encoding for Python objects
-import json
-from datetime import datetime
+                <div class="code"><pre># Task 3: dir(), help(), __doc__, __file__, __name__
+import math
 
-class Event:
-    def __init__(self, name, timestamp):
-        self.name = name
-        self.timestamp = timestamp
+print(&quot;__name__ of current script:&quot;, __name__)
+print(&quot;math.__file__ location:&quot;, getattr(math, &#x27;__file__&#x27;, &#x27;built-in C module&#x27;))
+print(&quot;math.__doc__ excerpt:&quot;, math.__doc__[:60] if math.__doc__ else &quot;N/A&quot;)
 
-class EventEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Event):
-            return {&quot;event_name&quot;: obj.name, &quot;timestamp&quot;: obj.timestamp.isoformat()}
-        return super().default(obj)
-
-event = Event(&quot;DEPLOYMENT&quot;, datetime(2026, 9, 13, 12, 0, 0))
-encoded_event = json.dumps(event, cls=EventEncoder)
-print(&quot;Custom JSON encoded object:&quot;, encoded_event)</pre></div>
+# dir() introspects all symbols exported by a module:
+math_symbols = [s for s in dir(math) if not s.startswith(&quot;_&quot;)]
+print(f&quot;math exports {len(math_symbols)} symbols. Samples:&quot;, math_symbols[:8])</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: YAML serialization</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 4: random module and applications</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: YAML serialization (PyYAML overview)
-# Conceptual example of YAML structure and usage:
-&quot;&quot;&quot;
-import yaml # Requires PyYAML
+                <div class="code"><pre># Task 4: Random module and applications
+import random
 
-config_data = {
-    &#x27;database&#x27;: {
-        &#x27;host&#x27;: &#x27;db.internal&#x27;,
-        &#x27;port&#x27;: 5432,
-        &#x27;pool_size&#x27;: 10
-    }
-}
+# Reproducible randomness with seed:
+random.seed(42)
 
-# Dump to YAML string:
-yaml_text = yaml.dump(config_data, default_flow_style=False)
-# Safe load from YAML:
-parsed = yaml.safe_load(yaml_text)
-&quot;&quot;&quot;
-print(&quot;YAML is widely used for human-readable configurations (Docker Compose, Kubernetes, CI/CD).&quot;)</pre></div>
+print(&quot;random() float in [0.0, 1.0):&quot;, random.random())
+print(&quot;randint(1, 100):&quot;, random.randint(1, 100))
+print(&quot;randrange(0, 100, 10):&quot;, random.randrange(0, 100, 10))
+
+colors = [&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;gold&quot;, &quot;purple&quot;]
+print(&quot;choice():&quot;, random.choice(colors))
+print(&quot;sample() 3 unique:&quot;, random.sample(colors, 3))
+
+deck = list(range(1, 11))
+random.shuffle(deck)
+print(&quot;shuffled deck:&quot;, deck)</pre></div>
               </div>
             </details>
           </li>
@@ -384,39 +368,29 @@ print(&quot;YAML is widely used for human-readable configurations (Docker Compos
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Serialization (pickle, JSON, YAML).</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Modules.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Cache Serializer Supporting Multiple Formats
-import json
-import pickle
+                <div class="code"><pre># Mini Project: Dice Simulator &amp; Probability Estimator
+import random
 
-class SerializerCache:
-    @staticmethod
-    def serialize(data, format=&quot;json&quot;):
-        if format == &quot;json&quot;:
-            return json.dumps(data).encode(&quot;utf-8&quot;)
-        elif format == &quot;pickle&quot;:
-            return pickle.dumps(data)
-        raise ValueError(f&quot;Unsupported format: {format}&quot;)
+def estimate_dice_probabilities(trials=10000):
+    sums_count = {}
+    for _ in range(trials):
+        dice1 = random.randint(1, 6)
+        dice2 = random.randint(1, 6)
+        total = dice1 + dice2
+        sums_count[total] = sums_count.get(total, 0) + 1
     
-    @staticmethod
-    def deserialize(raw_bytes, format=&quot;json&quot;):
-        if format == &quot;json&quot;:
-            return json.loads(raw_bytes.decode(&quot;utf-8&quot;))
-        elif format == &quot;pickle&quot;:
-            return pickle.loads(raw_bytes)
-        raise ValueError(f&quot;Unsupported format: {format}&quot;)
+    print(f&quot;Simulation Results over {trials:,} rolls of two dice:&quot;)
+    print(f&quot;{&#x27;Sum&#x27;:&lt;5} {&#x27;Count&#x27;:&lt;8} {&#x27;Estimated %&#x27;:&lt;12}&quot;)
+    print(&quot;-&quot; * 28)
+    for total in sorted(sums_count.keys()):
+        pct = (sums_count[total] / trials) * 100
+        print(f&quot;{total:&lt;5} {sums_count[total]:&lt;8} {pct:&gt;6.2f}%&quot;)
 
-sample = {&quot;session_id&quot;: &quot;xyz987&quot;, &quot;user_id&quot;: 402, &quot;permissions&quot;: [&quot;read&quot;, &quot;write&quot;]}
-
-b_json = SerializerCache.serialize(sample, &quot;json&quot;)
-b_pickle = SerializerCache.serialize(sample, &quot;pickle&quot;)
-
-print(&quot;JSON serialized size:&quot;, len(b_json), &quot;bytes&quot;)
-print(&quot;Pickle serialized size:&quot;, len(b_pickle), &quot;bytes&quot;)
-print(&quot;Verified deserialized match:&quot;, SerializerCache.deserialize(b_json, &quot;json&quot;) == sample)</pre></div>
+estimate_dice_probabilities(5000)</pre></div>
               </div>
             </details>
           </li>
@@ -427,25 +401,26 @@ print(&quot;Verified deserialized match:&quot;, SerializerCache.deserialize(b_js
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Serialization Pitfalls &amp; Edge Cases:
-# 1. SECURITY HAZARD: pickle.loads() can execute arbitrary arbitrary shell commands!
-# NEVER unpickle untrusted data received over the network. Use JSON instead.
+                <div class="code"><pre># Module Pitfalls &amp; Edge Cases:
+# 1. Pitfall: from module import * pollutes namespace and causes shadowing:
+# Avoid wildcard imports! Always be explicit.
 
-# 2. JSON limitations: Keys must be strings; does not support sets, tuples, or custom classes natively.
+# 2. Circular imports: Module A imports B, B imports A:
+# Fix: Move shared dependencies to a third module or import inside the function.
 
-# 3. Circular references cause RecursionError in standard JSON serializers.</pre></div>
+# 3. Overriding standard library names (e.g. naming your file random.py or math.py).</pre></div>
               </div>
             </details>
           </li>
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Serialization (pickle, JSON, YAML)) is for.</li>
+          <li>I can explain what this chapter (Modules) is for.</li>
           <li>I ran at least the warm-up and one core task myself.</li>
           <li>I know which later file builds on this topic (see Python index).</li>
         </ul>
       </section>
-      <footer>Python Notes File 29. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>Python Notes File 15. Structure ready; expand section notes over time. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
