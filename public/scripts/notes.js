@@ -125,6 +125,10 @@ function updateToggleUI() {
   const label = document.getElementById("theme-label");
   if (icon) icon.textContent = isDark ? "☀️" : "🌙";
   if (label) label.textContent = isDark ? "Light mode" : "Dark mode";
+
+  document.querySelectorAll(".theme-icon-mobile").forEach(function (el) {
+    el.textContent = isDark ? "☀️" : "🌙";
+  });
 }
 
 function toggleTheme() {
@@ -304,11 +308,182 @@ function initStickyPageTop() {
   }
 }
 
+function initSidebar() {
+  const sidebar = document.querySelector(".sidebar");
+  if (!sidebar) return;
+
+  const layout = document.querySelector(".layout");
+  const brand = sidebar.querySelector(".brand");
+
+  // 1. Ensure sidebar header with collapse toggle button
+  let collapseBtn = document.getElementById("sidebar-collapse-btn");
+  if (!collapseBtn && brand) {
+    let header = sidebar.querySelector(".sidebar-header");
+    if (!header) {
+      header = document.createElement("div");
+      header.className = "sidebar-header";
+      brand.parentNode.insertBefore(header, brand);
+      header.appendChild(brand);
+    }
+    collapseBtn = document.createElement("button");
+    collapseBtn.type = "button";
+    collapseBtn.id = "sidebar-collapse-btn";
+    collapseBtn.className = "sidebar-toggle-btn";
+    collapseBtn.setAttribute("title", "Collapse sidebar (Ctrl+B)");
+    collapseBtn.setAttribute("aria-label", "Collapse sidebar");
+    collapseBtn.innerHTML =
+      '<svg class="icon-collapse" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9-3 3 3 3"/></svg>' +
+      '<svg class="icon-close" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    header.appendChild(collapseBtn);
+  }
+
+  // 2. Ensure expand button for collapsed desktop state
+  let expandBtn = document.getElementById("sidebar-expand-btn");
+  if (!expandBtn) {
+    expandBtn = document.createElement("button");
+    expandBtn.type = "button";
+    expandBtn.id = "sidebar-expand-btn";
+    expandBtn.className = "sidebar-expand-btn";
+    expandBtn.setAttribute("title", "Expand sidebar (Ctrl+B)");
+    expandBtn.setAttribute("aria-label", "Expand sidebar");
+    expandBtn.innerHTML =
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 15 3-3-3-3"/></svg>' +
+      '<span>Sidebar</span>' +
+      '<kbd class="kbd-hint">Ctrl B</kbd>';
+    document.body.appendChild(expandBtn);
+  }
+
+  // 3. Ensure backdrop for mobile drawer
+  let backdrop = document.getElementById("sidebar-backdrop");
+  if (!backdrop) {
+    backdrop = document.createElement("div");
+    backdrop.id = "sidebar-backdrop";
+    backdrop.className = "sidebar-backdrop";
+    backdrop.setAttribute("aria-hidden", "true");
+    document.body.appendChild(backdrop);
+  }
+
+  // 4. Ensure mobile header
+  let mobileHeader = document.querySelector(".mobile-header");
+  if (!mobileHeader && layout) {
+    mobileHeader = document.createElement("header");
+    mobileHeader.className = "mobile-header";
+    const brandClone = brand ? brand.cloneNode(true) : null;
+    const isDark = document.documentElement.classList.contains("dark");
+    const menuBtn = document.createElement("button");
+    menuBtn.type = "button";
+    menuBtn.className = "mobile-menu-btn";
+    menuBtn.id = "mobile-menu-btn";
+    menuBtn.setAttribute("aria-label", "Open navigation");
+    menuBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>';
+
+    const mobileThemeBtn = document.createElement("button");
+    mobileThemeBtn.type = "button";
+    mobileThemeBtn.className = "mobile-theme-btn";
+    mobileThemeBtn.setAttribute("aria-label", "Toggle theme");
+    mobileThemeBtn.innerHTML = '<span class="icon theme-icon-mobile">' + (isDark ? "☀️" : "🌙") + '</span>';
+    mobileThemeBtn.addEventListener("click", toggleTheme);
+
+    mobileHeader.appendChild(menuBtn);
+    if (brandClone) mobileHeader.appendChild(brandClone);
+    mobileHeader.appendChild(mobileThemeBtn);
+
+    layout.parentNode.insertBefore(mobileHeader, layout);
+  }
+
+  // 5. Restore saved desktop collapse state
+  const isCollapsed = localStorage.getItem("sidebar-collapsed") === "true";
+  if (isCollapsed && window.innerWidth > 860) {
+    document.body.classList.add("sidebar-collapsed");
+  }
+
+  function toggleDesktopSidebar() {
+    const collapsed = document.body.classList.toggle("sidebar-collapsed");
+    localStorage.setItem("sidebar-collapsed", collapsed ? "true" : "false");
+    refreshSnippets();
+  }
+
+  function closeMobileSidebar() {
+    document.body.classList.remove("mobile-sidebar-open");
+  }
+
+  function openMobileSidebar() {
+    document.body.classList.add("mobile-sidebar-open");
+  }
+
+  if (collapseBtn) {
+    collapseBtn.addEventListener("click", function () {
+      if (window.innerWidth <= 860) {
+        closeMobileSidebar();
+      } else {
+        toggleDesktopSidebar();
+      }
+    });
+  }
+
+  if (expandBtn) {
+    expandBtn.addEventListener("click", function () {
+      toggleDesktopSidebar();
+    });
+  }
+
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener("click", function () {
+      if (document.body.classList.contains("mobile-sidebar-open")) {
+        closeMobileSidebar();
+      } else {
+        openMobileSidebar();
+      }
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener("click", closeMobileSidebar);
+  }
+
+  // Auto-close drawer on mobile when clicking any navigation link
+  sidebar.querySelectorAll(".nav a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      if (window.innerWidth <= 860) {
+        closeMobileSidebar();
+      }
+    });
+  });
+
+  // Keyboard shortcuts: Ctrl+B / Cmd+B toggles sidebar, Escape closes mobile sidebar
+  window.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "b" || e.key === "B")) {
+      e.preventDefault();
+      if (window.innerWidth <= 860) {
+        if (document.body.classList.contains("mobile-sidebar-open")) {
+          closeMobileSidebar();
+        } else {
+          openMobileSidebar();
+        }
+      } else {
+        toggleDesktopSidebar();
+      }
+    } else if (e.key === "Escape") {
+      if (document.body.classList.contains("mobile-sidebar-open")) {
+        closeMobileSidebar();
+      }
+    }
+  });
+
+  window.addEventListener("resize", function () {
+    if (window.innerWidth > 860) {
+      closeMobileSidebar();
+    }
+  });
+}
+
 (function () {
   const saved = localStorage.getItem("theme");
   if (saved === "dark" || (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
     document.documentElement.classList.add("dark");
   }
+  initSidebar();
   initLevelFilter();
   initStickyPageTop();
   initCodeMirrorSnippets();
