@@ -19,9 +19,9 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-input-and-reading-values">2. input() and reading values</a>
-        <a href="#3-command-line-arguments-sys-argv">3. Command-line arguments (sys.argv)</a>
-        <a href="#4-print-and-output-formatting">4. print and output formatting</a>
+        <a href="#2-input">2. input() and reading values</a>
+        <a href="#3-cli-args">3. Command-line arguments (sys.argv)</a>
+        <a href="#4-print-formatting">4. print and output formatting</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -40,13 +40,16 @@
       </nav>
       <header class="hero" id="intro">
         <h1>07. Input and Output</h1>
-        <p class="subtitle">File 07 — input stream, print, command-line arguments.</p>
+        <p class="subtitle">File 07 — reading user input, dynamic evaluation (eval), command-line arguments (sys.argv), and advanced output formatting with f-strings.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">input()</span>
+          <span class="chip">eval()</span>
+          <span class="chip">sys.argv</span>
+          <span class="chip">print()</span>
+          <span class="chip">f-strings</span>
         </div>
       </header>
+
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,26 +60,41 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Input and Output</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>Every interactive program requires communication with the outside world: reading data from users or external processes (<strong>Input</strong>) and rendering results back to terminals, logs, or streams (<strong>Output</strong>).</li>
+          <li>In Python, standard I/O revolves around three standard streams in the operating system:
+            <ul>
+              <li><code class="inline">sys.stdin</code> — standard input stream (read via <code class="inline">input()</code>).</li>
+              <li><code class="inline">sys.stdout</code> — standard output stream (written to via <code class="inline">print()</code>).</li>
+              <li><code class="inline">sys.stderr</code> — standard error stream (for diagnostic error logs).</li>
+            </ul>
+          </li>
+          <li>This chapter covers the full mechanics of terminal input, single-line multiple value parsing, dynamic evaluation via <code class="inline">eval()</code>, command-line parameter passing with <code class="inline">sys.argv</code>, and professional output formatting using modern f-strings.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–4 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">07-practice.py</code> before File 08. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Default Rules and How to Study This File</h3>
+        <div class="callout">
+          <strong>Default Best Practices:</strong>
+          <ol style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+            <li><strong>Always remember:</strong> <code class="inline">input()</code> and <code class="inline">sys.argv</code> <em>always</em> produce strings (<code class="inline">str</code>). Always cast explicitly when numbers are expected.</li>
+            <li><strong>Prefer f-strings:</strong> Use formatted string literals (<code class="inline">f"..."</code>) for all string interpolation. They are cleaner, faster, and less error-prone than <code class="inline">%</code> or <code class="inline">.format()</code>.</li>
+            <li><strong>Security First:</strong> Never pass untrusted user input directly into <code class="inline">eval()</code> due to arbitrary code execution risks.</li>
+          </ol>
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>input() and reading values</strong></li>
-          <li><strong>Command-line arguments (sys.argv)</strong></li>
-          <li><strong>print and output formatting</strong></li>
+          <li><strong>input() and reading values</strong> — prompt, typecasting, reading multiple values on one line, and <code class="inline">eval()</code></li>
+          <li><strong>Command-line arguments (sys.argv)</strong> — structure, rules, space handling, index safety</li>
+          <li><strong>print and output formatting</strong> — <code class="inline">sep</code>, <code class="inline">end</code>, <code class="inline">file</code>, <code class="inline">flush</code>, escape characters (<code class="inline">\n</code>, <code class="inline">\t</code>, <code class="inline">\r</code>, etc.), format specifiers, and f-strings</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
-      <section id="2-input-and-reading-values">
+
+      <section id="2-input">
         <div class="heading-with-levels">
           <h2>2. input() and reading values</h2>
           <div class="h2-levels">
@@ -84,15 +102,160 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="2-input-and-reading-values-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+        <h3 id="2-input-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
+        <h3>2.1. The input() Function</h3>
         <ul>
-          <li>Understand the main ideas in <strong>input() and reading values</strong>.</li>
-          <li>Write small demos in <code class="inline">07-practice.py</code> covering this section.</li>
+          <li><strong>Syntax:</strong> <code class="inline">variable = input([prompt])</code></li>
+          <li>When called, Python pauses script execution and displays the optional <code class="inline">prompt</code> message in the terminal. It waits until the user types input and presses the <kbd>Enter</kbd> key.</li>
+          <li><strong>Universal String Rule:</strong> Whatever the user enters is captured and returned strictly as a <strong><code class="inline">str</code></strong>. Even if the user enters digits like <code class="inline">45</code>, Python treats it as <code class="inline">"45"</code>.</li>
+          <li><strong>Python 2 vs. Python 3 Note:</strong> In Python 2, <code class="inline">raw_input()</code> returned strings and <code class="inline">input()</code> automatically evaluated code. In Python 3, <code class="inline">raw_input()</code> was removed and <code class="inline">input()</code> always returns a string.</li>
         </ul>
+
+        <div class="callout">
+          <strong>Classic Beginner Pitfall (String Concatenation):</strong>
+          Because <code class="inline">input()</code> returns strings, using <code class="inline">+</code> on two inputs performs string concatenation rather than numerical addition:
+          <br /><code class="inline">input("Num 1: ") + input("Num 2: ")</code> with entries <code class="inline">10</code> and <code class="inline">20</code> yields <code class="inline">"1020"</code>, not <code class="inline">30</code>!
+        </div>
+
+        <div class="code"><pre># Basic input usage:
+name = input("Enter your name: ")
+print("Hello,", name)
+print("Type of name:", type(name))  # Always &lt;class 'str'&gt;
+
+# The string addition pitfall:
+num1 = input("Enter first number: ")   # User types 10 -&gt; "10"
+num2 = input("Enter second number: ")  # User types 20 -&gt; "20"
+print("num1 + num2 =", num1 + num2)   # "1020" (String concatenation!)</pre></div>
+
+        <h3>2.2. Typecasting User Input</h3>
+        <p>To perform mathematical operations or type-sensitive comparisons, you must explicitly cast the string returned by <code class="inline">input()</code> using type constructor functions:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Target Type</th>
+              <th>Casting Syntax</th>
+              <th>Valid User Entry</th>
+              <th>Failure Pitfall</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">int</code></td>
+              <td><code class="inline">int(input())</code></td>
+              <td><code class="inline">25</code>, <code class="inline">-10</code></td>
+              <td>Entering decimal <code class="inline">25.5</code> or words raises <code class="inline">ValueError</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">float</code></td>
+              <td><code class="inline">float(input())</code></td>
+              <td><code class="inline">3.14</code>, <code class="inline">10</code>, <code class="inline">1e3</code></td>
+              <td>Entering letters raises <code class="inline">ValueError</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">bool</code></td>
+              <td><em>Custom logic</em> (see warning)</td>
+              <td><code class="inline">True</code>, <code class="inline">False</code></td>
+              <td><code class="inline">bool(input())</code> is <code class="inline">True</code> for any non-empty string!</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>The <code class="inline">bool(input())</code> Trap:</strong>
+          In Python, any non-empty string is <strong>truthy</strong>. If the user enters the text <code class="inline">"False"</code>, <code class="inline">bool("False")</code> evaluates to <code class="inline">True</code>! To properly read boolean flags from users, check against explicit matching values.
+        </div>
+
+        <div class="code"><pre># Correct numeric casting:
+age = int(input("Enter your age: "))
+height = float(input("Enter height in meters: "))
+print(f"Next year you will be {age + 1} years old.")
+
+# Safe boolean parsing pattern:
+raw_flag = input("Enable notifications? (yes/no): ").strip().lower()
+is_enabled = raw_flag in ("yes", "y", "true", "1")
+print("Notifications active:", is_enabled)</pre></div>
+
+        <h3 id="2-input-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. Reading Multiple Values on a Single Line</h3>
+        <p>Often, users or competitive programming platforms provide multiple inputs on a single line separated by spaces or commas. We can parse them using the string <code class="inline">.split()</code> method combined with unpacking, list comprehensions, or <code class="inline">map()</code>.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Syntax</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Unpacking with <code class="inline">split()</code></strong></td>
+              <td><code class="inline">a, b = input().split()</code></td>
+              <td>When the exact count of strings is known in advance</td>
+            </tr>
+            <tr>
+              <td><strong><code class="inline">map()</code> + Unpacking</strong></td>
+              <td><code class="inline">a, b = map(int, input().split())</code></td>
+              <td>Fixed count of numbers to separate variables</td>
+            </tr>
+            <tr>
+              <td><strong>List Comprehension</strong></td>
+              <td><code class="inline">[int(x) for x in input().split()]</code></td>
+              <td>Arbitrary count of numbers into a single list</td>
+            </tr>
+            <tr>
+              <td><strong>Custom Delimiter</strong></td>
+              <td><code class="inline">input().split(",")</code></td>
+              <td>Comma-separated values (CSV style)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># 1. Unpacking two strings:
+first_name, last_name = input("Enter first and last name: ").split()
+print(f"Initials: {first_name[0]}.{last_name[0]}.")
+
+# 2. Reading multiple integers into separate variables:
+a, b = map(int, input("Enter two integers separated by space: ").split())
+print(f"{a} + {b} = {a + b}")
+
+# 3. Reading arbitrary number of integers into a list:
+numbers = [int(x) for x in input("Enter integers: ").split()]
+print("Count:", len(numbers), "| Sum:", sum(numbers), "| Max:", max(numbers))
+
+# 4. Custom comma delimiter:
+items = [item.strip() for item in input("Enter tags (comma-separated): ").split(",")]
+print("Cleaned tags list:", items)</pre></div>
+
+        <h3>2.4. Dynamic Evaluation: eval()</h3>
+        <ul>
+          <li>The built-in <code class="inline">eval(expression)</code> function parses a Python expression string, evaluates it dynamically as executable Python code, and returns the result with its natural type.</li>
+          <li><strong>Automatic Type Deduction:</strong> <code class="inline">eval()</code> automatically converts string representations of numbers, floats, booleans, lists, tuples, and dictionaries into their respective types without manual casting.</li>
+        </ul>
+
+        <div class="code"><pre># Automatic type deduction:
+x = eval(input("Enter any Python value: "))
+print("Value:", x, "| Type:", type(x))
+# If user inputs: 10          -&gt; &lt;class 'int'&gt;
+# If user inputs: 10.5        -&gt; &lt;class 'float'&gt;
+# If user inputs: [1, 2, 3]   -&gt; &lt;class 'list'&gt;
+# If user inputs: True        -&gt; &lt;class 'bool'&gt;
+# If user inputs: (10, 20)    -&gt; &lt;class 'tuple'&gt;
+
+# Evaluating mathematical expressions:
+result = eval("10 + 20 * 3")
+print("Math result:", result)  # 70</pre></div>
+
+        <div class="callout">
+          <strong>Security Warning on eval():</strong>
+          <code class="inline">eval()</code> executes <em>arbitrary Python code</em>. If malicious users pass system commands like <code class="inline">__import__('os').system('rm -rf /')</code>, <code class="inline">eval()</code> will execute them with full script privileges! In production environments, use <code class="inline">ast.literal_eval()</code> for safely parsing literals.
+        </div>
       </section>
-      <section id="3-command-line-arguments-sys-argv">
+
+      <section id="3-cli-args">
         <div class="heading-with-levels">
           <h2>3. Command-line arguments (sys.argv)</h2>
           <div class="h2-levels">
@@ -100,15 +263,117 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="3-command-line-arguments-sys-argv-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+        <h3 id="3-cli-args-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
+        <h3>3.1. What are Command-Line Arguments?</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Command-line arguments (sys.argv)</strong>.</li>
-          <li>Write small demos in <code class="inline">07-practice.py</code> covering this section.</li>
+          <li>Command-line arguments are parameters passed to a Python script at invocation time from the terminal/shell:
+            <br /><code class="inline">python3 app.py arg1 arg2 arg3</code>
+          </li>
+          <li>They allow scripts to run in headless automation pipelines, scheduled cron jobs, and background workers without prompting the user interactively.</li>
+          <li>To read command-line arguments, Python provides the <strong><code class="inline">argv</code> list</strong> inside the built-in <strong><code class="inline">sys</code> module</strong>.</li>
         </ul>
+
+        <h3>3.2. Anatomy of sys.argv</h3>
+        <p><code class="inline">sys.argv</code> is a standard Python list where elements are indexed based on terminal input order:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Index</th>
+              <th>Content</th>
+              <th>Example (<code class="inline">python script.py 10 20</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">sys.argv[0]</code></td>
+              <td><strong>Script file name</strong> (or relative/absolute path used to invoke it)</td>
+              <td><code class="inline">"script.py"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">sys.argv[1]</code></td>
+              <td>First command-line argument passed by the user</td>
+              <td><code class="inline">"10"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">sys.argv[2]</code></td>
+              <td>Second command-line argument passed by the user</td>
+              <td><code class="inline">"20"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">sys.argv[1:]</code></td>
+              <td>Slice containing <strong>all user-supplied arguments</strong> (excluding script name)</td>
+              <td><code class="inline">["10", "20"]</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">len(sys.argv)</code></td>
+              <td>Total number of arguments + 1 (includes the script name)</td>
+              <td><code class="inline">3</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>import sys
+
+# Displaying all command-line arguments:
+print("Script name:       ", sys.argv[0])
+print("Total elements:    ", len(sys.argv))
+print("User arguments list:", sys.argv[1:])
+
+# Iterating over arguments:
+for i, arg in enumerate(sys.argv):
+    print(f"sys.argv[{i}] = {arg}")</pre></div>
+
+        <h3 id="3-cli-args-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.3. Crucial Rules &amp; Pitfalls of sys.argv</h3>
+        <ol>
+          <li>
+            <strong>Always Strings:</strong> Every item inside <code class="inline">sys.argv</code> is strictly of type <code class="inline">str</code>. Even if numbers are passed on the terminal, they must be converted explicitly using <code class="inline">int()</code> or <code class="inline">float()</code> before arithmetic.
+          </li>
+          <li>
+            <strong>Space Separator Rule:</strong> Terminal shells split arguments by spaces. If an argument contains spaces (e.g. a full name or address), it <strong>must be wrapped in quotation marks</strong>:
+            <br /><code class="inline">python3 user.py "John Doe" 28</code>
+            <br />Here, <code class="inline">sys.argv[1]</code> is <code class="inline">"John Doe"</code>. Without quotes, <code class="inline">"John"</code> and <code class="inline">"Doe"</code> become two distinct arguments.
+          </li>
+          <li>
+            <strong>The IndexError Trap:</strong> Accessing an index that wasn't supplied (e.g. <code class="inline">sys.argv[1]</code> when the user simply ran <code class="inline">python3 app.py</code>) crashes the program with <code class="inline">IndexError: list index out of range</code>. Always inspect <code class="inline">len(sys.argv)</code> before indexing.
+          </li>
+        </ol>
+
+        <div class="code"><pre>import sys
+
+# Safe command-line argument processing pattern:
+if len(sys.argv) &lt; 3:
+    print(f"Usage: python3 {sys.argv[0]} &lt;num1&gt; &lt;num2&gt;")
+    sys.exit(1)
+
+try:
+    num1 = float(sys.argv[1])
+    num2 = float(sys.argv[2])
+    print(f"Result: {num1} + {num2} = {num1 + num2}")
+except ValueError:
+    print("Error: Both arguments must be valid numbers.")
+    sys.exit(1)</pre></div>
+
+        <h3>3.4. Calculating the Sum of Arbitrary Command-Line Arguments</h3>
+        <p>A classic interview and practical scripting pattern is computing aggregations over an unknown number of command-line inputs:</p>
+
+        <div class="code"><pre>import sys
+
+# Slice off the script name and convert all remaining arguments:
+raw_args = sys.argv[1:]
+
+if not raw_args:
+    print("No numbers provided! Pass numbers like: python3 sum_args.py 10 20 30")
+else:
+    numbers = [float(arg) for arg in raw_args]
+    print(f"Processed {len(numbers)} numbers.")
+    print(f"Sum: {sum(numbers):.2f} | Average: {sum(numbers)/len(numbers):.2f}")</pre></div>
       </section>
-      <section id="4-print-and-output-formatting">
+
+      <section id="4-print-formatting">
         <div class="heading-with-levels">
           <h2>4. print and output formatting</h2>
           <div class="h2-levels">
@@ -116,14 +381,302 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="4-print-and-output-formatting-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+        <h3 id="4-print-formatting-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
+        <h3>4.1. The Complete print() Signature</h3>
+        <p>In Python 3, <code class="inline">print()</code> is a versatile built-in function with four optional keyword parameters:</p>
+        <div class="code"><pre>print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)</pre></div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Default Value</th>
+              <th>Description &amp; Use Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">*objects</code></td>
+              <td><em>None</em></td>
+              <td>Zero or more objects to be printed. Values are converted to strings via <code class="inline">str()</code>.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">sep</code></td>
+              <td><code class="inline">' '</code> (single space)</td>
+              <td>String inserted between multiple objects. Can be custom delimiters like <code class="inline">"-"</code>, <code class="inline">","</code>, or <code class="inline">""</code>.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">end</code></td>
+              <td><code class="inline">'\n'</code> (newline)</td>
+              <td>String appended after the last object. Setting <code class="inline">end=" "</code> or <code class="inline">end=""</code> prints on the same line.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">file</code></td>
+              <td><code class="inline">sys.stdout</code></td>
+              <td>The stream or file-like object receiving output. Can redirect to <code class="inline">sys.stderr</code> or an opened file.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">flush</code></td>
+              <td><code class="inline">False</code></td>
+              <td>If <code class="inline">True</code>, forces the output buffer to immediately flush to the screen without buffering.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># 1. Custom Separator (sep):
+print("2026", "09", "14", sep="-")          # 2026-09-14
+print("user", "domain.com", sep="@")        # user@domain.com
+print("192", "168", "1", "1", sep=".")      # 192.168.1.1
+print("A", "B", "C", sep="")                # ABC (no space)
+
+# 2. Custom Line Ending (end):
+print("Loading", end="...")
+print("Complete!")                          # Loading...Complete! (on same line)
+
+# Printing items in a loop horizontally:
+for i in range(1, 6):
+    print(i, end=" ")                       # 1 2 3 4 5 
+print()  # Newline flush
+
+# 3. Output Redirection &amp; Flushing:
+import sys, time
+print("Critical Error Alert!", file=sys.stderr)
+
+# Real-time counter with flush=True:
+for count in range(3, 0, -1):
+    print(count, end=" ", flush=True)
+    # time.sleep(1)
+print("Go!")</pre></div>
+
+        <h3>4.2. Escape Characters in String Literals and Output Formatting</h3>
         <ul>
-          <li>Understand the main ideas in <strong>print and output formatting</strong>.</li>
-          <li>Write small demos in <code class="inline">07-practice.py</code> covering this section.</li>
+          <li>In Python string literals, we can use <strong>escape characters</strong> (prefixed with a backslash <code class="inline">\</code>) to associate a special non-printable meaning, such as line breaks, tabs, or quotes within strings.</li>
         </ul>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Character</th>
+              <th>Feature / Meaning</th>
+              <th>Example Code</th>
+              <th>Console Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">\n</code></td>
+              <td>New line (line feed)</td>
+              <td><code class="inline">print("Hello\nWorld")</code></td>
+              <td>Hello<br />World</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\t</code></td>
+              <td>Horizontal tab (indent spacing)</td>
+              <td><code class="inline">print("Name:\tBharat")</code></td>
+              <td>Name:&nbsp;&nbsp;&nbsp;&nbsp;Bharat</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\v</code></td>
+              <td>Vertical tab</td>
+              <td><code class="inline">print("Row1\vRow2")</code></td>
+              <td>Moves down vertically (terminal-dependent)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\r</code></td>
+              <td>Carriage return (returns cursor to line start)</td>
+              <td><code class="inline">print("Processing...\rDone!       ")</code></td>
+              <td>Done! (overwrites "Processing...")</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\b</code></td>
+              <td>Back space (erases previous character)</td>
+              <td><code class="inline">print("Hellx\bo")</code></td>
+              <td>Hello (erases 'x')</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\f</code></td>
+              <td>Form feed (page break on printers/terminals)</td>
+              <td><code class="inline">print("Page1\fPage2")</code></td>
+              <td>Page break / terminal feed</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\'</code></td>
+              <td>Single quote inside single-quoted string</td>
+              <td><code class="inline">print('It\'s Python')</code></td>
+              <td>It's Python</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\"</code></td>
+              <td>Double quote inside double-quoted string</td>
+              <td><code class="inline">print("He said \"Hello\"")</code></td>
+              <td>He said "Hello"</td>
+            </tr>
+            <tr>
+              <td><code class="inline">\\</code></td>
+              <td>Back slash (literal backslash character)</td>
+              <td><code class="inline">print("C:\\users\\notes")</code></td>
+              <td>C:\users\notes</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># --- Escape Characters in Action ---
+# 1. New line (\n) and Tab (\t):
+print("ID\tName\tScore\n101\tBharat\t98\n102\tSonwane\t95")
+
+# 2. Quotes without conflicts:
+print('Python\'s syntax is "clean"')
+print("She said: \"Keep learning!\"")
+
+# 3. Backslash escaping vs Raw strings:
+print("Path: C:\\new_folder\\test.txt")      # Escapes each backslash
+print(r"Path: C:\new_folder\test.txt")     # Raw string (r"...") treats backslashes literally!
+
+# 4. Carriage return (\r) for in-place progress update:
+import time
+for percent in (25, 50, 75, 100):
+    print(f"\rDownloading... {percent}%", end="", flush=True)
+print("\nDownload complete!")</pre></div>
+
+        <h3 id="4-print-formatting-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.3. Modern Formatting: f-strings (Formatted String Literals)</h3>
+        <ul>
+          <li>Introduced in Python 3.6 (PEP 498), <strong>f-strings</strong> are prefixed with <code class="inline">f</code> or <code class="inline">F</code>.</li>
+          <li>Replacement fields enclosed in curly braces <code class="inline">{expression}</code> are evaluated at runtime and formatted directly into the string.</li>
+          <li>They are evaluated faster than <code class="inline">%</code> or <code class="inline">.format()</code> because they are parsed directly into bytecode instructions.</li>
+        </ul>
+
+        <h4>❖ Advanced f-string Format Specifiers</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Specifier</th>
+              <th>Meaning</th>
+              <th>Example Code</th>
+              <th>Formatted Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">:.2f</code></td>
+              <td>Float with fixed 2 decimal places</td>
+              <td><code class="inline">f"{3.14159:.2f}"</code></td>
+              <td><code class="inline">'3.14'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:,</code></td>
+              <td>Thousands comma separator</td>
+              <td><code class="inline">f"{1000000:,}"</code></td>
+              <td><code class="inline">'1,000,000'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:.1%</code></td>
+              <td>Percentage with 1 decimal place</td>
+              <td><code class="inline">f"{0.856:.1%}"</code></td>
+              <td><code class="inline">'85.6%'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:&gt;10</code></td>
+              <td>Right align within 10 spaces</td>
+              <td><code class="inline">f"{'data':&gt;10}"</code></td>
+              <td><code class="inline">'      data'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:&lt;10</code></td>
+              <td>Left align within 10 spaces</td>
+              <td><code class="inline">f"{'data':&lt;10}"</code></td>
+              <td><code class="inline">'data      '</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:^10</code></td>
+              <td>Center align within 10 spaces</td>
+              <td><code class="inline">f"{'data':^10}"</code></td>
+              <td><code class="inline">'   data   '</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:*^10</code></td>
+              <td>Center align with custom fill character</td>
+              <td><code class="inline">f"{'hi':*^10}"</code></td>
+              <td><code class="inline">'****hi****'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:04d</code></td>
+              <td>Zero-padded integer (4 digits)</td>
+              <td><code class="inline">f"{7:04d}"</code></td>
+              <td><code class="inline">'0007'</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">:b / :x</code></td>
+              <td>Binary / Hexadecimal formatting</td>
+              <td><code class="inline">f"{15:b}, {15:x}"</code></td>
+              <td><code class="inline">'1111, f'</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Practical Tabular formatting with f-strings:
+print(f"{'Item':&lt;15} | {'Qty':^6} | {'Price':&gt;10}")
+print("-" * 35)
+print(f"{'Keyboard':&lt;15} | {1:^6} | ${89.99:&gt;9.2f}")
+print(f"{'Ultra Monitor':&lt;15} | {2:^6} | ${349.50:&gt;9.2f}")
+
+# Escaping literal braces:
+print(f"Use {{name}} for variable injection.")  # Use {name} for variable injection.
+
+# Python 3.8+ Debug feature:
+num = 42
+print(f"{num=}, {num*2=}")  # num=42, num*2=84</pre></div>
+
+        <h3>4.4. Comparison: %-Formatting vs. str.format() vs. f-Strings</h3>
+        <p>Python has evolved through three primary formatting paradigms:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Example Syntax</th>
+              <th>Pros</th>
+              <th>Cons / Recommendation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. %-Formatting</strong> (Legacy / C-style)</td>
+              <td><code class="inline">"Hi %s, age %d" % (name, age)</code></td>
+              <td>Familiar to C/C++ developers</td>
+              <td>Prone to tuple unpacking errors; rigid; obsolete.</td>
+            </tr>
+            <tr>
+              <td><strong>2. str.format()</strong> (Python 2.7 / 3.0+)</td>
+              <td><code class="inline">"Hi {}, age {}".format(name, age)</code></td>
+              <td>Supports reordered indices &amp; reusable template strings</td>
+              <td>More verbose than f-strings; slower execution.</td>
+            </tr>
+            <tr>
+              <td><strong>3. f-Strings</strong> (Python 3.6+)</td>
+              <td><code class="inline">f"Hi {name}, age {age}"</code></td>
+              <td>Extremely readable, fastest performance, full Python expressions</td>
+              <td><strong>Recommended standard</strong> for all modern Python code.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>item = "Widget"
+cost = 19.5
+
+# 1. Legacy %-formatting:
+print("Item: %s, Cost: $%.2f" % (item, cost))
+
+# 2. str.format() method:
+print("Item: {0}, Cost: ${1:.2f}".format(item, cost))
+print("Item: {name}, Cost: ${price:.2f}".format(name=item, price=cost))
+
+# 3. Modern f-string (Preferred):
+print(f"Item: {item}, Cost: ${cost:.2f}")</pre></div>
       </section>
+
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -137,34 +690,57 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about input() and reading values?</span>
+            <span class="qa-question-title">C.1. Why does <code class="inline">int(input())</code> raise a <code class="inline">ValueError</code> when the user enters <code class="inline">"10.5"</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The <code class="inline">int()</code> constructor can directly convert float objects (e.g. <code class="inline">int(10.5) -&gt; 10</code>), but when parsing a <strong>string literal</strong>, it strictly expects base-10 digits only. The dot <code class="inline">.</code> character in <code class="inline">"10.5"</code> is an invalid integer character. To handle decimal user input, convert to float first: <code class="inline">int(float(input()))</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Command-line arguments (sys.argv)?</span>
+            <span class="qa-question-title">C.2. Why does <code class="inline">bool(input("Enter True/False: "))</code> always return <code class="inline">True</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code class="inline">input()</code> returns a string. In Python, all non-empty strings are truthy. Even if the user enters the word <code class="inline">"False"</code>, the string has length 5 and evaluates to <code class="inline">True</code>. Only pressing Enter with zero text yields the empty string <code class="inline">""</code>, which evaluates to <code class="inline">False</code>. To parse booleans safely, compare against explicit strings: <code class="inline">input().strip().lower() == "true"</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about print and output formatting?</span>
+            <span class="qa-question-title">C.3. What is the difference between <code class="inline">sep</code> and <code class="inline">end</code> in <code class="inline">print()</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code class="inline">sep</code> dictates the delimiter inserted <strong>between</strong> items passed into a single print statement (default is a single space <code class="inline">' '</code>). <code class="inline">end</code> specifies the character placed at the <strong>end</strong> after all items are displayed (default is a newline <code class="inline">'\n'</code>).</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Why is <code class="inline">eval(input())</code> dangerous, and what should be used instead?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">eval()</code> executes any valid Python code passed into it. An attacker can supply code to delete files, inspect environment variables, or spawn a reverse shell. For safe evaluation of Python literals (numbers, lists, dicts, tuples), use <code class="inline">ast.literal_eval()</code> from the standard <code class="inline">ast</code> library.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why does <code class="inline">sys.argv[0]</code> store the script name instead of the first argument?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>This follows the UNIX C standard where <code class="inline">argv[0]</code> always contains the invocation command or executable path. This allows programs to inspect how they were invoked, output proper usage messages (e.g. <code class="inline">f"Usage: python {sys.argv[0]} [options]"</code>), or act differently depending on binary symlinks.</p>
           </div>
         </details>
       </section>
+
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -173,199 +749,149 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">07-practice.py</code>. Run with <code class="inline">python3 07-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">07-practice.py</code>. Run with <code class="inline">python3 07-practice.py</code> to test your solutions interactively.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Print your name with an f-string (e.g. <code class="inline">name = "YourName"; print(f"Hello, {name}!")</code>).</span>
+                <span class="qa-question-title">Read user name and birth year; calculate and print current age with an f-string.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>name = &quot;Bharat&quot;
-topic = &quot;Python Input/Output&quot;
-print(f&quot;Hello, {name}! Welcome to the deep dive on {topic}.&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>input() and reading values</strong>.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Summary of input() and reading values:
-# 1. input(prompt) always returns user input as a string (str).
-# 2. To obtain numeric values, wrap input() in explicit typecasts like int() or float().
-# 3. Read multiple values on a single line using input().split() or map(int, input().split()).</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Command-line arguments (sys.argv)</strong> and print the result.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre>import sys
+                <div class="code"><pre>name = input("Enter your name: ")
+birth_year = int(input("Enter your birth year: "))
+current_year = 2026
 
-# sys.argv contains command-line arguments passed to the script
-print(&quot;Script name (sys.argv[0]):&quot;, sys.argv[0])
-print(&quot;Arguments count:&quot;, len(sys.argv))
-print(&quot;Argument list:&quot;, sys.argv)</pre></div>
+age = current_year - birth_year
+print(f"Hello, {name}! You are {age} years old.")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Read 3 numbers on a single line separated by space and print their sum.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Input and Output Handling in Python.
-
-Goal: Master reading user inputs, parsing command-line arguments via sys.argv,
-and formatting terminal output using modern f-strings and format specifiers.
-&quot;&quot;&quot;</pre></div>
+                <div class="code"><pre># Reading 3 integers using map():
+n1, n2, n3 = map(int, input("Enter 3 numbers separated by spaces: ").split())
+total = n1 + n2 + n3
+print(f"{n1} + {n2} + {n3} = {total}")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Print an IP address <code class="inline">192.168.1.1</code> using 4 arguments in <code class="inline">print()</code> with <code class="inline">sep</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Custom separator:
+print(192, 168, 1, 1, sep=".")  # 192.168.1.1</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: input() and reading values</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: sys.argv Sum &amp; Validation</strong> — Write a script that sums all numbers passed via command-line arguments and handles missing arguments safely.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: input() and reading values demo
-# (Simulated input parsing for demonstration)
-raw_input = &quot;25 180.5 Bharat&quot;
-parts = raw_input.split()
+                <div class="code"><pre>import sys
 
-age = int(parts[0])
-height = float(parts[1])
-user_name = parts[2]
+# Validate arguments exist:
+if len(sys.argv) &lt; 2:
+    print(f"Usage: python3 {sys.argv[0]} &lt;num1&gt; &lt;num2&gt; ...")
+    sys.exit(1)
 
-print(f&quot;Parsed Name: {user_name}&quot;)
-print(f&quot;Age: {age} (Type: {type(age).__name__})&quot;)
-print(f&quot;Height: {height} cm (Type: {type(height).__name__})&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Command-line arguments (sys.argv)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Command-line arguments with sys.argv
-import sys
-
-def parse_cli_args(args):
-    program_name = args[0]
-    cli_params = args[1:]
-    print(f&quot;Running program: {program_name}&quot;)
-    for idx, arg in enumerate(cli_params, 1):
-        print(f&quot;  Param {idx}: {arg}&quot;)
-    return len(cli_params)
-
-# Simulated execution:
-mock_argv = [&quot;app.py&quot;, &quot;--port&quot;, &quot;8080&quot;, &quot;--env&quot;, &quot;production&quot;]
-total_params = parse_cli_args(mock_argv)
-print(f&quot;Processed {total_params} CLI arguments successfully.&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: print and output formatting</strong> — Write a small working demo (10–20 lines) covering formatted output with f-strings, separator/end parameters in <code class="inline">print()</code>, and format specifiers; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Print and output formatting
-name = &quot;Quantum Computer&quot;
-price = 14999.954
-serial = 42
-
-# f-strings with precision and padding:
-print(f&quot;Item: {name:&lt;20} | Price: ${price:&gt;10.2f} | Hex ID: 0x{serial:04x}&quot;)
-
-# print() separator and end parameters:
-print(&quot;Processing&quot;, &quot;Data&quot;, &quot;Streams&quot;, sep=&quot; -&gt; &quot;, end=&quot; [DONE]\n&quot;)
-print(&quot;192&quot;, &quot;168&quot;, &quot;1&quot;, &quot;1&quot;, sep=&quot;.&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-        </ol>
-        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
-        <ol>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Input and Output.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Interactive Currency Converter &amp; Bill Formatter
-def format_bill(item_name, price_usd, exchange_rate=83.5):
-    price_inr = price_usd * exchange_rate
-    print(&quot;=&quot; * 40)
-    print(f&quot;{&#x27;RECEIPT&#x27;:^40}&quot;)
-    print(&quot;=&quot; * 40)
-    print(f&quot;Item:       {item_name}&quot;)
-    print(f&quot;Price USD:  ${price_usd:.2f}&quot;)
-    print(f&quot;Rate:       1 USD = {exchange_rate:.2f} INR&quot;)
-    print(&quot;-&quot; * 40)
-    print(f&quot;Total INR:  ₹{price_inr:,.2f}&quot;)
-    print(&quot;=&quot; * 40)
-
-format_bill(&quot;Mechanical Keyboard&quot;, 129.99)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Edge Cases in Python I/O:
-# 1. input() always returns str, leading to unintended string concatenation:
-a, b = &quot;10&quot;, &quot;20&quot;
-print(&quot;Mistake (str + str):&quot;, a + b)  # &#x27;1020&#x27; instead of 30!
-print(&quot;Correct (int + int):&quot;, int(a) + int(b))  # 30
-
-# 2. Unhandled ValueError on bad input:
 try:
-    bad_number = int(&quot;twenty&quot;)
-except ValueError as err:
-    print(f&quot;Safely caught conversion error: {err}&quot;)
+    numbers = [float(arg) for arg in sys.argv[1:]]
+    print(f"Arguments passed: {numbers}")
+    print(f"Total sum:        {sum(numbers):.2f}")
+    print(f"Average:          {sum(numbers)/len(numbers):.2f}")
+except ValueError as e:
+    print(f"Error: All arguments must be valid numbers! ({e})")
+    sys.exit(1)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 2: Tabular Invoice Formatter with f-strings</strong> — Format a professional receipt with left/center/right alignment, decimal precision, and thousands commas.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>items = [
+    ("Laptop Pro", 1, 1299.99),
+    ("Wireless Mouse", 2, 29.50),
+    ("USB-C Hub", 1, 45.00),
+    ("4K Monitor", 2, 499.00)
+]
 
-# 3. sys.argv IndexError if user runs script without required arguments.</pre></div>
+print("=" * 50)
+print(f"{'INVOICE RECEIPT':^50}")
+print("=" * 50)
+print(f"{'Item Name':&lt;20} | {'Qty':^6} | {'Unit Price':&gt;10} | {'Total':&gt;10}")
+print("-" * 50)
+
+grand_total = 0
+for name, qty, price in items:
+    line_total = qty * price
+    grand_total += line_total
+    print(f"{name:&lt;20} | {qty:^6} | ${price:&gt;9.2f} | ${line_total:&gt;9.2f}")
+
+print("=" * 50)
+print(f"{'GRAND TOTAL:':&lt;30} ${grand_total:&gt;17,.2f}")
+print("=" * 50)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 3: Safe Evaluator with ast.literal_eval</strong> — Demonstrate safe parsing of complex data structures from user strings without using unsafe <code class="inline">eval()</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import ast
+
+user_data = '{"name": "Bharat", "scores": [95, 88, 92], "active": True}'
+
+try:
+    # ast.literal_eval safely parses Python literals only:
+    parsed_obj = ast.literal_eval(user_data)
+    print("Successfully parsed object:", type(parsed_obj))
+    print("User name:   ", parsed_obj["name"])
+    print("Score average:", sum(parsed_obj["scores"]) / len(parsed_obj["scores"]))
+except (ValueError, SyntaxError) as err:
+    print(f"Failed to safely parse literal: {err}")</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+
+        <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>P.3. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Input and Output) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I understand why <code class="inline">input()</code> always returns a string and how to cast it safely.</li>
+          <li>I can read multiple inputs on one line with <code class="inline">split()</code>, <code class="inline">map()</code>, and list comprehensions.</li>
+          <li>I know the structure of <code class="inline">sys.argv</code> and how to safely inspect arguments.</li>
+          <li>I can format strings with precision, padding, alignment, and comma separators using f-strings.</li>
         </ul>
       </section>
-      <footer>Python Notes File 06. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 07. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

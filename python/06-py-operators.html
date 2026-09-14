@@ -19,11 +19,15 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-arithmetic">2. Arithmetic and assignment operators</a>
-        <a href="#3-relational-logical">3. Relational and logical operators</a>
-        <a href="#4-bitwise">4. Bitwise operators</a>
-        <a href="#5-membership-identity">5. Membership (in) and identity (is)</a>
-        <a href="#6-precedence">6. Operator precedence</a>
+        <a href="#2-arithmetic">2. Arithmetic operators</a>
+        <a href="#3-relational">3. Relational operators</a>
+        <a href="#4-logical">4. Logical operators</a>
+        <a href="#5-bitwise">5. Bitwise operators</a>
+        <a href="#6-assignment">6. Assignment operators</a>
+        <a href="#7-identity">7. Identity operators</a>
+        <a href="#8-membership">8. Membership operators</a>
+        <a href="#9-ternary">9. Ternary operator</a>
+        <a href="#10-precedence">10. Operator precedence</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -42,16 +46,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>06. Operators</h1>
-        <p class="subtitle">File 06 — arithmetic, relational, logical, bitwise, membership, identity, precedence.</p>
+        <p class="subtitle">File 06 — arithmetic, relational, logical, bitwise, assignment, identity, membership, ternary, and operator precedence.</p>
         <div class="chip-row">
-          <span class="chip">// %</span>
+          <span class="chip">+ - * / // % **</span>
+          <span class="chip">&lt; &lt;= == !=</span>
           <span class="chip">and or not</span>
+          <span class="chip">&amp; | ^ ~ &lt;&lt; &gt;&gt;</span>
+          <span class="chip">= += -= *=</span>
           <span class="chip">is / in</span>
-          <span class="chip">Bitwise</span>
+          <span class="chip">Ternary</span>
+          <span class="chip">Precedence</span>
         </div>
       </header>
 
-            <section id="1-introduction">
+      <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
           <div class="h2-levels">
@@ -61,21 +69,26 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li>Operators combine values into expressions. Python’s set is similar to other languages, with important details: <code class="inline">/</code> vs <code class="inline">//</code>, <code class="inline">and</code>/<code class="inline">or</code>/<code class="inline">not</code> (words, not <code class="inline">&amp;&amp;</code>), and <code class="inline">is</code> vs <code class="inline">==</code>.</li>
+          <li>Operators are special symbols or keywords in Python used to perform computations, manipulate variables, evaluate logical conditions, and compare data structures.</li>
+          <li>Python classifies operators into clear, dedicated categories: Arithmetic, Relational (Comparison), Logical, Bitwise, Assignment, Identity, Membership, Ternary, and Precedence hierarchies.</li>
         </ul>
         <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">==</code> for value equality, <code class="inline">is</code> only for <code class="inline">None</code> (and similar singletons). Prefer <code class="inline">and</code>/<code class="inline">or</code>/<code class="inline">not</code> for boolean logic.</div>
+        <div class="callout"><strong>Default Best Practices:</strong> Use <code class="inline">==</code> for value equality and <code class="inline">is</code> strictly for singletons like <code class="inline">None</code>. Always prefer <code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code> for boolean logic over bitwise operators. When writing complex expressions, use parentheses to ensure clear intent regardless of operator precedence.</div>
         <ul>
-          <li>After reading sections 2–6, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">06-practice.py</code> before File 07. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–10, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 07. Review <a href="#c-common-questions">C. Common questions</a> for interview preparation.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Arithmetic and assignment operators</strong></li>
-          <li><strong>Relational and logical operators</strong></li>
-          <li><strong>Bitwise operators</strong></li>
-          <li><strong>Membership (in) and identity (is)</strong></li>
-          <li><strong>Operator precedence</strong></li>
+          <li><strong>Arithmetic operators</strong> (<code class="inline">+</code>, <code class="inline">-</code>, <code class="inline">*</code>, <code class="inline">/</code>, <code class="inline">//</code>, <code class="inline">%</code>, <code class="inline">**</code>)</li>
+          <li><strong>Relational (comparison) operators</strong> (<code class="inline">&lt;</code>, <code class="inline">&lt;=</code>, <code class="inline">&gt;</code>, <code class="inline">&gt;=</code>, <code class="inline">==</code>, <code class="inline">!=</code>)</li>
+          <li><strong>Logical operators</strong> (<code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code>)</li>
+          <li><strong>Bitwise operators</strong> (<code class="inline">&amp;</code>, <code class="inline">|</code>, <code class="inline">^</code>, <code class="inline">~</code>, <code class="inline">&lt;&lt;</code>, <code class="inline">&gt;&gt;</code>)</li>
+          <li><strong>Assignment operators</strong> (simple <code class="inline">=</code> and compound <code class="inline">+=</code>, <code class="inline">-=</code>, …)</li>
+          <li><strong>Identity operators</strong> (<code class="inline">is</code>, <code class="inline">is not</code>)</li>
+          <li><strong>Membership operators</strong> (<code class="inline">in</code>, <code class="inline">not in</code>)</li>
+          <li><strong>Ternary operator</strong> (conditional expression <code class="inline">x if cond else y</code>)</li>
+          <li><strong>Operator precedence and associativity</strong></li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
@@ -85,159 +98,561 @@
 
       <section id="2-arithmetic">
         <div class="heading-with-levels">
-          <h2>2. Arithmetic and assignment operators</h2>
+          <h2>2. Arithmetic operators</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="2-arithmetic-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Arithmetic operators execute standard mathematical computations on numeric data types (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>), and support sequence repetition/concatenation.</p>
+
         <table>
           <thead>
-            <tr><th>Op</th><th>Meaning</th><th>Example</th></tr>
+            <tr><th>Operator</th><th>Name</th><th>Example</th><th>Result</th><th>Description / Notes</th></tr>
           </thead>
           <tbody>
-            <tr><td><code class="inline">+</code> <code class="inline">-</code> <code class="inline">*</code></td><td>Add, subtract, multiply</td><td><code class="inline">3 * 4 → 12</code></td></tr>
-            <tr><td><code class="inline">/</code></td><td>True division (float)</td><td><code class="inline">5 / 2 → 2.5</code></td></tr>
-            <tr><td><code class="inline">//</code></td><td>Floor division</td><td><code class="inline">5 // 2 → 2</code></td></tr>
-            <tr><td><code class="inline">%</code></td><td>Modulo (remainder)</td><td><code class="inline">5 % 2 → 1</code></td></tr>
-            <tr><td><code class="inline">**</code></td><td>Exponent</td><td><code class="inline">2 ** 3 → 8</code></td></tr>
+            <tr><td><code class="inline">+</code></td><td>Addition</td><td><code class="inline">10 + 5</code></td><td><code class="inline">15</code></td><td>Sum numbers; concatenates sequences (<code class="inline">"a" + "b"</code>)</td></tr>
+            <tr><td><code class="inline">-</code></td><td>Subtraction</td><td><code class="inline">10 - 5</code></td><td><code class="inline">5</code></td><td>Subtracts right from left; unary negation (<code class="inline">-x</code>)</td></tr>
+            <tr><td><code class="inline">*</code></td><td>Multiplication</td><td><code class="inline">4 * 3</code></td><td><code class="inline">12</code></td><td>Product of numbers; replicates sequences (<code class="inline">"ab" * 3</code>)</td></tr>
+            <tr><td><code class="inline">/</code></td><td>True Division</td><td><code class="inline">5 / 2</code></td><td><code class="inline">2.5</code></td><td><strong>Always returns a float</strong> in Python 3</td></tr>
+            <tr><td><code class="inline">//</code></td><td>Floor Division</td><td><code class="inline">5 // 2</code></td><td><code class="inline">2</code></td><td>Rounds down towards $-\infty$ (<code class="inline">-5 // 2 → -3</code>)</td></tr>
+            <tr><td><code class="inline">%</code></td><td>Modulo</td><td><code class="inline">5 % 2</code></td><td><code class="inline">1</code></td><td>Remainder of floor division; sign follows divisor</td></tr>
+            <tr><td><code class="inline">**</code></td><td>Exponentiation</td><td><code class="inline">2 ** 3</code></td><td><code class="inline">8</code></td><td>Right-to-left associativity (<code class="inline">2 ** 3 ** 2 = 512</code>)</td></tr>
           </tbody>
         </table>
-        <div class="code"><pre>-5 // 2    # -3 — floor toward -∞
--5 % 2     # 1  — sign follows divisor rules carefully
 
+        <h3 id="2-arithmetic-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Critical Arithmetic Nuances:</h4>
+        <div class="code"><pre># 1. True division (/) always yields float:
+print(10 / 2)       # 5.0 (always float, never int)
+print(7 / 2)        # 3.5
+
+# 2. Floor division (//) rounds toward negative infinity (floor):
+print(5 // 2)       # 2   (2.5 floored to 2)
+print(-5 // 2)      # -3  (floor(-2.5) is -3, NOT -2!)
+print(10.0 // 3)    # 3.0 (returns float if any operand is float)
+
+# 3. Modulo (%) remainder formula: r = x - (x // y) * y:
+print(5 % 2)        # 1   (5 - (2) * 2 = 1)
+print(-5 % 2)       # 1   (-5 - (-3) * 2 = -5 - (-6) = 1)
+print(5 % -2)       # -1  (5 - (-3) * (-2) = 5 - 6 = -1)
+
+# 4. Exponentiation (**) is right-to-left associative:
+print(2 ** 3 ** 2)  # 512 (evaluates as 2 ** (3 ** 2) = 2 ** 9 = 512, NOT (2**3)**2 = 64)
+
+# 5. Sequence replication and concatenation:
+print("Py" * 3)     # "PyPyPy"
+print([1, 2] + [3]) # [1, 2, 3]
+print([0] * 4)      # [0, 0, 0, 0]</pre></div>
+      </section>
+
+      <section id="3-relational">
+        <div class="heading-with-levels">
+          <h2>3. Relational (comparison) operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="3-relational-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Relational operators compare two values and determine the relationship between them. Every comparison returns a boolean (<code class="inline">True</code> or <code class="inline">False</code>).</p>
+
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Meaning</th><th>Example</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">&lt;</code></td><td>Strictly less than</td><td><code class="inline">3 &lt; 5</code></td><td><code class="inline">True</code></td></tr>
+            <tr><td><code class="inline">&lt;=</code></td><td>Less than or equal to</td><td><code class="inline">5 &lt;= 5</code></td><td><code class="inline">True</code></td></tr>
+            <tr><td><code class="inline">&gt;</code></td><td>Strictly greater than</td><td><code class="inline">10 &gt; 20</code></td><td><code class="inline">False</code></td></tr>
+            <tr><td><code class="inline">&gt;=</code></td><td>Greater than or equal to</td><td><code class="inline">10 &gt;= 7</code></td><td><code class="inline">True</code></td></tr>
+            <tr><td><code class="inline">==</code></td><td>Value equality</td><td><code class="inline">10 == 10.0</code></td><td><code class="inline">True</code></td></tr>
+            <tr><td><code class="inline">!=</code></td><td>Value inequality</td><td><code class="inline">10 != 20</code></td><td><code class="inline">True</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="3-relational-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Chained Comparisons &amp; Lexicographical Ordering:</h4>
+        <ul>
+          <li><strong>Chained Comparisons:</strong> Python natively allows mathematical range chaining such as <code class="inline">10 &lt; x &lt; 20</code>. This is evaluated as <code class="inline">(10 &lt; x) and (x &lt; 20)</code>, evaluating <code class="inline">x</code> only once.</li>
+          <li><strong>Lexicographical String Ordering:</strong> Strings are compared character by character according to their Unicode code points (<code class="inline">ord()</code>).</li>
+        </ul>
+
+        <div class="code"><pre># Chained comparisons:
+x = 15
+print(10 &lt; x &lt; 20)        # True  (equivalent to: 10 &lt; x and x &lt; 20)
+print(10 &lt; 20 &gt; 15)       # True  (10 &lt; 20 is True AND 20 &gt; 15 is True)
+print(10 &lt; 20 &lt; 15)       # False (10 &lt; 20 is True, but 20 &lt; 15 is False)
+
+# Lexicographical comparison:
+print("apple" &lt; "banana") # True  ('a' = 97 &lt; 'b' = 98)
+print("abc" &lt; "abd")      # True  ('c' = 99 &lt; 'd' = 100)
+print("Apple" &lt; "apple")  # True  (Uppercase 'A'=65 &lt; Lowercase 'a'=97)
+
+# Mixed-type comparisons:
+print(10 == 10.0)         # True  (mathematical value equality)
+# print(10 &lt; "20")        # TypeError: '&lt;' not supported between 'int' and 'str'</pre></div>
+      </section>
+
+      <section id="4-logical">
+        <div class="heading-with-levels">
+          <h2>4. Logical operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-logical-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Python provides three logical operators: <strong><code class="inline">and</code></strong>, <strong><code class="inline">or</code></strong>, and <strong><code class="inline">not</code></strong>. Using symbol equivalents (<code class="inline">&amp;&amp;</code>, <code class="inline">||</code>, <code class="inline">!</code>) causes a <code class="inline">SyntaxError</code>.</p>
+
+        <h4>4.1. Truth Value Testing (Truthiness)</h4>
+        <ul>
+          <li>Logical operators test the truth value of <em>any</em> Python object, not just booleans.</li>
+          <li><strong>Falsy values:</strong> <code class="inline">False</code>, <code class="inline">None</code>, numeric zero (<code class="inline">0</code>, <code class="inline">0.0</code>, <code class="inline">0j</code>), empty sequences/collections (<code class="inline">""</code>, <code class="inline">()</code>, <code class="inline">[]</code>, <code class="inline">{}</code>, <code class="inline">set()</code>, <code class="inline">range(0)</code>).</li>
+          <li><strong>Truthy values:</strong> All other objects (non-zero numbers, non-empty collections, valid objects).</li>
+        </ul>
+
+        <h4>4.2. Return Value Rules (Operand Evaluation)</h4>
+        <div class="callout">
+          <strong>Key Rule to Remember:</strong> In Python, <code class="inline">and</code> and <code class="inline">or</code> do <strong>not</strong> necessarily return a boolean! They return the <em>actual operand</em> that determined the outcome of the expression. Only <code class="inline">not</code> is guaranteed to always return a pure <code class="inline">bool</code> (<code class="inline">True</code> or <code class="inline">False</code>).
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Syntax</th><th>Evaluation Rule</th><th>Return Value Rule</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong><code class="inline">and</code></strong></td>
+              <td><code class="inline">x and y</code></td>
+              <td>Evaluates <code class="inline">x</code>. If <code class="inline">x</code> is falsy, stops immediately. Otherwise, evaluates <code class="inline">y</code>.</td>
+              <td>Returns the <strong>first falsy operand</strong>, or the <strong>last operand</strong> if all are truthy.</td>
+            </tr>
+            <tr>
+              <td><strong><code class="inline">or</code></strong></td>
+              <td><code class="inline">x or y</code></td>
+              <td>Evaluates <code class="inline">x</code>. If <code class="inline">x</code> is truthy, stops immediately. Otherwise, evaluates <code class="inline">y</code>.</td>
+              <td>Returns the <strong>first truthy operand</strong>, or the <strong>last operand</strong> if all are falsy.</td>
+            </tr>
+            <tr>
+              <td><strong><code class="inline">not</code></strong></td>
+              <td><code class="inline">not x</code></td>
+              <td>Evaluates truth value of <code class="inline">x</code> and inverts it.</td>
+              <td>Always returns <strong><code class="inline">bool</code></strong>: <code class="inline">False</code> if <code class="inline">x</code> is truthy; <code class="inline">True</code> if <code class="inline">x</code> is falsy.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># --- 1. 'and': returns first falsy OR last truthy ---
+print(True and False)       # False
+print(10 and 20)            # 20 (both truthy -&gt; returns last operand)
+print(0 and 20)             # 0  (0 is falsy -&gt; stops and returns 0)
+print("" and "Python")      # "" (empty string is falsy -&gt; returns "")
+print("Python" and "Rocks") # "Rocks" (both truthy -&gt; returns last operand)
+print(1 and 2 and 3 and 4)  # 4  (all truthy -&gt; returns last operand)
+print(1 and 0 and 3 and 4)  # 0  (stops at first falsy: 0)
+
+# --- 2. 'or': returns first truthy OR last falsy ---
+print(True or False)        # True
+print(10 or 20)             # 10 (10 is truthy -&gt; stops and returns 10)
+print(0 or 5)               # 5  (0 is falsy -&gt; evaluates and returns 5)
+print(0 or "")              # "" (both falsy -&gt; returns last operand)
+print([] or {} or "found")  # "found" (returns first truthy)
+print([] or 0 or None)      # None (all falsy -&gt; returns last operand)
+
+# Idiomatic default fallback:
+user_input = ""
+display_name = user_input or "Guest"
+print("Welcome,", display_name)  # "Welcome, Guest"
+
+# --- 3. 'not': always returns a pure boolean ---
+print(not True)             # False
+print(not False)            # True
+print(not 0)                # True
+print(not 100)              # False
+print(not "hello")          # False
+print(not [])               # True
+print(not not "hello")      # True (double negation bool conversion: bool("hello"))</pre></div>
+
+        <h3 id="4-logical-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>4.3. Short-Circuit Evaluation (Lazy Evaluation)</h4>
+        <ul>
+          <li>Python executes boolean expressions strictly from <strong>left to right</strong> and terminates as soon as the final result is certain.</li>
+          <li><code class="inline">False and &lt;expr&gt;</code>: <code class="inline">&lt;expr&gt;</code> is <strong>never evaluated</strong>.</li>
+          <li><code class="inline">True or &lt;expr&gt;</code>: <code class="inline">&lt;expr&gt;</code> is <strong>never evaluated</strong>.</li>
+        </ul>
+
+        <div class="code"><pre>def expensive_operation():
+    print("&gt;&gt;&gt; Performing expensive database / API call...")
+    return True
+
+# Short-circuiting demonstrations:
+print("--- Test 1 ---")
+result1 = False and expensive_operation()
+print("Result 1:", result1)  # Prints: False (function is NEVER called)
+
+print("--- Test 2 ---")
+result2 = True or expensive_operation()
+print("Result 2:", result2)   # Prints: True (function is NEVER called)
+
+# Practical defensive guards using short-circuiting:
+# 1. Null / None guard:
+user = None
+if user is not None and user.is_active:
+    print("User is active")  # Safe: user.is_active never executed if user is None
+
+# 2. Zero-division guard:
+count = 0
+total = 150
+if count != 0 and (total / count) &gt; 50:
+    print("Threshold reached")  # Safe: division never attempted if count == 0
+
+# 3. Collection bounds guard:
+data = []
+if len(data) &gt; 0 and data[0] == "admin":
+    print("Welcome Admin")  # Safe: IndexError prevented</pre></div>
+
+        <h4>4.4. Logical vs Bitwise Comparison &amp; Pitfalls</h4>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th>Logical (<code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code>)</th><th>Bitwise (<code class="inline">&amp;</code>, <code class="inline">|</code>, <code class="inline">~</code>)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Operands</strong></td><td>Any Python objects (evaluates truthiness)</td><td>Integers (bit-by-bit manipulation) or sets</td></tr>
+            <tr><td><strong>Short-circuiting</strong></td><td><strong>Yes</strong> (stops evaluation early)</td><td><strong>No</strong> (evaluates both sides always)</td></tr>
+            <tr><td><strong>Return Value</strong></td><td>Operand value or boolean</td><td>Computed integer or new set</td></tr>
+            <tr><td><strong>Precedence</strong></td><td>Low (below comparison operators)</td><td>High (binds tighter than comparisons!)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># DANGEROUS BUG: Using '&' for condition checking:
+x = 5
+# WRONG:
+# if x &gt; 0 &amp; x &lt; 10:  # Syntax error or unexpected result!
+# Because '&' binds tighter than '&gt;' and '&lt;', this parses as:
+# x &gt; (0 &amp; x) &lt; 10  -&gt;  x &gt; 0 &lt; 10 (chained comparison, completely different!)
+
+# CORRECT:
+if x &gt; 0 and x &lt; 10:
+    print("x is in range (0, 10)")
+
+# Multi-value equality trap:
+# WRONG: if x == 1 or 2 or 3:  (2 is truthy, so always True!)
+# CORRECT:
+if x in (1, 2, 3):
+    print("x is 1, 2, or 3")</pre></div>
+      </section>
+
+      <section id="5-bitwise">
+        <div class="heading-with-levels">
+          <h2>5. Bitwise operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-bitwise-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Bitwise operators operate directly on the individual binary bits of integer operands.</p>
+
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Name</th><th>Formula / Meaning</th><th>Example</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">&amp;</code></td><td>Bitwise AND</td><td>1 if both bits are 1; else 0</td><td><code class="inline">5 &amp; 3</code> (<code class="inline">101 &amp; 011</code>)</td><td><code class="inline">1</code> (<code class="inline">001</code>)</td></tr>
+            <tr><td><code class="inline">|</code></td><td>Bitwise OR</td><td>1 if either bit is 1; else 0</td><td><code class="inline">5 | 2</code> (<code class="inline">101 | 010</code>)</td><td><code class="inline">7</code> (<code class="inline">111</code>)</td></tr>
+            <tr><td><code class="inline">^</code></td><td>Bitwise XOR</td><td>1 if bits are different; 0 if same</td><td><code class="inline">5 ^ 1</code> (<code class="inline">101 ^ 001</code>)</td><td><code class="inline">4</code> (<code class="inline">100</code>)</td></tr>
+            <tr><td><code class="inline">~</code></td><td>Bitwise NOT</td><td>Inverts all bits: <code class="inline">~x = -(x + 1)</code></td><td><code class="inline">~5</code></td><td><code class="inline">-6</code></td></tr>
+            <tr><td><code class="inline">&lt;&lt;</code></td><td>Left Shift</td><td>Shifts bits left (multiplies by $2^n$)</td><td><code class="inline">3 &lt;&lt; 2</code> (<code class="inline">3 * 4</code>)</td><td><code class="inline">12</code></td></tr>
+            <tr><td><code class="inline">&gt;&gt;</code></td><td>Right Shift</td><td>Shifts bits right (floor divides by $2^n$)</td><td><code class="inline">16 &gt;&gt; 2</code> (<code class="inline">16 // 4</code>)</td><td><code class="inline">4</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="5-bitwise-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Bitmasks and Permission Flags:</h4>
+        <div class="code"><pre># Bitmask flags representation:
+READ_PERM    = 0b001  # 1
+WRITE_PERM   = 0b010  # 2
+EXECUTE_PERM = 0b100  # 4
+
+# Setting permissions using OR (|):
+user_perms = READ_PERM | WRITE_PERM  # 0b011 (3)
+
+# Checking permissions using AND (&amp;):
+can_read = bool(user_perms &amp; READ_PERM)        # True
+can_exec = bool(user_perms &amp; EXECUTE_PERM)     # False
+
+# Clearing / toggling permission using XOR (^):
+user_perms = user_perms ^ WRITE_PERM  # Clears WRITE_PERM (0b001)</pre></div>
+      </section>
+
+      <section id="6-assignment">
+        <div class="heading-with-levels">
+          <h2>6. Assignment operators</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="6-assignment-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Assignment operators bind values or objects to variable identifiers.</p>
+
+        <h4>6.1. Simple &amp; Multiple Assignment</h4>
+        <div class="code"><pre># Simple assignment:
 x = 10
-x += 5     # 15 — also -= *= /= //= %= **=</pre></div>
-        <ul>
-          <li>Unary <code class="inline">+</code> / <code class="inline">-</code>: <code class="inline">-x</code> negates.</li>
-          <li>String/list <code class="inline">+</code> concatenates; <code class="inline">*</code> repeats: <code class="inline">"ab" * 3 → "ababab"</code>.</li>
-        </ul>
-      </section>
 
-      <section id="3-relational-logical">
-        <div class="heading-with-levels">
-          <h2>3. Relational and logical operators</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-          </div>
-        </div>
-        <h3 id="3-relational-logical-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Relational (comparison)</h3>
-        <div class="code"><pre>3 &lt; 5          # True
-3 &lt;= 3         # True
-a == b         # value equality
-a != b
-"abc" &lt; "abd"  # lexicographic
-1 &lt; 2 &lt; 3      # True — chained comparisons</pre></div>
-        <h3>3.2. Logical</h3>
-        <ul>
-          <li><code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code> — short-circuit; return an operand (not always a bool).</li>
-        </ul>
-        <div class="code"><pre>True and False   # False
-0 or 5           # 5 — first truthy
-"" or "default"  # "default"
-not []           # True
+# Chained / multiple assignment (all point to the same object):
+a = b = c = 100
 
-# Short-circuit
-False and expensive()  # expensive never called
-True or expensive()    # expensive never called</pre></div>
-      </section>
+# Tuple unpacking assignment:
+x, y = 10, 20
+print(x, y)  # 10 20
 
-      <section id="4-bitwise">
-        <div class="heading-with-levels">
-          <h2>4. Bitwise operators</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-          </div>
-        </div>
-        <h3 id="4-bitwise-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+# Pythonic variable swap (no temporary variable needed):
+x, y = y, x
+print(x, y)  # 20 10</pre></div>
+
+        <h4>6.2. Compound (Augmented) Assignment Operators</h4>
+        <p>Compound operators perform an arithmetic or bitwise operation and assign the result back to the target variable in a single step.</p>
+
         <table>
           <thead>
-            <tr><th>Op</th><th>Name</th><th>Example</th></tr>
+            <tr><th>Operator</th><th>Equivalent Syntax</th><th>Example</th><th>Result</th></tr>
           </thead>
           <tbody>
-            <tr><td><code class="inline">&amp;</code></td><td>AND</td><td><code class="inline">5 &amp; 3 → 1</code></td></tr>
-            <tr><td><code class="inline">|</code></td><td>OR</td><td><code class="inline">5 | 2 → 7</code></td></tr>
-            <tr><td><code class="inline">^</code></td><td>XOR</td><td><code class="inline">5 ^ 1 → 4</code></td></tr>
-            <tr><td><code class="inline">~</code></td><td>NOT</td><td><code class="inline">~0 → -1</code> (two’s complement style)</td></tr>
-            <tr><td><code class="inline">&lt;&lt;</code> <code class="inline">&gt;&gt;</code></td><td>Shifts</td><td><code class="inline">1 &lt;&lt; 3 → 8</code></td></tr>
+            <tr><td><code class="inline">+=</code></td><td><code class="inline">x = x + y</code></td><td><code class="inline">x = 10; x += 5</code></td><td><code class="inline">15</code></td></tr>
+            <tr><td><code class="inline">-=</code></td><td><code class="inline">x = x - y</code></td><td><code class="inline">x = 10; x -= 3</code></td><td><code class="inline">7</code></td></tr>
+            <tr><td><code class="inline">*=</code></td><td><code class="inline">x = x * y</code></td><td><code class="inline">x = 4; x *= 3</code></td><td><code class="inline">12</code></td></tr>
+            <tr><td><code class="inline">/=</code></td><td><code class="inline">x = x / y</code></td><td><code class="inline">x = 10; x /= 2</code></td><td><code class="inline">5.0</code></td></tr>
+            <tr><td><code class="inline">//=</code></td><td><code class="inline">x = x // y</code></td><td><code class="inline">x = 10; x //= 3</code></td><td><code class="inline">3</code></td></tr>
+            <tr><td><code class="inline">%=</code></td><td><code class="inline">x = x % y</code></td><td><code class="inline">x = 10; x %= 4</code></td><td><code class="inline">2</code></td></tr>
+            <tr><td><code class="inline">**=</code></td><td><code class="inline">x = x ** y</code></td><td><code class="inline">x = 2; x **= 3</code></td><td><code class="inline">8</code></td></tr>
+            <tr><td><code class="inline">&amp;=</code> <code class="inline">|=</code> <code class="inline">^=</code></td><td>Bitwise compound</td><td><code class="inline">x = 5; x &amp;= 3</code></td><td><code class="inline">1</code></td></tr>
+            <tr><td><code class="inline">&lt;&lt;=</code> <code class="inline">&gt;&gt;=</code></td><td>Shift compound</td><td><code class="inline">x = 2; x &lt;&lt;= 2</code></td><td><code class="inline">8</code></td></tr>
           </tbody>
         </table>
-        <div class="code"><pre>flags = 0b1010
-flags &amp; 0b0010    # test bit
-flags | 0b0001    # set bit</pre></div>
+
+        <h3 id="6-assignment-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Augmented Assignment on Mutable vs Immutable Objects:</h4>
+        <div class="callout">
+          <strong>Crucial Distinction:</strong> On mutable objects (like lists), augmented assignment (<code class="inline">+=</code>) invokes <code class="inline">__iadd__</code> and <em>modifies the object in-place</em>. In contrast, standard addition (<code class="inline">lst = lst + [...]</code>) creates a <em>brand new list object</em> in memory!
+        </div>
+
+        <div class="code"><pre># Immutable objects (integers): re-binds variable to a new object:
+x = 10
+print(id(x))
+x += 1
+print(id(x))  # Different memory address!
+
+# Mutable objects (lists):
+list1 = [1, 2, 3]
+list2 = list1
+list1 += [4]         # Calls __iadd__; mutates list1 in-place!
+print(list1)         # [1, 2, 3, 4]
+print(list2)         # [1, 2, 3, 4] (list2 sees the change!)
+print(list1 is list2)# True
+
+# Contrast with lst = lst + [...]:
+list3 = [1, 2, 3]
+list4 = list3
+list3 = list3 + [4]  # Creates a NEW list object and rebinds list3
+print(list3 is list4)# False (list4 remains [1, 2, 3])</pre></div>
       </section>
 
-      <section id="5-membership-identity">
+      <section id="7-identity">
         <div class="heading-with-levels">
-          <h2>5. Membership (in) and identity (is)</h2>
+          <h2>7. Identity operators</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-membership-identity-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. in / not in</h3>
-        <div class="code"><pre>"a" in "cat"        # True
-3 in [1, 2, 3]      # True
-"x" not in {"a": 1} # True — checks keys</pre></div>
-        <h3>5.2. is / is not</h3>
-        <ul>
-          <li><code class="inline">is</code> tests <strong>object identity</strong> (same object in memory), not equality of value.</li>
-        </ul>
-        <div class="code"><pre>a = [1, 2]
-b = a
-c = [1, 2]
-a is b          # True — same object
-a is c          # False
-a == c          # True — same contents
+        <h3 id="7-identity-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Identity operators test whether two variables point to the <strong>exact same object in memory</strong> (same memory address returned by <code class="inline">id()</code>).</p>
 
-x = None
-x is None       # correct None check</pre></div>
-        <h3 id="5-membership-identity-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <ul>
-          <li>Small ints / interned strings may share identity for equal values — do <strong>not</strong> rely on <code class="inline">is</code> for ints/strings. Use <code class="inline">==</code>.</li>
-        </ul>
-        <div class="code"><pre>a = 256
-b = 256
-a is b          # often True (implementation detail)
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Meaning</th><th>Evaluates As</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">is</code></td><td>Returns <code class="inline">True</code> if both variables point to the same object</td><td><code class="inline">id(a) == id(b)</code></td></tr>
+            <tr><td><code class="inline">is not</code></td><td>Returns <code class="inline">True</code> if both variables point to different objects</td><td><code class="inline">id(a) != id(b)</code></td></tr>
+          </tbody>
+        </table>
 
-a = 257
-b = 257
-a is b          # often False — use ==</pre></div>
+        <div class="code"><pre># Value equality (==) vs Object identity (is):
+a = [1, 2, 3]
+b = [1, 2, 3]
+c = a
+
+print(a == b)      # True  (contents/values are identical)
+print(a is b)      # False (separate objects in heap memory)
+print(a is c)      # True  (both refer to the exact same object)
+
+# Idiomatic check for None:
+result = None
+if result is None:      # Correct singleton identity check
+    print("No result found")</pre></div>
+
+        <h3 id="7-identity-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>The Small Integer Caching &amp; String Interning Trap:</h4>
+        <ul>
+          <li>CPython pre-allocates and caches small integers in the range <strong><code class="inline">-5</code> to <code class="inline">256</code></strong>. Any integer created in this range points to the shared cached singleton.</li>
+          <li>Integers outside this range (<code class="inline">&gt; 256</code> or <code class="inline">&lt; -5</code>) might not share the same address, especially across interactive REPL lines.</li>
+          <li><strong>Golden Rule:</strong> Never use <code class="inline">is</code> to compare numeric or string values! Always use <code class="inline">==</code>. Reserve <code class="inline">is</code> for singletons like <code class="inline">None</code>, <code class="inline">True</code>, and <code class="inline">False</code>.</li>
+        </ul>
+
+        <div class="code"><pre>x = 256
+y = 256
+print(x is y)  # True (small integer cached by CPython)
+
+x = 257
+y = 257
+print(x is y)  # False (in REPL; separate heap allocations!)
+print(x == y)  # True (values are equal! Always use ==)</pre></div>
       </section>
 
-      <section id="6-precedence">
+      <section id="8-membership">
         <div class="heading-with-levels">
-          <h2>6. Operator precedence</h2>
+          <h2>8. Membership operators</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="6-precedence-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="8-membership-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Membership operators test whether a value or element exists within a sequence or collection (such as strings, lists, tuples, sets, or dictionaries).</p>
+
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Meaning</th><th>Example</th><th>Result</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">in</code></td><td>Returns <code class="inline">True</code> if element is found</td><td><code class="inline">"cat" in "scatter"</code></td><td><code class="inline">True</code></td></tr>
+            <tr><td><code class="inline">not in</code></td><td>Returns <code class="inline">True</code> if element is NOT found</td><td><code class="inline">4 not in [1, 2, 3]</code></td><td><code class="inline">True</code></td></tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Strings (substring check):
+print("py" in "python")        # True
+print("z" not in "python")     # True
+
+# Lists and tuples:
+numbers = [10, 20, 30, 40]
+print(20 in numbers)           # True
+print(50 not in numbers)       # True</pre></div>
+
+        <h3 id="8-membership-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Dictionary Membership &amp; Performance ($O(1)$ vs $O(n)$):</h4>
         <ul>
-          <li>Higher precedence binds tighter. When unsure, use parentheses.</li>
+          <li><strong>Dictionary Key Checking:</strong> Applying <code class="inline">in</code> to a dictionary checks whether the item exists as a <strong>key</strong>, <em>not</em> a value. To check values, you must query <code class="inline">dict.values()</code> explicitly.</li>
+          <li><strong>Lookup Performance:</strong> Checking membership in a <code class="inline">set</code> or <code class="inline">dict</code> runs in <strong>$O(1)$ average time</strong> (via hash table lookup), whereas checking a <code class="inline">list</code> or <code class="inline">tuple</code> requires <strong>$O(n)$ linear scan</strong>.</li>
         </ul>
-        <div class="code"><pre>2 + 3 * 4       # 14
-(2 + 3) * 4     # 20</pre></div>
-        <h3 id="6-precedence-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <ol>
-          <li><code class="inline">()</code> grouping</li>
-          <li><code class="inline">**</code></li>
-          <li>unary <code class="inline">+</code> <code class="inline">-</code> <code class="inline">~</code></li>
-          <li><code class="inline">*</code> <code class="inline">/</code> <code class="inline">//</code> <code class="inline">%</code></li>
-          <li><code class="inline">+</code> <code class="inline">-</code></li>
-          <li>Shifts <code class="inline">&lt;&lt;</code> <code class="inline">&gt;&gt;</code></li>
-          <li>Bitwise <code class="inline">&amp;</code> then <code class="inline">^</code> then <code class="inline">|</code></li>
-          <li>Comparisons: <code class="inline">in</code>, <code class="inline">is</code>, <code class="inline">&lt;</code>, <code class="inline">==</code>, …</li>
-          <li><code class="inline">not</code></li>
-          <li><code class="inline">and</code></li>
-          <li><code class="inline">or</code></li>
-        </ol>
+
+        <div class="code"><pre>user = {"id": 101, "name": "Bharat", "role": "admin"}
+
+# Checks keys by default:
+print("name" in user)          # True
+print("Bharat" in user)        # False (does NOT check values!)
+
+# Checking values explicitly:
+print("Bharat" in user.values())  # True
+
+# Performance tip:
+allowed_ids = {101, 102, 103}  # Use set for O(1) membership test
+if 101 in allowed_ids:
+    print("Access granted")</pre></div>
+      </section>
+
+      <section id="9-ternary">
+        <div class="heading-with-levels">
+          <h2>9. Ternary operator</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="9-ternary-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Python provides a concise ternary operator known as a <strong>conditional expression</strong>. Unlike C/Java's <code class="inline">condition ? x : y</code>, Python uses an expressive English syntax.</p>
+
+        <div class="callout">
+          <strong>Syntax:</strong> <code class="inline">value_if_true if condition else value_if_false</code>
+        </div>
+
+        <div class="code"><pre>age = 20
+status = "Adult" if age &gt;= 18 else "Minor"
+print("Status:", status)  # Status: Adult
+
+# Finding maximum of two numbers:
+a, b = 45, 80
+max_val = a if a &gt; b else b
+print("Max:", max_val)    # Max: 80</pre></div>
+
+        <h3 id="9-ternary-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Chained / Nested Ternary Expressions:</h4>
+        <div class="code"><pre># Nested ternary expression:
+score = 85
+grade = "A" if score &gt;= 90 else ("B" if score &gt;= 80 else ("C" if score &gt;= 70 else "F"))
+print("Grade:", grade)  # Grade: B
+
+# Inline conditional in print or data structures:
+users = ["Alice", "Bob"]
+print(f"User list has {len(users)} {'user' if len(users) == 1 else 'users'}.")</pre></div>
+      </section>
+
+      <section id="10-precedence">
+        <div class="heading-with-levels">
+          <h2>10. Operator precedence</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="10-precedence-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Operator precedence determines the grouping and evaluation order in compound expressions. Operators with higher precedence are evaluated before operators with lower precedence.</p>
+
+        <div class="code"><pre># Default precedence: multiplication (*) binds tighter than addition (+):
+print(2 + 3 * 4)    # 14 (3 * 4 = 12; 2 + 12 = 14)
+
+# Overriding precedence with parentheses ():
+print((2 + 3) * 4)  # 20 (5 * 4 = 20)</pre></div>
+
+        <h3 id="10-precedence-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>Complete Operator Precedence Table (Highest to Lowest):</h4>
+
+        <table>
+          <thead>
+            <tr><th>Priority</th><th>Operator</th><th>Description</th><th>Associativity</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1 (Highest)</td><td><code class="inline">()</code>, <code class="inline">[]</code>, <code class="inline">{}</code></td><td>Parentheses, indexing, slicing, function calls</td><td>Left-to-right</td></tr>
+            <tr><td>2</td><td><code class="inline">**</code></td><td>Exponentiation</td><td><strong>Right-to-left</strong></td></tr>
+            <tr><td>3</td><td><code class="inline">+x</code>, <code class="inline">-x</code>, <code class="inline">~x</code></td><td>Unary positive, negative, bitwise NOT</td><td>Right-to-left</td></tr>
+            <tr><td>4</td><td><code class="inline">*</code>, <code class="inline">/</code>, <code class="inline">//</code>, <code class="inline">%</code></td><td>Multiplication, division, floor division, modulo</td><td>Left-to-right</td></tr>
+            <tr><td>5</td><td><code class="inline">+</code>, <code class="inline">-</code></td><td>Addition, subtraction</td><td>Left-to-right</td></tr>
+            <tr><td>6</td><td><code class="inline">&lt;&lt;</code>, <code class="inline">&gt;&gt;</code></td><td>Bitwise shifts</td><td>Left-to-right</td></tr>
+            <tr><td>7</td><td><code class="inline">&amp;</code></td><td>Bitwise AND</td><td>Left-to-right</td></tr>
+            <tr><td>8</td><td><code class="inline">^</code></td><td>Bitwise XOR</td><td>Left-to-right</td></tr>
+            <tr><td>9</td><td><code class="inline">|</code></td><td>Bitwise OR</td><td>Left-to-right</td></tr>
+            <tr><td>10</td><td><code class="inline">&lt;</code>, <code class="inline">&lt;=</code>, <code class="inline">&gt;</code>, <code class="inline">&gt;=</code>, <code class="inline">==</code>, <code class="inline">!=</code>, <code class="inline">is</code>, <code class="inline">is not</code>, <code class="inline">in</code>, <code class="inline">not in</code></td><td>Comparisons, identity, and membership tests</td><td>Left-to-right</td></tr>
+            <tr><td>11</td><td><code class="inline">not</code></td><td>Boolean NOT</td><td>Right-to-left</td></tr>
+            <tr><td>12</td><td><code class="inline">and</code></td><td>Boolean AND</td><td>Left-to-right</td></tr>
+            <tr><td>13</td><td><code class="inline">or</code></td><td>Boolean OR</td><td>Left-to-right</td></tr>
+            <tr><td>14</td><td><code class="inline">if - else</code></td><td>Conditional expression (Ternary)</td><td>Right-to-left</td></tr>
+            <tr><td>15</td><td><code class="inline">:=</code></td><td>Walrus assignment expression (Python 3.8+)</td><td>Right-to-left</td></tr>
+            <tr><td>16 (Lowest)</td><td><code class="inline">=</code>, <code class="inline">+=</code>, <code class="inline">-=</code>, <code class="inline">*=</code>, etc.</td><td>Assignment operators</td><td>Right-to-left</td></tr>
+          </tbody>
+        </table>
+
+        <h4>Walrus Operator (<code class="inline">:=</code>) Precedence Rule:</h4>
         <ul>
-          <li>Walrus <code class="inline">:=</code> (3.8+) has low precedence — usually parenthesize: <code class="inline">if (n := len(s)) &gt; 0:</code>.</li>
+          <li>Introduced in Python 3.8, the walrus operator allows assignment within an expression. Because its precedence is very low, it usually requires explicit parentheses when combined with comparisons or logical checks.</li>
         </ul>
+        <div class="code"><pre># Walrus operator := requires parentheses in conditionals:
+text = "Antigravity IDE"
+if (n := len(text)) &gt; 10:
+    print(f"Text is too long: {n} characters")</pre></div>
       </section>
 
       <section id="c-common-questions">
@@ -253,21 +668,76 @@ a is b          # often False — use ==</pre></div>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. Difference between <code class="inline">/</code> and <code class="inline">//</code>?</span>
+            <span class="qa-question-title">C.1. What is the difference between <code class="inline">/</code> (True Division) and <code class="inline">//</code> (Floor Division)?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p><code class="inline">/</code> always does true (float) division in Python 3. <code class="inline">//</code> does floor division.</p>
+            <ul>
+              <li><strong>True Division (<code class="inline">/</code>):</strong> Always returns a <strong><code class="inline">float</code></strong> in Python 3, even if the division is exact (<code class="inline">10 / 2 → 5.0</code>).</li>
+              <li><strong>Floor Division (<code class="inline">//</code>):</strong> Returns the largest integer less than or equal to the quotient (rounds toward $-\infty$). If both operands are integers, it returns an <code class="inline">int</code> (<code class="inline">5 // 2 → 2</code>); if either operand is a float, it returns a floored <code class="inline">float</code> (<code class="inline">5.0 // 2 → 2.0</code>).</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. Difference between <code class="inline">==</code> and <code class="inline">is</code>?</span>
+            <span class="qa-question-title">C.2. What is the difference between <code class="inline">==</code> and <code class="inline">is</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p><code class="inline">==</code> compares values. <code class="inline">is</code> compares identity. Use <code class="inline">is</code> for <code class="inline">None</code>.</p>
+            <ul>
+              <li><strong><code class="inline">==</code> (Value Equality):</strong> Compares whether the <em>contents or values</em> of two objects are equal by calling <code class="inline">__eq__()</code>.</li>
+              <li><strong><code class="inline">is</code> (Object Identity):</strong> Compares whether two variables reference the <em>exact same memory address</em> (<code class="inline">id(a) == id(b)</code>).</li>
+              <li><strong>Best Practice:</strong> Always use <code class="inline">is None</code> or <code class="inline">is not None</code> for singletons; use <code class="inline">==</code> for comparing data values (strings, lists, numbers).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What do <code class="inline">and</code> and <code class="inline">or</code> return, and how does short-circuit evaluation work?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>They do <strong>not</strong> always return a boolean (<code class="inline">True</code> / <code class="inline">False</code>). Instead, they return the <strong>last evaluated operand</strong> that determined the outcome:</p>
+            <ul>
+              <li><code class="inline">x and y</code>: Returns <code class="inline">x</code> if <code class="inline">x</code> is falsy; otherwise evaluates and returns <code class="inline">y</code> (first falsy or last truthy).</li>
+              <li><code class="inline">x or y</code>: Returns <code class="inline">x</code> if <code class="inline">x</code> is truthy; otherwise evaluates and returns <code class="inline">y</code> (first truthy or last falsy).</li>
+            </ul>
+            <p><strong>Short-circuiting</strong> means Python evaluates strictly from left to right and stops the instant the final boolean outcome is certain, skipping execution of remaining operands (avoiding unnecessary computation, exceptions, or database queries).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Why does <code class="inline">if x == 1 or 2 or 3:</code> always evaluate to True?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because Python groups the condition as <code class="inline">(x == 1) or (2) or (3)</code>. The sub-expression <code class="inline">2</code> is a non-zero integer, which evaluates to truthy. Therefore, regardless of what <code class="inline">x</code> is, the <code class="inline">or 2</code> branch causes the whole condition to evaluate to truthy (<code class="inline">2</code>). The correct idiom is <code class="inline">if x in (1, 2, 3):</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How does the <code class="inline">in</code> operator work on dictionaries?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>By default, <code class="inline">x in dict</code> checks whether <code class="inline">x</code> exists among the dictionary's <strong>keys</strong> in $O(1)$ average time. It does <strong>not</strong> check values. To check values, you must explicitly write <code class="inline">x in dict.values()</code> (which runs in $O(n)$ linear scan time).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the difference between logical (<code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code>) and bitwise (<code class="inline">&amp;</code>, <code class="inline">|</code>, <code class="inline">~</code>) operators?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Logical operators</strong> work with truth values of arbitrary Python objects, support short-circuit evaluation, and have lower precedence than comparisons.</li>
+              <li><strong>Bitwise operators</strong> work on integer bits (or set intersections/unions), <strong>never short-circuit</strong> (both operands are always evaluated), and have higher precedence than comparisons.</li>
+            </ul>
           </div>
         </details>
 
@@ -275,21 +745,153 @@ a is b          # often False — use ==</pre></div>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What do <code class="inline">and</code>/<code class="inline">or</code> return?</span>
+            <span class="qa-question-title">C.7. Why is <code class="inline">-5 // 2</code> equal to <code class="inline">-3</code> and <code class="inline">-5 % 2</code> equal to <code class="inline">1</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>The last evaluated operand — not necessarily <code class="inline">True</code>/<code class="inline">False</code>. Useful for defaults: <code class="inline">name or "Guest"</code>.</p>
+            <ul>
+              <li>True quotient is $-2.5$. Floor division rounds down toward $-\infty$, and the greatest integer $\le -2.5$ is <strong>$-3$</strong>.</li>
+              <li>Modulo uses Python's universal identity: <code class="inline">r = x - (x // y) * y</code>.
+                <br />Substituting values: <code class="inline">-5 - (-3 * 2) = -5 - (-6) = 1</code>.
+                <br />In Python, the sign of the remainder always matches the sign of the divisor (<code class="inline">y</code>).</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. Why is <code class="inline">-5 // 2</code> equal to <code class="inline">-3</code>?</span>
+            <span class="qa-question-title">C.8. What is the difference between <code class="inline">lst += [4]</code> and <code class="inline">lst = lst + [4]</code>? What happens in <code class="inline">t = (1, [2]); t[1] += [3]</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Floor division rounds toward negative infinity, not toward zero.</p>
+            <ul>
+              <li><code class="inline">lst += [4]</code> invokes <code class="inline">__iadd__()</code>, which extends the existing list <strong>in-place</strong> without changing its memory address.</li>
+              <li><code class="inline">lst = lst + [4]</code> creates a <strong>brand-new list</strong> in memory and rebinds the variable <code class="inline">lst</code> to it.</li>
+              <li><strong>The Tuple Quiz:</strong> In <code class="inline">t = (1, [2]); t[1] += [3]</code>, the list inside the tuple <strong>is modified in-place</strong> to <code class="inline">[2, 3]</code>, but Python immediately raises a <code class="inline">TypeError: 'tuple' object does not support item assignment</code> because the augmented assignment attempts to assign the result back to <code class="inline">t[1]</code>!</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.9. Why does <code class="inline">2 ** 3 ** 2</code> evaluate to <code class="inline">512</code> instead of <code class="inline">64</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because the exponentiation operator (<code class="inline">**</code>) in Python has <strong>right-to-left associativity</strong>. Python evaluates <code class="inline">3 ** 2</code> first (which is <code class="inline">9</code>), followed by <code class="inline">2 ** 9 = 512</code>. To force left-to-right evaluation, use explicit parentheses: <code class="inline">(2 ** 3) ** 2 = 64</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.10. Why is <code class="inline">256 is 256</code> True, but <code class="inline">257 is 257</code> can be False?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>CPython maintains an internal cache of small integer objects in the range <strong><code class="inline">-5</code> to <code class="inline">256</code></strong> at startup. Whenever an integer in this range is created, Python reuses the existing singleton object in memory. Numbers outside this range (<code class="inline">257</code>, <code class="inline">1000</code>) are allocated separately on the heap when evaluated across different statements in the REPL. Never rely on <code class="inline">is</code> for numeric comparisons; always use <code class="inline">==</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.11. Why is <code class="inline">if x &gt; 0 &amp; x &lt; 10:</code> a dangerous bug?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because the bitwise AND operator (<code class="inline">&amp;</code>) has a <strong>higher precedence</strong> than comparison operators (<code class="inline">&gt;</code> and <code class="inline">&lt;</code>). Python parses this line as:
+            <br /><code class="inline">x &gt; (0 &amp; x) &lt; 10</code> $\implies$ <code class="inline">x &gt; 0 &lt; 10</code>.
+            <br />This becomes a chained comparison testing whether <code class="inline">x &gt; 0</code> AND <code class="inline">0 &lt; 10</code>, which is completely different from verifying whether <code class="inline">x</code> is between 0 and 10! The correct expression is <code class="inline">if x &gt; 0 and x &lt; 10:</code> or <code class="inline">if 0 &lt; x &lt; 10:</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.12. Why does <code class="inline">~5</code> evaluate to <code class="inline">-6</code> and <code class="inline">~0</code> evaluate to <code class="inline">-1</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python integers are represented using two's complement binary format. The bitwise NOT operator (<code class="inline">~</code>) inverts all bits of a number. Mathematically, for any integer <code class="inline">x</code>, two's complement inversion satisfies the identity:
+            <br /><strong><code class="inline">~x = -(x + 1)</code></strong>.
+            <br />Therefore, <code class="inline">~5 = -(5 + 1) = -6</code>, and <code class="inline">~0 = -(0 + 1) = -1</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.13. How do chained comparisons like <code class="inline">10 &lt; x &lt; 20</code> evaluate, and is <code class="inline">x</code> evaluated twice?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In Python, <code class="inline">a &lt; b &lt; c</code> is logically equivalent to <code class="inline">(a &lt; b) and (b &lt; c)</code>, with one crucial performance and safety feature: the middle operand <code class="inline">b</code> is <strong>evaluated exactly once</strong>. If <code class="inline">b</code> is an expensive computation or a function call with side effects (e.g. <code class="inline">10 &lt; compute() &lt; 20</code>), <code class="inline">compute()</code> will only run once.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.14. Why does <code class="inline">a = [[]] * 3</code> cause bugs when modifying an inner list?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Sequence multiplication (<code class="inline">*</code>) creates <strong>shallow copies of the object reference</strong>, not deep copies. In <code class="inline">a = [[]] * 3</code>, all three elements reference the <em>exact same list object</em> in memory. Modifying one (<code class="inline">a[0].append(1)</code>) reflects in all three (<code class="inline">[[1], [1], [1]]</code>).
+            <br /><strong>Correct idiom:</strong> Use a list comprehension to allocate distinct objects: <code class="inline">a = [[] for _ in range(3)]</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.15. What is the Walrus Operator (<code class="inline">:=</code>) in Python 3.8+, and when should you use it?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The Walrus Operator (<code class="inline">:=</code>), officially called an <strong>assignment expression</strong>, assigns a value to a variable <em>inside an expression</em>, avoiding redundant function calls or temporary variables.
+            <br />Common examples:
+            <br />1. In <code class="inline">while</code> loops: <code class="inline">while (chunk := file.read(1024)): ...</code>
+            <br />2. In <code class="inline">if</code> conditions: <code class="inline">if (n := len(data)) &gt; 10: print(f"Too long: {n}")</code>
+            <br />Because its precedence is very low, it generally requires parentheses when combined with comparisons.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.16. Can you compare numbers and strings with <code class="inline">&lt;</code> or <code class="inline">&gt;</code> in Python 3?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No.</strong> In Python 3, comparing incompatible types (like <code class="inline">5 &lt; "10"</code>) raises a <code class="inline">TypeError: '&lt;' not supported between instances of 'int' and 'str'</code>.
+            <br />(Note: Python 2 historically allowed ordering between arbitrary types based on alphabetical type names, but this was removed in Python 3 to prevent subtle bugs. Value equality <code class="inline">5 == "5"</code> is allowed and safely returns <code class="inline">False</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.17. What are De Morgan's Laws, and how do they simplify conditional logic?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>De Morgan's Laws are fundamental transformation rules in boolean logic:
+            <ul>
+              <li><code class="inline">not (A and B)</code> is equivalent to <code class="inline">(not A) or (not B)</code></li>
+              <li><code class="inline">not (A or B)</code> is equivalent to <code class="inline">(not A) and (not B)</code></li>
+            </ul>
+            They are frequently used in code reviews to refactor clunky negative conditions (e.g. <code class="inline">if not (is_valid and has_permission):</code> into <code class="inline">if not is_valid or not has_permission:</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.18. How does Python implement operator overloading behind the scenes?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Every Python operator delegates its implementation to a special <strong>dunder (double underscore) method</strong> on the class:
+            <ul>
+              <li><code class="inline">a + b</code> $\implies$ <code class="inline">a.__add__(b)</code></li>
+              <li><code class="inline">a == b</code> $\implies$ <code class="inline">a.__eq__(b)</code></li>
+              <li><code class="inline">a &lt; b</code> $\implies$ <code class="inline">a.__lt__(b)</code></li>
+              <li><code class="inline">a in b</code> $\implies$ <code class="inline">b.__contains__(a)</code></li>
+              <li><code class="inline">a += b</code> $\implies$ <code class="inline">a.__iadd__(b)</code> (in-place)</li>
+            </ul>
+            Custom classes can define or override these methods to provide native mathematical, comparison, or container syntax.</p>
           </div>
         </details>
       </section>
@@ -481,9 +1083,12 @@ for a in (True, False):
         </ol>
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I know / vs // vs %.</li>
-          <li>I use is for None checks.</li>
-          <li>I respect operator precedence or use parentheses.</li>
+          <li>I know the difference between true division (<code class="inline">/</code>), floor division (<code class="inline">//</code>), and modulo (<code class="inline">%</code>).</li>
+          <li>I can explain short-circuit evaluation and what <code class="inline">and</code>/<code class="inline">or</code> return for truthy and falsy operands.</li>
+          <li>I use <code class="inline">is</code> strictly for <code class="inline">None</code>/singleton identity checks, and <code class="inline">==</code> for value equality.</li>
+          <li>I understand in-place list mutation with augmented assignment (<code class="inline">+=</code>) vs rebinding.</li>
+          <li>I know how to write concise ternary conditional expressions (<code class="inline">x if cond else y</code>).</li>
+          <li>I understand operator precedence and when parentheses are needed.</li>
         </ul>
       </section>
 
