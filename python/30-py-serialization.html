@@ -41,13 +41,17 @@
       </nav>
       <header class="hero" id="intro">
         <h1>30. Serialization (pickle, JSON, YAML)</h1>
-        <p class="subtitle">File 30 — pickle, JSON, jsonpickle, YAML.</p>
+        <p class="subtitle">Object persistence, cross-language JSON data exchange, YAML configuration management, and critical security considerations.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">pickle</span>
+          <span class="chip">JSON &amp; Custom Encoders</span>
+          <span class="chip">jsonpickle</span>
+          <span class="chip">PyYAML &amp; safe_load</span>
+          <span class="chip">Security &amp; Insecure Deserialization</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +60,65 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. What is Serialization &amp; Deserialization?</h3>
         <ul>
-          <li>This chapter covers <strong>Serialization (pickle, JSON, YAML)</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Serialization (Marshalling / Pickling / Encoding):</strong> The process of converting an in-memory Python object (e.g., a dictionary, custom class instance, or nested list) into a persistent stream of bytes or a text format (JSON, YAML). This allows the object to be saved to disk, stored in a database/cache, or transmitted over a network.</li>
+          <li><strong>Deserialization (Unmarshalling / Unpickling / Decoding):</strong> The reverse process: reading a byte stream or text document and reconstructing the original in-memory Python object with its state and types intact.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">30-practice.py</code> before File 31. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Format Comparison Matrix</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Type</th>
+              <th>Human Readable?</th>
+              <th>Language Portability</th>
+              <th>Security Risks</th>
+              <th>Ideal Use Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>pickle</strong></td>
+              <td>Binary</td>
+              <td>No</td>
+              <td><strong>Python-only</strong></td>
+              <td><span style="color:var(--danger)">CRITICAL (Arbitrary Code Execution)</span></td>
+              <td>Short-term caching of complex Python objects, multiprocessing queues.</td>
+            </tr>
+            <tr>
+              <td><strong>JSON</strong></td>
+              <td>Text</td>
+              <td>Yes</td>
+              <td><strong>Universal</strong> (All languages)</td>
+              <td>Safe (Standard JSON parser cannot execute code)</td>
+              <td>REST APIs, web services, database documents (MongoDB, Postgres JSONB).</td>
+            </tr>
+            <tr>
+              <td><strong>YAML</strong></td>
+              <td>Text</td>
+              <td>Highly readable</td>
+              <td><strong>Universal</strong></td>
+              <td>Medium (Safe if using <code>safe_load</code>)</td>
+              <td>Application configurations (Docker Compose, Kubernetes, CI/CD pipelines).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>1.3. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Object serialization with pickle</strong></li>
-          <li><strong>JSON serialization / deserialization</strong></li>
-          <li><strong>jsonpickle and API JSON examples</strong></li>
-          <li><strong>YAML serialization</strong></li>
+          <li><strong>Introduction</strong> — Concepts, definitions, and format comparison matrix</li>
+          <li><strong>Object serialization with pickle</strong> — Binary dumps, custom hooks, and the dangerous RCE vulnerability</li>
+          <li><strong>JSON serialization / deserialization</strong> — Type mappings, formatting, and custom encoders/decoders for datetimes and Decimals</li>
+          <li><strong>jsonpickle and API JSON examples</strong> — Complex Python object graph preservation and API payloads</li>
+          <li><strong>YAML serialization</strong> — Configurations, safe loading, and multi-document parsing</li>
+          <li><strong>C. Common questions</strong> — Core interview questions with in-depth explanations</li>
+          <li><strong>P. Practical Assignment</strong> — Multi-format configuration manager mini-project and edge cases</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-object-serialization-with-pickle">
         <div class="heading-with-levels">
           <h2>2. Object serialization with pickle</h2>
@@ -86,14 +127,79 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-object-serialization-with-pickle-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+        <h3>2.1. The <code>pickle</code> Module API</h3>
+        <p>Python's built-in <code>pickle</code> module serializes arbitrary Python objects into a binary byte format. The API provides four primary functions:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Object serialization with pickle</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li><code>pickle.dump(obj, file)</code>: Serializes <code>obj</code> and writes it directly to an open binary file stream (<code>"wb"</code> mode).</li>
+          <li><code>pickle.dumps(obj)</code>: Serializes <code>obj</code> and returns the serialized representation as a <code>bytes</code> object in memory.</li>
+          <li><code>pickle.load(file)</code>: Reads from an open binary file stream (<code>"rb"</code> mode) and reconstructs the Python object.</li>
+          <li><code>pickle.loads(bytes_obj)</code>: Deserializes an in-memory <code>bytes</code> object back into a Python object.</li>
         </ul>
+
+        <div class="code"><pre>import pickle
+
+class Employee:
+    def __init__(self, emp_id, name, skills):
+        self.emp_id = emp_id
+        self.name = name
+        self.skills = skills
+
+    def __repr__(self):
+        return f"Employee({self.emp_id}, '{self.name}', {self.skills})"
+
+original_emp = Employee(101, "Alice", ["Python", "Docker", "PostgreSQL"])
+
+# 1. In-memory pickling:
+serialized_bytes = pickle.dumps(original_emp)
+print(f"Pickled byte size: {len(serialized_bytes)} bytes")
+print("Raw bytes preview:", serialized_bytes[:30])
+
+# 2. In-memory unpickling:
+reconstructed_emp = pickle.loads(serialized_bytes)
+print("Reconstructed:", reconstructed_emp)
+print("Type preserved:", type(reconstructed_emp))  # &lt;class '__main__.Employee'&gt;
+print("Skills preserved:", reconstructed_emp.skills)</pre></div>
+
+        <h3 id="2-object-serialization-with-pickle-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Custom Pickling via <code>__getstate__</code> and <code>__setstate__</code></h3>
+        <p>Certain resources cannot be pickled (e.g., open file descriptors, active database connections, thread locks, network sockets). By implementing <code>__getstate__</code> and <code>__setstate__</code>, a class can filter out non-serializable fields before pickling and re-initialize them upon unpickling.</p>
+
+        <div class="code"><pre>import pickle
+
+class SessionManager:
+    def __init__(self, user, token):
+        self.user = user
+        self.token = token
+        self.transient_lock = "Non-serializable system handle"
+
+    def __getstate__(self):
+        """Called by pickle.dump/dumps to get state dictionary for serialization."""
+        state = self.__dict__.copy()
+        # Omit transient resources:
+        state.pop("transient_lock", None)
+        return state
+
+    def __setstate__(self, state):
+        """Called by pickle.load/loads to restore object state."""
+        self.__dict__.update(state)
+        # Re-initialize transient resource:
+        self.transient_lock = "Freshly initialized lock"
+
+sess = SessionManager("admin", "tok_xyz987")
+raw = pickle.dumps(sess)
+restored = pickle.loads(raw)
+print("Restored user:", restored.user)
+print("Restored lock:", restored.transient_lock)</pre></div>
+
+        <div class="callout">
+          <strong>CRITICAL SECURITY WARNING: NEVER UNPICKLE UNTRUSTED DATA!</strong>
+          <p>The <code>pickle</code> module is <strong>NOT secure against erroneous or maliciously constructed data</strong>. An attacker can craft a malicious pickle byte stream using the <code>__reduce__</code> protocol that instructs Python to execute arbitrary system commands (e.g. <code>os.system('rm -rf /')</code> or reverse shells) during <code>pickle.loads()</code> before returning! Only unpickle data that originated from trusted, authenticated sources (like your own internal cluster with cryptographic HMAC signatures).</p>
+        </div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-json-serialization-deserialization">
         <div class="heading-with-levels">
           <h2>3. JSON serialization / deserialization</h2>
@@ -102,14 +208,75 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-json-serialization-deserialization-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+        <h3>3.1. Standard <code>json</code> Module API</h3>
+        <p><strong>JavaScript Object Notation (JSON)</strong> is the global standard for cross-language data exchange. Python includes the <code>json</code> module:</p>
         <ul>
-          <li>Understand the main ideas in <strong>JSON serialization / deserialization</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
+          <li><code>json.dump(obj, file, indent=2)</code>: Serializes to a text file stream.</li>
+          <li><code>json.dumps(obj, indent=2, sort_keys=True)</code>: Serializes to a JSON-formatted string.</li>
+          <li><code>json.load(file)</code>: Parses a JSON file stream into Python data structures.</li>
+          <li><code>json.loads(json_str)</code>: Parses a JSON string into Python data structures.</li>
         </ul>
+
+        <div class="code"><pre>import json
+
+payload = {
+    "status": "success",
+    "code": 200,
+    "authenticated": True,
+    "user": {
+        "id": 42,
+        "name": "Bharat",
+        "roles": ["admin", "developer"]
+    },
+    "metadata": None
+}
+
+# Serialize with formatting:
+json_string = json.dumps(payload, indent=2, sort_keys=True)
+print("Serialized JSON:\n", json_string)
+
+# Deserialize:
+parsed = json.loads(json_string)
+print("\nParsed username:", parsed["user"]["name"])
+print("Parsed roles:", parsed["user"]["roles"])</pre></div>
+
+        <h3 id="3-json-serialization-deserialization-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Custom JSON Encoders (Handling <code>datetime</code>, <code>Decimal</code>, and Custom Classes)</h3>
+        <p>Standard JSON only supports numbers, strings, booleans, null, lists, and string-keyed dictionaries. If you attempt to serialize a <code>datetime</code>, <code>Decimal</code>, <code>UUID</code>, or custom class, Python raises a <code>TypeError: Object of type X is not JSON serializable</code>.</p>
+        <p>You can handle these types cleanly using the <code>default</code> parameter or by subclassing <code>json.JSONEncoder</code>.</p>
+
+        <div class="code"><pre>import json
+from datetime import datetime, date
+from decimal import Decimal
+import uuid
+
+def custom_json_serializer(obj):
+    """Custom serializer function passed to json.dumps(default=...)."""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return float(obj)
+    if isinstance(obj, uuid.UUID):
+        return str(obj)
+    if hasattr(obj, "__dict__"):
+        return obj.__dict__
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+transaction = {
+    "tx_id": uuid.uuid4(),
+    "timestamp": datetime.now(),
+    "amount": Decimal("1499.50"),
+    "tags": {"finance", "cleared"}  # sets can also be handled: list(obj)
+}
+
+# Serializing with custom serializer:
+json_output = json.dumps(transaction, default=custom_json_serializer, indent=2)
+print("Serialized Custom Data:\n", json_output)</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-jsonpickle-and-api-json-examples">
         <div class="heading-with-levels">
           <h2>4. jsonpickle and API JSON examples</h2>
@@ -118,14 +285,60 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-jsonpickle-and-api-json-examples-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>jsonpickle and API JSON examples</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>4.1. What is <code>jsonpickle</code>?</h3>
+        <p>While standard <code>json</code> only handles basic data structures and loses custom class identities, <strong><code>jsonpickle</code></strong> is a library that serializes arbitrary, complex Python object graphs (including circular references and custom class instances) directly into human-readable JSON. It preserves the exact Python module and class path via metadata keys (like <code>"py/object"</code>).</p>
+
+        <div class="code"><pre># Install via: pip install jsonpickle
+import jsonpickle
+
+class Order:
+    def __init__(self, order_id, customer, total):
+        self.order_id = order_id
+        self.customer = customer
+        self.total = total
+
+order = Order("ORD-99", "Bharat", 299.95)
+
+# 1. Encode into JSON with Python class metadata:
+frozen_json = jsonpickle.encode(order, indent=2)
+print("jsonpickle output:\n", frozen_json)
+# {
+#   "py/object": "__main__.Order",
+#   "customer": "Bharat",
+#   "order_id": "ORD-99",
+#   "total": 299.95
+# }
+
+# 2. Reconstruct original class instance:
+restored_order = jsonpickle.decode(frozen_json)
+print("Restored class instance:", type(restored_order))  # &lt;class '__main__.Order'&gt;
+print("Order Total:", restored_order.total)</pre></div>
+
+        <h3 id="4-jsonpickle-and-api-json-examples-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Consuming REST API JSON Responses</h3>
+        <p>In real-world web applications (using <code>requests</code> or <code>urllib.request</code>), API communication is conducted over JSON payloads.</p>
+
+        <div class="code"><pre>import json
+
+# Simulating an HTTP API response string:
+api_response_body = '{"data": [{"id": 1, "title": "Buy groceries"}, {"id": 2, "title": "Deploy API"}]}'
+
+def parse_api_todos(response_text):
+    try:
+        payload = json.loads(response_text)
+        todos = payload.get("data", [])
+        return [item["title"] for item in todos]
+    except json.JSONDecodeError as err:
+        print(f"Failed to decode API JSON response: {err}")
+        return []
+
+todo_titles = parse_api_todos(api_response_body)
+print("Parsed Todo Titles:", todo_titles)</pre></div>
       </section>
+
+      <!-- SECTION 5 -->
       <section id="5-yaml-serialization">
         <div class="heading-with-levels">
           <h2>5. YAML serialization</h2>
@@ -134,14 +347,66 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="5-yaml-serialization-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>YAML serialization</strong>.</li>
-          <li>Write small demos in <code class="inline">30-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>5.1. Why YAML?</h3>
+        <p><strong>YAML (YAML Ain't Markup Language)</strong> is a human-readable data serialization format designed specifically for configuration files. It uses Python-style whitespace indentation instead of braces and brackets, supports inline comments (<code>#</code>), and avoids noisy quotes.</p>
+        <p>The standard Python library for YAML is <strong>PyYAML</strong> (installed via <code>pip install pyyaml</code>, imported as <code>yaml</code>).</p>
+
+        <div class="code"><pre>import yaml
+
+server_config = {
+    "server": {
+        "host": "0.0.0.0",
+        "port": 8080,
+        "workers": 4
+    },
+    "database": {
+        "engine": "postgresql",
+        "dbname": "app_db",
+        "pool_size": 20
+    },
+    "features": ["caching", "rate_limiting", "audit_logging"]
+}
+
+# 1. Dumping to YAML text:
+yaml_text = yaml.dump(server_config, sort_keys=False)
+print("Generated YAML Config:\n", yaml_text)
+
+# 2. Parsing YAML text:
+parsed_config = yaml.safe_load(yaml_text)
+print("Parsed port:", parsed_config["server"]["port"])
+print("Enabled features:", parsed_config["features"])</pre></div>
+
+        <h3 id="5-yaml-serialization-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.2. Security: Always Use <code>yaml.safe_load()</code></h3>
+        <p>The traditional <code>yaml.load()</code> function has the power to instantiate arbitrary Python objects. If an attacker passes a YAML document containing Python constructor tags (e.g., <code>!!python/object/apply:os.system ['rm -rf /']</code>), <code>yaml.load()</code> will execute it!</p>
+
+        <div class="callout">
+          <strong>The YAML Golden Rule:</strong> Always use <strong><code>yaml.safe_load()</code></strong> (or <code>yaml.safe_load_all()</code> for multi-document streams). <code>safe_load</code> restricts parsing strictly to standard simple data structures (dictionaries, lists, strings, numbers, booleans) and completely disables Python class instantiation tags.
+        </div>
+
+        <h3>5.3. Multi-Document YAML Streams</h3>
+        <p>YAML supports storing multiple documents in a single file separated by three hyphens (<code>---</code>), widely used in Kubernetes manifests.</p>
+
+        <div class="code"><pre>import yaml
+
+multi_doc = """
+---
+name: Service-A
+version: 1.0.0
+---
+name: Service-B
+version: 2.1.0
+"""
+
+# safe_load_all returns an iterator over all documents in the stream:
+documents = list(yaml.safe_load_all(multi_doc))
+for doc in documents:
+    print(f"Service: {doc['name']}, Version: {doc['version']}")</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -155,44 +420,110 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Object serialization with pickle?</span>
+            <span class="qa-question-title">C.1. What is the difference between serialization and deserialization?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>Serialization</strong> is the conversion of an active in-memory object (such as a dictionary, list, or custom class) into a persistent or transmittable format (such as a stream of bytes, JSON string, or YAML document).</p>
+            <p><strong>Deserialization</strong> is the inverse process: parsing that stream of bytes or formatted text back into a reconstructed, live in-memory Python object.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about JSON serialization / deserialization?</span>
+            <span class="qa-question-title">C.2. What is the difference between <code>dump()</code>/<code>load()</code> and <code>dumps()</code>/<code>loads()</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Across both the <code>json</code> and <code>pickle</code> modules:</p>
+            <ul>
+              <li><strong>Without "s" (<code>dump</code>, <code>load</code>):</strong> Operate on <strong>file streams</strong>. <code>dump(obj, file)</code> writes directly to a file handle; <code>load(file)</code> reads directly from a file handle.</li>
+              <li><strong>With "s" (<code>dumps</code>, <code>loads</code> — "dump string"):</strong> Operate on <strong>strings or bytes in memory</strong>. <code>dumps(obj)</code> returns a string (JSON) or bytes (pickle); <code>loads(data)</code> parses an in-memory string or bytes object.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about jsonpickle and API JSON examples?</span>
+            <span class="qa-question-title">C.3. Why is unpickling untrusted data a major security vulnerability?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The <code>pickle</code> protocol allows serialized objects to define a <code>__reduce__</code> method that specifies a callable and arguments to execute upon unpickling. An attacker can construct a serialized payload specifying <code>os.system</code> or <code>subprocess.Popen</code> with arbitrary shell commands.</p>
+            <p>When <code>pickle.loads()</code> is invoked on that payload, Python automatically executes the shell command with the privileges of the running application, resulting in complete Remote Code Execution (RCE). Never use pickle for network APIs or untrusted user input.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about YAML serialization?</span>
+            <span class="qa-question-title">C.4. What are the key trade-offs between pickle, JSON, and YAML?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong>pickle:</strong> Fast binary format, natively serializes almost any Python object and preserves exact class types. However, it is Python-only and unsafe for untrusted input.</li>
+              <li><strong>JSON:</strong> Ubiquitous, cross-platform standard supported by all languages. Safe and human-readable, but supports only basic data types (strings, numbers, booleans, lists, dicts).</li>
+              <li><strong>YAML:</strong> Superb human readability, supports comments and clean whitespace hierarchy, making it the premier choice for complex configurations. Parsing is slightly slower than JSON.</li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How do you serialize non-serializable objects (like <code>datetime</code> or <code>Decimal</code>) to JSON?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>You can pass a fallback function to the <code>default</code> parameter of <code>json.dumps()</code>, or subclass <code>json.JSONEncoder</code>:</p>
+            <div class="code"><pre>def serialize_custom(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
+json.dumps(data, default=serialize_custom)</pre></div>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the difference between <code>yaml.load()</code> and <code>yaml.safe_load()</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>yaml.load()</code> allows tags that can instantiate arbitrary Python classes and invoke functions, which introduces arbitrary code execution vulnerabilities if parsing untrusted YAML.</p>
+            <p><code>yaml.safe_load()</code> restricts the parser to a safe subset of standard YAML data types (strings, lists, dicts, integers, floats), preventing code execution and making it completely safe for parsing untrusted user inputs and configuration files.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How do <code>__getstate__</code> and <code>__setstate__</code> customize pickling behavior?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><code>__getstate__(self)</code>: Intercepts pickling and returns a dictionary of attributes to be serialized, allowing you to remove non-pickleable attributes (like database handles or file descriptors).</li>
+              <li><code>__setstate__(self, state)</code>: Intercepts unpickling, receiving the restored state dictionary, updating <code>self.__dict__</code>, and re-establishing or recreating transient resources.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why can't lambda functions or generators be pickled by default?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The <code>pickle</code> module serializes functions by saving their qualified module and name reference (e.g. <code>math.sin</code>), expecting to import that name upon unpickling. Because <code>lambda</code> functions are anonymous (all having the name <code>&lt;lambda&gt;</code>) and lack top-level global module bindings, <code>pickle</code> cannot serialize them. Generators hold active C-level stack execution state and instruction pointers that cannot be cleanly serialized across process boundaries.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,7 +532,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">30-practice.py</code>. Run with <code class="inline">python3 30-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">30-practice.py</code>. Run with <code class="inline">python3 30-practice.py</code>. Test pickle, JSON encoding, jsonpickle, and YAML.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -212,32 +543,26 @@
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Object Serialization with Pickle:
-# 1. Serialization (pickling) converts in-memory Python object hierarchies into byte streams.
-# 2. Deserialization (unpickling) reconstructs the Python object from the byte stream.
-# 3. CAUTION: &#x27;pickle&#x27; is Python-specific and NOT secure against malicious data. Never unpickle untrusted bytes.</pre></div>
+                <div class="code"><pre># Summary of Serialization:
+# 1. Serialization converts in-memory objects to byte/text streams for storage or network transport.
+# 2. pickle is Python-only and unsafe for untrusted data due to code execution risks.
+# 3. JSON is safe, universal, and human-readable; YAML is ideal for human-edited configurations.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>JSON serialization / deserialization</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example serializing a dictionary to JSON and loading it back.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># JSON serialization / deserialization:
-import json
+                <div class="code"><pre>import json
 
-data = {&quot;project&quot;: &quot;Python Notes&quot;, &quot;version&quot;: 3.12, &quot;active&quot;: True, &quot;tags&quot;: [&quot;backend&quot;, &quot;docs&quot;]}
-
-# Serialization to string:
-json_str = json.dumps(data, indent=2)
-print(&quot;Serialized JSON:\n&quot; + json_str)
-
-# Deserialization from string:
-parsed_data = json.loads(json_str)
-print(&quot;Deserialized title:&quot;, parsed_data[&quot;project&quot;])</pre></div>
+data = {"user": "Alice", "active": True, "scores": [95, 88, 92]}
+json_str = json.dumps(data)
+parsed = json.loads(json_str)
+print("Reconstructed name:", parsed["user"])</pre></div>
               </div>
             </details>
           </li>
@@ -248,204 +573,190 @@ print(&quot;Deserialized title:&quot;, parsed_data[&quot;project&quot;])</pre></
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Object Serialization (pickle, json, jsonpickle, yaml).
+                <div class="code"><pre>"""Chapter Practice: Python Serialization (pickle, JSON, jsonpickle, YAML).
 
-Goal: Master object conversion formats, pickle security concerns, JSON marshaling,
-custom encoders/decoders, and multi-platform data interchange.
-&quot;&quot;&quot;</pre></div>
+Goal: Master object marshalling/unmarshalling, custom JSON encoders for datetimes and Decimals,
+safe YAML parsing, and defensive security measures against insecure deserialization.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Object serialization with pickle</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Pickling custom class instances</strong> — Serialize and deserialize a custom class instance using <code>pickle.dumps</code> and <code>pickle.loads</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Object serialization with pickle
+                <div class="code"><pre># Task 1: Pickling custom class instance
 import pickle
 
 class Player:
-    def __init__(self, username, level, score):
+    def __init__(self, username, level, inventory):
         self.username = username
         self.level = level
-        self.score = score
+        self.inventory = inventory
 
-player = Player(&quot;GamerOne&quot;, 15, 9420)
+p1 = Player("GamerOne", 45, ["sword", "shield", "potion"])
+p1_bytes = pickle.dumps(p1)
 
-# Serialize to bytes:
-pickled_bytes = pickle.dumps(player)
-print(f&quot;Pickled bytes length: {len(pickled_bytes)}&quot;)
-
-# Deserialize from bytes:
-restored_player = pickle.loads(pickled_bytes)
-print(f&quot;Restored Player: {restored_player.username}, Level: {restored_player.level}, Score: {restored_player.score}&quot;)</pre></div>
+restored_p1 = pickle.loads(p1_bytes)
+print("Restored Player:", restored_p1.username, "| Level:", restored_p1.level)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: JSON serialization / deserialization</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Custom JSON encoder</strong> — Serialize an object containing <code>datetime.datetime</code> and <code>decimal.Decimal</code> to JSON.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: JSON serialization / deserialization
-import json
-
-payload = {
-    &quot;server&quot;: &quot;api.production.internal&quot;,
-    &quot;port&quot;: 443,
-    &quot;ssl&quot;: True,
-    &quot;endpoints&quot;: [&quot;/auth&quot;, &quot;/users&quot;, &quot;/metrics&quot;]
-}
-
-# Write to JSON file:
-filename = &quot;config_sample.json&quot;
-with open(filename, &quot;w&quot;) as f:
-    json.dump(payload, f, indent=4)
-
-# Read from JSON file:
-with open(filename, &quot;r&quot;) as f:
-    loaded = json.load(f)
-
-print(&quot;Loaded endpoints from file:&quot;, loaded[&quot;endpoints&quot;])
-
-import os
-os.remove(filename)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: jsonpickle and API JSON examples</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Custom JSON encoding for Python objects
+                <div class="code"><pre># Task 2: Custom JSON Encoder
 import json
 from datetime import datetime
+from decimal import Decimal
 
-class Event:
-    def __init__(self, name, timestamp):
-        self.name = name
-        self.timestamp = timestamp
+order_data = {
+    "order_id": 9982,
+    "created_at": datetime(2026, 9, 14, 15, 30),
+    "amount": Decimal("129.95")
+}
 
-class EventEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Event):
-            return {&quot;event_name&quot;: obj.name, &quot;timestamp&quot;: obj.timestamp.isoformat()}
-        return super().default(obj)
+def custom_encoder(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return str(obj)
+    raise TypeError(f"Type {type(obj)} not serializable")
 
-event = Event(&quot;DEPLOYMENT&quot;, datetime(2026, 9, 13, 12, 0, 0))
-encoded_event = json.dumps(event, cls=EventEncoder)
-print(&quot;Custom JSON encoded object:&quot;, encoded_event)</pre></div>
+json_output = json.dumps(order_data, default=custom_encoder, indent=2)
+print("Serialized Order:\n", json_output)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: YAML serialization</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Safe YAML parsing</strong> — Parse a YAML configuration string using <code>yaml.safe_load</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: YAML serialization (PyYAML overview)
-# Conceptual example of YAML structure and usage:
-&quot;&quot;&quot;
-import yaml # Requires PyYAML
+                <div class="code"><pre># Task 3: Safe YAML parsing
+import yaml
 
-config_data = {
-    &#x27;database&#x27;: {
-        &#x27;host&#x27;: &#x27;db.internal&#x27;,
-        &#x27;port&#x27;: 5432,
-        &#x27;pool_size&#x27;: 10
-    }
-}
+yaml_doc = """
+environment: production
+database:
+  host: postgres.internal
+  port: 5432
+  ssl_mode: require
+logging:
+  level: INFO
+  handlers:
+    - console
+    - file
+"""
 
-# Dump to YAML string:
-yaml_text = yaml.dump(config_data, default_flow_style=False)
-# Safe load from YAML:
-parsed = yaml.safe_load(yaml_text)
-&quot;&quot;&quot;
-print(&quot;YAML is widely used for human-readable configurations (Docker Compose, Kubernetes, CI/CD).&quot;)</pre></div>
+cfg = yaml.safe_load(yaml_doc)
+print("Loaded DB Host:", cfg["database"]["host"])
+print("Log Handlers:  ", cfg["logging"]["handlers"])</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Serialization (pickle, JSON, YAML).</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a Unified Serializer supporting JSON, YAML, and Pickle with automated format detection and secure safe loading.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Cache Serializer Supporting Multiple Formats
+                <div class="code"><pre># Mini Project: Multi-Format Data Serializer
 import json
+import yaml
 import pickle
 
-class SerializerCache:
+class DataSerializer:
     @staticmethod
-    def serialize(data, format=&quot;json&quot;):
-        if format == &quot;json&quot;:
-            return json.dumps(data).encode(&quot;utf-8&quot;)
-        elif format == &quot;pickle&quot;:
+    def serialize(data, fmt="json"):
+        fmt = fmt.lower()
+        if fmt == "json":
+            return json.dumps(data, indent=2)
+        elif fmt in ("yaml", "yml"):
+            return yaml.dump(data, sort_keys=False)
+        elif fmt == "pickle":
             return pickle.dumps(data)
-        raise ValueError(f&quot;Unsupported format: {format}&quot;)
-    
+        else:
+            raise ValueError(f"Unsupported format: {fmt}")
+
     @staticmethod
-    def deserialize(raw_bytes, format=&quot;json&quot;):
-        if format == &quot;json&quot;:
-            return json.loads(raw_bytes.decode(&quot;utf-8&quot;))
-        elif format == &quot;pickle&quot;:
-            return pickle.loads(raw_bytes)
-        raise ValueError(f&quot;Unsupported format: {format}&quot;)
+    def deserialize(raw_data, fmt="json"):
+        fmt = fmt.lower()
+        if fmt == "json":
+            return json.loads(raw_data)
+        elif fmt in ("yaml", "yml"):
+            return yaml.safe_load(raw_data)
+        elif fmt == "pickle":
+            return pickle.loads(raw_data)
+        else:
+            raise ValueError(f"Unsupported format: {fmt}")
 
-sample = {&quot;session_id&quot;: &quot;xyz987&quot;, &quot;user_id&quot;: 402, &quot;permissions&quot;: [&quot;read&quot;, &quot;write&quot;]}
+sample = {"app": "Microservice", "replicas": 3, "active": True}
+json_res = DataSerializer.serialize(sample, "json")
+yaml_res = DataSerializer.serialize(sample, "yaml")
 
-b_json = SerializerCache.serialize(sample, &quot;json&quot;)
-b_pickle = SerializerCache.serialize(sample, &quot;pickle&quot;)
-
-print(&quot;JSON serialized size:&quot;, len(b_json), &quot;bytes&quot;)
-print(&quot;Pickle serialized size:&quot;, len(b_pickle), &quot;bytes&quot;)
-print(&quot;Verified deserialized match:&quot;, SerializerCache.deserialize(b_json, &quot;json&quot;) == sample)</pre></div>
+print("JSON parsed:", DataSerializer.deserialize(json_res, "json")["app"])
+print("YAML parsed:", DataSerializer.deserialize(yaml_res, "yaml")["replicas"])</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate handling circular references in JSON serialization vs pickle.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Serialization Pitfalls &amp; Edge Cases:
-# 1. SECURITY HAZARD: pickle.loads() can execute arbitrary arbitrary shell commands!
-# NEVER unpickle untrusted data received over the network. Use JSON instead.
+                <div class="code"><pre># Edge Case: Circular references
+import pickle
+import json
 
-# 2. JSON limitations: Keys must be strings; does not support sets, tuples, or custom classes natively.
+cyclic = [1, 2]
+cyclic.append(cyclic)
 
-# 3. Circular references cause RecursionError in standard JSON serializers.</pre></div>
+# Pickle handles cycles naturally:
+pickled_cycle = pickle.dumps(cyclic)
+restored_cycle = pickle.loads(pickled_cycle)
+print("Pickle cycle verified:", restored_cycle[2] is restored_cycle)  # True
+
+# Standard json.dumps crashes on cyclic references:
+try:
+    json.dumps(cyclic)
+except ValueError as err:
+    print("JSON correctly rejected cycle:", err)  # Circular reference detected</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Serialization (pickle, JSON, YAML)) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know when to use pickle (internal Python caching) vs JSON (cross-language APIs) vs YAML (config files).</li>
+          <li>I understand why unpickling untrusted data is a critical security vulnerability.</li>
+          <li>I can write custom JSON encoders for non-standard Python types.</li>
+          <li>I always use <code>yaml.safe_load()</code> to parse YAML documents safely.</li>
         </ul>
       </section>
-      <footer>Python Notes File 29. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 30. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

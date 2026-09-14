@@ -42,13 +42,18 @@
       </nav>
       <header class="hero" id="intro">
         <h1>32. Unit Testing</h1>
-        <p class="subtitle">File 32 — unittest, Selenium note, pytest fixtures.</p>
+        <p class="subtitle">Standard unittest module, Selenium integration overview, pytest fixtures, parametrization, and mocking.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">unittest.TestCase</span>
+          <span class="chip">pytest</span>
+          <span class="chip">@pytest.fixture</span>
+          <span class="chip">@pytest.mark.parametrize</span>
+          <span class="chip">unittest.mock</span>
+          <span class="chip">Selenium</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,29 +62,30 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. Why Automated Testing?</h3>
+        <p>A <strong>unit test</strong> is an automated script that exercises an isolated, individual component (unit) of source code—such as a single function, method, or class—and verifies that it returns the expected outcome given specific inputs.</p>
+        <p>Key benefits of unit testing:</p>
         <ul>
-          <li>This chapter covers <strong>Unit Testing</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Prevents Regressions:</strong> Ensures that adding new features or fixing bugs does not silently break existing functionality.</li>
+          <li><strong>Enables Confident Refactoring:</strong> Allows developers to clean up architecture, improve performance, or upgrade Python versions knowing tests will catch anomalies immediately.</li>
+          <li><strong>Acts as Living Documentation:</strong> Clear tests demonstrate exactly how classes and functions are intended to be invoked.</li>
+          <li><strong>Enables CI/CD:</strong> Automated test suites run on every commit or pull request before code reaches production servers.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">32-practice.py</code> before File 33. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>unittest introduction</strong></li>
-          <li><strong>Unit testing with Selenium (overview)</strong></li>
-          <li><strong>Limitations of unittest; intro to pytest</strong></li>
-          <li><strong>setUp / tearDown / class-level fixtures in pytest</strong></li>
-          <li><strong>Sample test scenarios</strong></li>
+          <li><strong>Introduction</strong> — Concepts, testing pyramid, and unit testing benefits</li>
+          <li><strong>unittest introduction</strong> — The standard library xUnit framework, test cases, and assertions</li>
+          <li><strong>Unit testing with Selenium (overview)</strong> — End-to-end UI testing, WebDriver lifecycle, and CI runs</li>
+          <li><strong>Limitations of unittest; intro to pytest</strong> — Why modern Python prefers pytest and plain assertions</li>
+          <li><strong>setUp / tearDown / class-level fixtures in pytest</strong> — Dependency injection, fixture scopes, and teardown</li>
+          <li><strong>Sample test scenarios</strong> — Mocking external APIs, parametrization, and exception testing</li>
+          <li><strong>C. Common questions</strong> — Core interview questions with comprehensive answers</li>
+          <li><strong>P. Practical Assignment</strong> — Complete test suite mini-project and edge case drills</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-unittest-introduction">
         <div class="heading-with-levels">
           <h2>2. unittest introduction</h2>
@@ -88,14 +94,86 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-unittest-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+        <h3>2.1. Python's Built-in <code>unittest</code> Framework</h3>
+        <p>The <code>unittest</code> module (historically inspired by JUnit) is Python's built-in testing framework. Key conventions:</p>
         <ul>
-          <li>Understand the main ideas in <strong>unittest introduction</strong>.</li>
-          <li>Write small demos in <code class="inline">32-practice.py</code> covering this section.</li>
+          <li>Test classes inherit from <code>unittest.TestCase</code>.</li>
+          <li>Individual test methods <strong>must start with the prefix <code>test_</code></strong> (e.g. <code>test_addition</code>). Methods without this prefix are ignored by the test runner.</li>
+          <li>Tests use specialized assertion methods provided by <code>TestCase</code>.</li>
         </ul>
+
+        <div class="code"><pre>import unittest
+
+def add(x, y):
+    return x + y
+
+def divide(x, y):
+    if y == 0:
+        raise ValueError("Cannot divide by zero!")
+    return x / y
+
+class TestMathOperations(unittest.TestCase):
+    def test_add_positive_integers(self):
+        self.assertEqual(add(10, 5), 15)
+
+    def test_add_negative_integers(self):
+        self.assertEqual(add(-10, -5), -15)
+
+    def test_divide_valid(self):
+        self.assertAlmostEqual(divide(10, 3), 3.3333333, places=5)
+
+    def test_divide_by_zero_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            divide(10, 0)
+
+if __name__ == "__main__":
+    unittest.main()</pre></div>
+
+        <h3 id="2-unittest-introduction-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Common <code>unittest</code> Assertion Methods</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Checks That</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>self.assertEqual(a, b)</code></td>
+              <td><code>a == b</code></td>
+            </tr>
+            <tr>
+              <td><code>self.assertNotEqual(a, b)</code></td>
+              <td><code>a != b</code></td>
+            </tr>
+            <tr>
+              <td><code>self.assertTrue(x)</code></td>
+              <td><code>bool(x) is True</code></td>
+            </tr>
+            <tr>
+              <td><code>self.assertFalse(x)</code></td>
+              <td><code>bool(x) is False</code></td>
+            </tr>
+            <tr>
+              <td><code>self.assertIs(a, b)</code></td>
+              <td><code>a is b</code> (identity)</td>
+            </tr>
+            <tr>
+              <td><code>self.assertIn(item, container)</code></td>
+              <td><code>item in container</code></td>
+            </tr>
+            <tr>
+              <td><code>self.assertRaises(ExcType)</code></td>
+              <td>Code block raises the specified exception</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-unit-testing-with-selenium-overview">
         <div class="heading-with-levels">
           <h2>3. Unit testing with Selenium (overview)</h2>
@@ -104,14 +182,38 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-unit-testing-with-selenium-overview-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Unit testing with Selenium (overview)</strong>.</li>
-          <li>Write small demos in <code class="inline">32-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>3.1. Browser Automation &amp; Integration Testing</h3>
+        <p>While unit tests test pure Python logic in isolation, <strong>Selenium WebDriver</strong> automates real web browsers (Chrome, Firefox) to execute End-to-End (E2E) integration tests across the complete frontend and backend stack.</p>
+
+        <div class="code"><pre># Conceptual Selenium test integrated with unittest:
+"""
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import unittest
+
+class TestWebAppLogin(unittest.TestCase):
+    def setUp(self):
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")  # Run browser without GUI in CI/CD
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()  # Terminate browser session
+
+    def test_login_success(self):
+        self.driver.get("https://example.com/login")
+        self.driver.find_element(By.ID, "username").send_keys("testuser")
+        self.driver.find_element(By.ID, "password").send_keys("secret123")
+        self.driver.find_element(By.ID, "submit-btn").click()
+
+        welcome_text = self.driver.find_element(By.ID, "welcome-msg").text
+        self.assertEqual(welcome_text, "Welcome, testuser!")
+"""</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-limitations-of-unittest-intro-to-pytest">
         <div class="heading-with-levels">
           <h2>4. Limitations of unittest; intro to pytest</h2>
@@ -120,14 +222,48 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-limitations-of-unittest-intro-to-pytest-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+        <h3>4.1. Why the Python Community Migrated to <code>pytest</code></h3>
+        <p>While <code>unittest</code> is built into Python, it suffers from several legacy Java-style design constraints:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Limitations of unittest; intro to pytest</strong>.</li>
-          <li>Write small demos in <code class="inline">32-practice.py</code> covering this section.</li>
+          <li><strong>Boilerplate Overhead:</strong> Every test requires class declarations and inheriting from <code>unittest.TestCase</code>.</li>
+          <li><strong>Cumbersome Assertions:</strong> You must memorize dozens of specialized camelCase methods (<code>assertEqual</code>, <code>assertIn</code>, <code>assertDictEqual</code>).</li>
+          <li><strong>No Native Parametrization:</strong> Running the same test logic over 20 different inputs requires messy subtests or loops.</li>
         </ul>
+        <p><strong><code>pytest</code></strong> is the modern industry standard framework for Python testing. In pytest, tests are simple standalone functions, assertions use standard Python <code>assert</code> statements, and failure outputs provide rich value introspection.</p>
+
+        <div class="code"><pre># Clean pytest test function:
+def test_string_formatting():
+    name = "Bharat"
+    greeting = f"Hello, {name}!"
+    # Plain Python assert: pytest rewrites the bytecode to show exact failed diffs!
+    assert greeting == "Hello, Bharat!"
+    assert len(greeting) > 0</pre></div>
+
+        <h3 id="4-limitations-of-unittest-intro-to-pytest-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Parametrized Tests with <code>@pytest.mark.parametrize</code></h3>
+        <p>Instead of writing separate test functions or loops, <code>@pytest.mark.parametrize</code> runs a test function multiple times across a matrix of input arguments and expected results.</p>
+
+        <div class="code"><pre>import pytest
+
+def is_palindrome(text):
+    clean = "".join(c.lower() for c in text if c.isalnum())
+    return clean == clean[::-1]
+
+@pytest.mark.parametrize("test_input, expected", [
+    ("radar", True),
+    ("Racecar", True),
+    ("hello", False),
+    ("A man, a plan, a canal: Panama", True),
+    ("12321", True),
+    ("12345", False)
+])
+def test_palindrome_detection(test_input, expected):
+    assert is_palindrome(test_input) == expected</pre></div>
       </section>
+
+      <!-- SECTION 5 -->
       <section id="5-setup-teardown-class-level-fixtures-in-pytest">
         <div class="heading-with-levels">
           <h2>5. setUp / tearDown / class-level fixtures in pytest</h2>
@@ -136,14 +272,67 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="5-setup-teardown-class-level-fixtures-in-pytest-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+        <h3>5.1. <code>setUp</code> and <code>tearDown</code> in <code>unittest</code></h3>
+        <p>In <code>unittest</code>, test setup and cleanup are implemented by overriding lifecycle methods:</p>
         <ul>
-          <li>Understand the main ideas in <strong>setUp / tearDown / class-level fixtures in pytest</strong>.</li>
-          <li>Write small demos in <code class="inline">32-practice.py</code> covering this section.</li>
+          <li><code>setUp(self)</code>: Runs <strong>before every single test method</strong> in the class.</li>
+          <li><code>tearDown(self)</code>: Runs <strong>after every single test method</strong> in the class.</li>
+          <li><code>@classmethod setUpClass(cls)</code>: Runs <strong>once</strong> before any tests in the class start.</li>
+          <li><code>@classmethod tearDownClass(cls)</code>: Runs <strong>once</strong> after all tests in the class complete.</li>
         </ul>
+
+        <div class="code"><pre>import unittest
+
+class TestDatabaseWorker(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        print("\n[DB SETUP] Connecting to shared database...")
+
+    @classmethod
+    def tearDownClass(cls):
+        print("\n[DB TEARDOWN] Dropping shared database connection...")
+
+    def setUp(self):
+        # Fresh isolated state before each test
+        self.session_data = {"user": "Alice", "cart": []}
+
+    def tearDown(self):
+        # Cleanup state after each test
+        self.session_data.clear()
+
+    def test_add_item(self):
+        self.session_data["cart"].append("Item-1")
+        self.assertEqual(len(self.session_data["cart"]), 1)
+
+    def test_empty_cart(self):
+        self.assertEqual(len(self.session_data["cart"]), 0)</pre></div>
+
+        <h3 id="5-setup-teardown-class-level-fixtures-in-pytest-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.2. Modern Fixtures in <code>pytest</code></h3>
+        <p><code>pytest</code> replaces rigid class lifecycles with <strong>fixtures</strong> via <code>@pytest.fixture</code>. Fixtures use dependency injection: test functions request fixtures simply by declaring them as parameters.</p>
+        <p>Teardown logic is implemented using the <code>yield</code> keyword: code before <code>yield</code> runs as setup; code after <code>yield</code> runs as teardown!</p>
+
+        <div class="code"><pre>import pytest
+
+@pytest.fixture(scope="function")
+def sample_user():
+    # Setup:
+    print("\n[SETUP] Creating test user object...")
+    user = {"id": 101, "name": "Bharat", "role": "admin"}
+    yield user  # Provide value to test function
+    # Teardown:
+    print("\n[TEARDOWN] Purging user session...")
+
+def test_user_role(sample_user):
+    assert sample_user["role"] == "admin"
+
+def test_user_id(sample_user):
+    assert sample_user["id"] > 0</pre></div>
       </section>
+
+      <!-- SECTION 6 -->
       <section id="6-sample-test-scenarios">
         <div class="heading-with-levels">
           <h2>6. Sample test scenarios</h2>
@@ -152,14 +341,37 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="6-sample-test-scenarios-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Sample test scenarios</strong>.</li>
-          <li>Write small demos in <code class="inline">32-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>6.1. Mocking External Dependencies with <code>unittest.mock</code></h3>
+        <p>Real-world unit tests should not make actual external network calls, charge real credit cards, or send real emails. The standard library provides <code>unittest.mock.patch</code> to replace external functions with controllable mock objects.</p>
+
+        <div class="code"><pre>from unittest.mock import patch, MagicMock
+
+# Function that depends on external network API:
+def get_current_weather(city):
+    import urllib.request
+    # In reality, this makes an HTTP call to api.weather.com
+    raise ConnectionError("No internet in unit test environment!")
+
+def weather_advisory(city):
+    temp = get_current_weather(city)
+    if temp > 35:
+        return "Heat advisory!"
+    elif temp &lt; 5:
+        return "Frost advisory!"
+    return "Pleasant weather."
+
+# Mocking get_current_weather to test advisory logic in isolation:
+@patch("__main__.get_current_weather")
+def test_weather_heat_advisory(mock_weather):
+    mock_weather.return_value = 40  # Simulate 40 degrees without internet!
+    advisory = weather_advisory("Delhi")
+    assert advisory == "Heat advisory!"
+    mock_weather.assert_called_once_with("Delhi")</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -173,44 +385,113 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about unittest introduction?</span>
+            <span class="qa-question-title">C.1. What is a unit test and how does it differ from integration testing?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>Unit Testing:</strong> Tests the smallest testable piece of code (a single function or method) in total isolation from external systems. All external dependencies (databases, network calls, filesystem) are mocked out.</p>
+            <p><strong>Integration Testing:</strong> Tests how multiple components interact and communicate with each other (e.g. testing whether the application layer correctly writes and reads records from a real PostgreSQL database instance).</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Unit testing with Selenium (overview)?</span>
+            <span class="qa-question-title">C.2. What are the roles of <code>setUp()</code> and <code>tearDown()</code> in <code>unittest</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code>setUp()</code> executes immediately before each test method is invoked, allowing you to construct clean, pristine test fixtures. <code>tearDown()</code> executes immediately after each test method completes (even if the test failed or raised an exception), ensuring that temporary files, databases, or mocks are cleaned up.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Limitations of unittest; intro to pytest?</span>
+            <span class="qa-question-title">C.3. Why has <code>pytest</code> largely superseded <code>unittest</code> in professional Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong>No Boilerplate:</strong> Tests are plain Python functions; no class inheritance required.</li>
+              <li><strong>Native Assertions:</strong> Uses standard <code>assert expr</code>. Pytest rewrites the AST to provide detailed failure explanations (e.g. showing dict diffs or set differences).</li>
+              <li><strong>Powerful Fixture System:</strong> Reusable dependency-injected fixtures with explicit scoping (function, class, module, session).</li>
+              <li><strong>Rich Ecosystem:</strong> Hundreds of plugins (<code>pytest-cov</code> for test coverage, <code>pytest-xdist</code> for parallel execution, <code>pytest-asyncio</code>).</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about setUp / tearDown / class-level fixtures in pytest?</span>
+            <span class="qa-question-title">C.4. How do you assert that a specific exception is raised in <code>pytest</code> vs <code>unittest</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>In <code>unittest</code>:</strong></p>
+            <div class="code"><pre>with self.assertRaises(ValueError):
+    divide(10, 0)</pre></div>
+            <p><strong>In <code>pytest</code>:</strong></p>
+            <div class="code"><pre>with pytest.raises(ValueError) as exc_info:
+    divide(10, 0)
+assert "Cannot divide by zero" in str(exc_info.value)</pre></div>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How do <code>pytest</code> fixture scopes work?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Fixture scopes determine how frequently a fixture is recreated:</p>
+            <ul>
+              <li><code>function</code> (default): Re-executed once per test function. Guaranteed isolation.</li>
+              <li><code>class</code>: Re-executed once per test class.</li>
+              <li><code>module</code>: Re-executed once per Python module (file).</li>
+              <li><code>package</code>: Re-executed once per package.</li>
+              <li><code>session</code>: Executed once for the entire test suite run (ideal for expensive resources like starting a Dockerized database container).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How does <code>yield</code> enable teardown in a <code>pytest</code> fixture?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When a fixture contains <code>yield</code>, execution pauses and hands the yielded value to the test function. Once the test completes, pytest resumes execution immediately after the <code>yield</code> statement to execute cleanup code (equivalent to a <code>finally</code> block).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What is mocking and when should you use <code>unittest.mock.patch</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Mocking simulates the behavior of complex, slow, or external real objects. You should use <code>patch</code> when testing code that interacts with:</p>
+            <ul>
+              <li>External HTTP REST APIs or third-party web services.</li>
+              <li>Filesystem operations (writing/deleting files).</li>
+              <li>Database connections or message brokers.</li>
+              <li>Time-dependent functions (e.g. freezing <code>datetime.now()</code>).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. What is the difference between unit testing and Selenium browser testing?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Unit tests execute pure Python code in memory, taking mere milliseconds per test. Selenium tests drive a real headless or GUI browser, executing Javascript, rendering CSS, and simulating real user interactions (clicks, keyboard strokes). Selenium tests are slower and prone to timing flakiness, but verify critical end-to-end user workflows.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,7 +500,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">32-practice.py</code>. Run with <code class="inline">python3 32-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">32-practice.py</code>. Run with <code class="inline">python3 -m unittest 32-practice.py</code> or <code class="inline">pytest 32-practice.py</code>. Test assertions, fixtures, and mocks.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -230,32 +511,31 @@
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of unittest Introduction:
-# 1. &#x27;unittest&#x27; is Python&#x27;s built-in unit testing framework inspired by JUnit.
-# 2. Test cases inherit from unittest.TestCase and methods must begin with the prefix &#x27;test_&#x27;.
-# 3. Assertions include assertEqual, assertTrue, assertFalse, assertRaises, and assertIn.</pre></div>
+                <div class="code"><pre># Summary of Unit Testing:
+# 1. unittest is Python's built-in xUnit framework; test methods must start with 'test_'.
+# 2. Modern Python prefers pytest for cleaner plain assert syntax and powerful fixtures.
+# 3. Use unittest.mock to isolate units from external dependencies like databases and APIs.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Unit testing with Selenium (overview)</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example testing a string reversal function with unittest.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Unit testing with Selenium overview:
-# Selenium automates browser interactions for end-to-end (E2E) testing.
-&quot;&quot;&quot;
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+                <div class="code"><pre>import unittest
 
-driver = webdriver.Chrome()
-driver.get(&quot;https://example.com&quot;)
-assert &quot;Example Domain&quot; in driver.title
-driver.quit()
-&quot;&quot;&quot;
-print(&quot;Selenium drives real browsers to test UI interactions, forms, and end-to-end flows.&quot;)</pre></div>
+def reverse_str(s):
+    return s[::-1]
+
+class TestReverse(unittest.TestCase):
+    def test_reverse(self):
+        self.assertEqual(reverse_str("python"), "nohtyp")
+
+if __name__ == "__main__":
+    unittest.main()</pre></div>
               </div>
             </details>
           </li>
@@ -266,209 +546,168 @@ print(&quot;Selenium drives real browsers to test UI interactions, forms, and en
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Unit Testing (unittest &amp; pytest).
+                <div class="code"><pre>"""Chapter Practice: Python Unit Testing &amp; Pytest Framework.
 
-Goal: Master test case design with unittest.TestCase, test discovery, assertions,
-fixtures (setUp/tearDown), mock objects, and migration to pytest.
-&quot;&quot;&quot;</pre></div>
+Goal: Master unittest.TestCase, assertion methods, modern pytest fixtures,
+parametrization matrices, exception assertions, and external API mocking.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: unittest introduction</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Testing exceptions</strong> — Assert that an invalid argument raises ValueError using both <code>assertRaises</code> and <code>pytest.raises</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: unittest.TestCase demonstration
+                <div class="code"><pre># Task 1: Testing exceptions
+def withdraw(balance, amount):
+    if amount > balance:
+        raise ValueError("Insufficient balance")
+    return balance - amount
+
+# unittest approach:
 import unittest
-
-def add(a, b):
-    return a + b
-
-def divide(a, b):
-    if b == 0:
-        raise ValueError(&quot;Denominator cannot be zero&quot;)
-    return a / b
-
-class TestMathOperations(unittest.TestCase):
-    def test_add(self):
-        self.assertEqual(add(3, 4), 7)
-        self.assertEqual(add(-1, 1), 0)
-    
-    def test_divide_success(self):
-        self.assertEqual(divide(10, 2), 5.0)
-    
-    def test_divide_zero(self):
+class TestWithdrawal(unittest.TestCase):
+    def test_overdraft(self):
         with self.assertRaises(ValueError):
-            divide(10, 0)
-
-# Programmatic test suite execution:
-suite = unittest.TestLoader().loadTestsFromTestCase(TestMathOperations)
-runner = unittest.TextTestRunner(verbosity=2)
-runner.run(suite)</pre></div>
+            withdraw(100, 200)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Unit testing with Selenium (overview)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Pytest fixture with teardown</strong> — Create a fixture that yields a temporary list and cleans it up.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Unit testing with Selenium overview &amp; mock testing
-from unittest.mock import MagicMock
+                <div class="code"><pre># Task 2: Pytest fixture with yield teardown
+import pytest
 
-# Testing external dependencies using unittest.mock:
-mock_api = MagicMock()
-mock_api.get_user.return_value = {&quot;id&quot;: 101, &quot;name&quot;: &quot;Bharat&quot;}
+@pytest.fixture
+def managed_resource():
+    resource = ["init"]
+    yield resource
+    resource.clear()
 
-user = mock_api.get_user(101)
-print(&quot;Mock returned user:&quot;, user)
-mock_api.get_user.assert_called_once_with(101)
-print(&quot;Assertion passed: mock called with expected ID 101.&quot;)</pre></div>
+def test_resource_manipulation(managed_resource):
+    managed_resource.append("updated")
+    assert len(managed_resource) == 2</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Limitations of unittest; intro to pytest</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Mocking API calls</strong> — Use <code>unittest.mock.patch</code> to mock a remote payment gateway response.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Limitations of unittest vs Pytest
-# Comparison:
-# unittest: Requires classes, self.assert*, boilerplate test runners.
-# pytest: Simple assert statements, parameterization, powerful fixtures, no boilerplate.
+                <div class="code"><pre># Task 3: Mocking with patch
+from unittest.mock import patch
 
-def is_prime(n):
-    return n &gt; 1 and all(n % i != 0 for i in range(2, int(n**0.5) + 1))
+def charge_credit_card(card_num, amount):
+    raise ConnectionError("No real gateway call in test!")
 
-# Pytest style test function (pure function with assert):
-def test_is_prime():
-    assert is_prime(2) == True
-    assert is_prime(7) == True
-    assert is_prime(4) == False
+def checkout(card_num, amount):
+    success = charge_credit_card(card_num, amount)
+    return "APPROVED" if success else "DECLINED"
 
-test_is_prime()
-print(&quot;Pytest test passed cleanly without class boilerplate.&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: setUp / tearDown / class-level fixtures in pytest</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: setUp / tearDown / class-level fixtures
-import unittest
-
-class TestDatabaseConnection(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        print(&quot;\n[setUpClass] Connecting to test database instance once...&quot;)
-    
-    def setUp(self):
-        print(&quot;[setUp] Initializing transaction for test method&quot;)
-    
-    def test_query_one(self):
-        self.assertTrue(True)
-    
-    def tearDown(self):
-        print(&quot;[tearDown] Rolling back test transaction&quot;)
-    
-    @classmethod
-    def tearDownClass(cls):
-        print(&quot;[tearDownClass] Closing database connection pool.&quot;)
-
-suite = unittest.TestLoader().loadTestsFromTestCase(TestDatabaseConnection)
-unittest.TextTestRunner(verbosity=0).run(suite)</pre></div>
+@patch("__main__.charge_credit_card", return_value=True)
+def test_successful_checkout(mock_charge):
+    status = checkout("4111222233334444", 99.0)
+    assert status == "APPROVED"
+    mock_charge.assert_called_once()</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Unit Testing.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a complete Shopping Cart test suite testing item addition, total calculation, discounts, and tax with pytest.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Shopping Cart Test Suite with Mock Payment Gateway
-import unittest
-from unittest.mock import MagicMock
-
+                <div class="code"><pre># Mini Project: Shopping Cart Unit Test Suite
 class ShoppingCart:
-    def __init__(self, payment_gateway):
-        self.gateway = payment_gateway
-        self.items = []
-    
-    def add_item(self, name, price):
-        self.items.append(price)
-    
-    def total(self):
-        return sum(self.items)
-    
-    def checkout(self):
-        return self.gateway.charge(self.total())
+    def __init__(self):
+        self.items = {}
 
-class TestShoppingCart(unittest.TestCase):
-    def test_checkout_success(self):
-        mock_gateway = MagicMock()
-        mock_gateway.charge.return_value = True
-        
-        cart = ShoppingCart(mock_gateway)
-        cart.add_item(&quot;Book&quot;, 25.0)
-        cart.add_item(&quot;Pen&quot;, 5.0)
-        
-        self.assertEqual(cart.total(), 30.0)
-        result = cart.checkout()
-        
-        self.assertTrue(result)
-        mock_gateway.charge.assert_called_once_with(30.0)
+    def add_item(self, item_name, price, quantity=1):
+        if price &lt; 0 or quantity &lt; 1:
+            raise ValueError("Invalid price or quantity")
+        if item_name in self.items:
+            self.items[item_name]["quantity"] += quantity
+        else:
+            self.items[item_name] = {"price": price, "quantity": quantity}
 
-suite = unittest.TestLoader().loadTestsFromTestCase(TestShoppingCart)
-unittest.TextTestRunner(verbosity=0).run(suite)
-print(&quot;Shopping cart test passed with mocked payment gateway.&quot;)</pre></div>
+    def total(self, discount_pct=0):
+        subtotal = sum(i["price"] * i["quantity"] for i in self.items.values())
+        return subtotal * (1 - discount_pct / 100)
+
+# Pytest test suite:
+import pytest
+
+@pytest.fixture
+def populated_cart():
+    cart = ShoppingCart()
+    cart.add_item("Book", 20.0, 2)   # 40.0
+    cart.add_item("Pen", 5.0, 4)     # 20.0
+    return cart
+
+def test_cart_total(populated_cart):
+    assert populated_cart.total() == 60.0
+
+def test_cart_discount(populated_cart):
+    assert populated_cart.total(discount_pct=10) == 54.0
+
+def test_invalid_item():
+    cart = ShoppingCart()
+    with pytest.raises(ValueError):
+        cart.add_item("Bad", -10.0)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate testing floating point equality using <code>assertAlmostEqual</code> or <code>pytest.approx</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Unit Testing Pitfalls &amp; Edge Cases:
-# 1. Method naming: Omitting &#x27;test_&#x27; prefix causes unittest to silently skip running the test!
+                <div class="code"><pre># Edge Case: Floating-point precision in tests
+# 0.1 + 0.2 == 0.30000000000000004!
+import pytest
 
-# 2. Testing implementation details instead of observable behavior (makes tests brittle).
-
-# 3. Flaky tests caused by dependence on shared mutable state, time.time(), or live networks.</pre></div>
+def test_float_addition():
+    # BAD: assert 0.1 + 0.2 == 0.3 (FAILS!)
+    # GOOD: Use pytest.approx
+    assert (0.1 + 0.2) == pytest.approx(0.3)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Unit Testing) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can write test classes inheriting from <code>unittest.TestCase</code>.</li>
+          <li>I understand why <code>pytest</code> is preferred in modern Python codebases.</li>
+          <li>I can write fixtures with <code>yield</code> teardowns and parametrize test cases.</li>
+          <li>I know how to isolate tests from third-party systems using <code>unittest.mock.patch</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 31. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 32. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

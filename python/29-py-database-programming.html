@@ -22,7 +22,7 @@
         <a href="#2-introduction-to-python-database-programming">2. Introduction to Python database programming</a>
         <a href="#3-create-drop-insert-sample">3. Create/drop/insert (sample)</a>
         <a href="#4-crud-operations">4. CRUD operations</a>
-        <a href="#5-working-with-mysql-and-oracle-notes">5. Working with MySQL (and Oracle notes)</a>
+        <a href="#5-working-with-postgresql">5. Working with PostgreSQL (psycopg &amp; DB-API)</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -41,13 +41,18 @@
       </nav>
       <header class="hero" id="intro">
         <h1>29. Database Programming (PDBC)</h1>
-        <p class="subtitle">File 29 — DB-API, Oracle/MySQL CRUD.</p>
+        <p class="subtitle">PEP 249 DB-API 2.0 specification, SQLite, PostgreSQL (psycopg), transactions, CRUD operations, and security.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">PEP 249 DB-API 2.0</span>
+          <span class="chip">sqlite3</span>
+          <span class="chip">PostgreSQL (psycopg2 / psycopg)</span>
+          <span class="chip">CRUD &amp; Transactions</span>
+          <span class="chip">Connection Pooling</span>
+          <span class="chip">SQL Injection Prevention</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +61,50 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
-        <ul>
-          <li>This chapter covers <strong>Database Programming (PDBC)</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
-        </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">29-practice.py</code> before File 30. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+        <h3>1.1. Overview: What is PDBC &amp; PEP 249?</h3>
+        <p><strong>Python Database Connectivity (PDBC)</strong> refers to interacting with relational database management systems (RDBMS) directly from Python code. To ensure that developers do not have to learn a completely different API for every vendor (PostgreSQL, SQLite, MySQL, Oracle), Python defined <strong>PEP 249 (Python Database API Specification v2.0)</strong>.</p>
+        <p>PEP 249 establishes standard interfaces, method signatures, parameter formatting rules, and exception hierarchies across all compliant Python database drivers. Whether using <code>sqlite3</code>, <code>psycopg2</code> / <code>psycopg</code> (for PostgreSQL), or other drivers, the fundamental workflow is identical:</p>
+
+        <div class="callout">
+          <strong>The Standard PEP 249 DB-API Workflow:</strong>
+          <ol>
+            <li><strong>Connect:</strong> Open a connection object via <code>driver.connect(...)</code>.</li>
+            <li><strong>Cursor:</strong> Create a cursor via <code>connection.cursor()</code> to manage query context and result sets.</li>
+            <li><strong>Execute:</strong> Run parameterized SQL queries with <code>cursor.execute(sql, params)</code> or <code>cursor.executemany(sql, seq_of_params)</code>.</li>
+            <li><strong>Retrieve / Persist:</strong> Fetch rows using <code>cursor.fetchone()</code>, <code>cursor.fetchall()</code>, or <code>cursor.fetchmany()</code>. For DML (INSERT/UPDATE/DELETE), commit changes via <code>connection.commit()</code>.</li>
+            <li><strong>Release:</strong> Close the cursor and connection via <code>cursor.close()</code> and <code>connection.close()</code> (or using <code>with</code> context managers).</li>
+          </ol>
+        </div>
+
+        <h3>1.2. The Cardinal Rule: Prevent SQL Injection</h3>
+        <p>Never format or concatenate user input into SQL query strings using Python f-strings or string concatenation. Doing so leaves your application vulnerable to <strong>SQL Injection (SQLi)</strong> attacks, where malicious actors can bypass authentication, exfiltrate private data, or wipe database tables.</p>
+
+        <div class="code"><pre># DANGEROUS VULNERABILITY (SQL Injection):
+user_id = "1 OR 1=1; DROP TABLE users; --"
+# BAD: f-string inserts raw string directly into the SQL parser!
+# cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
+
+# SAFE: Parameterized Query (PEP 249 parameter binding)
+# The database engine treats the parameter strictly as literal data, never executable SQL:
+# In SQLite:
+cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+
+# In PostgreSQL (psycopg):
+cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))</pre></div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to Python database programming</strong></li>
-          <li><strong>Create/drop/insert (sample)</strong></li>
-          <li><strong>CRUD operations</strong></li>
-          <li><strong>Working with MySQL (and Oracle notes)</strong></li>
+          <li><strong>Introduction</strong> — PDBC concepts, PEP 249 specification, and SQL injection prevention</li>
+          <li><strong>Introduction to Python database programming</strong> — Connections, cursors, and the built-in <code>sqlite3</code> engine</li>
+          <li><strong>Create/drop/insert (sample)</strong> — DDL, table constraints, batch inserts, and auto-generated IDs</li>
+          <li><strong>CRUD operations</strong> — Create, Read (fetch variants, row factories), Update, Delete, and ACID transactions</li>
+          <li><strong>Working with PostgreSQL (psycopg &amp; DB-API)</strong> — PostgreSQL drivers, connection pooling, and enterprise patterns</li>
+          <li><strong>C. Common questions</strong> — High-yield interview questions with comprehensive answers</li>
+          <li><strong>P. Practical Assignment</strong> — Complete coding drills, transactional banking ledger, and edge cases</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-introduction-to-python-database-programming">
         <div class="heading-with-levels">
           <h2>2. Introduction to Python database programming</h2>
@@ -86,14 +113,53 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-introduction-to-python-database-programming-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Introduction to Python database programming</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>2.1. Built-in <code>sqlite3</code>: The Zero-Configuration Database</h3>
+        <p>Python includes the <code>sqlite3</code> module in the standard library. SQLite runs embedded in-process without requiring a separate database server process, making it ideal for testing, local data storage, and prototyping.</p>
+        <p>Special database target: passing <code>":memory:"</code> to <code>sqlite3.connect()</code> creates a lightning-fast, volatile in-RAM database that disappears when the process exits.</p>
+
+        <div class="code"><pre>import sqlite3
+
+# Connect to a transient in-memory database:
+conn = sqlite3.connect(":memory:")
+cursor = conn.cursor()
+
+# Verify SQLite engine version:
+cursor.execute("SELECT sqlite_version()")
+version = cursor.fetchone()[0]
+print(f"Connected to SQLite engine version: {version}")
+
+# Clean up resources:
+cursor.close()
+conn.close()</pre></div>
+
+        <h3 id="2-introduction-to-python-database-programming-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Connection and Cursor Core Objects</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Object</th>
+              <th>Key Methods &amp; Attributes</th>
+              <th>Purpose / Responsibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Connection</strong></td>
+              <td><code>cursor()</code>, <code>commit()</code>, <code>rollback()</code>, <code>close()</code>, <code>total_changes</code></td>
+              <td>Manages the physical connection session, network socket, and transaction boundaries (commit/rollback).</td>
+            </tr>
+            <tr>
+              <td><strong>Cursor</strong></td>
+              <td><code>execute()</code>, <code>executemany()</code>, <code>fetchone()</code>, <code>fetchall()</code>, <code>fetchmany()</code>, <code>rowcount</code>, <code>description</code></td>
+              <td>Executes SQL statements, tracks row pagination, retrieves column headers, and iterates query results.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-create-drop-insert-sample">
         <div class="heading-with-levels">
           <h2>3. Create/drop/insert (sample)</h2>
@@ -102,14 +168,61 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-create-drop-insert-sample-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Create/drop/insert (sample)</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>3.1. DDL: Creating and Dropping Tables</h3>
+        <p>Data Definition Language (DDL) statements like <code>CREATE TABLE</code> and <code>DROP TABLE</code> define the schema structure. Always use <code>IF NOT EXISTS</code> and <code>IF EXISTS</code> to prevent fatal runtime errors on repeat runs.</p>
+
+        <div class="code"><pre>import sqlite3
+
+conn = sqlite3.connect(":memory:")
+cur = conn.cursor()
+
+# 1. Clean previous state if needed:
+cur.execute("DROP TABLE IF EXISTS employees")
+
+# 2. Define schema with constraints:
+cur.execute("""
+    CREATE TABLE employees (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        department TEXT NOT NULL,
+        salary REAL CHECK(salary >= 0),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
+print("Table 'employees' created successfully.")</pre></div>
+
+        <h3 id="3-create-drop-insert-sample-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Single Inserts vs Bulk <code>executemany()</code></h3>
+        <p>Executing individual <code>INSERT</code> statements inside a Python loop causes heavy round-trip overhead. PEP 249 provides <code>cursor.executemany()</code>, which executes a prepared statement against an iterable sequence of tuples efficiently.</p>
+
+        <div class="code"><pre># Single insert:
+cur.execute(
+    "INSERT INTO employees (name, department, salary) VALUES (?, ?, ?)",
+    ("Alice", "Engineering", 95000.0)
+)
+alice_id = cur.lastrowid
+print(f"Inserted Alice with ID: {alice_id}")
+
+# Bulk insert using executemany():
+new_hires = [
+    ("Bob", "Marketing", 72000.0),
+    ("Charlie", "Engineering", 110000.0),
+    ("Diana", "Finance", 88000.0)
+]
+
+cur.executemany(
+    "INSERT INTO employees (name, department, salary) VALUES (?, ?, ?)",
+    new_hires
+)
+
+# CRUCIAL: Always commit DML operations to persist them!
+conn.commit()
+print(f"Bulk insert complete. Rows affected: {cur.rowcount}")</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-crud-operations">
         <div class="heading-with-levels">
           <h2>4. CRUD operations</h2>
@@ -118,30 +231,189 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-crud-operations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+        <h3>4.1. Reading Data: <code>fetchone()</code>, <code>fetchall()</code>, and Direct Iteration</h3>
+        <p>After running a <code>SELECT</code> query, several methods exist to retrieve the results:</p>
         <ul>
-          <li>Understand the main ideas in <strong>CRUD operations</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
+          <li><code>cursor.fetchone()</code>: Returns the next single row as a tuple (or <code>None</code> if no more rows).</li>
+          <li><code>cursor.fetchall()</code>: Fetches all remaining rows at once into a list of tuples.</li>
+          <li><code>cursor.fetchmany(size)</code>: Fetches the next batch of $N$ rows (ideal for pagination).</li>
+          <li><strong>Direct Cursor Iteration:</strong> <code>for row in cursor: ...</code> — streams rows lazily without loading the entire result set into RAM at once!</li>
         </ul>
+
+        <div class="code"><pre># 1. Fetch all rows:
+cur.execute("SELECT id, name, department, salary FROM employees ORDER BY salary DESC")
+all_rows = cur.fetchall()
+print("All employees (ordered by salary):")
+for r in all_rows:
+    print(f"  ID {r[0]}: {r[1]} ({r[2]}) - ${r[3]:,.2f}")
+
+# 2. Fetch single row:
+cur.execute("SELECT name, salary FROM employees WHERE id = ?", (1,))
+single_emp = cur.fetchone()
+print(f"\nEmployee 1: {single_emp[0]}, Salary: ${single_emp[1]}")
+
+# 3. Memory-friendly cursor stream:
+cur.execute("SELECT name FROM employees WHERE department = ?", ("Engineering",))
+for (emp_name,) in cur:
+    print(f"Engineer: {emp_name}")</pre></div>
+
+        <h3 id="4-crud-operations-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Updating and Deleting Records with Transactions</h3>
+        <p>Transactions satisfy the <strong>ACID</strong> guarantees (Atomicity, Consistency, Isolation, Durability). In PEP 249, transactions are managed at the connection level. If an error occurs during an update or delete, call <code>conn.rollback()</code> to revert the database to its pre-transaction state.</p>
+
+        <div class="code"><pre>def update_employee_salary(conn, emp_id, new_salary):
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE employees SET salary = ? WHERE id = ?", (new_salary, emp_id))
+        if cur.rowcount == 0:
+            print(f"[WARN] No employee found with ID: {emp_id}")
+        else:
+            conn.commit()
+            print(f"[SUCCESS] Updated employee {emp_id} salary to ${new_salary}")
+    except Exception as err:
+        conn.rollback()
+        print(f"[ERROR] Update failed, transaction rolled back: {err}")
+
+update_employee_salary(conn, 1, 98000.0)
+
+def delete_employee(conn, emp_id):
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM employees WHERE id = ?", (emp_id,))
+        conn.commit()
+        print(f"[DELETED] Successfully removed employee {emp_id}")
+    except Exception as err:
+        conn.rollback()
+        print(f"[ERROR] Delete failed, transaction rolled back: {err}")
+
+delete_employee(conn, 2)</pre></div>
+
+        <h3>4.3. Row Factories (Returning Dictionaries Instead of Tuples)</h3>
+        <p>By default, DB-API returns rows as plain numeric tuples (e.g. <code>row[0]</code>, <code>row[1]</code>). Using <code>sqlite3.Row</code> allows accessing columns by name (<code>row["name"]</code>) or index, making code cleaner and resilient against column reordering.</p>
+
+        <div class="code"><pre>conn.row_factory = sqlite3.Row  # Configure row factory
+cur = conn.cursor()
+
+cur.execute("SELECT id, name, salary FROM employees WHERE id = ?", (1,))
+row = cur.fetchone()
+
+print("Access by column name:", row["name"])
+print("Access by index:      ", row[1])
+print("Convert to dict:      ", dict(row))</pre></div>
       </section>
-      <section id="5-working-with-mysql-and-oracle-notes">
+
+      <!-- SECTION 5 -->
+      <section id="5-working-with-postgresql">
         <div class="heading-with-levels">
-          <h2>5. Working with MySQL (and Oracle notes)</h2>
+          <h2>5. Working with PostgreSQL (psycopg &amp; DB-API)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
-        <h3 id="5-working-with-mysql-and-oracle-notes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Working with MySQL (and Oracle notes)</strong>.</li>
-          <li>Write small demos in <code class="inline">29-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3 id="5-working-with-postgresql-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>5.1. Why PostgreSQL in Enterprise Python?</h3>
+        <p><strong>PostgreSQL</strong> is widely regarded as the world's most advanced open-source object-relational database. Unlike SQLite, PostgreSQL is a client-server RDBMS designed for multi-user concurrency, high write throughput, enterprise ACID compliance, complex window functions, and rich native data types (such as <code>JSONB</code>, <code>UUID</code>, and geometric arrays).</p>
+
+        <h3>5.2. PostgreSQL Python Drivers: <code>psycopg2</code> vs <code>psycopg</code> (v3)</h3>
+        <p>The standard, battle-tested Python driver for PostgreSQL is <strong><code>psycopg2</code></strong> (or the pure-C binary distribution <code>psycopg2-binary</code>). The next-generation driver is <strong><code>psycopg</code> (version 3)</strong>, which adds full native Python <code>asyncio</code> support and faster binary copying.</p>
+
+        <div class="code"><pre># Installing PostgreSQL drivers via pip:
+# pip install psycopg2-binary
+# or modern psycopg 3:
+# pip install "psycopg[binary]"
+
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+# Standard PostgreSQL connection parameters:
+DB_CONFIG = {
+    "host": "localhost",
+    "port": 5432,
+    "dbname": "production_db",
+    "user": "postgres_user",
+    "password": "secure_password_123"
+}
+
+try:
+    # 1. Establish connection:
+    conn = psycopg2.connect(**DB_CONFIG)
+    
+    # 2. Use context managers for automatic cursor closing:
+    with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        # Note: PostgreSQL uses %s for parameter substitution (NEVER '?'!):
+        cur.execute("""
+            SELECT id, username, email, is_active
+            FROM users
+            WHERE is_active = %s
+            ORDER BY id ASC
+            LIMIT %s;
+        """, (True, 5))
+
+        rows = cur.fetchall()
+        for user in rows:
+            print(f"User: {user['username']} | Email: {user['email']}")
+
+    conn.close()
+except psycopg2.Error as err:
+    print(f"PostgreSQL database error: {err}")</pre></div>
+
+        <h3 id="5-working-with-postgresql-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.3. PostgreSQL Connection Pooling</h3>
+        <p>In PostgreSQL, each client connection spawns a new server-side process on the database host. Repeatedly opening and closing TCP connections on every HTTP request introduces severe latency and can overwhelm server resources. Production applications use a <strong>Connection Pool</strong> to reuse pre-warmed connection instances.</p>
+
+        <div class="code"><pre>from psycopg2 import pool
+
+# Initialize a thread-safe connection pool (min 1, max 10 connections):
+db_pool = pool.ThreadedConnectionPool(
+    minconn=1,
+    maxconn=10,
+    host="localhost",
+    port=5432,
+    dbname="production_db",
+    user="postgres_user",
+    password="secure_password_123"
+)
+
+def fetch_user_by_id(user_id):
+    # Acquire a connection from the pool:
+    conn = db_pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, username FROM users WHERE id = %s", (user_id,))
+            return cur.fetchone()
+    finally:
+        # ALWAYS return connection to the pool when finished:
+        db_pool.putconn(conn)
+
+# Graceful application shutdown:
+# db_pool.closeall()</pre></div>
+
+        <h3>5.4. Working with PostgreSQL JSONB and Transactions</h3>
+        <p>PostgreSQL allows storing and querying structured JSON data with indexable <code>JSONB</code> columns. <code>psycopg2</code> automatically serializes Python dictionaries into JSONB and deserializes them back into Python dictionaries.</p>
+
+        <div class="code"><pre>import psycopg2
+from psycopg2.extras import Json
+
+def insert_user_settings(conn, user_id, settings_dict):
+    with conn.cursor() as cur:
+        cur.execute("""
+            INSERT INTO user_profiles (user_id, preferences)
+            VALUES (%s, %s)
+            ON CONFLICT (user_id) DO UPDATE
+            SET preferences = EXCLUDED.preferences
+            RETURNING id;
+        """, (user_id, Json(settings_dict)))
+        
+        record_id = cur.fetchone()[0]
+        conn.commit()
+        return record_id</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -155,44 +427,106 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction to Python database programming?</span>
+            <span class="qa-question-title">C.1. What is PEP 249 (Python DB-API 2.0) and why is it important?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>PEP 249 is the Python Database API Specification v2.0. It defines a standardized programming interface for connecting to and interacting with relational databases from Python. It specifies standard connection functions (<code>connect()</code>), connection methods (<code>cursor()</code>, <code>commit()</code>, <code>rollback()</code>, <code>close()</code>), cursor methods (<code>execute()</code>, <code>fetchall()</code>, <code>fetchone()</code>), and standard exception classes (<code>DatabaseError</code>, <code>IntegrityError</code>, <code>OperationalError</code>).</p>
+            <p>This allows Python code to be database-agnostic: switching between SQLite, PostgreSQL, and MySQL requires changing only the connection initialization and minor dialect syntax, while the core application logic remains identical.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Create/drop/insert (sample)?</span>
+            <span class="qa-question-title">C.2. Why is SQL Injection dangerous and how does parameterization prevent it?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>SQL Injection occurs when untrusted input is concatenated directly into a SQL command string, altering the SQL parser's syntax tree and allowing attackers to run arbitrary database commands (such as dumping passwords or dropping tables).</p>
+            <p>Parameterized queries separate the query structure from the input parameters. The SQL statement is compiled by the database engine first, and parameters are sent separately over the protocol as literal values. Even if a parameter contains <code>' OR 1=1; DROP TABLE users;</code>, the database treats it as literal string content, completely neutralizing the attack.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about CRUD operations?</span>
+            <span class="qa-question-title">C.3. What are the differences between <code>fetchone()</code>, <code>fetchall()</code>, and <code>fetchmany()</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code>fetchone()</code>:</strong> Retrieves the single next row of a query result set, returning a tuple or <code>None</code> when exhausted. Minimal memory overhead.</li>
+              <li><strong><code>fetchall()</code>:</strong> Fetches all remaining rows at once into a Python list. Can cause memory exhaustion (<code>MemoryError</code>) if the result set contains hundreds of thousands of rows.</li>
+              <li><strong><code>fetchmany(size=N)</code>:</strong> Fetches a specific batch of $N$ rows. Ideal for pagination, chunked processing, and streaming pipelines.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Working with MySQL (and Oracle notes)?</span>
+            <span class="qa-question-title">C.4. Why is <code>conn.commit()</code> necessary, and what does <code>conn.rollback()</code> do?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In PEP 249 compliant drivers, connections start transactions automatically when DML statements (<code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>) are executed.</p>
+            <p><code>conn.commit()</code> writes and permanently applies all pending transactional changes to persistent disk storage. If you close the connection without calling <code>commit()</code>, all changes are automatically discarded. <code>conn.rollback()</code> explicitly aborts the current transaction, reverting the database state to the beginning of the transaction block.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What parameter placeholders are used by SQLite vs PostgreSQL?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>PEP 249 defines multiple parameter styles (<code>paramstyle</code>):</p>
+            <ul>
+              <li><strong>SQLite (<code>qmark</code> style):</strong> Uses question marks: <code>WHERE id = ? AND name = ?</code>.</li>
+              <li><strong>PostgreSQL / psycopg2 (<code>pyformat</code> or <code>format</code> style):</strong> Uses percent-s: <code>WHERE id = %s AND name = %s</code>. (Note: even for integers and dates, use <code>%s</code>; the driver casts the types automatically based on the Python objects).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is a Connection Pool and why is it critical for PostgreSQL?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A connection pool maintains a cache of pre-opened, active database connections that can be borrowed and returned by worker threads or web requests.</p>
+            <p>Unlike SQLite or multi-threaded servers, PostgreSQL uses a process-per-connection architecture. Spawning a new PostgreSQL connection involves a full OS process fork, TCP three-way handshake, TLS negotiation, and authentication handshake (taking 20–100ms per connection). A connection pool reduces connection acquisition latency to sub-millisecond speeds and protects the database from connection exhaustion.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How do you retrieve query results as dictionaries instead of tuples?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>In SQLite:</strong> Set the connection's row factory: <code>conn.row_factory = sqlite3.Row</code>. Each row can then be accessed by column name (<code>row["email"]</code>) or converted to a dict via <code>dict(row)</code>.</li>
+              <li><strong>In PostgreSQL (psycopg2):</strong> Use <code>cursor_factory=RealDictCursor</code> from <code>psycopg2.extras</code>: <code>with conn.cursor(cursor_factory=RealDictCursor) as cur: ...</code>. Rows are returned directly as standard Python dictionaries.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How do <code>with</code> context managers work with database connections and cursors?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><code>with conn.cursor() as cur:</code> guarantees that the cursor is automatically closed when exiting the block, even if an exception is raised.</li>
+              <li>In <code>sqlite3</code> and <code>psycopg2</code>, <code>with conn:</code> manages transaction boundaries: if the block completes without errors, it automatically calls <code>conn.commit()</code>; if an exception occurs, it automatically calls <code>conn.rollback()</code>! Note: <code>with conn:</code> does NOT close the connection itself.</li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,7 +535,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">29-practice.py</code>. Run with <code class="inline">python3 29-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">29-practice.py</code>. Run with <code class="inline">python3 29-practice.py</code>. Test connections, CRUD operations, transactions, and PostgreSQL patterns.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -213,32 +547,30 @@
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Summary of Python Database Programming (PDBC):
-# 1. Python uses PEP 249 (Python DB-API 2.0) providing a unified standard interface across all RDBMS drivers.
-# 2. Core workflow: Connect -&gt; Create Cursor -&gt; Execute Query -&gt; Fetch / Commit -&gt; Close.
-# 3. Built-in &#x27;sqlite3&#x27; provides a full zero-configuration in-memory or file-based SQL database.</pre></div>
+# 1. PEP 249 (DB-API 2.0) standardizes database connection, cursor, execute, and transaction APIs.
+# 2. Never format user strings into SQL queries; always use parameterized binding (?, %s) to prevent SQLi.
+# 3. Use sqlite3 for lightweight in-memory storage; use PostgreSQL (psycopg) with connection pools for enterprise applications.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Create/drop/insert (sample)</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example creating an in-memory table and inserting a record.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Create/drop/insert sample with sqlite3:
-import sqlite3
+                <div class="code"><pre>import sqlite3
 
-# Connect to in-memory database:
-conn = sqlite3.connect(&quot;:memory:&quot;)
-cursor = conn.cursor()
+conn = sqlite3.connect(":memory:")
+cur = conn.cursor()
 
-cursor.execute(&quot;CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT)&quot;)
-cursor.execute(&quot;INSERT INTO users (name, email) VALUES (?, ?)&quot;, (&quot;Alice&quot;, &quot;alice@test.com&quot;))
+cur.execute("CREATE TABLE tags (id INTEGER PRIMARY KEY, name TEXT UNIQUE)")
+cur.execute("INSERT INTO tags (name) VALUES (?)", ("python",))
 conn.commit()
 
-cursor.execute(&quot;SELECT * FROM users&quot;)
-print(&quot;User row:&quot;, cursor.fetchone())
+cur.execute("SELECT * FROM tags")
+print("Inserted tag:", cur.fetchone())
 conn.close()</pre></div>
               </div>
             </details>
@@ -250,173 +582,165 @@ conn.close()</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Database Programming (PDBC &amp; DB-API 2.0).
+                <div class="code"><pre>"""Chapter Practice: Python Database Programming (PDBC &amp; DB-API 2.0).
 
-Goal: Master DB-API workflow (connection, cursor, execute, fetch, commit, rollback),
-parameterized queries against SQL injection, in-memory SQLite, and MySQL/PostgreSQL driver patterns.
-&quot;&quot;&quot;</pre></div>
+Goal: Master PEP 249 DB-API standards, parameterized queries against SQL injection,
+full CRUD operations, ACID transaction rollbacks, and PostgreSQL (psycopg) enterprise patterns.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction to Python database programming</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Table schema &amp; bulk insertion</strong> — Create a products table and insert items in bulk with <code>executemany</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction to Python database programming
+                <div class="code"><pre># Task 1: Bulk insert with executemany
 import sqlite3
 
-# Standard DB-API 2.0 workflow:
-conn = sqlite3.connect(&quot;:memory:&quot;)
-cursor = conn.cursor()
-
-# Verify connection:
-cursor.execute(&quot;SELECT sqlite_version()&quot;)
-version = cursor.fetchone()[0]
-print(f&quot;Connected to SQLite version: {version}&quot;)
-conn.close()</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Create/drop/insert (sample)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Create/drop/insert table operations
-import sqlite3
-
-conn = sqlite3.connect(&quot;:memory:&quot;)
+conn = sqlite3.connect(":memory:")
 cur = conn.cursor()
 
-# Create table:
-cur.execute(&quot;&quot;&quot;
-    CREATE TABLE products (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+cur.execute("""
+    CREATE TABLE inventory (
+        sku TEXT PRIMARY KEY,
         name TEXT NOT NULL,
-        price REAL NOT NULL
+        stock INTEGER CHECK(stock >= 0),
+        unit_price REAL NOT NULL
     )
-&quot;&quot;&quot;)
+""")
 
-# Parameterized bulk insert (executemany):
-items = [
-    (&quot;Wireless Keyboard&quot;, 49.99),
-    (&quot;Gaming Mouse&quot;, 29.50),
-    (&quot;HDMI Cable&quot;, 9.99)
+products = [
+    ("SKU-101", "Mechanical Keyboard", 15, 89.99),
+    ("SKU-102", "Ergonomic Mouse", 40, 49.50),
+    ("SKU-103", "USB-C Hub", 25, 29.99)
 ]
-cur.executemany(&quot;INSERT INTO products (name, price) VALUES (?, ?)&quot;, items)
+
+cur.executemany("INSERT INTO inventory VALUES (?, ?, ?, ?)", products)
 conn.commit()
-print(f&quot;Inserted {cur.rowcount} records successfully.&quot;)
-conn.close()</pre></div>
+print(f"Successfully inserted {cur.rowcount} inventory items.")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: CRUD operations</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Full CRUD workflow</strong> — Write functions implementing Create, Read, Update, and Delete operations.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Full CRUD operations (Create, Read, Update, Delete)
-import sqlite3
-
-conn = sqlite3.connect(&quot;:memory:&quot;)
+                <div class="code"><pre># Task 2: Full CRUD workflow
+conn.row_factory = sqlite3.Row
 cur = conn.cursor()
-cur.execute(&quot;CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT, done BOOLEAN)&quot;)
 
-# 1. Create:
-cur.execute(&quot;INSERT INTO tasks (title, done) VALUES (?, ?)&quot;, (&quot;Buy milk&quot;, False))
-task_id = cur.lastrowid
-
-# 2. Read:
-cur.execute(&quot;SELECT * FROM tasks WHERE id = ?&quot;, (task_id,))
-print(&quot;Read:&quot;, cur.fetchone())
-
-# 3. Update:
-cur.execute(&quot;UPDATE tasks SET done = ? WHERE id = ?&quot;, (True, task_id))
+# 1. CREATE:
+cur.execute("INSERT INTO inventory VALUES (?, ?, ?, ?)", ("SKU-104", "Monitor Stand", 10, 39.99))
 conn.commit()
 
-# 4. Delete:
-cur.execute(&quot;DELETE FROM tasks WHERE id = ?&quot;, (task_id,))
+# 2. READ:
+cur.execute("SELECT * FROM inventory WHERE sku = ?", ("SKU-104",))
+item = dict(cur.fetchone())
+print("Read record:", item)
+
+# 3. UPDATE:
+cur.execute("UPDATE inventory SET stock = ? WHERE sku = ?", (18, "SKU-104"))
 conn.commit()
-print(&quot;Tasks count after delete:&quot;, cur.execute(&quot;SELECT count(*) FROM tasks&quot;).fetchone()[0])
-conn.close()</pre></div>
+
+# 4. DELETE:
+cur.execute("DELETE FROM inventory WHERE sku = ?", ("SKU-104",))
+conn.commit()
+print("Item deleted. Verifying exists:", cur.execute("SELECT count(*) FROM inventory WHERE sku='SKU-104'").fetchone()[0])</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Working with MySQL (and Oracle notes)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: PostgreSQL driver pattern</strong> — Demonstrate connecting and querying PostgreSQL using <code>psycopg2</code> syntax.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Working with MySQL (and Oracle notes)
-# Conceptual example showing standard DB-API consistency across MySQL / PostgreSQL:
-&quot;&quot;&quot;
-import mysql.connector # or psycopg2 for PostgreSQL
+                <div class="code"><pre># Task 3: PostgreSQL driver pattern with psycopg2
+"""
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
-connection = mysql.connector.connect(
-    host=&quot;localhost&quot;,
-    user=&quot;root&quot;,
-    password=&quot;password123&quot;,
-    database=&quot;production_db&quot;
+# Connect using DSN or keyword arguments:
+connection = psycopg2.connect(
+    host="localhost",
+    dbname="app_db",
+    user="postgres",
+    password="my_password"
 )
-cursor = connection.cursor(dictionary=True) # returns rows as dicts
-cursor.execute(&quot;SELECT * FROM customers WHERE active = %s&quot;, (True,))
-results = cursor.fetchall()
+
+# Use RealDictCursor to receive rows as Python dicts:
+with connection.cursor(cursor_factory=RealDictCursor) as cur:
+    # Use %s placeholder (PostgreSQL standard):
+    cur.execute("SELECT id, name, balance FROM accounts WHERE balance > %s", (500.0,))
+    for account in cur.fetchall():
+        print(f"Account {account['id']}: {account['name']} (${account['balance']})")
+
 connection.close()
-&quot;&quot;&quot;
-print(&quot;DB-API 2.0 provides identical cursor &amp; execute mechanics across MySQL, PostgreSQL, Oracle, and SQLite.&quot;)</pre></div>
+"""
+print("Demonstrated psycopg2 PostgreSQL connection and parameterized query pattern.")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Database Programming (PDBC).</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build an atomic bank funds transfer function with complete transaction rollback on failure.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: In-Memory Transactional Bank Account Ledger
+                <div class="code"><pre># Mini Project: Atomic Banking Transfer with ACID Rollback
 import sqlite3
 
-conn = sqlite3.connect(&quot;:memory:&quot;)
+conn = sqlite3.connect(":memory:")
 cur = conn.cursor()
 
-cur.execute(&quot;CREATE TABLE accounts (id INTEGER PRIMARY KEY, holder TEXT, balance REAL)&quot;)
-cur.execute(&quot;INSERT INTO accounts (holder, balance) VALUES (&#x27;Alice&#x27;, 1000.0), (&#x27;Bob&#x27;, 500.0)&quot;)
+cur.execute("""
+    CREATE TABLE accounts (
+        id INTEGER PRIMARY KEY,
+        holder TEXT NOT NULL,
+        balance REAL CHECK(balance >= 0)
+    )
+""")
+
+cur.execute("INSERT INTO accounts VALUES (1, 'Alice', 1000.0), (2, 'Bob', 500.0)")
 conn.commit()
 
-def transfer_funds(from_id, to_id, amount):
+def transfer(conn, from_acc, to_acc, amount):
+    cur = conn.cursor()
     try:
-        cur.execute(&quot;BEGIN TRANSACTION&quot;)
-        # Deduct:
-        cur.execute(&quot;UPDATE accounts SET balance = balance - ? WHERE id = ?&quot;, (amount, from_id))
-        # Add:
-        cur.execute(&quot;UPDATE accounts SET balance = balance + ? WHERE id = ?&quot;, (amount, to_id))
+        # Atomic Transaction Begin
+        cur.execute("UPDATE accounts SET balance = balance - ? WHERE id = ?", (amount, from_acc))
+        cur.execute("UPDATE accounts SET balance = balance + ? WHERE id = ?", (amount, to_acc))
         conn.commit()
-        print(f&quot;Successfully transferred ${amount:.2f} from Account #{from_id} to #{to_id}&quot;)
-    except Exception as err:
-        conn.rollback()
-        print(f&quot;Transaction failed, rolled back: {err}&quot;)
+        print(f"[SUCCESS] Transferred ${amount:.2f} from Account #{from_acc} to #{to_acc}")
+    except sqlite3.IntegrityError as err:
+        conn.rollback()  # Rollback on CHECK(balance >= 0) violation
+        print(f"[ROLLBACK] Transfer of ${amount:.2f} aborted: Insufficient funds or constraint error ({err})")
 
-transfer_funds(1, 2, 200.0)
+# Valid transfer:
+transfer(conn, 1, 2, 200.0)
 
-for row in cur.execute(&quot;SELECT id, holder, balance FROM accounts&quot;):
-    print(f&quot;  Account #{row[0]} ({row[1]}): ${row[2]:.2f}&quot;)
+# Invalid transfer (attempting to overdraft Alice's remaining $800):
+transfer(conn, 1, 2, 950.0)
+
+for row in cur.execute("SELECT id, holder, balance FROM accounts"):
+    print(f"  Account {row[0]} ({row[1]}): ${row[2]:.2f}")
 conn.close()</pre></div>
               </div>
             </details>
@@ -424,30 +748,33 @@ conn.close()</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 critical database edge cases and demonstrate preventing SQL injection safely.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Database Pitfalls &amp; Edge Cases:
-# 1. SQL Injection: Never format query strings with f-strings or %:
-# BAD:  cur.execute(f&quot;SELECT * FROM users WHERE user = &#x27;{username}&#x27;&quot;)
-# GOOD: cur.execute(&quot;SELECT * FROM users WHERE user = ?&quot;, (username,))
-
-# 2. Forgetting conn.commit() for INSERT/UPDATE/DELETE (changes will be discarded on close!).
-
-# 3. Connection leaks: Always close connections or use context manager: with sqlite3.connect(...) as conn:</pre></div>
+                <div class="code"><pre># Edge Cases &amp; Security Pitfalls:
+# 1. SQL Injection:
+#    BAD:  cur.execute(f"SELECT * FROM users WHERE username = '{user_input}'")
+#    GOOD: cur.execute("SELECT * FROM users WHERE username = ?", (user_input,))
+#
+# 2. Forgetting commit(): INSERT/UPDATE/DELETE are not saved to disk until conn.commit() is called.
+#
+# 3. Unbounded fetchall() on massive tables causes Out-Of-Memory (OOM) errors.
+#    Use cursor iteration or fetchmany(1000) for large tables.</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Database Programming (PDBC)) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain the PEP 249 DB-API 2.0 specification and workflow.</li>
+          <li>I know how to write parameterized queries to prevent SQL injection.</li>
+          <li>I understand when to use <code>fetchone()</code>, <code>fetchall()</code>, and cursor streaming.</li>
+          <li>I know how to connect to PostgreSQL with <code>psycopg2</code> and use connection pools.</li>
         </ul>
       </section>
-      <footer>Python Notes File 28. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 29. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

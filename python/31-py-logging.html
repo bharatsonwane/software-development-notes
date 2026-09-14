@@ -42,13 +42,18 @@
       </nav>
       <header class="hero" id="intro">
         <h1>31. Logging</h1>
-        <p class="subtitle">File 31 — logging levels, formatters, custom loggers, config.</p>
+        <p class="subtitle">Severity levels, handlers, formatters, hierarchical loggers, exception tracking, and production log rotation.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">logging</span>
+          <span class="chip">DEBUG to CRITICAL</span>
+          <span class="chip">Handlers &amp; Formatters</span>
+          <span class="chip">getLogger(__name__)</span>
+          <span class="chip">RotatingFileHandler</span>
+          <span class="chip">dictConfig</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,29 +62,30 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. Why Logging Over <code>print()</code>?</h3>
+        <p>In hobby scripts, developers frequently rely on <code>print()</code> to see what the code is doing. However, in production applications, microservices, and libraries, <code>print()</code> is completely inadequate because:</p>
         <ul>
-          <li>This chapter covers <strong>Logging</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>No Granular Levels:</strong> You cannot disable debug prints in production without manually deleting or commenting out code lines.</li>
+          <li><strong>No Routing / Destinations:</strong> <code>print()</code> writes indiscriminately to standard output (<code>sys.stdout</code>). It cannot simultaneously write to rotating files, external syslog servers, or error alerts.</li>
+          <li><strong>No Contextual Metadata:</strong> <code>print()</code> lacks timestamps, process IDs, thread names, module names, and line numbers unless manually constructed.</li>
+          <li><strong>No Exception Tracebacks:</strong> Capturing stack traces and diagnostics with <code>print()</code> during an outage requires messy manual traceback formatting.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">31-practice.py</code> before File 32. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+        <p>Python's built-in <strong><code>logging</code></strong> module provides a standardized, thread-safe, and highly configurable framework to track events, performance, and errors across applications.</p>
+
+        <h3>1.2. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction, levels, and basic demo</strong></li>
-          <li><strong>Formatting messages; logging exceptions</strong></li>
-          <li><strong>Custom logger patterns</strong></li>
-          <li><strong>Per-module logs and inspect</strong></li>
-          <li><strong>Generic logger and config file</strong></li>
+          <li><strong>Introduction</strong> — Why logging is essential and limitations of <code>print()</code></li>
+          <li><strong>Introduction, levels, and basic demo</strong> — The 5 severity levels, numeric values, and <code>basicConfig</code></li>
+          <li><strong>Formatting messages; logging exceptions</strong> — LogRecord attributes and <code>logger.exception()</code></li>
+          <li><strong>Custom logger patterns</strong> — The four pillars: Loggers, Handlers, Formatters, and Filters</li>
+          <li><strong>Per-module logs and inspect</strong> — Hierarchical dot-notation and <code>getLogger(__name__)</code></li>
+          <li><strong>Generic logger and config file</strong> — Production log rotation and dictionary configuration (<code>dictConfig</code>)</li>
+          <li><strong>C. Common questions</strong> — High-yield interview questions with comprehensive answers</li>
+          <li><strong>P. Practical Assignment</strong> — Complete coding drills, multi-handler production logger, and edge cases</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-introduction-levels-and-basic-demo">
         <div class="heading-with-levels">
           <h2>2. Introduction, levels, and basic demo</h2>
@@ -88,14 +94,67 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-introduction-levels-and-basic-demo-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Introduction, levels, and basic demo</strong>.</li>
-          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>2.1. The 5 Standard Logging Levels</h3>
+        <p>Events are categorized by severity. Each level corresponds to an integer value in the <code>logging</code> module:</p>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Numeric Value</th>
+              <th>When to Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>DEBUG</code></td>
+              <td>10</td>
+              <td>Detailed diagnostic information, typically of interest only when diagnosing problems.</td>
+            </tr>
+            <tr>
+              <td><code>INFO</code></td>
+              <td>20</td>
+              <td>Confirmation that things are working as expected (e.g. service startup, user login).</td>
+            </tr>
+            <tr>
+              <td><code>WARNING</code></td>
+              <td>30</td>
+              <td>An indication that something unexpected happened (e.g. disk low, retry), but software still functions. <strong>(DEFAULT LEVEL)</strong></td>
+            </tr>
+            <tr>
+              <td><code>ERROR</code></td>
+              <td>40</td>
+              <td>Due to a more serious problem, the software has been unable to perform some function (e.g. database query failure).</td>
+            </tr>
+            <tr>
+              <td><code>CRITICAL</code></td>
+              <td>50</td>
+              <td>A serious error, indicating that the program itself may be unable to continue running (e.g. memory exhaustion, core dependency down).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="2-introduction-levels-and-basic-demo-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Basic Logging with <code>basicConfig()</code></h3>
+        <p><code>logging.basicConfig()</code> configures the root logger with basic defaults (destination, format, and minimum severity threshold). Any log event with severity <em>greater than or equal to</em> the configured threshold will be emitted.</p>
+
+        <div class="code"><pre>import logging
+
+# Configure basic logging to console with INFO threshold:
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s - %(message)s"
+)
+
+logging.debug("This is a DEBUG message (Will NOT be displayed because threshold is INFO)")
+logging.info("Application worker started successfully.")
+logging.warning("Cache hit ratio dropped below 70%.")
+logging.error("Database query timed out after 5000ms.")
+logging.critical("Payment gateway returned 503 Service Unavailable!")</pre></div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-formatting-messages-logging-exceptions">
         <div class="heading-with-levels">
           <h2>3. Formatting messages; logging exceptions</h2>
@@ -104,14 +163,44 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-formatting-messages-logging-exceptions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+        <h3>3.1. Standard LogRecord Attributes</h3>
+        <p>When an event is logged, Python creates a <code>LogRecord</code> object containing rich contextual attributes that can be injected into the format string:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Formatting messages; logging exceptions</strong>.</li>
-          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
+          <li><code>%(asctime)s</code>: Human-readable timestamp when the LogRecord was created.</li>
+          <li><code>%(levelname)s</code>: Text logging level for the message (<code>'DEBUG'</code>, <code>'INFO'</code>, etc.).</li>
+          <li><code>%(name)s</code>: Name of the logger used to log the call.</li>
+          <li><code>%(message)s</code>: The logged message string itself.</li>
+          <li><code>%(filename)s</code>: Filename portion of pathname where the logging call was made.</li>
+          <li><code>%(lineno)d</code>: Source line number where the logging call was made.</li>
+          <li><code>%(threadName)s</code>: Thread name (vital for multi-threaded debugging).</li>
+          <li><code>%(process)d</code>: Process ID (PID).</li>
         </ul>
+
+        <h3 id="3-formatting-messages-logging-exceptions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Logging Exceptions with Full Tracebacks</h3>
+        <p>Inside an <code>except</code> block, calling <code>logger.exception("message")</code> automatically captures the active exception traceback and appends it to the log message (equivalent to <code>logger.error("message", exc_info=True)</code>).</p>
+
+        <div class="code"><pre>import logging
+
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d): %(message)s"
+)
+
+def divide_numbers(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        # Automatically extracts exception and complete stack trace!
+        logging.exception("Failed to compute division ratio:")
+        return None
+
+divide_numbers(10, 0)</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-custom-logger-patterns">
         <div class="heading-with-levels">
           <h2>4. Custom logger patterns</h2>
@@ -120,14 +209,74 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-custom-logger-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Custom logger patterns</strong>.</li>
-          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>4.1. The 4 Pillars of Python Logging Architecture</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Class</th>
+              <th>Responsibility</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Logger</strong></td>
+              <td><code>logging.Logger</code></td>
+              <td>The direct interface that application code invokes (e.g. <code>logger.info()</code>). Evaluates severity thresholds and passes LogRecords to Handlers.</td>
+            </tr>
+            <tr>
+              <td><strong>Handler</strong></td>
+              <td><code>logging.Handler</code></td>
+              <td>Sends LogRecords to target destinations (console, disk files, HTTP endpoints, email).</td>
+            </tr>
+            <tr>
+              <td><strong>Formatter</strong></td>
+              <td><code>logging.Formatter</code></td>
+              <td>Specifies the exact structure and layout of the final output string.</td>
+            </tr>
+            <tr>
+              <td><strong>Filter</strong></td>
+              <td><code>logging.Filter</code></td>
+              <td>Provides fine-grained control to allow or reject specific LogRecords based on custom criteria.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="4-custom-logger-patterns-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Building a Custom Multi-Destination Logger</h3>
+        <p>In production applications, you often want <code>DEBUG</code> messages to be saved to a file, while only <code>WARNING</code> and above appear on the console.</p>
+
+        <div class="code"><pre>import logging
+import sys
+
+# 1. Create a custom logger:
+logger = logging.getLogger("service_logger")
+logger.setLevel(logging.DEBUG)  # Lowest threshold for the logger itself
+
+# 2. Console Handler (WARNING and above to stderr):
+console_handler = logging.StreamHandler(sys.stderr)
+console_handler.setLevel(logging.WARNING)
+console_format = logging.Formatter("[CONSOLE %(levelname)s] %(message)s")
+console_handler.setFormatter(console_format)
+
+# 3. File Handler (DEBUG and above to disk):
+file_handler = logging.FileHandler("service_debug.log", mode="a")
+file_handler.setLevel(logging.DEBUG)
+file_format = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+file_handler.setFormatter(file_format)
+
+# 4. Attach handlers to logger:
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
+# Testing:
+logger.debug("Detailed debug info (written to file only)")
+logger.warning("Warning message (written to BOTH file and console!)")</pre></div>
       </section>
+
+      <!-- SECTION 5 -->
       <section id="5-per-module-logs-and-inspect">
         <div class="heading-with-levels">
           <h2>5. Per-module logs and inspect</h2>
@@ -136,14 +285,27 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="5-per-module-logs-and-inspect-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Per-module logs and inspect</strong>.</li>
-          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>5.1. The Idiomatic Pattern: <code>getLogger(__name__)</code></h3>
+        <p>Always create loggers using <code>logger = logging.getLogger(__name__)</code> at the top of every module. Because <code>__name__</code> reflects the module's hierarchical package path (e.g. <code>auth.jwt.validator</code>), Python automatically establishes a parent-child relationship between loggers.</p>
+
+        <div class="code"><pre># In auth/service.py:
+import logging
+
+logger = logging.getLogger(__name__)
+
+def authenticate(username):
+    logger.info("Authenticating user: %s", username)
+    # Output name will be "auth.service"</pre></div>
+
+        <h3 id="5-per-module-logs-and-inspect-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>5.2. Logger Propagation and Preventing Duplicate Messages</h3>
+        <p>By default, child loggers pass their LogRecords up to their parent loggers (all the way to root) via <strong>propagation</strong> (<code>logger.propagate = True</code>). If a child logger has its own handler attached AND propagates to a root logger that also has a handler, <strong>every message will be logged twice!</strong></p>
+        <p>To avoid duplicate logs, either configure handlers exclusively on the root logger, or set <code>logger.propagate = False</code> on child loggers that manage their own handlers.</p>
       </section>
+
+      <!-- SECTION 6 -->
       <section id="6-generic-logger-and-config-file">
         <div class="heading-with-levels">
           <h2>6. Generic logger and config file</h2>
@@ -152,14 +314,75 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="6-generic-logger-and-config-file-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Generic logger and config file</strong>.</li>
-          <li>Write small demos in <code class="inline">31-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>6.1. Production Log Rotation: <code>RotatingFileHandler</code></h3>
+        <p>If an application runs continuously, a single log file will grow indefinitely, eventually consuming all disk space. <code>RotatingFileHandler</code> automatically rotates log files when they reach a maximum size limit (<code>maxBytes</code>), maintaining a fixed number of backup archives (<code>backupCount</code>).</p>
+
+        <div class="code"><pre>import logging
+from logging.handlers import RotatingFileHandler
+
+# Rotate when file hits 5 MB, keeping at most 3 backups:
+rotating_handler = RotatingFileHandler(
+    "app_service.log",
+    maxBytes=5 * 1024 * 1024,  # 5 MB
+    backupCount=3,
+    encoding="utf-8"
+)
+
+formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
+rotating_handler.setFormatter(formatter)
+
+app_logger = logging.getLogger("production_app")
+app_logger.setLevel(logging.INFO)
+app_logger.addHandler(rotating_handler)</pre></div>
+
+        <h3 id="6-generic-logger-and-config-file-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>6.2. Dictionary-Based Configuration: <code>dictConfig</code></h3>
+        <p>In modern production Python (Django, FastAPI, Flask), logging is configured declaratively using <code>logging.config.dictConfig()</code> from a Python dictionary or YAML file.</p>
+
+        <div class="code"><pre>import logging.config
+
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        },
+        "json_style": {
+            "format": '{"time": "%(asctime)s", "level": "%(levelname)s", "msg": "%(message)s"}'
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "standard",
+            "stream": "ext://sys.stdout"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "json_style",
+            "filename": "server.log",
+            "maxBytes": 10485760,  # 10 MB
+            "backupCount": 5
+        }
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": ["console", "file"]
+    }
+}
+
+logging.config.dictConfig(LOGGING_CONFIG)
+
+prod_logger = logging.getLogger("api.orders")
+prod_logger.info("Order service initialized successfully.")</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -173,44 +396,101 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction, levels, and basic demo?</span>
+            <span class="qa-question-title">C.1. Why should you use the <code>logging</code> module instead of <code>print()</code> in production?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code>print()</code> lacks severity categorization, outputs only to <code>sys.stdout</code>, lacks timestamps and thread context, cannot be turned off selectively without editing source code, and cannot rotate files when disk space fills up.</p>
+            <p>The <code>logging</code> module allows dynamically adjusting thresholds (e.g. <code>INFO</code> in production, <code>DEBUG</code> in staging) via configuration, sends outputs to multiple destinations simultaneously, captures stack traces automatically, and is thread-safe.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Formatting messages; logging exceptions?</span>
+            <span class="qa-question-title">C.2. What are the standard logging levels, their numeric values, and the default level?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><code>DEBUG</code> (10): Diagnostic details.</li>
+              <li><code>INFO</code> (20): General operational milestones.</li>
+              <li><code>WARNING</code> (30): Potential issues or unexpected states. <strong>(DEFAULT LEVEL)</strong></li>
+              <li><code>ERROR</code> (40): Serious failure in a specific function.</li>
+              <li><code>CRITICAL</code> (50): Severe failure threatening the application process.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Custom logger patterns?</span>
+            <span class="qa-question-title">C.3. How do Loggers, Handlers, Formatters, and Filters collaborate?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Application code calls a <strong>Logger</strong> (e.g. <code>logger.info()</code>). The Logger checks its minimum level; if satisfied, it packages the event into a <code>LogRecord</code> object. The Logger forwards this record to one or more <strong>Handlers</strong>. Each Handler determines if it accepts the record level, passes it through optional <strong>Filters</strong>, uses a <strong>Formatter</strong> to render the record into a formatted string, and writes it to the target destination (console, file, socket).</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Per-module logs and inspect?</span>
+            <span class="qa-question-title">C.4. Why is <code>logger = logging.getLogger(__name__)</code> standard best practice?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In Python, <code>__name__</code> evaluates to the fully qualified module name (e.g. <code>ecommerce.payments.stripe</code>). Using <code>__name__</code> establishes an intuitive logger hierarchy matching the project folder/module structure. This allows setting granular logging levels for specific packages or modules without modifying individual files.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the difference between <code>logger.error()</code> and <code>logger.exception()</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>logger.error("msg")</code> logs an <code>ERROR</code> level message without an exception traceback unless explicitly passed <code>exc_info=True</code>.</p>
+            <p><code>logger.exception("msg")</code> logs an <code>ERROR</code> level message and automatically captures and appends the active exception's full stack traceback from <code>sys.exc_info()</code>. It should only be called within an <code>except</code> block.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Why do duplicate log lines occur and how do you resolve them?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Duplicate log entries happen when:</p>
+            <ol>
+              <li>A child logger has a handler attached, and <code>logger.propagate = True</code> causes the record to also bubble up to a parent or root logger that has its own handler attached. (Fix: set <code>logger.propagate = False</code> or configure handlers exclusively on root).</li>
+              <li>Handlers are added repeatedly inside a function or loop without checking if handlers already exist (Fix: check <code>if not logger.handlers: logger.addHandler(...)</code>).</li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How does <code>RotatingFileHandler</code> work and why is it essential?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>RotatingFileHandler</code> writes log entries to an active file until its size reaches <code>maxBytes</code>. When full, the active file is closed and renamed (e.g. <code>app.log</code> $\to$ <code>app.log.1</code>, <code>app.log.1</code> $\to$ <code>app.log.2</code>), and a fresh <code>app.log</code> is created. If the number of backup archives exceeds <code>backupCount</code>, the oldest file is deleted. This guarantees that logs never exhaust the server's disk space.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why should you pass format arguments as parameters instead of f-strings to log methods?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Writing <code>logger.debug(f"User data: {heavy_computation()}")</code> evaluates the f-string immediately even if the logger's level is set to <code>INFO</code>, wasting CPU cycles.</p>
+            <p>Writing <code>logger.debug("User data: %s", user_id)</code> allows the logger to check if <code>DEBUG</code> is enabled first; if disabled, the string formatting operation is skipped entirely, saving significant CPU resources.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,7 +499,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">31-practice.py</code>. Run with <code class="inline">python3 31-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">31-practice.py</code>. Run with <code class="inline">python3 31-practice.py</code>. Test severity levels, formatters, and rotating handlers.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -230,30 +510,25 @@
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Logging Levels and Basic Setup:
-# 1. Python&#x27;s &#x27;logging&#x27; standard library tracks events during application runtime.
-# 2. Five standard severity levels: DEBUG (10) &lt; INFO (20) &lt; WARNING (30) &lt; ERROR (40) &lt; CRITICAL (50).
-# 3. Default logging level is WARNING; events below WARNING are ignored unless configured via basicConfig.</pre></div>
+                <div class="code"><pre># Summary of Python Logging:
+# 1. 5 standard severity levels: DEBUG (10), INFO (20), WARNING (30 - default), ERROR (40), CRITICAL (50).
+# 2. Always use getLogger(__name__) for hierarchical, per-module logging.
+# 3. RotatingFileHandler prevents disk space exhaustion in production environments.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Formatting messages; logging exceptions</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example setting up basic logging and emitting messages.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Formatting messages and logging exceptions:
-import logging
+                <div class="code"><pre>import logging
 
-logging.basicConfig(level=logging.INFO, format=&quot;%(asctime)s [%(levelname)s] %(message)s&quot;)
-logging.info(&quot;Application initialized.&quot;)
-
-try:
-    1 / 0
-except ZeroDivisionError:
-    logging.exception(&quot;Operation encountered a fatal division error:&quot;)</pre></div>
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.info("Worker node online")
+logging.warning("Memory utilization at 82%")</pre></div>
               </div>
             </details>
           </li>
@@ -264,182 +539,173 @@ except ZeroDivisionError:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Logging System.
+                <div class="code"><pre>"""Chapter Practice: Python Production Logging.
 
-Goal: Master logging levels, root vs custom logger hierarchies, Handlers,
-Formatters, exception traceback logging, and file rotation patterns.
-&quot;&quot;&quot;</pre></div>
+Goal: Master severity levels, LogRecord formatters, custom handlers,
+hierarchical logger propagation, and declarative dictConfig setups.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction, levels, and basic demo</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Logging exceptions</strong> — Catch an exception and record its full traceback using <code>logger.exception</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction, levels, and basic demo
+                <div class="code"><pre># Task 1: Exception logging with traceback
 import logging
 
-logger = logging.getLogger(&quot;demo_logger&quot;)
+logger = logging.getLogger("task1_logger")
+
+try:
+    result = 100 / 0
+except ZeroDivisionError:
+    logger.exception("Computation failed catastrophically:")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 2: Custom multi-handler logger</strong> — Create a logger with a console handler and a file handler.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 2: Multi-handler logger
+import logging
+import sys
+
+logger = logging.getLogger("custom_app")
 logger.setLevel(logging.DEBUG)
 
-# Console handler:
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter(&quot;%(levelname)s: %(message)s&quot;)
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+# Console handler (INFO and above)
+c_handler = logging.StreamHandler(sys.stdout)
+c_handler.setLevel(logging.INFO)
+c_handler.setFormatter(logging.Formatter("[CONSOLE] %(message)s"))
 
-logger.debug(&quot;Detailed diagnostic information (DEBUG)&quot;)
-logger.info(&quot;Normal lifecycle milestone (INFO)&quot;)
-logger.warning(&quot;Unusual condition that requires attention (WARNING)&quot;)
-logger.error(&quot;Operation failed (ERROR)&quot;)
-logger.critical(&quot;System failure / imminent shutdown (CRITICAL)&quot;)</pre></div>
+# File handler (DEBUG and above)
+f_handler = logging.FileHandler("app_audit.log", mode="a")
+f_handler.setLevel(logging.DEBUG)
+f_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+
+logger.addHandler(c_handler)
+logger.addHandler(f_handler)
+
+logger.debug("Debug event: only in file")
+logger.info("Info event: in file AND console")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Formatting messages; logging exceptions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Rotating file handler</strong> — Configure a rotating file handler that limits file sizes.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Formatting messages and logging exceptions
+                <div class="code"><pre># Task 3: Log rotation
+from logging.handlers import RotatingFileHandler
 import logging
 
-formatter = logging.Formatter(
-    fmt=&quot;%(asctime)s | %(name)s | %(levelname)-8s | %(filename)s:%(lineno)d | %(message)s&quot;,
-    datefmt=&quot;%Y-%m-%d %H:%M:%S&quot;
-)
-record = logging.LogRecord(
-    name=&quot;payment_service&quot;, level=logging.ERROR, pathname=&quot;payment.py&quot;,
-    lineno=42, msg=&quot;Card declined: insufficient funds&quot;, args=(), exc_info=None
-)
-print(&quot;Formatted Log Line:&quot;)
-print(formatter.format(record))</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Custom logger patterns</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Custom logger patterns (File and Console handlers)
-import logging
-import os
+rot_logger = logging.getLogger("rotator")
+rot_logger.setLevel(logging.INFO)
 
-app_logger = logging.getLogger(&quot;app.service&quot;)
-app_logger.setLevel(logging.INFO)
+handler = RotatingFileHandler("rot_test.log", maxBytes=1024, backupCount=2)
+handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+rot_logger.addHandler(handler)
 
-log_filename = &quot;app_activity.log&quot;
-file_handler = logging.FileHandler(log_filename, mode=&quot;w&quot;)
-file_handler.setFormatter(logging.Formatter(&quot;[%(asctime)s] %(levelname)s - %(message)s&quot;))
-
-app_logger.addHandler(file_handler)
-app_logger.info(&quot;Service started successfully.&quot;)
-app_logger.info(&quot;Processing queue batch #104.&quot;)
-
-file_handler.close()
-with open(log_filename) as f:
-    print(&quot;Log file output:\n&quot; + f.read())
-os.remove(log_filename)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Per-module logs and inspect</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Per-module logs and inspect
-import logging
-
-# Hierarchical logger naming:
-auth_logger = logging.getLogger(&quot;app.auth&quot;)
-db_logger = logging.getLogger(&quot;app.database&quot;)
-
-print(&quot;auth_logger name:&quot;, auth_logger.name)
-print(&quot;db_logger parent:&quot;, db_logger.parent.name)
-
-# Child loggers inherit effective level from parent unless explicitly overridden
-print(&quot;Effective level:&quot;, auth_logger.getEffectiveLevel())</pre></div>
+for i in range(50):
+    rot_logger.info(f"Log event sequence number #{i:04d} filling bytes...")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Logging.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a complete production logging setup using <code>dictConfig</code> with structured output.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Robust Request Logging Middleware Simulator
-import logging
-import time
+                <div class="code"><pre># Mini Project: Enterprise dictConfig setup
+import logging.config
 
-logger = logging.getLogger(&quot;api_middleware&quot;)
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter(&quot;%(asctime)s [%(levelname)s] %(message)s&quot;))
-logger.addHandler(handler)
+CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "detailed": {
+            "format": "%(asctime)s [%(levelname)s] (%(name)s:%(lineno)d): %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "detailed"
+        }
+    },
+    "loggers": {
+        "backend": {
+            "level": "INFO",
+            "handlers": ["console"],
+            "propagate": False
+        }
+    }
+}
 
-def log_api_request(endpoint, handler_fn):
-    start = time.perf_counter()
-    logger.info(f&quot;Incoming Request -&gt; {endpoint}&quot;)
-    try:
-        response = handler_fn()
-        elapsed = (time.perf_counter() - start) * 1000
-        logger.info(f&quot;Completed {endpoint} in {elapsed:.2f}ms with status 200 OK&quot;)
-        return response
-    except Exception as err:
-        logger.error(f&quot;Failed {endpoint}: {err}&quot;, exc_info=True)
-        return {&quot;error&quot;: str(err), &quot;status&quot;: 500}
-
-# Simulate successful request:
-log_api_request(&quot;/api/v1/health&quot;, lambda: {&quot;status&quot;: &quot;healthy&quot;})</pre></div>
+logging.config.dictConfig(CONFIG)
+log = logging.getLogger("backend.api")
+log.info("Production API server running on port 8000")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate preventing duplicate logs with <code>propagate = False</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Logging Pitfalls &amp; Edge Cases:
-# 1. Calling logging.basicConfig() after root logger already has handlers does nothing (ignored).
+                <div class="code"><pre># Edge Case: Preventing duplicate log output
+import logging
 
-# 2. Duplicate log lines: Adding handlers multiple times (e.g. inside a function called repeatedly).
+root = logging.getLogger()
+root.setLevel(logging.INFO)
+root_h = logging.StreamHandler()
+root.addHandler(root_h)
 
-# 3. String formatting overhead: Prefer logger.info(&quot;User %s&quot;, user) over logger.info(f&quot;User {user}&quot;) so formatting only occurs if level is active.</pre></div>
+child = logging.getLogger("my_child")
+child_h = logging.StreamHandler()
+child.addHandler(child_h)
+
+# By default, child.info("Test") would print TWICE!
+child.propagate = False  # Stops propagation to parent, preventing duplicate prints
+child.info("This message prints exactly once.")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Logging) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know why <code>print()</code> should not be used in production applications.</li>
+          <li>I can explain the numeric hierarchy of Python's 5 standard log levels.</li>
+          <li>I understand the roles of Loggers, Handlers, Formatters, and Filters.</li>
+          <li>I can configure rotating logs to prevent disk exhaustion.</li>
         </ul>
       </section>
-      <footer>Python Notes File 30. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 31. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
