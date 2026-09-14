@@ -41,13 +41,19 @@
       </nav>
       <header class="hero" id="intro">
         <h1>12. Sets</h1>
-        <p class="subtitle">File 12 — set properties, methods, math operators, comprehension.</p>
+        <p class="subtitle">File 12 — unique unordered collections, hash table internals, set algebra, frozenset, and set comprehensions.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Unordered &amp; Unique</span>
+          <span class="chip">Hash Table O(1)</span>
+          <span class="chip">Empty Set Trap</span>
+          <span class="chip">discard vs remove</span>
+          <span class="chip">Set Algebra (&amp; | - ^)</span>
+          <span class="chip">frozenset</span>
+          <span class="chip">Set Comprehension</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +62,40 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Sets</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>A <strong>Set</strong> in Python is an <strong>unordered, mutable, unindexed collection of unique, hashable objects</strong>. It is represented by the built-in <code class="inline">set</code> type.</li>
+          <li>Sets mirror mathematical set theory: duplicates are strictly impossible, order is not guaranteed, and elements cannot be accessed using numeric indices or slices (<code class="inline">s[0]</code> raises a <code class="inline">TypeError</code>).</li>
+          <li>The primary superpowers of sets in Python are <strong>instantaneous $O(1)$ average-time membership testing</strong> (<code class="inline">x in s</code>), automatic duplicate elimination, and highly optimized mathematical set algebra (unions, intersections, differences).</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">12-practice.py</code> before File 13. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Internal Implementation in CPython</h3>
+        <div class="callout">
+          <strong>Under the Hood (PySetObject):</strong>
+          In CPython, a set is implemented as a <strong>hash table</strong> with open addressing and quadratic probing, very similar to dictionary keys:
+          <ul>
+            <li>When an item is inserted, Python computes its hash using <code class="inline">hash(item)</code> and maps it to a hash bucket.</li>
+            <li><strong>Constant Time Operations:</strong> Lookup (<code class="inline">in</code>), insertion (<code class="inline">add</code>), and deletion (<code class="inline">discard</code>) execute in <strong>$O(1)$ average time complexity</strong>, compared to $O(N)$ linear scans in lists and tuples.</li>
+            <li><strong>Requirement:</strong> Because sets rely on hashing, every element inserted into a set <strong>must be hashable</strong> (immutable objects whose hash value never changes).</li>
+          </ul>
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Set properties and creation</strong></li>
-          <li><strong>Important set methods</strong></li>
-          <li><strong>Mathematical and membership operators</strong></li>
-          <li><strong>Set comprehension</strong></li>
+          <li><strong>Set properties and creation</strong> — uniqueness, empty set trap, constructors, and <code class="inline">frozenset</code></li>
+          <li><strong>Important set methods</strong> — <code class="inline">add</code>, <code class="inline">update</code>, <code class="inline">remove</code> vs <code class="inline">discard</code>, <code class="inline">pop</code>, and <code class="inline">clear</code></li>
+          <li><strong>Mathematical and membership operators</strong> — union, intersection, difference, symmetric difference, and subset predicates</li>
+          <li><strong>Set comprehension</strong> — syntax, automatic deduplication, and conditional filtering</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: SET PROPERTIES AND CREATION -->
       <section id="2-set-properties-and-creation">
         <div class="heading-with-levels">
           <h2>2. Set properties and creation</h2>
@@ -86,14 +104,105 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-set-properties-and-creation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Core Characteristics of Python Sets</h3>
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Behavior</th><th>Details</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Unordered</strong></td>
+              <td>Yes</td>
+              <td>Elements do not maintain any predictable sequence. Iteration order depends on hash values and table sizing.</td>
+            </tr>
+            <tr>
+              <td><strong>Unique Elements</strong></td>
+              <td>Yes</td>
+              <td>Duplicate values are silently ignored and discarded upon insertion.</td>
+            </tr>
+            <tr>
+              <td><strong>Mutable Collection</strong></td>
+              <td>Yes</td>
+              <td>You can add and remove elements dynamically.</td>
+            </tr>
+            <tr>
+              <td><strong>Unindexed</strong></td>
+              <td>Yes</td>
+              <td>Indexing (<code class="inline">s[0]</code>) and slicing (<code class="inline">s[1:3]</code>) are unsupported and raise <code class="inline">TypeError</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Hashable Elements</strong></td>
+              <td>Mandatory</td>
+              <td>Elements must be immutable (integers, floats, strings, tuples). Mutable objects like lists, dicts, and sets are illegal.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>2.2. Ways to Create a Set &amp; The Empty Set Trap</h3>
+        <div class="callout">
+          <strong>The Empty Set Trap:</strong> Writing <code class="inline">s = {}</code> does <strong>NOT</strong> create an empty set; it creates an empty <strong>Dictionary</strong> (<code class="inline">dict</code>) for historical reasons. To create an empty set, you <strong>must use the <code class="inline">set()</code> constructor</strong>.
+        </div>
+
+        <div class="code"><pre># The Empty Set Trap:
+empty_dict = {}
+print(type(empty_dict))  # &lt;class 'dict'&gt;
+
+empty_set = set()
+print(type(empty_set))   # &lt;class 'set'&gt;
+
+# Set literals with non-empty elements:
+primes = {2, 3, 5, 7, 11}
+print(primes)
+
+# Automatic deduplication:
+numbers = {10, 20, 10, 30, 20, 40}
+print("Deduplicated:", numbers)  # {40, 10, 20, 30} (Duplicates removed)
+
+# Creating set from any iterable:
+char_set = set("MISSISSIPPI")
+print("Unique chars:", char_set)  # {'M', 'I', 'S', 'P'}
+
+list_dedup = set([1, 2, 2, 3, 4, 4, 5])
+print("List deduplication:", list_dedup)  # {1, 2, 3, 4, 5}</pre></div>
+
+        <h3 id="2-set-properties-and-creation-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. The Unhashable Type Error</h3>
+        <p>A set can only contain objects that possess a lifetime-constant hash value. Attempting to insert a mutable container raises a <code class="inline">TypeError</code>:</p>
+
+        <div class="code"><pre># Valid elements (Immutable / Hashable):
+valid_set = {10, "Sonwane", (1, 2, 3), 3.14}
+print("Valid set:", valid_set)
+
+# Invalid elements (Mutable / Unhashable):
+# bad1 = {[1, 2], [3, 4]}  # TypeError: unhashable type: 'list'
+# bad2 = {{1, 2}, {3, 4}}  # TypeError: unhashable type: 'set'
+# bad3 = {{"a": 1}}        # TypeError: unhashable type: 'dict'</pre></div>
+
+        <h3>2.4. The <code class="inline">frozenset</code> (Immutable Set)</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Set properties and creation</strong>.</li>
-          <li>Write small demos in <code class="inline">12-practice.py</code> covering this section.</li>
+          <li>A <strong><code class="inline">frozenset</code></strong> is an immutable, read-only version of a Python set.</li>
+          <li>Because it is immutable, a <code class="inline">frozenset</code> is <strong>hashable</strong>: it can be used as a <strong>dictionary key</strong> or stored as an element inside another set.</li>
         </ul>
+
+        <div class="code"><pre>fs = frozenset([1, 2, 3, 4, 4])
+print(fs)           # frozenset({1, 2, 3, 4})
+# fs.add(5)         # AttributeError: 'frozenset' object has no attribute 'add'
+
+# Using frozenset as a dictionary key:
+role_permissions = {
+    frozenset(["read", "write"]): "Editor",
+    frozenset(["read"]): "Viewer",
+    frozenset(["read", "write", "delete", "admin"]): "Admin"
+}
+
+user_perms = frozenset(["write", "read"])
+print("Role:", role_permissions[user_perms])  # Editor (Order-independent lookup!)</pre></div>
       </section>
+
+      <!-- SECTION 3: IMPORTANT SET METHODS -->
       <section id="3-important-set-methods">
         <div class="heading-with-levels">
           <h2>3. Important set methods</h2>
@@ -102,14 +211,76 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-important-set-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. Adding Elements: <code class="inline">add()</code> vs <code class="inline">update()</code></h3>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Argument</th><th>Behavior</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">s.add(item)</code></td>
+              <td>Single hashable item</td>
+              <td>Inserts the item directly into the set ($O(1)$).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.update(*iterables)</code></td>
+              <td>One or more iterables</td>
+              <td>Unpacks all items from the iterables and adds them individually.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>s = {10, 20}
+
+# add():
+s.add(30)
+print(s)  # {10, 20, 30}
+
+# update() takes multiple iterables (lists, strings, tuples, sets):
+s.update([40, 50], (60, 70), "AB")
+print("After update:", s)  # {10, 20, 30, 40, 50, 60, 70, 'A', 'B'}</pre></div>
+
+        <h3>3.2. Removing Elements: <code class="inline">remove()</code> vs <code class="inline">discard()</code></h3>
+        <div class="callout">
+          <strong>Key Interview Difference:</strong>
+          <ul>
+            <li><strong><code class="inline">s.remove(x)</code>:</strong> Removes <code class="inline">x</code>. If <code class="inline">x</code> is missing, it <strong>raises a <code class="inline">KeyError</code></strong>.</li>
+            <li><strong><code class="inline">s.discard(x)</code>:</strong> Removes <code class="inline">x</code> if present. If <code class="inline">x</code> is missing, it <strong>does nothing silently without raising an error</strong>. Always prefer <code class="inline">discard()</code> when deleting elements that might not exist.</li>
+          </ul>
+        </div>
+
+        <div class="code"><pre>fruits = {"apple", "banana", "cherry"}
+
+# discard() is safe:
+fruits.discard("banana")
+fruits.discard("mango")  # No error raised even though 'mango' is absent
+print("After discard:", fruits)  # {'apple', 'cherry'}
+
+# remove() raises error on missing item:
+fruits.remove("apple")
+print("After remove:", fruits)   # {'cherry'}
+# fruits.remove("mango")         # Raises KeyError: 'mango'</pre></div>
+
+        <h3 id="3-important-set-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.3. <code class="inline">pop()</code> and <code class="inline">clear()</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>Important set methods</strong>.</li>
-          <li>Write small demos in <code class="inline">12-practice.py</code> covering this section.</li>
+          <li><strong><code class="inline">s.pop()</code>:</strong> Removes and returns an <strong>arbitrary</strong> element from the set. Raises <code class="inline">KeyError</code> if the set is empty. (Note: "arbitrary" does not mean cryptographically random; it depends on internal hash bucket placement).</li>
+          <li><strong><code class="inline">s.clear()</code>:</strong> Removes all elements, leaving an empty set (<code class="inline">set()</code>).</li>
         </ul>
+
+        <div class="code"><pre>tags = {"python", "cloud", "backend", "api"}
+
+removed_tag = tags.pop()
+print(f"Popped tag: '{removed_tag}', Remaining tags: {tags}")
+
+tags.clear()
+print("After clear:", tags)  # set()</pre></div>
       </section>
+
+      <!-- SECTION 4: MATHEMATICAL AND MEMBERSHIP OPERATORS -->
       <section id="4-mathematical-and-membership-operators">
         <div class="heading-with-levels">
           <h2>4. Mathematical and membership operators</h2>
@@ -118,14 +289,87 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-mathematical-and-membership-operators-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. Set Algebraic Operations Table</h3>
+        <table>
+          <thead>
+            <tr><th>Operation</th><th>Operator</th><th>Method</th><th>Definition</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Union</strong></td>
+              <td><code class="inline">A | B</code></td>
+              <td><code class="inline">A.union(B)</code></td>
+              <td>All elements present in set A, set B, or both.</td>
+            </tr>
+            <tr>
+              <td><strong>Intersection</strong></td>
+              <td><code class="inline">A &amp; B</code></td>
+              <td><code class="inline">A.intersection(B)</code></td>
+              <td>Only elements present in both set A and set B.</td>
+            </tr>
+            <tr>
+              <td><strong>Difference</strong></td>
+              <td><code class="inline">A - B</code></td>
+              <td><code class="inline">A.difference(B)</code></td>
+              <td>Elements present in A that are NOT in B.</td>
+            </tr>
+            <tr>
+              <td><strong>Symmetric Difference</strong></td>
+              <td><code class="inline">A ^ B</code></td>
+              <td><code class="inline">A.symmetric_difference(B)</code></td>
+              <td>Elements in A or B, but NOT in both (Exclusive OR).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>Operator vs Method Nuance:</strong> The operators (<code class="inline">|</code>, <code class="inline">&amp;</code>, <code class="inline">-</code>, <code class="inline">^</code>) strictly require <strong>both operands to be sets</strong>. The corresponding methods (<code class="inline">union()</code>, <code class="inline">intersection()</code>, etc.) accept <strong>any iterable</strong> (list, tuple, string, dictionary) as arguments!
+        </div>
+
+        <div class="code"><pre>a = {1, 2, 3, 4, 5}
+b = {4, 5, 6, 7, 8}
+
+print("Union (|):                ", a | b)                 # {1, 2, 3, 4, 5, 6, 7, 8}
+print("Intersection (&):         ", a & b)                 # {4, 5}
+print("Difference (a - b):        ", a - b)                 # {1, 2, 3}
+print("Difference (b - a):        ", b - a)                 # {6, 7, 8}
+print("Symmetric Diff (a ^ b):    ", a ^ b)                 # {1, 2, 3, 6, 7, 8}
+
+# Method accepts arbitrary iterables:
+print("Union with list:          ", a.union([99, 100]))     # {1, 2, 3, 4, 5, 99, 100}
+# print(a | [99, 100])  # Raises TypeError: unsupported operand type(s) for |: 'set' and 'list'</pre></div>
+
+        <h3 id="4-mathematical-and-membership-operators-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. In-Place Set Mutation Operations</h3>
+        <p>You can update a set in-place using augmented assignment operators:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Mathematical and membership operators</strong>.</li>
-          <li>Write small demos in <code class="inline">12-practice.py</code> covering this section.</li>
+          <li><code class="inline">a |= b</code>: <code class="inline">a.update(b)</code> (Union in-place)</li>
+          <li><code class="inline">a &amp;= b</code>: <code class="inline">a.intersection_update(b)</code> (Intersection in-place)</li>
+          <li><code class="inline">a -= b</code>: <code class="inline">a.difference_update(b)</code> (Difference in-place)</li>
+          <li><code class="inline">a ^= b</code>: <code class="inline">a.symmetric_difference_update(b)</code> (Symmetric diff in-place)</li>
         </ul>
+
+        <h3>4.3. Subset, Superset &amp; Disjoint Relations</h3>
+        <div class="code"><pre>small = {1, 2}
+large = {1, 2, 3, 4}
+disjoint = {5, 6}
+
+# Subset (<=) and Proper Subset (<):
+print("small issubset large:     ", small.issubset(large))    # True
+print("small <= large:            ", small <= large)           # True
+print("small < large (proper):    ", small < large)            # True
+
+# Superset (>=):
+print("large is superset of small:", large.issuperset(small))  # True
+
+# Disjoint (zero shared elements):
+print("small isdisjoint disjoint: ", small.isdisjoint(disjoint)) # True</pre></div>
       </section>
+
+      <!-- SECTION 5: SET COMPREHENSION -->
       <section id="5-set-comprehension">
         <div class="heading-with-levels">
           <h2>5. Set comprehension</h2>
@@ -134,14 +378,35 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-set-comprehension-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Set comprehension</strong>.</li>
-          <li>Write small demos in <code class="inline">12-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. Syntax &amp; Mental Model</h3>
+        <p>Set comprehension uses curly braces <code class="inline">{}</code> with an expression and iteration clause. It dynamically builds a set while automatically deduplicating values:</p>
+
+        <div class="code"><pre># General Syntax:
+# { <expression> for <item> in <iterable> if <condition> }
+
+# Extract unique lengths of words:
+words = ["apple", "banana", "cherry", "fig", "date", "banana", "kiwi"]
+lengths = {len(w) for w in words}
+print("Unique word lengths:", lengths)  # {4, 5, 6, 3}
+
+# Unique uppercase vowels in a paragraph:
+text = "The quick brown fox jumps over the lazy dog"
+vowels = {char.upper() for char in text if char.lower() in "aeiou"}
+print("Unique vowels:", vowels)  # {'E', 'U', 'I', 'O', 'A'}</pre></div>
+
+        <h3 id="5-set-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Practical Sanitization &amp; File Extensions</h3>
+        <div class="code"><pre># Extract unique file extensions from a list of filenames:
+files = ["main.py", "test.py", "index.html", "style.css", "script.PY", "notes.txt", "app.js"]
+extensions = {f.rsplit(".", 1)[-1].lower() for f in files if "." in f}
+print("Unique extensions:", extensions)
+# {'py', 'html', 'css', 'txt', 'js'}</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -150,49 +415,115 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Set properties and creation?</span>
+            <span class="qa-question-title">C.1. Why does {} create a dictionary instead of an empty set?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Dictionaries were introduced in Python long before sets (sets were added in Python 2.3 as a module, and made built-in syntax in Python 2.4). Because <code class="inline">{}</code> was already established as the literal for an empty dictionary, reusing it for sets would have broken existing code.</p>
+            <p>Consequently, an empty set must be instantiated explicitly using <code class="inline">set()</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Important set methods?</span>
+            <span class="qa-question-title">C.2. Why is membership testing (item in s) O(1) in a set but O(N) in a list?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In a <strong>list</strong>, elements are stored sequentially. To check if an item exists, Python must iterate through the list from index 0 to $N-1$ until a match is found ($O(N)$ linear search).</p>
+            <p>In a <strong>set</strong>, elements are indexed via a <strong>hash table</strong>. Python computes <code class="inline">hash(item)</code> in $O(1)$ time, directly jumps to the calculated bucket address in memory, and verifies whether the bucket is occupied. This results in $O(1)$ average-case lookup time regardless of whether the set contains 10 items or 10,000,000 items.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Mathematical and membership operators?</span>
+            <span class="qa-question-title">C.3. What is the difference between remove() and discard()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">s.remove(x)</code>:</strong> Removes <code class="inline">x</code> from the set. If <code class="inline">x</code> is not present, it raises a <strong><code class="inline">KeyError</code></strong>. Use this only when the absence of an item indicates an abnormal application state.</li>
+              <li><strong><code class="inline">s.discard(x)</code>:</strong> Removes <code class="inline">x</code> if present. If absent, it silently completes without error. Ideal for idempotent cleanups.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Set comprehension?</span>
+            <span class="qa-question-title">C.4. Why can't a set contain a list or another set? What is hashability?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>To place an object into a hash table, Python must compute its hash code via <code class="inline">hash(obj)</code>. An object is <strong>hashable</strong> only if:</p>
+            <ol>
+              <li>Its hash value never changes during its entire lifetime.</li>
+              <li>It can be compared for equality with other objects (<code class="inline">__eq__</code>).</li>
+            </ol>
+            <p>Because lists, dictionaries, and sets are mutable, their contents can change at any time. If an object's contents change, its hash value would change, meaning Python would search for it in the wrong hash bucket! To preserve hash table integrity, Python forbids mutable objects from being inserted into sets, raising <code class="inline">TypeError: unhashable type: 'list'</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is a frozenset and when should you use it?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <code class="inline">frozenset</code> is an immutable, hashable variant of a set. Because it cannot be modified after construction, it implements <code class="inline">__hash__()</code>.</p>
+            <p>You should use a <code class="inline">frozenset</code> when:</p>
+            <ul>
+              <li>You need to use a set as a <strong>dictionary key</strong> (e.g. mapping a composite set of user roles or tag combinations to a permission level).</li>
+              <li>You need to store sets inside another set (a "set of sets").</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the difference between set operators (| , &) and set methods (union, intersection)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Operand Type Flexibility:</strong></p>
+            <ul>
+              <li>Set <strong>operators</strong> (<code class="inline">A | B</code>, <code class="inline">A & B</code>, <code class="inline">A - B</code>, <code class="inline">A ^ B</code>) strictly require both operands to be instances of <code class="inline">set</code> or <code class="inline">frozenset</code>. If one operand is a list, Python raises a <code class="inline">TypeError</code>.</li>
+              <li>Set <strong>methods</strong> (<code class="inline">A.union(B)</code>, <code class="inline">A.intersection(B)</code>) accept <strong>any arbitrary iterable</strong> (e.g. lists, tuples, dictionaries, generator expressions) as arguments.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What is the difference between Difference (A - B) and Symmetric Difference (A ^ B)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Difference (<code class="inline">A - B</code>):</strong> Elements that belong strictly to set <code class="inline">A</code> and do not exist in set <code class="inline">B</code> (Relative complement). Order matters: <code class="inline">A - B != B - A</code>.</li>
+              <li><strong>Symmetric Difference (<code class="inline">A ^ B</code>):</strong> Elements that belong to <code class="inline">A</code> or <code class="inline">B</code>, but <strong>NOT to both</strong>. It is equivalent to <code class="inline">(A | B) - (A & B)</code>. It is commutative: <code class="inline">A ^ B == B ^ A</code>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why is s.pop() considered arbitrary rather than random?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">s.pop()</code> does not use a random number generator. Instead, it scans the underlying CPython hash table array from index 0 onwards and removes the very first occupied entry it encounters.</p>
+            <p>Because the physical slot an element occupies depends strictly on its hash value and table resize history, consecutive calls in the same Python process will pop elements in deterministic hash-table order, not a uniformly distributed random order.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,209 +532,191 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">12-practice.py</code>. Run with <code class="inline">python3 12-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">12-practice.py</code>. Run with <code class="inline">python3 12-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Set properties and creation</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment summarizing set properties and the empty set trap.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Set Properties and Creation:
+                <div class="code"><pre># Set Foundations:
 # 1. Sets are unordered, unindexed collections of unique, hashable elements.
-# 2. Duplicate elements are automatically discarded upon addition.
-# 3. An empty set MUST be created with set(), since {} creates an empty dict.</pre></div>
+# 2. {} creates an empty dict; set() creates an empty set.
+# 3. Hash table implementation provides O(1) membership testing (item in s).</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Important set methods</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Deduplicate a list of integers and verify that membership testing runs in constant time.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Important set methods:
-s = {10, 20, 30}
-s.add(40)
-s.update([50, 60])
-s.discard(20)  # discard does NOT raise KeyError if absent
-print(&quot;Set after mutations:&quot;, s)
-popped = s.pop()
-print(f&quot;Popped element: {popped}, Remaining: {s}&quot;)</pre></div>
+                <div class="code"><pre>raw_ids = [101, 102, 101, 103, 104, 102, 105]
+unique_ids = set(raw_ids)
+print("Unique IDs:", unique_ids)  # {101, 102, 103, 104, 105}
+print("Is 103 present:", 103 in unique_ids)  # O(1) constant time lookup</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Safely remove elements using discard() and observe behavior when element is missing.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Sets and Set Theory Operations.
-
-Goal: Master set instantiation, membership testing, set algebra (union, intersection,
-difference, symmetric difference), and set comprehensions for deduplication.
-&quot;&quot;&quot;</pre></div>
+                <div class="code"><pre>colors = {"red", "green", "blue"}
+colors.discard("green")
+colors.discard("yellow")  # Does not raise KeyError!
+print("Colors after safe discard:", colors)  # {'red', 'blue'}</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Set properties and creation</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Common Elements Across Multiple Lists — Find items present across 3 independent customer transaction lists.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Set properties and creation
-# Deduplication on creation:
-numbers = [1, 2, 2, 3, 4, 4, 4, 5]
-unique_set = set(numbers)
-print(&quot;Original list:&quot;, numbers)
-print(&quot;Deduplicated set:&quot;, unique_set)
+                <div class="code"><pre>store_a = ["laptop", "mouse", "keyboard", "monitor"]
+store_b = ["mouse", "keyboard", "printer", "laptop"]
+store_c = ["keyboard", "laptop", "webcam", "headphones"]
 
-empty_dict = {}
-empty_set = set()
-print(&quot;type({}):&quot;, type(empty_dict))   # dict
-print(&quot;type(set()):&quot;, type(empty_set)) # set</pre></div>
+common_items = set(store_a).intersection(store_b, store_c)
+print("Items available in all 3 stores:", common_items)
+# Items available in all 3 stores: {'laptop', 'keyboard'}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Important set methods</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Unique Vocabulary &amp; Symmetric Difference — Compare words in two document summaries.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Important set methods
-tags = {&quot;python&quot;, &quot;coding&quot;, &quot;web&quot;}
-tags.add(&quot;backend&quot;)
-print(&quot;After add:&quot;, tags)
+                <div class="code"><pre>doc1 = "python is fast elegant and simple"
+doc2 = "python is powerful versatile and elegant"
 
-# remove vs discard:
-tags.discard(&quot;not_found&quot;)  # Safe: does nothing
-# tags.remove(&quot;not_found&quot;) # Would raise KeyError!
+words1 = set(doc1.split())
+words2 = set(doc2.split())
 
-tags.clear()
-print(&quot;After clear:&quot;, tags)</pre></div>
+shared_words = words1 & words2
+exclusive_words = words1 ^ words2
+
+print("Shared vocabulary:   ", shared_words)     # {'python', 'is', 'elegant', 'and'}
+print("Exclusive vocabulary:", exclusive_words)  # {'fast', 'simple', 'powerful', 'versatile'}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Mathematical and membership operators</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Pangram Checker — Verify if a sentence contains every letter of the English alphabet using sets.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Mathematical and membership operators
-a = {1, 2, 3, 4, 5}
-b = {4, 5, 6, 7, 8}
+                <div class="code"><pre>import string
 
-print(&quot;Union (a | b):&quot;, a | b)
-print(&quot;Intersection (a &amp; b):&quot;, a &amp; b)
-print(&quot;Difference (a - b):&quot;, a - b)
-print(&quot;Symmetric Difference (a ^ b):&quot;, a ^ b)
+def is_pangram(sentence: str) -> bool:
+    alphabet_set = set(string.ascii_lowercase)
+    sentence_set = {ch.lower() for ch in sentence if ch.isalpha()}
+    return alphabet_set <= sentence_set
 
-# Subset &amp; Superset tests:
-sub = {1, 2}
-print(&quot;sub.issubset(a):&quot;, sub.issubset(a))       # True
-print(&quot;a.issuperset(sub):&quot;, a.issuperset(sub))   # True</pre></div>
+print("Pangram 1:", is_pangram("The quick brown fox jumps over the lazy dog"))  # True
+print("Pangram 2:", is_pangram("Hello world, python is awesome"))              # False</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Set comprehension</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 4: Set Comprehension Filter — Filter and sanitize user input tags, stripping whitespace and lowercasing.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Set comprehension
-# Unique vowel extractor:
-text = &quot;The quick brown fox jumps over the lazy dog&quot;
-vowels = {ch.lower() for ch in text if ch.lower() in &quot;aeiou&quot;}
-print(&quot;Unique vowels found:&quot;, vowels)
-
-# Even squares:
-even_squares = {x**2 for x in range(10) if x % 2 == 0}
-print(&quot;Even squares set:&quot;, even_squares)</pre></div>
+                <div class="code"><pre>raw_tags = ["  Python ", "Django", "python", " API", "DJANGO  ", "cloud", "api "]
+clean_tags = {tag.strip().lower() for tag in raw_tags}
+print("Cleaned unique tags:", clean_tags)
+# {'python', 'django', 'api', 'cloud'}</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Sets.</span>
+                <span class="qa-question-title">Challenge 1: Jaccard Similarity Coefficient — Calculate text similarity between two documents based on set intersection and union.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: User Permissions &amp; Access Control Evaluator
-def check_access(user_roles, required_permissions, role_permissions_map):
-    # Aggregate all permissions granted by user&#x27;s roles using set union:
-    user_perms = set()
-    for role in user_roles:
-        user_perms.update(role_permissions_map.get(role, set()))
-    
-    missing_perms = required_permissions - user_perms
-    has_access = len(missing_perms) == 0
-    return has_access, missing_perms
+                <div class="code"><pre>def jaccard_similarity(text1: str, text2: str) -> float:
+    set1 = set(text1.lower().split())
+    set2 = set(text2.lower().split())
+    intersection_len = len(set1 & set2)
+    union_len = len(set1 | set2)
+    return round(intersection_len / union_len, 4) if union_len > 0 else 1.0
 
-role_map = {
-    &quot;editor&quot;: {&quot;read&quot;, &quot;write&quot;},
-    &quot;admin&quot;: {&quot;read&quot;, &quot;write&quot;, &quot;delete&quot;, &quot;manage_users&quot;},
-    &quot;viewer&quot;: {&quot;read&quot;}
-}
-
-req = {&quot;read&quot;, &quot;write&quot;, &quot;delete&quot;}
-ok, missing = check_access([&quot;editor&quot;], req, role_map)
-print(f&quot;Editor has full access: {ok}, Missing: {missing}&quot;)
-
-ok_admin, _ = check_access([&quot;admin&quot;], req, role_map)
-print(f&quot;Admin has full access: {ok_admin}&quot;)</pre></div>
+s1 = "data science with python and machine learning algorithms"
+s2 = "machine learning and deep learning with python algorithms"
+similarity = jaccard_similarity(s1, s2)
+print(f"Jaccard Similarity: {similarity * 100:.2f}%")
+# Jaccard Similarity: 55.56%</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Role-Based Access Control (RBAC) Engine — Implement permission verification using set algebra and frozenset.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Set Pitfalls &amp; Edge Cases:
-# 1. Sets cannot contain mutable items (unhashable):
-# s = {[1, 2], [3, 4]}  # TypeError: unhashable type: &#x27;list&#x27;
-s = {(1, 2), (3, 4)}    # Tuples are fine!
+                <div class="code"><pre># User has assigned permissions:
+user_permissions = {"read:posts", "write:posts", "read:profile"}
 
-# 2. Sets are unordered — you cannot slice or index them:
-# s[0]  # TypeError: &#x27;set&#x27; object is not subscriptable
+# Endpoint requires specific permissions:
+required_permissions = {"read:posts", "write:posts"}
+admin_permissions = {"read:posts", "write:posts", "delete:posts"}
 
-# 3. set() is mutable; frozenset() is the immutable variant (can be hashed).</pre></div>
+def has_access(granted: set, required: set) -> bool:
+    # All required permissions must be a subset of granted permissions:
+    return required <= granted
+
+print("Has standard access:", has_access(user_permissions, required_permissions))  # True
+print("Has admin access:   ", has_access(user_permissions, admin_permissions))     # False</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Sets) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know why <code class="inline">{}</code> creates a dict and <code class="inline">set()</code> creates an empty set.</li>
+          <li>I understand why membership testing <code class="inline">x in s</code> is $O(1)$ constant time.</li>
+          <li>I can explain the difference between <code class="inline">remove()</code> and <code class="inline">discard()</code>.</li>
+          <li>I know how to use <code class="inline">frozenset</code> as a hashable dictionary key.</li>
         </ul>
       </section>
-      <footer>Python Notes File 11. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 12. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

@@ -23,7 +23,7 @@
         <a href="#3-update-delete-and-important-methods">3. Update, delete, and important methods</a>
         <a href="#4-dict-programs-and-comprehension">4. Dict programs and comprehension</a>
         <a href="#5-merging-and-nested-collections">5. Merging and nested collections</a>
-        <a href="#6-mini-apps-dict-supermarket-outline">6. Mini apps (dict / supermarket outline)</a>
+        <a href="#6-mini-apps-dict-supermarket-outline">6. Mini apps (supermarket billing)</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -42,13 +42,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>13. Dictionaries</h1>
-        <p class="subtitle">File 13 — dict CRUD, methods, comprehension, mini apps.</p>
+        <p class="subtitle">File 13 — hash map key-value pairs, CPython compact hash table, CRUD operations, merging patterns, and real-world billing mini-applications.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Key-Value Mapping</span>
+          <span class="chip">Insertion-Ordered (3.7+)</span>
+          <span class="chip">Compact Hash Table</span>
+          <span class="chip">d.get() &amp; setdefault()</span>
+          <span class="chip">Dict Comprehension</span>
+          <span class="chip">Union Operator (|)</span>
+          <span class="chip">Nested Dicts</span>
+          <span class="chip">Supermarket Mini App</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,29 +64,46 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Dictionaries</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>A <strong>Dictionary</strong> (<code class="inline">dict</code>) is Python's built-in associative mapping type that associates unique <strong>keys</strong> with arbitrary <strong>values</strong> (<code class="inline">{key: value}</code>).</li>
+          <li>Unlike sequences (strings, lists, tuples) which are indexed by sequential numeric positions, dictionary items are accessed via their keys.</li>
+          <li>Since Python 3.7 (language specification guarantee), dictionaries maintain <strong>insertion order</strong>: iterating through a dictionary yields items in the exact order they were inserted.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">13-practice.py</code> before File 14. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. CPython Internals: The Compact Hash Table</h3>
+        <div class="callout">
+          <strong>Under the Hood (PEP 468 &amp; Python 3.6+):</strong>
+          CPython uses an ingenious <strong>compact hash table design</strong>:
+          <ul>
+            <li><strong>The Old Design (pre-3.6):</strong> Stored <code class="inline">[hash, key, value]</code> directly in a sparse hash table with empty entries, wasting 30–40% memory and having random iteration order.</li>
+            <li><strong>The Modern Compact Design:</strong> Uses two arrays:
+              <ol>
+                <li>A dense <code class="inline">entries</code> array that stores <code class="inline">[hash, key, value]</code> in chronological insertion order.</li>
+                <li>A sparse <code class="inline">indices</code> array of small integer indices mapping the hash code to the index in the <code class="inline">entries</code> array.</li>
+              </ol>
+            </li>
+            <li>This saves 20% to 25% RAM and provides guaranteed <strong>insertion-ordered iteration</strong> for free.</li>
+          </ul>
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>dict properties, creation, access</strong></li>
-          <li><strong>Update, delete, and important methods</strong></li>
-          <li><strong>Dict programs and comprehension</strong></li>
-          <li><strong>Merging and nested collections</strong></li>
-          <li><strong>Mini apps (dict / supermarket outline)</strong></li>
+          <li><strong>dict properties, creation, access</strong> — key rules, hashing, <code class="inline">[]</code> vs <code class="inline">get()</code></li>
+          <li><strong>Update, delete, and important methods</strong> — <code class="inline">keys()</code>, <code class="inline">values()</code>, <code class="inline">items()</code>, <code class="inline">setdefault()</code>, <code class="inline">pop()</code></li>
+          <li><strong>Dict programs and comprehension</strong> — syntax, inversion, frequency mapping</li>
+          <li><strong>Merging and nested collections</strong> — Python 3.9+ <code class="inline">|</code> operator, unpacking, nested navigation</li>
+          <li><strong>Mini apps (supermarket billing)</strong> — complete working inventory and invoice system</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: DICT PROPERTIES, CREATION, ACCESS -->
       <section id="2-dict-properties-creation-access">
         <div class="heading-with-levels">
           <h2>2. dict properties, creation, access</h2>
@@ -88,14 +112,81 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-dict-properties-creation-access-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>dict properties, creation, access</strong>.</li>
-          <li>Write small demos in <code class="inline">13-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>2.1. Key and Value Rules</h3>
+        <table>
+          <thead>
+            <tr><th>Component</th><th>Mutability</th><th>Uniqueness</th><th>Allowed Data Types</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Key</strong></td>
+              <td><strong>Immutable</strong> (Hashable)</td>
+              <td><strong>Unique</strong> (No duplicates)</td>
+              <td>Strings, numbers (int, float), tuples (containing only immutable items), frozensets.</td>
+            </tr>
+            <tr>
+              <td><strong>Value</strong></td>
+              <td>Mutable or Immutable</td>
+              <td>Duplicates Allowed</td>
+              <td>Any valid Python object (integers, lists, sets, functions, other dicts).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>2.2. Creation Patterns</h3>
+        <div class="code"><pre># 1. Empty dictionary:
+d1 = {}
+d2 = dict()
+
+# 2. Literal syntax:
+user = {
+    "id": 101,
+    "name": "Bharat Sonwane",
+    "role": "Lead Engineer",
+    "active": True
+}
+
+# 3. dict() constructor with keyword arguments:
+config = dict(host="localhost", port=8080, debug=True)
+
+# 4. dict() constructor from sequence of (key, value) pairs:
+pairs = [("a", 1), ("b", 2), ("c", 3)]
+d_from_pairs = dict(pairs)
+
+# 5. dict.fromkeys(keys, default_val):
+keys = ["cpu", "memory", "disk"]
+metrics = dict.fromkeys(keys, 0)
+print("Metrics:", metrics)  # {'cpu': 0, 'memory': 0, 'disk': 0}</pre></div>
+
+        <h3 id="2-dict-properties-creation-access-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. Safe vs Unsafe Key Access: <code class="inline">d[key]</code> vs <code class="inline">d.get()</code></h3>
+        <div class="callout">
+          <strong>Key Access Best Practice:</strong>
+          <ul>
+            <li><strong><code class="inline">d[key]</code>:</strong> Fast lookup. If <code class="inline">key</code> is not found, it raises a <strong><code class="inline">KeyError</code></strong>. Use this when the key is expected to exist.</li>
+            <li><strong><code class="inline">d.get(key, default=None)</code>:</strong> Returns the value if found; returns <code class="inline">None</code> (or specified default) if missing. <strong>Never raises a KeyError</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="code"><pre>profile = {"username": "sonwanebr", "tier": "gold"}
+
+# Unsafe access:
+print(profile["username"])  # 'sonwanebr'
+# print(profile["email"])   # Raises KeyError: 'email'
+
+# Safe access with get():
+print(profile.get("email"))                 # None (No error)
+print(profile.get("email", "not_provided")) # 'not_provided'
+
+# Membership testing: O(1) constant time on keys
+if "tier" in profile:
+    print(f"User tier is {profile['tier']}")</pre></div>
       </section>
+
+      <!-- SECTION 3: UPDATE, DELETE, AND IMPORTANT METHODS -->
       <section id="3-update-delete-and-important-methods">
         <div class="heading-with-levels">
           <h2>3. Update, delete, and important methods</h2>
@@ -104,14 +195,100 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-update-delete-and-important-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Update, delete, and important methods</strong>.</li>
-          <li>Write small demos in <code class="inline">13-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. Mutating &amp; Adding Key-Value Pairs</h3>
+        <div class="code"><pre>inventory = {"apples": 50, "bananas": 100}
+
+# 1. Direct assignment (Updates existing key or inserts new key):
+inventory["apples"] = 75     # Updates 'apples'
+inventory["oranges"] = 60    # Inserts 'oranges'
+print("Inventory:", inventory)
+
+# 2. update() method (merges another dict or iterable of pairs):
+inventory.update({"grapes": 40, "bananas": 120})
+print("After update:", inventory)</pre></div>
+
+        <h3>3.2. Dynamic Default Initialization: <code class="inline">setdefault()</code></h3>
+        <p><code class="inline">d.setdefault(key, default)</code> checks if <code class="inline">key</code> exists. If present, it returns its current value. If missing, it inserts <code class="inline">key</code> with value <code class="inline">default</code> and returns that default:</p>
+
+        <div class="code"><pre># Grouping words by their first letter using setdefault:
+words = ["apple", "apricot", "banana", "blueberry", "cherry"]
+grouped = {}
+
+for w in words:
+    grouped.setdefault(w[0], []).append(w)
+
+print("Grouped words:", grouped)
+# {'a': ['apple', 'apricot'], 'b': ['banana', 'blueberry'], 'c': ['cherry']}</pre></div>
+
+        <h3 id="3-update-delete-and-important-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.3. Deleting Elements: <code class="inline">pop()</code>, <code class="inline">popitem()</code>, <code class="inline">del</code>, <code class="inline">clear()</code></h3>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Behavior</th><th>Missing Key Handling</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">d.pop(k[, default])</code></td>
+              <td>Removes key <code class="inline">k</code> and returns its value.</td>
+              <td>Returns <code class="inline">default</code> if given; otherwise raises <code class="inline">KeyError</code>.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">d.popitem()</code></td>
+              <td>Removes and returns last inserted <code class="inline">(key, value)</code> pair (LIFO order).</td>
+              <td>Raises <code class="inline">KeyError</code> if dictionary is empty.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">del d[k]</code></td>
+              <td>Deletes key <code class="inline">k</code> statement-style.</td>
+              <td>Raises <code class="inline">KeyError</code> if missing.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">d.clear()</code></td>
+              <td>Empties dictionary in-place.</td>
+              <td>Always safe.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>cache = {"req_1": "OK", "req_2": "FAIL", "req_3": "TIMEOUT"}
+
+# pop():
+val = cache.pop("req_2")
+print(f"Popped: {val}, Remaining: {cache}")
+
+# pop() with default prevents KeyError:
+missing = cache.pop("req_99", "NOT_FOUND")
+print("Missing key pop:", missing)  # 'NOT_FOUND'
+
+# popitem() removes last item (LIFO):
+last_pair = cache.popitem()
+print("Popped item:", last_pair)   # ('req_3', 'TIMEOUT')</pre></div>
+
+        <h3>3.4. Dictionary View Objects: <code class="inline">keys()</code>, <code class="inline">values()</code>, <code class="inline">items()</code></h3>
+        <p>These methods return <strong>dynamic view objects</strong> that reflect changes in the underlying dictionary in real time:</p>
+
+        <div class="code"><pre>prices = {"pen": 10, "notebook": 50, "marker": 25}
+
+k_view = prices.keys()
+v_view = prices.values()
+i_view = prices.items()
+
+print("Keys:  ", list(k_view))
+print("Values:", list(v_view))
+
+# Views dynamically reflect changes:
+prices["eraser"] = 5
+print("Keys after update:", list(k_view))  # Automatically includes 'eraser'
+
+# Iterating key-value pairs:
+for item, price in prices.items():
+    print(f"{item:<10} -> ${price}")</pre></div>
       </section>
+
+      <!-- SECTION 4: DICT PROGRAMS AND COMPREHENSION -->
       <section id="4-dict-programs-and-comprehension">
         <div class="heading-with-levels">
           <h2>4. Dict programs and comprehension</h2>
@@ -120,14 +297,45 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-dict-programs-and-comprehension-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Dict programs and comprehension</strong>.</li>
-          <li>Write small demos in <code class="inline">13-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>4.1. Dict Comprehension Syntax</h3>
+        <p>Constructs a new dictionary concisely from any iterable:</p>
+        <div class="code"><pre># Syntax: { key_expr: value_expr for item in iterable if condition }
+
+# Numbers mapped to their squares:
+squares = {x: x**2 for x in range(1, 6)}
+print("Squares:", squares)  # {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}
+
+# Filter dictionary: keep items above threshold:
+salaries = {"Alice": 85000, "Bob": 52000, "Charlie": 95000, "Diana": 48000}
+high_earners = {k: v for k, v in salaries.items() if v >= 80000}
+print("High earners:", high_earners)  # {'Alice': 85000, 'Charlie': 95000}</pre></div>
+
+        <h3 id="4-dict-programs-and-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. Inverting a Dictionary (Key-Value Swap)</h3>
+        <div class="code"><pre># Inverting key-value pairs:
+code_to_country = {"US": "United States", "IN": "India", "DE": "Germany"}
+country_to_code = {country: code for code, country in code_to_country.items()}
+print("Inverted:", country_to_code)
+# {'United States': 'US', 'India': 'IN', 'Germany': 'DE'}</pre></div>
+
+        <h3>4.3. Character &amp; Word Frequency Counters</h3>
+        <div class="code"><pre># Character frequency map:
+msg = "mississippi"
+freq = {ch: msg.count(ch) for ch in set(msg)}
+print("Char Frequency:", freq)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}
+
+# Word frequency using dict.get():
+quote = "code clean code fast debug code"
+word_counts = {}
+for w in quote.split():
+    word_counts[w] = word_counts.get(w, 0) + 1
+print("Word Counts:", word_counts)  # {'code': 3, 'clean': 1, 'fast': 1, 'debug': 1}</pre></div>
       </section>
+
+      <!-- SECTION 5: MERGING AND NESTED COLLECTIONS -->
       <section id="5-merging-and-nested-collections">
         <div class="heading-with-levels">
           <h2>5. Merging and nested collections</h2>
@@ -136,30 +344,135 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-merging-and-nested-collections-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Merging and nested collections</strong>.</li>
-          <li>Write small demos in <code class="inline">13-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. Dictionary Merging in Python 3.9+ (PEP 584)</h3>
+        <p>Python 3.9 introduced the union operator (<code class="inline">|</code>) and in-place update operator (<code class="inline">|=</code>) for dictionaries. The right-hand operand takes precedence on duplicate keys:</p>
+
+        <div class="code"><pre>default_cfg = {"host": "localhost", "port": 8080, "timeout": 30}
+user_cfg = {"port": 9000, "debug": True}
+
+# 1. Merge operator (|) returns a brand new dictionary:
+merged = default_cfg | user_cfg
+print("Merged (user overrides default):", merged)
+# {'host': 'localhost', 'port': 9000, 'timeout': 30, 'debug': True}
+
+# 2. In-place merge (|=):
+default_cfg |= user_cfg
+print("In-place updated default_cfg:", default_cfg)
+
+# 3. Older pre-3.9 unpacking method:
+unpacked = {**default_cfg, **user_cfg}</pre></div>
+
+        <h3 id="5-merging-and-nested-collections-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Deep Merging &amp; Nested Dictionaries</h3>
+        <div class="code"><pre># Nested JSON-like record:
+company = {
+    "org": "TechCorp",
+    "departments": {
+        "engineering": {"head": "Rahul", "members": 45},
+        "marketing": {"head": "Sneha", "members": 15}
+    }
+}
+
+# Safe nested navigation:
+eng_head = company.get("departments", {}).get("engineering", {}).get("head")
+print("Engineering Head:", eng_head)  # Rahul
+
+# Recursive deep merge function:
+def deep_merge(dict1: dict, dict2: dict) -> dict:
+    result = dict1.copy()
+    for k, v in dict2.items():
+        if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+            result[k] = deep_merge(result[k], v)
+        else:
+            result[k] = v
+    return result
+
+base = {"ui": {"theme": "light", "fontSize": 14}, "api": "v1"}
+overrides = {"ui": {"theme": "dark"}, "debug": True}
+print("Deep Merged:", deep_merge(base, overrides))
+# {'ui': {'theme': 'dark', 'fontSize': 14}, 'api': 'v1', 'debug': True}</pre></div>
       </section>
+
+      <!-- SECTION 6: MINI APPS (SUPERMARKET BILLING) -->
       <section id="6-mini-apps-dict-supermarket-outline">
         <div class="heading-with-levels">
-          <h2>6. Mini apps (dict / supermarket outline)</h2>
+          <h2>6. Mini apps (supermarket billing)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-mini-apps-dict-supermarket-outline-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Mini apps (dict / supermarket outline)</strong>.</li>
-          <li>Write small demos in <code class="inline">13-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>6.1. Supermarket Inventory &amp; Invoice Generation System</h3>
+        <p>A complete, modular Python application using nested dictionaries for catalog lookup, stock tracking, and invoice generation:</p>
+
+        <div class="code"><pre># Supermarket catalog: Item -> {price, stock, unit}
+catalog = {
+    "101": {"name": "Milk (1L)",     "price": 60.0,  "stock": 25},
+    "102": {"name": "Brown Bread",   "price": 45.0,  "stock": 15},
+    "103": {"name": "Eggs (Dozen)",  "price": 84.0,  "stock": 40},
+    "104": {"name": "Butter (500g)", "price": 275.0, "stock": 10},
+    "105": {"name": "Coffee (200g)", "price": 320.0, "stock": 8}
+}
+
+# Customer shopping cart: {item_id: quantity_purchased}
+cart = {"101": 2, "103": 1, "105": 2}
+
+def generate_invoice(cart: dict, catalog: dict, tax_rate: float = 0.05) -> dict:
+    subtotal = 0.0
+    line_items = []
+
+    for item_id, qty in cart.items():
+        if item_id not in catalog:
+            continue
+        product = catalog[item_id]
+        if qty > product["stock"]:
+            raise ValueError(f"Insufficient stock for {product['name']}. Available: {product['stock']}")
+        
+        # Deduct inventory stock:
+        product["stock"] -= qty
+        total_price = qty * product["price"]
+        subtotal += total_price
+        
+        line_items.append({
+            "name": product["name"],
+            "qty": qty,
+            "unit_price": product["price"],
+            "total": total_price
+        })
+
+    tax = subtotal * tax_rate
+    grand_total = subtotal + tax
+
+    return {
+        "items": line_items,
+        "subtotal": subtotal,
+        "tax": tax,
+        "grand_total": grand_total
+    }
+
+# Run invoice generator:
+invoice = generate_invoice(cart, catalog)
+
+print("=" * 48)
+print(f"{'SUPERMARKET TAX INVOICE':^48}")
+print("=" * 48)
+print(f"{'Item':<18} {'Qty':<6} {'Unit ($)':<10} {'Total ($)':<10}")
+print("-" * 48)
+for item in invoice["items"]:
+    print(f"{item['name']:<18} {item['qty']:<6} {item['unit_price']:<10.2f} {item['total']:<10.2f}")
+print("-" * 48)
+print(f"{'Subtotal:':<36} ${invoice['subtotal']:.2f}")
+print(f"{'Tax (5%):':<36} ${invoice['tax']:.2f}")
+print(f"{'Grand Total:':<36} ${invoice['grand_total']:.2f}")
+print("=" * 48)</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -168,49 +481,105 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about dict properties, creation, access?</span>
+            <span class="qa-question-title">C.1. Since what Python version are dictionaries ordered, and how is it implemented?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Dictionaries became ordered by implementation in <strong>Python 3.6</strong> (CPython optimization), and became an official language specification guarantee in <strong>Python 3.7</strong>.</p>
+            <p>This is implemented via a compact hash table featuring two separate arrays: a dense <code class="inline">entries</code> array storing keys, values, and hash codes in chronological insertion order, and a sparse <code class="inline">indices</code> array mapping hash codes to indices in the entries array.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Update, delete, and important methods?</span>
+            <span class="qa-question-title">C.2. What is the difference between d['key'] and d.get('key')?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">d['key']</code>:</strong> Direct access. Raises a <strong><code class="inline">KeyError</code></strong> if the key is missing from the dictionary.</li>
+              <li><strong><code class="inline">d.get('key', default=None)</code>:</strong> Safe access. Returns <code class="inline">None</code> (or the provided fallback default) when the key does not exist, avoiding exceptions.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Dict programs and comprehension?</span>
+            <span class="qa-question-title">C.3. What makes an object eligible to be a dictionary key?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>An object can be a dictionary key if and only if it is <strong>hashable</strong>:</p>
+            <ol>
+              <li>It implements <code class="inline">__hash__()</code> and its hash value remains constant throughout its lifecycle.</li>
+              <li>It implements <code class="inline">__eq__()</code> to allow equality comparison with other keys.</li>
+            </ol>
+            <p>Immutable types (integers, floats, strings, tuples of immutable items, frozensets) are hashable. Mutable types (lists, dicts, sets) are unhashable and raise <code class="inline">TypeError: unhashable type</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Merging and nested collections?</span>
+            <span class="qa-question-title">C.4. How does setdefault() differ from dict.get()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">d.get(k, default)</code>:</strong> Purely reads from the dictionary. If <code class="inline">k</code> is missing, it returns <code class="inline">default</code> but <strong>does not modify the dictionary</strong>.</li>
+              <li><strong><code class="inline">d.setdefault(k, default)</code>:</strong> Reads and conditionally writes. If <code class="inline">k</code> is missing, it <strong>inserts <code class="inline">d[k] = default</code> in-place</strong> and returns that default.</li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How does the | union operator in Python 3.9 handle duplicate keys?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When merging dictionaries using <code class="inline">c = a | b</code>, if a key is present in both <code class="inline">a</code> and <code class="inline">b</code>, the value from the <strong>right-hand dictionary (<code class="inline">b</code>) takes precedence and overwrites</strong> the value from the left-hand dictionary (<code class="inline">a</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Why is iterating over a dictionary and mutating its keys forbidden?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Adding or removing keys during iteration alters the size of the underlying hash table. This invalidates the dictionary iterator's internal state, raising a <strong><code class="inline">RuntimeError: dictionary changed size during iteration</code></strong>.</p>
+            <p><strong>Safe Solution:</strong> Iterate over a snapshot list of the keys using <code class="inline">for key in list(d.keys()):</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What is the difference between collections.defaultdict and standard dict?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">collections.defaultdict</code> is a subclass of <code class="inline">dict</code> that accepts a <code class="inline">default_factory</code> callable (e.g. <code class="inline">int</code>, <code class="inline">list</code>, <code class="inline">set</code>). When accessing a missing key via <code class="inline">d[missing_key]</code>, it automatically invokes the factory to initialize the value, eliminating the need for <code class="inline">if key not in d:</code> or <code class="inline">setdefault()</code> checks.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why are dictionary view objects (keys, values, items) advantageous?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In Python 2, <code class="inline">d.keys()</code> constructed and returned a full list in memory ($O(N)$ space). In Python 3, view objects consume $O(1)$ memory by providing a read-through window directly into the dictionary's internal hash table. They dynamically reflect updates without requiring new list allocations and support set-like operations (<code class="inline">d1.keys() & d2.keys()</code>).</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,215 +588,218 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">13-practice.py</code>. Run with <code class="inline">python3 13-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">13-practice.py</code>. Run with <code class="inline">python3 13-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>dict properties, creation, access</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment summarizing dictionary hash table internals and key requirements.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Dict Properties, Creation, and Access:
-# 1. Dictionaries store key-value mappings where keys must be unique and hashable (immutable).
-# 2. Since Python 3.7+, dictionaries preserve insertion order.
-# 3. Accessing a missing key via d[key] raises KeyError; d.get(key, default) safely returns default.</pre></div>
+                <div class="code"><pre># Dict Foundations:
+# 1. Dictionaries are insertion-ordered, mutable key-value mappings (Python 3.7+).
+# 2. Keys must be hashable and unique; values can be any type and duplicate.
+# 3. Compact hash table design provides O(1) average lookup, insertion, and deletion.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Update, delete, and important methods</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Demonstrate safe key access using get() with custom fallback vs direct key access.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Update, delete, and important methods:
-user = {&quot;name&quot;: &quot;Alice&quot;, &quot;age&quot;: 28, &quot;role&quot;: &quot;admin&quot;}
-user[&quot;location&quot;] = &quot;San Francisco&quot;  # Add / update
-user.update({&quot;status&quot;: &quot;active&quot;, &quot;age&quot;: 29})
-popped_role = user.pop(&quot;role&quot;)
-print(&quot;User after updates:&quot;, user)
-print(&quot;Popped role:&quot;, popped_role)</pre></div>
+                <div class="code"><pre>student = {"name": "Bharat", "score": 95}
+print("Name:", student["name"])
+print("Grade:", student.get("grade", "Pending"))  # 'Pending' without KeyError</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Construct an inverted dictionary using dict comprehension.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Dictionaries and Hash Maps.
-
-Goal: Master dictionary construction, key-value lookups, safe querying with .get() and
-.setdefault(), dictionary comprehensions, merging syntax, and nested JSON-like structures.
-&quot;&quot;&quot;</pre></div>
+                <div class="code"><pre>mapping = {"A": 1, "B": 2, "C": 3}
+inverted = {v: k for k, v in mapping.items()}
+print("Inverted:", inverted)  # {1: 'A', 2: 'B', 3: 'C'}</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: dict properties, creation, access</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Word Frequency Aggregator — Count word frequencies in a multi-line paragraph ignoring punctuation and case.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: dict properties, creation, access
-# Creation styles:
-d1 = {&quot;a&quot;: 1, &quot;b&quot;: 2}
-d2 = dict(name=&quot;Bob&quot;, age=30)
-d3 = dict([(&quot;x&quot;, 10), (&quot;y&quot;, 20)])
+                <div class="code"><pre>import string
 
-print(&quot;d1:&quot;, d1)
-print(&quot;d2:&quot;, d2)
-print(&quot;d3:&quot;, d3)
+text = "Python is fast, Python is simple. Code clean, code fast!"
+clean_text = text.translate(str.maketrans("", "", string.punctuation)).lower()
 
-# Safe access with .get():
-print(&quot;d2[&#x27;name&#x27;]:&quot;, d2[&quot;name&quot;])
-print(&quot;d2.get(&#x27;salary&#x27;, &#x27;N/A&#x27;):&quot;, d2.get(&quot;salary&quot;, &quot;N/A&quot;))</pre></div>
+word_counts = {}
+for word in clean_text.split():
+    word_counts[word] = word_counts.get(word, 0) + 1
+
+print("Word counts:", word_counts)
+# {'python': 2, 'is': 2, 'fast': 2, 'simple': 1, 'code': 2, 'clean': 1}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Update, delete, and important methods</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Merge Two Configurations with Priority — Combine default settings with environment overrides using Python 3.9+ union.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Update, delete, and important methods
-profile = {&quot;user&quot;: &quot;charlie&quot;, &quot;email&quot;: &quot;charlie@test.com&quot;, &quot;tier&quot;: &quot;free&quot;}
-print(&quot;keys():&quot;, list(profile.keys()))
-print(&quot;values():&quot;, list(profile.values()))
-print(&quot;items():&quot;, list(profile.items()))
+                <div class="code"><pre>base_config = {"host": "127.0.0.1", "port": 5000, "ssl": False, "workers": 4}
+env_config = {"port": 8000, "ssl": True}
 
-# setdefault: inserts key with default if not already present
-profile.setdefault(&quot;tier&quot;, &quot;premium&quot;) # tier already exists, unchanged
-profile.setdefault(&quot;points&quot;, 100)     # inserted
-print(&quot;Profile after setdefault:&quot;, profile)</pre></div>
+effective_config = base_config | env_config
+print("Effective Config:", effective_config)
+# {'host': '127.0.0.1', 'port': 8000, 'ssl': True, 'workers': 4}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Dict programs and comprehension</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Top-N Frequent Elements Finder — Find the top 2 most frequent characters in a string without using external libraries.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Dict programs and comprehension
-# Character frequency counter:
-text = &quot;dictionary programming&quot;
-char_counts = {ch: text.count(ch) for ch in set(text) if ch != &quot; &quot;}
-print(&quot;Character counts:&quot;, char_counts)
+                <div class="code"><pre>sample = "abracadabra"
+freq = {}
+for ch in sample:
+    freq[ch] = freq.get(ch, 0) + 1
 
-# Inverting a dictionary (values become keys):
-original = {&quot;apple&quot;: &quot;fruit&quot;, &quot;carrot&quot;: &quot;vegetable&quot;, &quot;banana&quot;: &quot;fruit&quot;}
-# Grouping by category:
-grouped = {}
-for item, cat in original.items():
-    grouped.setdefault(cat, []).append(item)
-print(&quot;Grouped by category:&quot;, grouped)</pre></div>
+# Sort by count descending:
+sorted_freq = sorted(freq.items(), key=lambda item: item[1], reverse=True)
+print("Top 2 characters:", sorted_freq[:2])
+# [('a', 5), ('b', 2)]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Merging and nested collections</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 4: Group Employees by Department — Transform a flat list of employee dicts into department groupings using setdefault.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Merging and nested collections
-# Merging dictionaries (Python 3.9+ &#x27;|&#x27; operator):
-default_settings = {&quot;theme&quot;: &quot;light&quot;, &quot;notifications&quot;: True, &quot;timeout&quot;: 30}
-user_settings = {&quot;theme&quot;: &quot;dark&quot;, &quot;timeout&quot;: 60}
+                <div class="code"><pre>employees = [
+    {"name": "Alice", "dept": "Engineering"},
+    {"name": "Bob", "dept": "HR"},
+    {"name": "Charlie", "dept": "Engineering"},
+    {"name": "Diana", "dept": "Finance"},
+    {"name": "Evan", "dept": "HR"}
+]
 
-merged = default_settings | user_settings  # Right-side overrides
-print(&quot;Merged settings:&quot;, merged)
+dept_map = {}
+for emp in employees:
+    dept_map.setdefault(emp["dept"], []).append(emp["name"])
 
-# Nested dictionary traversal:
-company = {
-    &quot;tech&quot;: {
-        &quot;lead&quot;: &quot;Alice&quot;,
-        &quot;team&quot;: [&quot;Bob&quot;, &quot;Charlie&quot;]
-    }
-}
-print(&quot;Tech team members:&quot;, company[&quot;tech&quot;][&quot;team&quot;])</pre></div>
+print("Employees by Dept:", dept_map)
+# {'Engineering': ['Alice', 'Charlie'], 'HR': ['Bob', 'Evan'], 'Finance': ['Diana']}</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Dictionaries.</span>
+                <span class="qa-question-title">Challenge 1: Recursive Nested Dictionary Key Flattener — Flatten a deeply nested dictionary into dot-notated keys.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: In-Memory Product Catalog &amp; Inventory Manager
-catalog = {
-    &quot;SKU-001&quot;: {&quot;name&quot;: &quot;Wireless Mouse&quot;, &quot;price&quot;: 29.99, &quot;stock&quot;: 45},
-    &quot;SKU-002&quot;: {&quot;name&quot;: &quot;Mechanical Keyboard&quot;, &quot;price&quot;: 99.50, &quot;stock&quot;: 12},
-    &quot;SKU-003&quot;: {&quot;name&quot;: &quot;USB-C Hub&quot;, &quot;price&quot;: 49.00, &quot;stock&quot;: 0},
-    &quot;SKU-004&quot;: {&quot;name&quot;: &quot;Monitor Arm&quot;, &quot;price&quot;: 79.99, &quot;stock&quot;: 25}
+                <div class="code"><pre>def flatten_dict(d: dict, parent_key: str = "", sep: str = ".") -> dict:
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+nested = {
+    "server": {
+        "host": "localhost",
+        "port": 8080,
+        "auth": {"enabled": True, "token": "secret"}
+    },
+    "version": 2
 }
 
-def purchase_product(catalog, sku, qty):
-    product = catalog.get(sku)
-    if not product:
-        return False, &quot;Product not found&quot;
-    if product[&quot;stock&quot;] &lt; qty:
-        return False, f&quot;Insufficient stock ({product[&#x27;stock&#x27;]} available)&quot;
-    product[&quot;stock&quot;] -= qty
-    total_cost = product[&quot;price&quot;] * qty
-    return True, f&quot;Purchased {qty}x {product[&#x27;name&#x27;]} for ${total_cost:.2f}&quot;
-
-success, msg = purchase_product(catalog, &quot;SKU-002&quot;, 2)
-print(&quot;Order status:&quot;, msg)
-print(&quot;Updated stock for SKU-002:&quot;, catalog[&quot;SKU-002&quot;][&quot;stock&quot;])</pre></div>
+print("Flattened Dict:", flatten_dict(nested))
+# {'server.host': 'localhost', 'server.port': 8080, 'server.auth.enabled': True, 'server.auth.token': 'secret', 'version': 2}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: In-Memory Key-Value Store with TTL (Time-to-Live) — Implement a dictionary wrapper supporting expiration.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Dict Pitfalls &amp; Edge Cases:
-# 1. Unhashable keys: lists cannot be dictionary keys:
-# d = {[1, 2]: &quot;data&quot;} # TypeError: unhashable type: &#x27;list&#x27;
-# Use tuples instead: d = {(1, 2): &quot;data&quot;}
+                <div class="code"><pre>import time
 
-# 2. Modifying dict size during iteration raises RuntimeError:
-# for k in d: del d[k] # RuntimeError: dictionary changed size during iteration
-# Fix: iterate over list(d.keys())
+class TTLDict:
+    def __init__(self):
+        self._store = {}
 
-# 3. Missing key without get() raises KeyError.</pre></div>
+    def set(self, key, value, ttl_seconds: float):
+        expires_at = time.time() + ttl_seconds
+        self._store[key] = (value, expires_at)
+
+    def get(self, key, default=None):
+        if key not in self._store:
+            return default
+        value, expires_at = self._store[key]
+        if time.time() > expires_at:
+            del self._store[key]  # Clean expired
+            return default
+        return value
+
+cache = TTLDict()
+cache.set("session_123", "user_active", ttl_seconds=0.1)
+print("Immediate get: ", cache.get("session_123"))  # 'user_active'
+time.sleep(0.15)
+print("After 150ms get:", cache.get("session_123"))  # None</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Dictionaries) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain how CPython compact hash tables preserve insertion order and save memory.</li>
+          <li>I know when to use <code class="inline">d[key]</code> vs <code class="inline">d.get()</code> and <code class="inline">d.setdefault()</code>.</li>
+          <li>I can merge dictionaries using the Python 3.9+ <code class="inline">|</code> operator.</li>
+          <li>I know why modifying dictionary keys during iteration raises a <code class="inline">RuntimeError</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 12. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 13. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

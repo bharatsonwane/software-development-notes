@@ -44,13 +44,18 @@
       </nav>
       <header class="hero" id="intro">
         <h1>25. Multithreading</h1>
-        <p class="subtitle">File 25 — Thread, daemon, Lock, RLock, Semaphore, Event, Queue.</p>
+        <p class="subtitle">Concurrency, GIL realities, thread lifecycles, synchronization primitives, and thread-safe queues.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">threading.Thread</span>
+          <span class="chip">GIL</span>
+          <span class="chip">Lock &amp; RLock</span>
+          <span class="chip">Semaphore</span>
+          <span class="chip">Event &amp; Condition</span>
+          <span class="chip">queue.Queue</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -59,31 +64,35 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. Concurrency vs Parallelism</h3>
         <ul>
-          <li>This chapter covers <strong>Multithreading</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Concurrency:</strong> The ability of a system to manage multiple tasks by interleaving their execution over overlapping time periods. Even on a single-core CPU, concurrency creates the illusion of simultaneous execution via rapid context switching.</li>
+          <li><strong>Parallelism:</strong> The ability of a system to execute multiple computational tasks literally at the exact same physical instant across multiple CPU cores.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
+
+        <h3>1.2. The Global Interpreter Lock (GIL)</h3>
+        <p>In standard CPython (the reference implementation of Python), multithreading is governed by the <strong>Global Interpreter Lock (GIL)</strong>. The GIL is a mutual exclusion lock that prevents multiple native threads from executing Python bytecodes at once.</p>
         <ul>
-          <li>After reading sections 2–8 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">25-practice.py</code> before File 26. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li><strong>CPU-Bound Tasks (Math, Image Processing, Compression):</strong> Threads spend their time executing Python bytecode. Due to the GIL, multithreading does NOT achieve true multi-core speedup for CPU-bound tasks in CPython (and can even run slower due to lock contention). Use the <code>multiprocessing</code> module instead!</li>
+          <li><strong>I/O-Bound Tasks (Network Requests, File I/O, Database Queries):</strong> When a thread waits for disk I/O or network responses, Python releases the GIL. Another thread can immediately execute. Multithreading provides massive throughput and responsiveness gains for I/O-bound tasks.</li>
         </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.3. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to multithreading</strong></li>
-          <li><strong>Creating and starting threads</strong></li>
-          <li><strong>Thread names and related methods</strong></li>
-          <li><strong>Daemon threads</strong></li>
-          <li><strong>Synchronization (Lock, RLock, Semaphore)</strong></li>
-          <li><strong>Inter-thread communication (Event, Condition, Queue)</strong></li>
-          <li><strong>Good practices and summary</strong></li>
+          <li><strong>Introduction</strong> — Concurrency, parallelism, and the CPython GIL</li>
+          <li><strong>Introduction to multithreading</strong> — Threads, processes, and memory sharing</li>
+          <li><strong>Creating and starting threads</strong> — <code>target</code> callable vs class inheritance, <code>start()</code> vs <code>run()</code>, and <code>join()</code></li>
+          <li><strong>Thread names and related methods</strong> — Identification, active thread counts, and enumeration</li>
+          <li><strong>Daemon threads</strong> — Background workers, lifecycle termination rules, and caveats</li>
+          <li><strong>Synchronization (Lock, RLock, Semaphore)</strong> — Race conditions, deadlocks, reentrant locks, and resource pools</li>
+          <li><strong>Inter-thread communication (Event, Condition, Queue)</strong> — Signalling, monitor conditions, and thread-safe queues</li>
+          <li><strong>Good practices and summary</strong> — Threading guidelines and architectural decision matrix</li>
+          <li><strong>C. Common questions</strong> — Core interview questions with in-depth explanations</li>
+          <li><strong>P. Practical Assignment</strong> — Producer-consumer pipeline mini-project and edge case drills</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-introduction-to-multithreading">
         <div class="heading-with-levels">
           <h2>2. Introduction to multithreading</h2>
@@ -92,14 +101,54 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-introduction-to-multithreading-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Introduction to multithreading</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>2.1. Processes vs Threads</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Process</th>
+              <th>Thread</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Memory Space</strong></td>
+              <td>Isolated, independent memory address space.</td>
+              <td>Shared memory space within the parent process.</td>
+            </tr>
+            <tr>
+              <td><strong>Creation Overhead</strong></td>
+              <td>Heavy; requires duplicating or allocating full OS resources.</td>
+              <td>Lightweight; shares process heap and descriptors.</td>
+            </tr>
+            <tr>
+              <td><strong>Communication</strong></td>
+              <td>Inter-Process Communication (IPC: pipes, sockets, shared memory).</td>
+              <td>Direct variable access (requires synchronization to avoid race conditions).</td>
+            </tr>
+            <tr>
+              <td><strong>Crash Impact</strong></td>
+              <td>One process crash does not affect other processes.</td>
+              <td>An unhandled crash in one thread can terminate the entire process.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>2.2. The Main Thread</h3>
+        <p>When any Python program starts, the Python runtime creates a single execution thread known as the <strong>MainThread</strong>. Any additional threads spawned by the code are child threads.</p>
+
+        <div class="code"><pre>import threading
+
+# Inspecting the main thread:
+current = threading.current_thread()
+print("Current thread name:", current.name)       # MainThread
+print("Thread identifier:  ", current.ident)      # Integer thread ID
+print("Is thread alive?    ", current.is_alive())  # True</pre></div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-creating-and-starting-threads">
         <div class="heading-with-levels">
           <h2>3. Creating and starting threads</h2>
@@ -108,14 +157,74 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-creating-and-starting-threads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Creating and starting threads</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>3.1. Approach 1: Passing a Target Function</h3>
+        <p>The simplest way to create a thread is by instantiating <code>threading.Thread</code> with a target callable and a tuple of positional arguments via <code>args</code> (or a dictionary via <code>kwargs</code>).</p>
+
+        <div class="code"><pre>import threading
+import time
+
+def worker_task(task_name, duration):
+    print(f"[{threading.current_thread().name}] Starting {task_name}...")
+    time.sleep(duration)  # Simulating I/O wait
+    print(f"[{threading.current_thread().name}] Finished {task_name}!")
+
+# 1. Instantiate threads
+t1 = threading.Thread(target=worker_task, args=("Download File A", 1), name="Worker-A")
+t2 = threading.Thread(target=worker_task, args=("Download File B", 2), name="Worker-B")
+
+# 2. Start threads (spawns OS-level native thread)
+t1.start()
+t2.start()
+
+# 3. Wait for threads to finish using join()
+t1.join()
+t2.join()
+
+print("Both worker threads have completed. Main continues.")</pre></div>
+
+        <div class="callout">
+          <strong>CRITICAL: <code>start()</code> vs <code>run()</code>:</strong> Always call <code>t.start()</code> to initiate a new thread of execution. If you call <code>t.run()</code> directly, it simply executes the target function sequentially inside the <em>current calling thread</em> without spawning any new thread!
+        </div>
+
+        <h3 id="3-creating-and-starting-threads-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Approach 2: Subclassing <code>threading.Thread</code></h3>
+        <p>For complex thread workers requiring internal state, subclass <code>threading.Thread</code>, call <code>super().__init__()</code> in <code>__init__</code>, and override the <code>run()</code> method.</p>
+
+        <div class="code"><pre>import threading
+import time
+
+class CustomWorkerThread(threading.Thread):
+    def __init__(self, worker_id, items):
+        super().__init__(name=f"CustomWorker-{worker_id}")
+        self.worker_id = worker_id
+        self.items = items
+        self.processed_count = 0
+
+    def run(self):
+        print(f"[{self.name}] Beginning batch processing...")
+        for item in self.items:
+            # Process each item
+            time.sleep(0.05)
+            self.processed_count += 1
+        print(f"[{self.name}] Completed batch of {self.processed_count} items.")
+
+# Spawning custom worker threads:
+worker1 = CustomWorkerThread(1, ["apple", "banana", "cherry"])
+worker2 = CustomWorkerThread(2, ["dog", "elephant"])
+
+worker1.start()
+worker2.start()
+
+worker1.join()
+worker2.join()
+
+print("Worker 1 processed:", worker1.processed_count)
+print("Worker 2 processed:", worker2.processed_count)</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-thread-names-and-related-methods">
         <div class="heading-with-levels">
           <h2>4. Thread names and related methods</h2>
@@ -124,14 +233,37 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-thread-names-and-related-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+        <h3>4.1. Thread Inspection Utilities</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Thread names and related methods</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
+          <li><code>threading.current_thread()</code>: Returns the <code>Thread</code> object corresponding to the caller's thread of control.</li>
+          <li><code>threading.active_count()</code>: Returns the number of currently alive <code>Thread</code> objects.</li>
+          <li><code>threading.enumerate()</code>: Returns a list of all currently alive <code>Thread</code> objects.</li>
+          <li><code>thread.is_alive()</code>: Returns <code>True</code> if the thread has started and has not yet terminated.</li>
+          <li><code>thread.ident</code> / <code>thread.native_id</code>: Unique system thread identifiers assigned by the OS.</li>
         </ul>
+
+        <div class="code"><pre>import threading
+import time
+
+def background_pulse():
+    time.sleep(0.5)
+
+threads = [threading.Thread(target=background_pulse, name=f"Pulse-{i}") for i in range(3)]
+for t in threads:
+    t.start()
+
+print(f"Active thread count: {threading.active_count()}")
+print("Currently running threads:")
+for t in threading.enumerate():
+    print(f"  - {t.name} (alive={t.is_alive()}, id={t.ident})")
+
+for t in threads:
+    t.join()</pre></div>
       </section>
+
+      <!-- SECTION 5 -->
       <section id="5-daemon-threads">
         <div class="heading-with-levels">
           <h2>5. Daemon threads</h2>
@@ -140,14 +272,35 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="5-daemon-threads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Daemon threads</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>5.1. Daemon vs Non-Daemon Threads</h3>
+        <p>By default, threads created in Python are <strong>non-daemon threads</strong>. The Python interpreter process will remain alive and running until <em>every non-daemon thread</em> has finished executing its code.</p>
+        <p>A <strong>daemon thread</strong> is a low-priority background support thread (e.g., garbage collectors, periodic healthcheck pingers, telemetry senders). When only daemon threads remain alive, the Python runtime exits immediately, abruptly killing all daemon threads.</p>
+
+        <div class="code"><pre>import threading
+import time
+
+def daemon_heartbeat():
+    while True:
+        print("[HEARTBEAT] Ping sent from daemon thread...")
+        time.sleep(0.5)
+
+# Marking a thread as daemon:
+daemon_t = threading.Thread(target=daemon_heartbeat, daemon=True, name="HeartbeatDaemon")
+daemon_t.start()
+
+print("Main thread running important 2-second job...")
+time.sleep(2.0)
+print("Main thread exiting now.")
+# When main thread exits here, daemon_t is killed instantly!</pre></div>
+
+        <div class="callout">
+          <strong>CAUTION: Daemon Threads Skip Cleanups!</strong> Because daemon threads are abruptly killed upon interpreter exit, their <code>finally</code> blocks are NOT guaranteed to execute, and context managers (like open file handles or database transactions) may NOT be properly closed or committed! Never perform state-critical operations in daemon threads without graceful shutdown signals.
+        </div>
       </section>
+
+      <!-- SECTION 6 -->
       <section id="6-synchronization-lock-rlock-semaphore">
         <div class="heading-with-levels">
           <h2>6. Synchronization (Lock, RLock, Semaphore)</h2>
@@ -156,14 +309,82 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="6-synchronization-lock-rlock-semaphore-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Synchronization (Lock, RLock, Semaphore)</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>6.1. Race Conditions &amp; <code>threading.Lock</code></h3>
+        <p>A <strong>race condition</strong> occurs when multiple threads concurrently read and modify shared mutable state without proper coordination, leading to data corruption. In Python, an operation like <code>counter += 1</code> translates to multiple underlying bytecode instructions (read, increment, write). If context switches happen between these bytecodes, updates are lost.</p>
+
+        <div class="code"><pre>import threading
+
+counter = 0
+lock = threading.Lock()
+
+def safe_increment(n):
+    global counter
+    for _ in range(n):
+        # Mutual exclusion using with lock context manager:
+        with lock:
+            counter += 1
+
+threads = [threading.Thread(target=safe_increment, args=(100_000,)) for _ in range(5)]
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()
+
+print("Expected: 500,000 | Actual counter:", counter)  # 500,000 (Guaranteed!)</pre></div>
+
+        <h3 id="6-synchronization-lock-rlock-semaphore-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>6.2. <code>threading.RLock</code> (Reentrant Lock)</h3>
+        <p>A standard <code>Lock</code> cannot be acquired twice by the same thread; attempting to do so causes a self-deadlock. An <code>RLock</code> (Reentrant Lock) keeps track of the owning thread and recursion depth, allowing the owner to acquire it multiple times. It is released only when the release count equals the acquire count.</p>
+
+        <div class="code"><pre>import threading
+
+class Account:
+    def __init__(self, balance):
+        self.balance = balance
+        self.rlock = threading.RLock()
+
+    def deposit(self, amount):
+        with self.rlock:
+            self.balance += amount
+
+    def transfer(self, target_account, amount):
+        with self.rlock:  # First acquire
+            self.balance -= amount
+            # deposit also acquires self.rlock - with standard Lock, this deadlocks!
+            target_account.deposit(amount)
+
+acc1 = Account(1000)
+acc2 = Account(500)
+acc1.transfer(acc2, 200)
+print("Acc 1 balance:", acc1.balance)  # 800
+print("Acc 2 balance:", acc2.balance)  # 700</pre></div>
+
+        <h3>6.3. <code>threading.Semaphore</code></h3>
+        <p>A <code>Semaphore</code> manages an internal counter that decreases on <code>acquire()</code> and increases on <code>release()</code>. It allows up to $N$ concurrent threads to access a shared pool of resources (e.g., maximum 3 simultaneous database connections).</p>
+
+        <div class="code"><pre>import threading
+import time
+
+# Permit at most 2 simultaneous connections
+connection_pool = threading.Semaphore(2)
+
+def access_database(thread_id):
+    print(f"Thread {thread_id} waiting for connection slot...")
+    with connection_pool:
+        print(f"--> Thread {thread_id} ACQUIRED database slot! Working...")
+        time.sleep(0.5)
+        print(f"<-- Thread {thread_id} RELEASING slot.")
+
+threads = [threading.Thread(target=access_database, args=(i,)) for i in range(5)]
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()</pre></div>
       </section>
+
+      <!-- SECTION 7 -->
       <section id="7-inter-thread-communication-event-condition-queue">
         <div class="heading-with-levels">
           <h2>7. Inter-thread communication (Event, Condition, Queue)</h2>
@@ -172,14 +393,84 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="7-inter-thread-communication-event-condition-queue-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Goals</h3>
+        <h3>7.1. <code>threading.Event</code></h3>
+        <p>An <code>Event</code> is one of the simplest communication mechanisms between threads: one thread signals an event, and other threads wait for it. It manages an internal boolean flag initialized to <code>False</code>.</p>
         <ul>
-          <li>Understand the main ideas in <strong>Inter-thread communication (Event, Condition, Queue)</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
+          <li><code>event.set()</code>: Sets flag to <code>True</code>, awakening all waiting threads.</li>
+          <li><code>event.clear()</code>: Resets flag to <code>False</code>.</li>
+          <li><code>event.wait([timeout])</code>: Blocks until the flag becomes <code>True</code>.</li>
         </ul>
+
+        <div class="code"><pre>import threading
+import time
+
+ready_event = threading.Event()
+
+def server_initialization():
+    print("[INIT] Loading configurations and database pools...")
+    time.sleep(1.0)
+    print("[INIT] Server ready to receive traffic!")
+    ready_event.set()  # Broadcast signal to waiting workers
+
+def client_worker(client_id):
+    print(f"Client {client_id} waiting for server to become ready...")
+    ready_event.wait()  # Blocks until ready_event.set() is called
+    print(f"Client {client_id} connected and processing requests!")
+
+t_server = threading.Thread(target=server_initialization)
+t_clients = [threading.Thread(target=client_worker, args=(i,)) for i in range(3)]
+
+for c in t_clients: c.start()
+t_server.start()
+
+t_server.join()
+for c in t_clients: c.join()</pre></div>
+
+        <h3 id="7-inter-thread-communication-event-condition-queue-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>7.2. <code>queue.Queue</code>: The Gold Standard for Thread Communication</h3>
+        <p>Instead of manually coordinating locks and events, idiomatic Python multithreading uses <code>queue.Queue</code>. A <code>Queue</code> is internally thread-safe; all locking, notification, and bounds-checking are handled automatically.</p>
+
+        <div class="code"><pre>import threading
+import queue
+import time
+
+task_queue = queue.Queue(maxsize=5)
+
+def producer(items_count):
+    for i in range(items_count):
+        item = f"TASK-{i}"
+        task_queue.put(item)  # Blocks if queue is full
+        print(f"[PRODUCED] {item}")
+        time.sleep(0.1)
+
+def consumer(consumer_id):
+    while True:
+        try:
+            item = task_queue.get(timeout=0.5)  # Blocks until item available
+            print(f"  [CONSUMER {consumer_id}] Processed {item}")
+            task_queue.task_done()  # Signals task completion
+        except queue.Empty:
+            print(f"  [CONSUMER {consumer_id}] Queue empty, worker shutting down.")
+            break
+
+prod = threading.Thread(target=producer, args=(6,))
+cons1 = threading.Thread(target=consumer, args=(1,))
+cons2 = threading.Thread(target=consumer, args=(2,))
+
+prod.start()
+cons1.start()
+cons2.start()
+
+prod.join()
+task_queue.join()  # Blocks until all items have been task_done()
+cons1.join()
+cons2.join()
+print("All tasks processed safely!")</pre></div>
       </section>
+
+      <!-- SECTION 8 -->
       <section id="8-good-practices-and-summary">
         <div class="heading-with-levels">
           <h2>8. Good practices and summary</h2>
@@ -188,14 +479,18 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="8-good-practices-and-summary-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. Goals</h3>
+        <h3>8.1. Summary Checklist</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Good practices and summary</strong>.</li>
-          <li>Write small demos in <code class="inline">25-practice.py</code> covering this section.</li>
+          <li><strong>Prefer Queues:</strong> Avoid shared mutable variables protected by manual locks wherever possible; pass messages through <code>queue.Queue</code>.</li>
+          <li><strong>Always Use Context Managers:</strong> Use <code>with lock:</code> instead of manual <code>lock.acquire()</code> and <code>lock.release()</code> to prevent deadlocks caused by unhandled exceptions.</li>
+          <li><strong>Watch for GIL Bottlenecks:</strong> Use <code>threading</code> for I/O-bound tasks; use <code>multiprocessing</code> or <code>concurrent.futures.ProcessPoolExecutor</code> for CPU-heavy calculations.</li>
+          <li><strong>Clean Daemon Lifecycles:</strong> Never rely on daemon threads to flush files or commit database transactions on shutdown.</li>
         </ul>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -209,44 +504,102 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction to multithreading?</span>
+            <span class="qa-question-title">C.1. What is the Python GIL and how does it affect multithreading?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The Global Interpreter Lock (GIL) is a mutex in CPython that ensures only one thread executes Python bytecode at any given moment, protecting CPython's internal memory management and reference counting from race conditions.</p>
+            <p>As a result, multithreading in CPython cannot utilize multiple CPU cores for CPU-bound computations (such as number crunching). However, the GIL is released during I/O operations (network requests, disk access, sleeps), making multithreading highly effective for concurrent I/O-bound applications.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Creating and starting threads?</span>
+            <span class="qa-question-title">C.2. What is the difference between <code>t.start()</code> and <code>t.run()</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong><code>t.start()</code>:</strong> Invokes the operating system API to create and launch a new native thread of execution, which then internally calls the thread's <code>run()</code> method in parallel.</p>
+            <p><strong><code>t.run()</code>:</strong> Simply calls the target function directly inside the <em>current calling thread</em>. No new thread is spawned, and the code runs synchronously and sequentially.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Thread names and related methods?</span>
+            <span class="qa-question-title">C.3. What is a daemon thread, and what happens when the main thread finishes?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>A daemon thread is a background thread that does not prevent the Python process from terminating. When all non-daemon threads have finished executing, the Python interpreter immediately exits, terminating all remaining daemon threads abruptly without executing their <code>finally</code> clauses.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Daemon threads?</span>
+            <span class="qa-question-title">C.4. What is the difference between <code>Lock</code> and <code>RLock</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong><code>Lock</code> (Standard Mutex):</strong> Can be acquired only once. If the thread currently holding the lock attempts to acquire it again, it deadlocks itself.</p>
+            <p><strong><code>RLock</code> (Reentrant Lock):</strong> Can be acquired multiple times by the <em>same</em> owning thread. It tracks the acquiring thread and an internal counter. The lock is only released when the owner has called <code>release()</code> an equal number of times as <code>acquire()</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How does a <code>Semaphore</code> differ from a <code>Lock</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <code>Lock</code> allows mutually exclusive access to exactly <strong>one</strong> thread at a time (binary state: locked or unlocked).</p>
+            <p>A <code>Semaphore</code> manages an internal integer counter representing available resource tokens. It allows up to $N$ threads to acquire tokens simultaneously, making it ideal for limiting concurrency (e.g., maximum 5 simultaneous database connections or rate-limiting HTTP requests).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How do <code>threading.Event</code> and <code>threading.Condition</code> differ?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong><code>Event</code>:</strong> Provides a simple binary signal (flag <code>True</code> or <code>False</code>). Any number of threads can wait for the flag to be set via <code>wait()</code>. Once set via <code>set()</code>, all waiting threads wake up simultaneously.</p>
+            <p><strong><code>Condition</code>:</strong> Always associated with an underlying lock. It allows threads to wait until a complex state condition is satisfied (via <code>wait()</code>), releasing the lock while waiting and re-acquiring it when notified by another thread via <code>notify()</code> or <code>notify_all()</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. Why is <code>queue.Queue</code> preferred over manual locks for inter-thread communication?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>queue.Queue</code> encapsulates all necessary locks, condition variables, and boundary checks internally. It eliminates common concurrency bugs:</p>
+            <ul>
+              <li>No manual <code>acquire()</code> and <code>release()</code> calls, eliminating lock leaks and deadlocks.</li>
+              <li>Built-in blocking and timeouts on <code>put()</code> and <code>get()</code>.</li>
+              <li>Clean task tracking with <code>task_done()</code> and <code>join()</code>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. When should you choose <code>threading</code> vs <code>multiprocessing</code> vs <code>asyncio</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code>multiprocessing</code>:</strong> For CPU-intensive tasks (machine learning, data encryption, video encoding). Spawns separate processes with separate Python runtimes, bypassing the GIL to use all CPU cores.</li>
+              <li><strong><code>threading</code>:</strong> For I/O-bound tasks with legacy synchronous libraries or blocking OS calls where threads can share memory easily.</li>
+              <li><strong><code>asyncio</code>:</strong> For high-concurrency network servers (thousands of simultaneous web socket connections) using cooperative single-threaded event loops.</li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -255,7 +608,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">25-practice.py</code>. Run with <code class="inline">python3 25-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">25-practice.py</code>. Run with <code class="inline">python3 25-practice.py</code>. Practice threads, locks, semaphores, and queues.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -266,32 +619,32 @@
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Introduction to Multithreading:
-# 1. A thread is a separate flow of execution within the same process sharing address space.
-# 2. Python&#x27;s &#x27;threading&#x27; module provides thread creation and synchronization primitives.
-# 3. CPython uses the Global Interpreter Lock (GIL), making threads ideal for I/O-bound tasks, while multiprocessing is used for CPU-bound tasks.</pre></div>
+                <div class="code"><pre># Summary of Multithreading:
+# 1. Threads share memory space inside a single process, making communication fast but risky.
+# 2. CPython GIL permits only one thread to execute Python bytecode at a time.
+# 3. Multithreading excels for I/O-bound tasks; use multiprocessing for CPU-bound tasks.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Creating and starting threads</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example spawning two threads and joining them.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Creating and starting threads:
-import threading
-import time
+                <div class="code"><pre>import threading
 
-def print_worker(message):
-    time.sleep(0.05)
-    print(f&quot;[Thread {threading.current_thread().name}] says: {message}&quot;)
+def say_hello(name):
+    print(f"Hello from thread {threading.current_thread().name}, {name}!")
 
-t = threading.Thread(target=print_worker, args=(&quot;Hello Multithreading!&quot;,), name=&quot;Worker-1&quot;)
-t.start()
-t.join()
-print(&quot;Worker thread completed.&quot;)</pre></div>
+t1 = threading.Thread(target=say_hello, args=("Alice",), name="T1")
+t2 = threading.Thread(target=say_hello, args=("Bob",), name="T2")
+
+t1.start()
+t2.start()
+t1.join()
+t2.join()</pre></div>
               </div>
             </details>
           </li>
@@ -302,184 +655,184 @@ print(&quot;Worker thread completed.&quot;)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Multithreading and Concurrency.
+                <div class="code"><pre>"""Chapter Practice: Python Multithreading and Concurrency.
 
-Goal: Master thread creation (functional &amp; subclassing), thread lifecycle (start, join),
-thread naming, daemon threads, and synchronization locks.
-&quot;&quot;&quot;</pre></div>
+Goal: Master thread creation, daemon lifecycles, synchronization (Lock, RLock, Semaphore),
+and inter-thread communication with Event and thread-safe Queues.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction to multithreading</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Creating threads</strong> — Create threads using both functional target and subclassing approaches.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction to multithreading
+                <div class="code"><pre># Task 1: Both approaches to thread creation
 import threading
-import time
 
-def worker(num):
-    print(f&quot;Task {num} started on {threading.current_thread().name}&quot;)
-    time.sleep(0.02)
-    print(f&quot;Task {num} finished&quot;)
+# Functional approach:
+def task(x):
+    print(f"Function thread result: {x * 2}")
 
-threads = []
-for i in range(3):
-    th = threading.Thread(target=worker, args=(i+1,))
-    threads.append(th)
-    th.start()
+t_func = threading.Thread(target=task, args=(10,))
+t_func.start()
+t_func.join()
 
-for th in threads:
-    th.join()
-print(&quot;All tasks completed concurrently.&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Creating and starting threads</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Creating threads by subclassing threading.Thread
-import threading
-import time
-
-class CustomWorkerThread(threading.Thread):
-    def __init__(self, thread_id, duration):
+# Subclassing approach:
+class CalculationThread(threading.Thread):
+    def __init__(self, val):
         super().__init__()
-        self.thread_id = thread_id
-        self.duration = duration
-    
-    def run(self):
-        print(f&quot;Custom thread #{self.thread_id} running...&quot;)
-        time.sleep(self.duration)
-        print(f&quot;Custom thread #{self.thread_id} finished after {self.duration}s&quot;)
+        self.val = val
 
-worker_inst = CustomWorkerThread(thread_id=42, duration=0.03)
-worker_inst.start()
-worker_inst.join()</pre></div>
+    def run(self):
+        print(f"Subclass thread result: {self.val * 3}")
+
+t_class = CalculationThread(10)
+t_class.start()
+t_class.join()</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Thread names and related methods</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Synchronization with Lock</strong> — Protect a shared counter across multiple concurrent threads.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Thread names and related methods
+                <div class="code"><pre># Task 2: Thread synchronization with Lock
 import threading
 
-def identify_thread():
-    curr = threading.current_thread()
-    print(f&quot;Thread Name: {curr.name}&quot;)
-    print(f&quot;Thread Ident: {curr.ident}&quot;)
-    print(f&quot;Is Alive: {curr.is_alive()}&quot;)
-    print(f&quot;Is Daemon: {curr.daemon}&quot;)
+shared_counter = 0
+counter_lock = threading.Lock()
 
-t = threading.Thread(target=identify_thread, name=&quot;Worker-Named-Alpha&quot;)
-t.start()
-t.join()
-print(&quot;Active thread count:&quot;, threading.active_count())</pre></div>
+def increment():
+    global shared_counter
+    for _ in range(50_000):
+        with counter_lock:
+            shared_counter += 1
+
+workers = [threading.Thread(target=increment) for _ in range(4)]
+for w in workers: w.start()
+for w in workers: w.join()
+
+print("Synchronized Counter (Expected 200,000):", shared_counter)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Daemon threads</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Rate limiting with Semaphore</strong> — Permit only 2 threads to enter a critical section at a time.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Daemon threads
+                <div class="code"><pre># Task 3: Semaphore rate-limiting
 import threading
 import time
 
-def background_service():
-    print(&quot;Daemon background monitor started.&quot;)
-    time.sleep(0.05)
-    print(&quot;Daemon background monitor completed.&quot;)
+pool = threading.Semaphore(2)
 
-# Daemon threads terminate automatically when main thread terminates
-d_thread = threading.Thread(target=background_service, daemon=True)
-print(&quot;Is daemon thread:&quot;, d_thread.daemon)
-d_thread.start()
-d_thread.join()</pre></div>
+def access_resource(worker_id):
+    with pool:
+        print(f"Worker {worker_id} acquired slot")
+        time.sleep(0.1)
+        print(f"Worker {worker_id} released slot")
+
+threads = [threading.Thread(target=access_resource, args=(i,)) for i in range(4)]
+for t in threads: t.start()
+for t in threads: t.join()</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Multithreading.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a multi-worker Producer-Consumer task pipeline with graceful shutdown using <code>queue.Queue</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Thread-Safe Counter with threading.Lock
+                <div class="code"><pre># Mini Project: Thread-safe Producer-Consumer Pipeline
 import threading
+import queue
+import time
 
-class ThreadSafeCounter:
-    def __init__(self):
-        self.count = 0
-        self.lock = threading.Lock()
-    
-    def increment(self):
-        with self.lock:
-            # Critical section protected against race conditions
-            self.count += 1
+task_queue = queue.Queue(maxsize=10)
+stop_event = threading.Event()
 
-counter = ThreadSafeCounter()
-threads = []
-for _ in range(50):
-    t = threading.Thread(target=counter.increment)
-    threads.append(t)
-    t.start()
+def producer(count):
+    for i in range(count):
+        task_queue.put(f"Job-{i}")
+        print(f"[Producer] Queued Job-{i}")
+        time.sleep(0.05)
 
-for t in threads:
-    t.join()
+def worker(worker_id):
+    while not stop_event.is_set() or not task_queue.empty():
+        try:
+            job = task_queue.get(timeout=0.1)
+            print(f"  [Worker {worker_id}] Processing {job}")
+            time.sleep(0.08)
+            task_queue.task_done()
+        except queue.Empty:
+            continue
 
-print(&quot;Final synchronized counter value:&quot;, counter.count)</pre></div>
+p = threading.Thread(target=producer, args=(6,))
+workers = [threading.Thread(target=worker, args=(i,)) for i in range(2)]
+
+p.start()
+for w in workers: w.start()
+
+p.join()
+task_queue.join()
+stop_event.set()
+for w in workers: w.join()
+print("All tasks processed and workers gracefully stopped.")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate deadlocking with Lock vs safety with RLock.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Multithreading Pitfalls &amp; Edge Cases:
-# 1. Race Conditions: Multiple threads mutating shared data without a Lock leads to corrupted state.
+                <div class="code"><pre># RLock vs Lock recursive re-entry
+import threading
 
-# 2. Deadlock: Two threads waiting on each other&#x27;s locks. Always acquire locks in the same order.
+rlock = threading.RLock()
+with rlock:
+    print("Acquired RLock 1st time")
+    with rlock:
+        print("Acquired RLock 2nd time safely in same thread!")
 
-# 3. CPU-bound concurrency: Threads won&#x27;t speed up pure CPU number-crunching in CPython due to the GIL; use multiprocessing instead.</pre></div>
+# With standard Lock, the 2nd acquire would hang forever (deadlock)!</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Multithreading) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I understand the GIL and why multithreading is optimal for I/O tasks.</li>
+          <li>I can explain the difference between <code>start()</code> and <code>run()</code>.</li>
+          <li>I know when to use <code>Lock</code> vs <code>RLock</code> vs <code>Semaphore</code>.</li>
+          <li>I can coordinate threads using <code>queue.Queue</code> and <code>threading.Event</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 24. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 25. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

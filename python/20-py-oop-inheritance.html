@@ -42,13 +42,19 @@
       </nav>
       <header class="hero" id="intro">
         <h1>20. Inheritance and Relationships</h1>
-        <p class="subtitle">File 20 — HAS-A, IS-A, inheritance types, MRO, super().</p>
+        <p class="subtitle">File 20 — object relationships, composition vs aggregation, inheritance hierarchies, C3 MRO linearization, and cooperative super().</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">HAS-A (Composition)</span>
+          <span class="chip">IS-A (Inheritance)</span>
+          <span class="chip">Multiple Inheritance</span>
+          <span class="chip">Diamond Problem</span>
+          <span class="chip">C3 MRO Linearization</span>
+          <span class="chip">super()</span>
+          <span class="chip">Cooperative Calls</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,29 +63,34 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Inheritance and Relationships</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>Real-world systems are built from complex networks of interconnected entities. Object-Oriented Programming establishes relationships between classes through two fundamental architectures:
+            <ol>
+              <li><strong>HAS-A Relationship (Composition &amp; Aggregation):</strong> An object contains or holds references to other objects.</li>
+              <li><strong>IS-A Relationship (Inheritance):</strong> A specialized child class inherits state and behavior from a generic parent class.</li>
+            </ol>
+          </li>
+          <li>Python provides native support for <strong>Multiple Inheritance</strong>, resolved gracefully using the <strong>C3 Linearization Algorithm (Method Resolution Order / MRO)</strong> and cooperative <code class="inline">super()</code>.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">20-practice.py</code> before File 21. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>HAS-A relationship (composition / aggregation)</strong></li>
-          <li><strong>IS-A relationship (inheritance)</strong></li>
-          <li><strong>Types of inheritance</strong></li>
-          <li><strong>Method Resolution Order (MRO)</strong></li>
-          <li><strong>super() function</strong></li>
+          <li><strong>HAS-A relationship (composition / aggregation)</strong> — lifetime coupling, delegation, and "favor composition"</li>
+          <li><strong>IS-A relationship (inheritance)</strong> — syntax, base &amp; derived classes, <code class="inline">isinstance</code> and <code class="inline">issubclass</code></li>
+          <li><strong>Types of inheritance</strong> — single, multilevel, hierarchical, multiple, and hybrid</li>
+          <li><strong>Method Resolution Order (MRO)</strong> — the Diamond Problem and C3 linearization</li>
+          <li><strong>super() function</strong> — constructor chaining and cooperative multiple inheritance</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: HAS-A RELATIONSHIP -->
       <section id="2-has-a-relationship-composition-aggregation">
         <div class="heading-with-levels">
           <h2>2. HAS-A relationship (composition / aggregation)</h2>
@@ -88,14 +99,56 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-has-a-relationship-composition-aggregation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>HAS-A relationship (composition / aggregation)</strong>.</li>
-          <li>Write small demos in <code class="inline">20-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>2.1. Composition vs Aggregation</h3>
+        <table>
+          <thead>
+            <tr><th>Relationship</th><th>Coupling</th><th>Lifecycle Dependency</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Composition</strong> (Strong HAS-A)</td>
+              <td>Tightly coupled</td>
+              <td>Child lifecycle depends on Parent. If Parent is destroyed, Child is also destroyed.</td>
+              <td><code class="inline">Car</code> HAS-A <code class="inline">Engine</code>. If the car is crushed, its engine is destroyed.</td>
+            </tr>
+            <tr>
+              <td><strong>Aggregation</strong> (Weak HAS-A)</td>
+              <td>Loosely coupled</td>
+              <td>Child exists independently of Parent. If Parent is destroyed, Child survives.</td>
+              <td><code class="inline">Department</code> HAS-A <code class="inline">Professor</code>. If department closes, professor continues to exist.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="2-has-a-relationship-composition-aggregation-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <div class="code"><pre># Composition Example (Car owns Engine lifecycle):
+class Engine:
+    def __init__(self, hp):
+        self.hp = hp
+
+    def ignite(self):
+        return f"{self.hp} HP engine running."
+
+class Car:
+    def __init__(self, brand, hp):
+        self.brand = brand
+        self.engine = Engine(hp)  # Engine created internally inside Car
+
+    def start(self):
+        print(f"{self.brand}: {self.engine.ignite()}")
+
+my_car = Car("Porsche", 450)
+my_car.start()  # Porsche: 450 HP engine running.</pre></div>
+
+        <div class="callout">
+          <strong>Design Principle:</strong> <em>"Favor object composition over class inheritance."</em> Composition gives flexibility to swap components at runtime (dependency injection) without brittle deep inheritance trees.
+        </div>
       </section>
+
+      <!-- SECTION 3: IS-A RELATIONSHIP (INHERITANCE) -->
       <section id="3-is-a-relationship-inheritance">
         <div class="heading-with-levels">
           <h2>3. IS-A relationship (inheritance)</h2>
@@ -104,14 +157,38 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-is-a-relationship-inheritance-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>IS-A relationship (inheritance)</strong>.</li>
-          <li>Write small demos in <code class="inline">20-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. Basic Inheritance Syntax</h3>
+        <p>A child class inherits all accessible attributes and methods of its parent class:</p>
+
+        <div class="code"><pre>class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        return "Some generic sound"
+
+# Dog IS-A Animal:
+class Dog(Animal):
+    def speak(self):
+        return f"{self.name} says Woof!"
+
+d = Dog("Buddy")
+print(d.speak())  # Buddy says Woof!</pre></div>
+
+        <h3 id="3-is-a-relationship-inheritance-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Type Inspection: <code class="inline">isinstance()</code> vs <code class="inline">issubclass()</code></h3>
+        <div class="code"><pre>print(isinstance(d, Dog))       # True
+print(isinstance(d, Animal))    # True (Dog IS-A Animal)
+print(isinstance(d, object))    # True (Everything is an object)
+
+print(issubclass(Dog, Animal))  # True
+print(issubclass(Animal, Dog))  # False</pre></div>
       </section>
+
+      <!-- SECTION 4: TYPES OF INHERITANCE -->
       <section id="4-types-of-inheritance">
         <div class="heading-with-levels">
           <h2>4. Types of inheritance</h2>
@@ -120,14 +197,40 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-types-of-inheritance-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Types of inheritance</strong>.</li>
-          <li>Write small demos in <code class="inline">20-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>4.1. The 5 Inheritance Architectures in Python</h3>
+        <ol>
+          <li><strong>Single Inheritance:</strong> One child class inherits from one parent class (<code class="inline">B(A)</code>).</li>
+          <li><strong>Multilevel Inheritance:</strong> A chain of inheritance (<code class="inline">C(B)</code> where <code class="inline">B(A)</code>).</li>
+          <li><strong>Hierarchical Inheritance:</strong> Multiple children inherit from a single parent (<code class="inline">B(A)</code>, <code class="inline">C(A)</code>).</li>
+          <li><strong>Multiple Inheritance:</strong> One child class inherits directly from two or more parent classes (<code class="inline">C(A, B)</code>).</li>
+          <li><strong>Hybrid Inheritance:</strong> Combination of two or more inheritance models above.</li>
+        </ol>
+
+        <h3 id="4-types-of-inheritance-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <div class="code"><pre># Multiple Inheritance Example:
+class Flyer:
+    def fly(self):
+        return "Soaring in the sky"
+
+class Swimmer:
+    def swim(self):
+        return "Swimming in the water"
+
+# Duck inherits from BOTH Flyer and Swimmer:
+class Duck(Flyer, Swimmer):
+    def quack(self):
+        return "Quack quack!"
+
+d = Duck()
+print(d.fly())    # Soaring in the sky
+print(d.swim())   # Swimming in the water
+print(d.quack())  # Quack quack!</pre></div>
       </section>
+
+      <!-- SECTION 5: METHOD RESOLUTION ORDER (MRO) -->
       <section id="5-method-resolution-order-mro">
         <div class="heading-with-levels">
           <h2>5. Method Resolution Order (MRO)</h2>
@@ -136,14 +239,48 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-method-resolution-order-mro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Method Resolution Order (MRO)</strong>.</li>
-          <li>Write small demos in <code class="inline">20-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. The Diamond Problem &amp; C3 Linearization</h3>
+        <div class="callout">
+          <strong>The Diamond Problem:</strong> If Class D inherits from B and C, and both B and C inherit from A, which method executes when calling <code class="inline">D.action()</code>?
+          Python resolves this deterministically using the <strong>C3 Linearization Algorithm</strong>:
+          <ul>
+            <li>Subclasses are checked <strong>before</strong> their parents.</li>
+            <li>Multiple parents are searched in the exact order listed in the class header.</li>
+            <li>Monotonicity is preserved (a class will never be visited twice).</li>
+          </ul>
+        </div>
+
+        <h3 id="5-method-resolution-order-mro-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Inspecting MRO</h3>
+        <div class="code"><pre>class A:
+    def greet(self):
+        return "A"
+
+class B(A):
+    def greet(self):
+        return "B"
+
+class C(A):
+    def greet(self):
+        return "C"
+
+class D(B, C):
+    pass
+
+d = D()
+print("Greets as:", d.greet())  # B (Because B appears before C in class D(B, C))
+
+# Inspecting MRO tuple:
+print("MRO for Class D:")
+for cls in D.__mro__:
+    print(" ", cls.__name__)
+# Order: D -> B -> C -> A -> object</pre></div>
       </section>
+
+      <!-- SECTION 6: SUPER() FUNCTION -->
       <section id="6-super-function">
         <div class="heading-with-levels">
           <h2>6. super() function</h2>
@@ -152,14 +289,60 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-super-function-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>super() function</strong>.</li>
-          <li>Write small demos in <code class="inline">20-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>6.1. Constructor Chaining with <code class="inline">super()</code></h3>
+        <p><code class="inline">super()</code> returns a proxy object delegating method calls to parent classes in the MRO:</p>
+
+        <div class="code"><pre>class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+class Employee(Person):
+    def __init__(self, name, age, emp_id, salary):
+        # Delegate name and age initialization to Person:
+        super().__init__(name, age)
+        self.emp_id = emp_id
+        self.salary = salary
+
+emp = Employee("Bharat", 29, 1001, 95000.0)
+print(f"{emp.name} (ID: {emp.emp_id}) is {emp.age} years old.")</pre></div>
+
+        <h3 id="6-super-function-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>6.2. Cooperative Multiple Inheritance</h3>
+        <p>In multiple inheritance, <code class="inline">super()</code> does not simply call the parent class; it calls the <strong>next class in the MRO chain</strong>:</p>
+
+        <div class="code"><pre>class Base:
+    def __init__(self):
+        print("Base __init__")
+
+class MixinA(Base):
+    def __init__(self):
+        super().__init__()
+        print("MixinA __init__")
+
+class MixinB(Base):
+    def __init__(self):
+        super().__init__()
+        print("MixinB __init__")
+
+class Combined(MixinA, MixinB):
+    def __init__(self):
+        super().__init__()
+        print("Combined __init__")
+
+# MRO: Combined -> MixinA -> MixinB -> Base -> object
+c = Combined()
+# Output order:
+# Base __init__
+# MixinB __init__
+# MixinA __init__
+# Combined __init__</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -168,49 +351,96 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about HAS-A relationship (composition / aggregation)?</span>
+            <span class="qa-question-title">C.1. What is the difference between Composition and Inheritance?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong>Inheritance (IS-A):</strong> A Dog IS-A Animal. Extends behavior from a base class. Creates tight compile-time coupling. Use when true substitutability (Liskov Substitution Principle) applies.</li>
+              <li><strong>Composition (HAS-A):</strong> A Car HAS-A Engine. Assembles complex behavior by containing references to other components. Allows swapping implementations dynamically at runtime.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about IS-A relationship (inheritance)?</span>
+            <span class="qa-question-title">C.2. How does Python solve the Diamond Problem in Multiple Inheritance?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Python resolves it using the <strong>C3 Linearization Algorithm</strong> to construct a linear Method Resolution Order (MRO). If both parent classes inherit from a common ancestor, C3 ensures the common ancestor is visited only <strong>after</strong> both parent branches have been traversed.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Types of inheritance?</span>
+            <span class="qa-question-title">C.3. Why does super() not always call the immediate parent class?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In multiple inheritance, <code class="inline">super()</code> does not mean "call my parent." It means <strong>"call the next class in the active instance's MRO"</strong>.</p>
+            <p>In cooperative multiple inheritance, calling <code class="inline">super()</code> in one sibling mixin will actually invoke the other sibling mixin if it follows it in the MRO list.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Method Resolution Order (MRO)?</span>
+            <span class="qa-question-title">C.4. What is the root base class of all classes in Python 3?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The built-in <strong><code class="inline">object</code></strong> class. In Python 3, writing <code class="inline">class MyClass:</code> implicitly inherits from <code class="inline">class MyClass(object):</code>. It provides default implementations for <code class="inline">__str__</code>, <code class="inline">__repr__</code>, <code class="inline">__eq__</code>, and <code class="inline">__hash__</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What causes a TypeError: Cannot create a consistent method resolution order (MRO)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>This error occurs when the inheritance graph creates an impossible cyclic or contradictory hierarchy that violates C3 linearization rules (e.g. attempting <code class="inline">class A(B, C): pass</code> when <code class="inline">C</code> is already a subclass of <code class="inline">B</code>). Python rejects such class definitions at definition time.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What are Mixins in Python?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <strong>Mixin</strong> is a lightweight class that provides a specific set of reusable helper methods to other classes via multiple inheritance. Mixins are not intended to be instantiated on their own and typically do not define an <code class="inline">__init__</code> constructor (e.g. <code class="inline">JSONSerializableMixin</code>, <code class="inline">LoggableMixin</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How does issubclass(bool, int) evaluate and why?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">issubclass(bool, int)</code> returns <strong><code class="inline">True</code></strong>. In Python, the <code class="inline">bool</code> type was implemented as a direct subclass of <code class="inline">int</code> for historical backwards compatibility. <code class="inline">True</code> has value 1 and <code class="inline">False</code> has value 0.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why should you always call super().__init__() in subclasses?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>If a subclass defines its own <code class="inline">__init__</code> method, Python does <strong>not</strong> automatically invoke the parent class's <code class="inline">__init__</code>. Failing to explicitly call <code class="inline">super().__init__(...)</code> leaves parent attributes uninitialized, resulting in unexpected <code class="inline">AttributeError</code> failures when calling inherited methods.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,254 +449,241 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">20-practice.py</code>. Run with <code class="inline">python3 20-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">20-practice.py</code>. Run with <code class="inline">python3 20-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>HAS-A relationship (composition / aggregation)</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining the difference between HAS-A and IS-A relationships.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of HAS-A Relationship (Composition / Aggregation):
-# 1. HAS-A models composition where a class contains references to instances of other classes.
-# 2. Promotes loose coupling and reuse without creating deep, brittle inheritance hierarchies.
-# 3. Principle: &#x27;Favor composition over inheritance&#x27; whenever possible.</pre></div>
+                <div class="code"><pre># Relationship Foundations:
+# 1. HAS-A (Composition): Class holds reference to component objects; loosely coupled.
+# 2. IS-A (Inheritance): Subclass extends superclass; enables code reuse and polymorphism.
+# 3. C3 MRO linearizes multiple inheritance without diamond problem ambiguity.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>IS-A relationship (inheritance)</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Inspect the __mro__ of a simple subclass hierarchy.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># IS-A Relationship (Inheritance):
-class Animal:
-    def breathe(self):
-        return &quot;Breathing oxygen&quot;
+                <div class="code"><pre>class A: pass
+class B(A): pass
+class C(B): pass
 
-class Dog(Animal):  # Dog IS-A Animal
-    def bark(self):
-        return &quot;Woof!&quot;
-
-d = Dog()
-print(&quot;Dog breathing:&quot;, d.breathe())
-print(&quot;Dog barking:&quot;, d.bark())
-print(&quot;isinstance(d, Animal):&quot;, isinstance(d, Animal))</pre></div>
+print("MRO of C:", [cls.__name__ for cls in C.__mro__])
+# ['C', 'B', 'A', 'object']</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Verify isinstance() and issubclass() across an inheritance chain.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: OOP Inheritance, Composition, and Method Resolution.
+                <div class="code"><pre>class Vehicle: pass
+class Car(Vehicle): pass
 
-Goal: Master IS-A vs HAS-A design patterns, single/multiple/multilevel/hierarchical
-inheritance, the super() proxy, and C3 Linearization (MRO).
-&quot;&quot;&quot;</pre></div>
+c = Car()
+print("isinstance(c, Vehicle):", isinstance(c, Vehicle))  # True
+print("issubclass(Car, Vehicle):", issubclass(Car, Vehicle))# True</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: HAS-A relationship (composition / aggregation)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Employee Hierarchy with super() — Build Employee and Manager classes with salary calculation.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: HAS-A relationship (composition / aggregation)
-class Engine:
-    def start(self):
-        return &quot;V8 Engine started rumbling.&quot;
-
-class Car:
-    def __init__(self, brand):
-        self.brand = brand
-        self.engine = Engine()  # Car HAS-A Engine
-    
-    def drive(self):
-        status = self.engine.start()
-        return f&quot;{self.brand} is moving. {status}&quot;
-
-c = Car(&quot;Mustang&quot;)
-print(c.drive())</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: IS-A relationship (inheritance)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: IS-A relationship with super() constructor chaining
-class Person:
-    def __init__(self, name, age):
+                <div class="code"><pre>class Employee:
+    def __init__(self, name: str, base_salary: float):
         self.name = name
-        self.age = age
-    
-    def get_info(self):
-        return f&quot;{self.name}, Age {self.age}&quot;
+        self.base_salary = base_salary
 
-class SoftwareEngineer(Person):
-    def __init__(self, name, age, tech_stack):
-        super().__init__(name, age)  # Call parent constructor
-        self.tech_stack = tech_stack
-    
-    def get_info(self):
-        base = super().get_info()
-        return f&quot;{base} | Stack: {&#x27;, &#x27;.join(self.tech_stack)}&quot;
+    def calculate_total_pay(self) -> float:
+        return self.base_salary
 
-eng = SoftwareEngineer(&quot;Bharat&quot;, 30, [&quot;Python&quot;, &quot;TypeScript&quot;, &quot;React&quot;])
-print(eng.get_info())</pre></div>
+class Manager(Employee):
+    def __init__(self, name: str, base_salary: float, bonus: float):
+        super().__init__(name, base_salary)
+        self.bonus = bonus
+
+    def calculate_total_pay(self) -> float:
+        return super().calculate_total_pay() + self.bonus
+
+mgr = Manager("Bharat Sonwane", 120000.0, 30000.0)
+print(f"{mgr.name} Total Compensation: ${mgr.calculate_total_pay():,}")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Types of inheritance</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Composition Payment Gateway — Build Order class containing PaymentGateway component.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Types of inheritance
-# 1. Single: Child(Parent)
-# 2. Multilevel: C(B), B(A)
-# 3. Hierarchical: B(A), C(A)
-# 4. Multiple: Child(ParentA, ParentB)
+                <div class="code"><pre>class PaymentProcessor:
+    def charge(self, amount: float):
+        return f"Successfully charged ${amount:.2f} via Secure Gateway."
 
-class Swimmer:
-    def swim(self):
-        return &quot;Swimming in water.&quot;
+class Order:
+    def __init__(self, order_id: str, amount: float, processor: PaymentProcessor):
+        self.order_id = order_id
+        self.amount = amount
+        self.processor = processor  # Composition / Aggregation
 
-class Flyer:
-    def fly(self):
-        return &quot;Flying in the air.&quot;
+    def checkout(self):
+        print(f"Order #{self.order_id}: {self.processor.charge(self.amount)}")
 
-class Duck(Swimmer, Flyer):  # Multiple inheritance
-    pass
-
-donald = Duck()
-print(donald.swim())
-print(donald.fly())</pre></div>
+gateway = PaymentProcessor()
+order = Order("ORD-9876", 450.0, gateway)
+order.checkout()</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Method Resolution Order (MRO)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: JSON Serializable Mixin — Create a Mixin class that dumps instance state to JSON.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Method Resolution Order (MRO)
-class A:
-    def ping(self): print(&quot;A.ping&quot;)
+                <div class="code"><pre>import json
+
+class JSONSerializableMixin:
+    def to_json(self) -> str:
+        return json.dumps(self.__dict__, indent=2)
+
+class Product(JSONSerializableMixin):
+    def __init__(self, sku: str, price: float, tags: list):
+        self.sku = sku
+        self.price = price
+        self.tags = tags
+
+p = Product("SKU-100", 29.99, ["electronics", "gadget"])
+print("JSON Output:\n" + p.to_json())</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Diamond Multiple Inheritance Tracker — Trace cooperative super() execution order.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class A:
+    def log(self):
+        print("A log")
 
 class B(A):
-    def ping(self): print(&quot;B.ping&quot;)
+    def log(self):
+        print("B log")
+        super().log()
 
 class C(A):
-    def ping(self): print(&quot;C.ping&quot;)
+    def log(self):
+        print("C log")
+        super().log()
 
 class D(B, C):
-    pass
+    def log(self):
+        print("D log")
+        super().log()
 
 d = D()
-d.ping()  # Resolves to B.ping (first in MRO)
-print(&quot;MRO for class D:&quot;)
-for cls in D.mro():
-    print(&quot; &quot;, cls.__name__)</pre></div>
+d.log()
+# Output: D log -> B log -> C log -> A log</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Inheritance and Relationships.</span>
+                <span class="qa-question-title">Challenge 1: Logging &amp; Validation Mixin Pipeline — Combine multiple mixins to build an audited database model.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: UI Component Hierarchy with Composite Rendering
-class UIComponent:
-    def __init__(self, component_id):
-        self.component_id = component_id
-    
-    def render(self):
-        raise NotImplementedError
+                <div class="code"><pre>class TimestampMixin:
+    def __init__(self, *args, **kwargs):
+        import time
+        self.created_at = time.time()
+        super().__init__(*args, **kwargs)
 
-class Button(UIComponent):
-    def __init__(self, component_id, label):
-        super().__init__(component_id)
-        self.label = label
-    def render(self):
-        return f&quot;&lt;button id=&#x27;{self.component_id}&#x27;&gt;{self.label}&lt;/button&gt;&quot;
+class AuditableMixin:
+    def audit_log(self):
+        print(f"[AUDIT] Entity {self.__class__.__name__} state: {self.__dict__}")
 
-class Panel(UIComponent):
-    def __init__(self, component_id):
-        super().__init__(component_id)
-        self.children = []  # Composition
-    
-    def add(self, child):
-        self.children.append(child)
-    
-    def render(self):
-        inner = &quot;\n  &quot;.join(child.render() for child in self.children)
-        return f&quot;&lt;div id=&#x27;{self.component_id}&#x27;&gt;\n  {inner}\n&lt;/div&gt;&quot;
+class UserAccount(TimestampMixin, AuditableMixin):
+    def __init__(self, username, email):
+        self.username = username
+        self.email = email
+        super().__init__()
 
-panel = Panel(&quot;main-container&quot;)
-panel.add(Button(&quot;btn-submit&quot;, &quot;Submit&quot;))
-panel.add(Button(&quot;btn-cancel&quot;, &quot;Cancel&quot;))
-print(&quot;Rendered Tree:\n&quot; + panel.render())</pre></div>
+user = UserAccount("bharat_dev", "bharat@example.com")
+user.audit_log()</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Plugin Architecture via Inheritance Subclass Registration — Automatically register subclasses at runtime.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Inheritance Pitfalls &amp; Edge Cases:
-# 1. The Diamond Problem in multiple inheritance:
-# Solved gracefully in Python via C3 Linearization MRO algorithm.
+                <div class="code"><pre>class BaseExporter:
+    registry = {}
 
-# 2. Forgetting super().__init__() leads to uninitialized parent attributes:
-# class Child(Parent):
-#     def __init__(self):
-#         # Without super().__init__(), parent fields are missing!
-#         pass
+    def __init_subclass__(cls, format_name, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls.registry[format_name] = cls
 
-# 3. Inconsistent MRO hierarchy raises TypeError: Cannot create a consistent method resolution order (MRO).</pre></div>
+class CSVExporter(BaseExporter, format_name="csv"):
+    pass
+
+class JSONExporter(BaseExporter, format_name="json"):
+    pass
+
+print("Auto-registered Exporters:", BaseExporter.registry)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Inheritance and Relationships) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain why composition is preferred over inheritance in modern software design.</li>
+          <li>I know how Python solves the Diamond Problem using C3 MRO linearization.</li>
+          <li>I understand how <code class="inline">super()</code> enables cooperative multiple inheritance.</li>
+          <li>I can use mixins to share cross-cutting capabilities cleanly.</li>
         </ul>
       </section>
-      <footer>Python Notes File 19. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 20. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

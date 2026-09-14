@@ -46,13 +46,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>19. OOP Fundamentals</h1>
-        <p class="subtitle">File 19 — class, object, self, constructors, variables, methods, GC.</p>
+        <p class="subtitle">File 19 — classes, objects, self, constructors, instance/class/static variables &amp; methods, inner classes, and garbage collection.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Class &amp; Object</span>
+          <span class="chip">self</span>
+          <span class="chip">__init__</span>
+          <span class="chip">Instance vs Class Variables</span>
+          <span class="chip">@classmethod &amp; @staticmethod</span>
+          <span class="chip">Inner Classes</span>
+          <span class="chip">Garbage Collection</span>
+          <span class="chip">__del__</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -61,33 +68,33 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>OOP Fundamentals</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Object-Oriented Programming (OOP)</strong> is a design paradigm based on modeling software around real-world entities ("objects") containing <strong>state (attributes/data)</strong> and <strong>behavior (methods/functions)</strong>.</li>
+          <li>In Python, <em>everything is an object</em>: integers, strings, functions, modules, and user-defined classes are all first-class instances inheriting from the root <code class="inline">object</code> base class.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–10 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">19-practice.py</code> before File 20. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Class, object, and reference variable</strong></li>
-          <li><strong>self variable (complete story)</strong></li>
-          <li><strong>Constructors (__init__)</strong></li>
-          <li><strong>Instance variables and methods</strong></li>
-          <li><strong>Static / class variables</strong></li>
-          <li><strong>Instance vs class vs static methods</strong></li>
-          <li><strong>Accessing members across classes</strong></li>
-          <li><strong>Inner / nested classes and nested methods</strong></li>
-          <li><strong>Garbage collection and destructor</strong></li>
+          <li><strong>Class, object, and reference variable</strong> — blueprint vs instance</li>
+          <li><strong>self variable (complete story)</strong> — implicit instance binding</li>
+          <li><strong>Constructors (__init__)</strong> — initialization vs creation (<code class="inline">__new__</code>)</li>
+          <li><strong>Instance variables and methods</strong> — per-instance state</li>
+          <li><strong>Static / class variables</strong> — shared class-level attributes</li>
+          <li><strong>Instance vs class vs static methods</strong> — <code class="inline">@classmethod</code> vs <code class="inline">@staticmethod</code></li>
+          <li><strong>Accessing members across classes</strong> — passing object references</li>
+          <li><strong>Inner / nested classes and nested methods</strong> — logical containment</li>
+          <li><strong>Garbage collection and destructor</strong> — reference counting, cyclic GC, and <code class="inline">__del__</code></li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: CLASS, OBJECT, AND REFERENCE VARIABLE -->
       <section id="2-class-object-and-reference-variable">
         <div class="heading-with-levels">
           <h2>2. Class, object, and reference variable</h2>
@@ -96,14 +103,29 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-class-object-and-reference-variable-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. The Blueprint &amp; Instance Paradigm</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Class, object, and reference variable</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li><strong>Class:</strong> A blueprint or template defining the structure and behavior for future objects. Consumes memory only to store its class namespace dictionary (<code class="inline">Class.__dict__</code>).</li>
+          <li><strong>Object (Instance):</strong> A physical realization instantiated from the class blueprint allocated on the heap.</li>
+          <li><strong>Reference Variable:</strong> A variable holding the memory address reference pointing to the heap-allocated object instance.</li>
         </ul>
+
+        <div class="code"><pre>class Student:
+    """Blueprint representing a student."""
+    pass
+
+# Creating two distinct object instances on heap:
+s1 = Student()  # s1 is a reference variable
+s2 = Student()
+
+print("s1 id:", id(s1))
+print("s2 id:", id(s2))
+print("Are they the same object?", s1 is s2)  # False</pre></div>
       </section>
+
+      <!-- SECTION 3: SELF VARIABLE -->
       <section id="3-self-variable-complete-story">
         <div class="heading-with-levels">
           <h2>3. self variable (complete story)</h2>
@@ -112,14 +134,28 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-self-variable-complete-story-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>self variable (complete story)</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. What is <code class="inline">self</code>?</h3>
+        <div class="callout">
+          <strong>Under the Hood:</strong> <code class="inline">self</code> is a reference variable that always points to the <strong>current object instance</strong> executing the method. Unlike Java/C++ <code class="inline">this</code> which is an implicit language keyword, <code class="inline">self</code> in Python is an explicit first parameter in instance method definitions, though calling <code class="inline">obj.method()</code> passes it implicitly behind the scenes.
+        </div>
+
+        <div class="code"><pre>class Account:
+    def deposit(self, amount):
+        print("Self pointer address:", id(self))
+
+acc = Account()
+print("acc object address:  ", id(acc))
+
+# Invoking via instance (Python automatically passes acc as self):
+acc.deposit(100)
+
+# Equivalent invocation via Class:
+Account.deposit(acc, 100)</pre></div>
       </section>
+
+      <!-- SECTION 4: CONSTRUCTORS (__INIT__) -->
       <section id="4-constructors-init">
         <div class="heading-with-levels">
           <h2>4. Constructors (__init__)</h2>
@@ -128,14 +164,26 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-constructors-init-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. The Role of <code class="inline">__init__</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>Constructors (__init__)</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li><code class="inline">__init__</code> is the special <strong>initialization method</strong> invoked automatically right after a new object instance is created.</li>
+          <li>Its sole responsibility is to attach and initialize instance variables on <code class="inline">self</code>.</li>
+          <li>It <strong>must never return anything other than <code class="inline">None</code></strong>; attempting <code class="inline">return value</code> raises a <code class="inline">TypeError</code>.</li>
         </ul>
+
+        <div class="code"><pre>class Employee:
+    def __init__(self, emp_id: int, name: str, salary: float):
+        self.emp_id = emp_id
+        self.name = name
+        self.salary = salary
+        print(f"Initialized Employee: {self.name}")
+
+e = Employee(101, "Bharat Sonwane", 95000.0)</pre></div>
       </section>
+
+      <!-- SECTION 5: INSTANCE VARIABLES AND METHODS -->
       <section id="5-instance-variables-and-methods">
         <div class="heading-with-levels">
           <h2>5. Instance variables and methods</h2>
@@ -144,14 +192,32 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-instance-variables-and-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+
+        <h3>5.1. Where Can Instance Variables Be Created?</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Instance variables and methods</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li><strong>Inside <code class="inline">__init__</code>:</strong> Using <code class="inline">self.var = val</code> (Standard practice).</li>
+          <li><strong>Inside an instance method:</strong> Using <code class="inline">self.var = val</code>.</li>
+          <li><strong>Outside the class:</strong> Using the reference variable <code class="inline">obj.var = val</code>.</li>
         </ul>
+
+        <div class="code"><pre>class Laptop:
+    def __init__(self, brand):
+        self.brand = brand          # Created in constructor
+
+    def set_ram(self, ram_gb):
+        self.ram = ram_gb           # Created in instance method
+
+l = Laptop("Apple")
+l.set_ram(16)
+l.color = "Space Grey"              # Created outside class via reference
+
+print("Instance namespace dictionary:")
+print(l.__dict__)
+# {'brand': 'Apple', 'ram': 16, 'color': 'Space Grey'}</pre></div>
       </section>
+
+      <!-- SECTION 6: STATIC / CLASS VARIABLES -->
       <section id="6-static-class-variables">
         <div class="heading-with-levels">
           <h2>6. Static / class variables</h2>
@@ -160,14 +226,40 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-static-class-variables-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
+
+        <h3>6.1. Class Variables vs Instance Variables</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Static / class variables</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li><strong>Class Variables (Static):</strong> Declared directly within the class body outside any method. Shared by <strong>all instances</strong> of that class. Modifying it via <code class="inline">ClassName.var = new_val</code> affects every instance.</li>
+          <li><strong>The Shadowing Gotcha:</strong> Assigning via an instance (<code class="inline">obj.var = new_val</code>) does NOT modify the class variable; it silently creates a new <strong>instance variable</strong> on <code class="inline">obj</code> that shadows the class variable!</li>
         </ul>
+
+        <div class="code"><pre>class BankAccount:
+    bank_name = "Global National Bank"  # Class / static variable
+
+    def __init__(self, account_holder, balance):
+        self.holder = account_holder    # Instance variable
+        self.balance = balance
+
+b1 = BankAccount("Alice", 5000)
+b2 = BankAccount("Bob", 8000)
+
+print(b1.bank_name)  # Global National Bank
+print(b2.bank_name)  # Global National Bank
+
+# Modifying class variable via ClassName (Affects all):
+BankAccount.bank_name = "Apex Universal Bank"
+print(b1.bank_name)  # Apex Universal Bank
+print(b2.bank_name)  # Apex Universal Bank
+
+# Shadowing trap:
+b1.bank_name = "Alice's Private Bank"  # Creates instance variable on b1!
+print(b1.bank_name)          # Alice's Private Bank (Shadowed)
+print(b2.bank_name)          # Apex Universal Bank (Unchanged)
+print(BankAccount.bank_name) # Apex Universal Bank (Class level unchanged)</pre></div>
       </section>
+
+      <!-- SECTION 7: INSTANCE VS CLASS VS STATIC METHODS -->
       <section id="7-instance-vs-class-vs-static-methods">
         <div class="heading-with-levels">
           <h2>7. Instance vs class vs static methods</h2>
@@ -176,14 +268,75 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="7-instance-vs-class-vs-static-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Instance vs class vs static methods</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>7.1. Method Classification Table</h3>
+        <table>
+          <thead>
+            <tr><th>Method Type</th><th>Decorator</th><th>First Parameter</th><th>Access Capabilities</th><th>Primary Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Instance Method</strong></td>
+              <td>None</td>
+              <td><code class="inline">self</code></td>
+              <td>Instance variables and Class variables.</td>
+              <td>Operating on specific object state.</td>
+            </tr>
+            <tr>
+              <td><strong>Class Method</strong></td>
+              <td><code class="inline">@classmethod</code></td>
+              <td><code class="inline">cls</code></td>
+              <td>Class variables only (no access to <code class="inline">self</code>).</td>
+              <td>Alternative constructors (factory methods).</td>
+            </tr>
+            <tr>
+              <td><strong>Static Method</strong></td>
+              <td><code class="inline">@staticmethod</code></td>
+              <td>None</td>
+              <td>General utility logic (no <code class="inline">self</code>, no <code class="inline">cls</code>).</td>
+              <td>Isolated helper functions scoped to class.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="7-instance-vs-class-vs-static-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <div class="code"><pre>class Date:
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+
+    # Instance method:
+    def format_iso(self):
+        return f"{self.year:04d}-{self.month:02d}-{self.day:02d}"
+
+    # Class method as alternative constructor (Factory):
+    @classmethod
+    def from_string(cls, date_str: str):
+        # Parses "YYYY-MM-DD"
+        y, m, d = map(int, date_str.split("-"))
+        return cls(y, m, d)
+
+    # Static method: General validator independent of state
+    @staticmethod
+    def is_valid_month(month: int) -> bool:
+        return 1 <= month <= 12
+
+# Using standard constructor:
+d1 = Date(2026, 9, 14)
+print(d1.format_iso())  # 2026-09-14
+
+# Using class method factory:
+d2 = Date.from_string("2026-12-31")
+print(d2.format_iso())  # 2026-12-31
+
+# Using static method:
+print("Is month 13 valid:", Date.is_valid_month(13))  # False</pre></div>
       </section>
+
+      <!-- SECTION 8: ACCESSING MEMBERS ACROSS CLASSES -->
       <section id="8-accessing-members-across-classes">
         <div class="heading-with-levels">
           <h2>8. Accessing members across classes</h2>
@@ -192,14 +345,30 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="8-accessing-members-across-classes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Accessing members across classes</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>8.1. Passing Object References Between Classes</h3>
+        <p>One class can interact with another by receiving an instance reference as a parameter:</p>
+
+        <div class="code"><pre>class Engine:
+    def start(self):
+        print("V8 engine roaring to life...")
+
+class Car:
+    def __init__(self, model, engine: Engine):
+        self.model = model
+        self.engine = engine
+
+    def drive(self):
+        print(f"Driving {self.model}:")
+        self.engine.start()
+
+eng = Engine()
+car = Car("Ford Mustang", eng)
+car.drive()</pre></div>
       </section>
+
+      <!-- SECTION 9: INNER / NESTED CLASSES AND NESTED METHODS -->
       <section id="9-inner-nested-classes-and-nested-methods">
         <div class="heading-with-levels">
           <h2>9. Inner / nested classes and nested methods</h2>
@@ -208,14 +377,28 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="9-inner-nested-classes-and-nested-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>9.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Inner / nested classes and nested methods</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>9.1. Inner Classes</h3>
+        <p>When an object cannot exist independently of another object (e.g. a <code class="inline">Head</code> without a <code class="inline">Human</code>, an <code class="inline">Address</code> without an <code class="inline">Employee</code>), define it as an <strong>Inner Class</strong>:</p>
+
+        <div class="code"><pre>class University:
+    def __init__(self, name):
+        self.name = name
+        self.cs_department = self.Department("Computer Science")
+
+    class Department:
+        def __init__(self, dept_name):
+            self.dept_name = dept_name
+
+        def display(self):
+            print(f"Department: {self.dept_name}")
+
+uni = University("Stanford")
+uni.cs_department.display()  # Department: Computer Science</pre></div>
       </section>
+
+      <!-- SECTION 10: GARBAGE COLLECTION AND DESTRUCTOR -->
       <section id="10-garbage-collection-and-destructor">
         <div class="heading-with-levels">
           <h2>10. Garbage collection and destructor</h2>
@@ -224,14 +407,33 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="10-garbage-collection-and-destructor-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>10.1. Goals</h3>
+
+        <h3>10.1. CPython's Dual Garbage Collection Mechanism</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Garbage collection and destructor</strong>.</li>
-          <li>Write small demos in <code class="inline">19-practice.py</code> covering this section.</li>
+          <li><strong>1. Reference Counting (Primary):</strong> Every Python object has an internal <code class="inline">ob_refcnt</code> field tracking how many references point to it. As soon as <code class="inline">ob_refcnt == 0</code>, memory is deallocated <strong>immediately</strong>.</li>
+          <li><strong>2. Generational Cyclic GC (Secondary):</strong> Detects and reclaims isolated reference cycles (Object A references B, and B references A, but neither is reachable from the root). Python classifies objects into 3 generations (Gen 0, 1, 2).</li>
         </ul>
+
+        <h3>10.2. The Destructor (<code class="inline">__del__</code>)</h3>
+        <p><code class="inline">__del__</code> is called just before the object is destroyed by garbage collection:</p>
+
+        <div class="code"><pre>import gc
+
+class Resource:
+    def __init__(self, name):
+        self.name = name
+        print(f"Acquired: {self.name}")
+
+    def __del__(self):
+        print(f"Destructor invoked: Releasing {self.name}")
+
+# Reference count drop triggers destructor:
+r1 = Resource("DatabaseSocket")
+del r1  # Prints: Destructor invoked: Releasing DatabaseSocket</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -240,49 +442,109 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Class, object, and reference variable?</span>
+            <span class="qa-question-title">C.1. What is the difference between __new__ and __init__?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">__new__(cls)</code>:</strong> The actual <strong>creator</strong> method. It is a static method that allocates memory and returns a brand new instance of <code class="inline">cls</code>. Used in Singletons and subclassing immutable types (<code class="inline">tuple</code>, <code class="inline">int</code>).</li>
+              <li><strong><code class="inline">__init__(self)</code>:</strong> The <strong>initializer</strong> method. It receives the already-created instance as <code class="inline">self</code> and attaches attributes. Returns <code class="inline">None</code>.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about self variable (complete story)?</span>
+            <span class="qa-question-title">C.2. Why does self need to be explicitly written in Python method definitions?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Explicit <code class="inline">self</code> adheres to Python's core zen: <em>"Explicit is better than implicit."</em> It avoids ambiguity between local variables and instance variables without requiring an extra keyword like <code class="inline">this</code>, simplifies method inspection, and enables dynamic method binding onto classes at runtime.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Constructors (__init__)?</span>
+            <span class="qa-question-title">C.3. What is the difference between @classmethod and @staticmethod?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">@classmethod</code>:</strong> Receives the class (<code class="inline">cls</code>) as its first implicit argument. Can access and modify class-level state. Primary use case: Factory methods / alternative constructors.</li>
+              <li><strong><code class="inline">@staticmethod</code>:</strong> Receives neither <code class="inline">self</code> nor <code class="inline">cls</code>. Behaves like a plain function that happens to live inside a class's namespace. Primary use case: Utility functions.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Instance variables and methods?</span>
+            <span class="qa-question-title">C.4. How does assigning to a class variable via an instance (obj.var = 10) create a bug?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In Python, reading <code class="inline">obj.var</code> searches the instance namespace first, then falls back to the class namespace.</p>
+            <p>However, <strong>writing</strong> <code class="inline">obj.var = 10</code> always adds an entry to <code class="inline">obj.__dict__</code>. It creates a new instance variable on <code class="inline">obj</code> that shadows the class variable, leaving the class variable unchanged for all other instances.</p>
+            <p><strong>Fix:</strong> Always mutate class variables through the class name: <code class="inline">ClassName.var = 10</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How does CPython resolve cyclic reference memory leaks?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Reference counting cannot free circular structures (e.g. Node A references Node B, and Node B references Node A). When both external references are lost, their reference counts remain 1.</p>
+            <p>CPython includes a <strong>Generational Cyclic Garbage Collector</strong> (<code class="inline">gc</code> module). It periodically runs graph cycle-detection algorithms across objects in Generation 0, 1, and 2, detects isolated reference islands with no roots reachable from global namespaces or call stacks, and reclaims them.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Why shouldn't you rely on __del__ for critical resource cleanup?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The exact timing of <code class="inline">__del__</code> execution is <strong>non-deterministic</strong>:</p>
+            <ul>
+              <li>If objects form circular references, <code class="inline">__del__</code> might not be called until program termination, or may be deferred indefinitely.</li>
+              <li>Exceptions occurring inside <code class="inline">__del__</code> are ignored and printed to <code class="inline">sys.stderr</code>.</li>
+            </ul>
+            <p><strong>Solution:</strong> Always use <strong>Context Managers (<code class="inline">with</code> statement)</strong> or explicit <code class="inline">close()</code> methods inside <code class="inline">try...finally</code> blocks for sockets, files, and database connections.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What does __dict__ contain in a class and instance?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><code class="inline">instance.__dict__</code>: A dictionary mapping instance attribute names to their current values.</li>
+              <li><code class="inline">Class.__dict__</code>: A mappingproxy containing the class's methods, static attributes, docstrings, and descriptors.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. What is the purpose of __slots__?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>By default, every Python instance stores attributes in a dynamic <code class="inline">__dict__</code> dictionary, which consumes significant RAM. Declaring <code class="inline">__slots__ = ['x', 'y']</code> instructs Python to allocate a fixed-size array of pointers instead of a dictionary, reducing memory footprint by 40–50% when creating millions of small objects.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -291,238 +553,236 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">19-practice.py</code>. Run with <code class="inline">python3 19-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">19-practice.py</code>. Run with <code class="inline">python3 19-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Class, object, and reference variable</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining class blueprints, self, and class vs instance variables.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Class, Object, and Reference Variable:
-# 1. A class is a blueprint for creating objects, defining attributes and methods.
-# 2. An object is a concrete instance of a class allocated in memory.
-# 3. A reference variable points to the object in heap memory; multiple references can point to the same object.</pre></div>
+                <div class="code"><pre># OOP Foundations:
+# 1. Classes are blueprints; objects are heap-allocated instances.
+# 2. self explicitly refers to the active instance executing the method.
+# 3. Class variables are shared by all instances; instance variables are unique to each.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>self variable (complete story)</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Create a BankAccount class with deposit and balance inspection methods.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># The &#x27;self&#x27; variable:
-class Greeter:
-    def set_name(self, name):
-        # &#x27;self&#x27; refers to the current instance calling the method
-        self.name = name
-    def say_hello(self):
-        print(f&quot;Hello, my name is {self.name} (id={id(self)})&quot;)
+                <div class="code"><pre>class BankAccount:
+    def __init__(self, owner, balance=0.0):
+        self.owner = owner
+        self.balance = balance
 
-g = Greeter()
-g.set_name(&quot;Bharat&quot;)
-g.say_hello()</pre></div>
+    def deposit(self, amount):
+        if amount > 0:
+            self.balance += amount
+        return self.balance
+
+acc = BankAccount("Bharat", 1000.0)
+print(f"Owner: {acc.owner}, New Balance: ${acc.deposit(500.0)}")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Demonstrate the @staticmethod decorator on a MathUtil class.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Object-Oriented Programming Fundamentals.
+                <div class="code"><pre>class MathUtil:
+    @staticmethod
+    def is_even(n: int) -> bool:
+        return n % 2 == 0
 
-Goal: Master class definitions, object instantiation, the role of self,
-constructors (__init__), instance vs class variables, and static/class methods.
-&quot;&quot;&quot;</pre></div>
+print("Is 42 even:", MathUtil.is_even(42))  # True</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Class, object, and reference variable</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Class Method Factory Constructor — Build a Person class with from_birth_year factory method.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Class, object, and reference variable
-class Car:
-    pass
+                <div class="code"><pre>from datetime import date
 
-# Creating multiple objects:
-car1 = Car()
-car2 = Car()
-car3 = car1  # Aliasing reference
-
-print(&quot;car1 address:&quot;, hex(id(car1)))
-print(&quot;car2 address:&quot;, hex(id(car2)))
-print(&quot;car1 is car2:&quot;, car1 is car2)  # False (independent objects)
-print(&quot;car1 is car3:&quot;, car1 is car3)  # True (same reference)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: self variable (complete story)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: self variable (complete story)
-class Device:
-    def __init__(self, brand, model):
-        # self binds attributes directly to the specific instance
-        self.brand = brand
-        self.model = model
-    
-    def print_specs(self):
-        print(f&quot;Device: {self.brand} {self.model}&quot;)
-
-d1 = Device(&quot;Apple&quot;, &quot;MacBook Pro&quot;)
-d2 = Device(&quot;Dell&quot;, &quot;XPS 15&quot;)
-
-# Behind the scenes, Device.print_specs(d1) is invoked:
-d1.print_specs()
-Device.print_specs(d2)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Constructors (__init__)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Constructors (__init__)
-class Student:
-    def __init__(self, roll_no, name, score=0.0):
-        print(f&quot;[Constructor] Initializing Student #{roll_no}&quot;)
-        self.roll_no = roll_no
+class Person:
+    def __init__(self, name: str, age: int):
         self.name = name
-        self.score = score
+        self.age = age
 
-s1 = Student(101, &quot;Alice&quot;, 94.5)
-s2 = Student(102, &quot;Bob&quot;)  # Uses default score
-print(f&quot;Student 1: {s1.name}, Score: {s1.score}&quot;)
-print(f&quot;Student 2: {s2.name}, Score: {s2.score}&quot;)</pre></div>
+    @classmethod
+    def from_birth_year(cls, name: str, birth_year: int):
+        current_year = date.today().year
+        return cls(name, current_year - birth_year)
+
+p = Person.from_birth_year("Bharat", 1996)
+print(f"{p.name} is {p.age} years old.")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Instance variables and methods</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Active Instance Tracker (Class Variable) — Maintain a live count of active instances incrementing in __init__ and decrementing in __del__.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Instance variables and methods
-class BankAccount:
-    bank_name = &quot;Global Tech Bank&quot;  # Class / Static variable
-    
-    def __init__(self, owner, balance=0.0):
-        self.owner = owner          # Instance variable
-        self.balance = balance      # Instance variable
-    
-    def deposit(self, amount):      # Instance method
-        if amount &gt; 0:
-            self.balance += amount
-            print(f&quot;Deposited ${amount:.2f}. New Balance: ${self.balance:.2f}&quot;)
-    
-    def withdraw(self, amount):     # Instance method
-        if 0 &lt; amount &lt;= self.balance:
-            self.balance -= amount
-            print(f&quot;Withdrew ${amount:.2f}. Remaining: ${self.balance:.2f}&quot;)
-        else:
-            print(&quot;Insufficient funds or invalid amount.&quot;)
+                <div class="code"><pre>class Session:
+    active_sessions = 0
 
-acc = BankAccount(&quot;Bharat&quot;, 500.0)
-acc.deposit(200.0)
-acc.withdraw(150.0)
-print(f&quot;Account belongs to {acc.owner} at {BankAccount.bank_name}&quot;)</pre></div>
+    def __init__(self, user_id):
+        self.user_id = user_id
+        Session.active_sessions += 1
+
+    def __del__(self):
+        Session.active_sessions -= 1
+
+s1 = Session("user_1")
+s2 = Session("user_2")
+print("Active sessions:", Session.active_sessions)  # 2
+del s1
+print("Active sessions after logout:", Session.active_sessions)  # 1</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 3: Inner Class Composition (Car &amp; Engine) — Model a Car containing a nested Engine class.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class Car:
+    def __init__(self, model, horsepower):
+        self.model = model
+        self.engine = self.Engine(horsepower)
+
+    class Engine:
+        def __init__(self, hp):
+            self.hp = hp
+
+        def specs(self):
+            return f"{self.hp} HP Turbocharged"
+
+    def display(self):
+        print(f"Car: {self.model} with {self.engine.specs()}")
+
+c = Car("BMW M3", 503)
+c.display()</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Shadowing Demonstration — Deliberately trigger class variable shadowing and fix it.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class Config:
+    timeout = 30
+
+c1 = Config()
+c2 = Config()
+
+# Shadowing bug:
+c1.timeout = 60  # Only changes on c1
+print("c1 timeout:", c1.timeout)  # 60
+print("c2 timeout:", c2.timeout)  # 30 (Still default!)
+
+# Correct update:
+Config.timeout = 45
+print("c2 after Class update:", c2.timeout)  # 45</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to OOP Fundamentals.</span>
+                <span class="qa-question-title">Challenge 1: Singleton Pattern Implementation via __new__ — Ensure only one instance of DatabasePool can exist.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Employee Management System with Class &amp; Static Methods
-class Employee:
-    company = &quot;InnovateCorp&quot;
-    employee_count = 0
-    
-    def __init__(self, emp_id, name, base_salary):
-        self.emp_id = emp_id
-        self.name = name
-        self.base_salary = base_salary
-        Employee.employee_count += 1
-    
-    @classmethod
-    def get_company_stats(cls):
-        return f&quot;{cls.company} employs {cls.employee_count} active team members.&quot;
-    
-    @staticmethod
-    def calculate_bonus(salary, rating):
-        # Pure utility calculation
-        multiplier = 0.20 if rating &gt;= 4.5 else 0.10
-        return round(salary * multiplier, 2)
+                <div class="code"><pre>class DatabasePool:
+    _instance = None
 
-e1 = Employee(&quot;EMP-1&quot;, &quot;Sarah&quot;, 95000)
-e2 = Employee(&quot;EMP-2&quot;, &quot;David&quot;, 82000)
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.connection_string = "postgresql://localhost:5432/prod"
+        return cls._instance
 
-print(Employee.get_company_stats())
-print(f&quot;{e1.name}&#x27;s Bonus: ${Employee.calculate_bonus(e1.base_salary, 4.8):,.2f}&quot;)</pre></div>
+p1 = DatabasePool()
+p2 = DatabasePool()
+print("Are p1 and p2 identical singletons?", p1 is p2)  # True</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Memory Optimization with __slots__ — Benchmark memory consumption of 100,000 instances with and without __slots__.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># OOP Fundamentals Pitfalls:
-# 1. Modifying class variable via self creates a shadowing instance variable:
-class Config:
-    timeout = 30
+                <div class="code"><pre>import sys
 
-c = Config()
-c.timeout = 60  # Creates c.__dict__[&#x27;timeout&#x27;] = 60; Config.timeout remains 30!
-print(&quot;c.timeout:&quot;, c.timeout)           # 60
-print(&quot;Config.timeout:&quot;, Config.timeout) # 30
+class StandardPoint:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-# 2. Omitting &#x27;self&#x27; as first parameter in instance methods causes TypeError on invocation.</pre></div>
+class SlottedPoint:
+    __slots__ = ["x", "y"]
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+p_std = StandardPoint(10, 20)
+p_slot = SlottedPoint(10, 20)
+
+# Standard has __dict__, slotted does not:
+print("Standard size (bytes):", sys.getsizeof(p_std) + sys.getsizeof(p_std.__dict__))
+print("Slotted size (bytes): ", sys.getsizeof(p_slot))</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (OOP Fundamentals) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain the difference between a class and an object instance.</li>
+          <li>I understand the role of <code class="inline">self</code> and why it is explicitly declared in methods.</li>
+          <li>I know when to use an instance method, <code class="inline">@classmethod</code>, and <code class="inline">@staticmethod</code>.</li>
+          <li>I know how reference counting and generational garbage collection manage memory in CPython.</li>
         </ul>
       </section>
-      <footer>Python Notes File 18. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 19. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

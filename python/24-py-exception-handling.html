@@ -43,13 +43,18 @@
       </nav>
       <header class="hero" id="intro">
         <h1>24. Exception Handling</h1>
-        <p class="subtitle">File 24 — hierarchy, try/except/else/finally, custom exceptions.</p>
+        <p class="subtitle">Exception hierarchy, try-except-else-finally lifecycle, nested recovery patterns, and custom domain exceptions.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">BaseException</span>
+          <span class="chip">try / except</span>
+          <span class="chip">else / finally</span>
+          <span class="chip">Nested Flows</span>
+          <span class="chip">Custom Exceptions</span>
+          <span class="chip">raise ... from</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -58,30 +63,33 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. Overview: Errors vs Exceptions</h3>
+        <p>In software development, software failures generally fall into two broad categories:</p>
         <ul>
-          <li>This chapter covers <strong>Exception Handling</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Syntax Errors (Compile-Time / Parsing Errors):</strong> Occur when code violates Python syntax rules (e.g., missing colons, invalid indentation, unclosed quotes). The Python parser detects these before execution starts; no code runs.</li>
+          <li><strong>Exceptions (Runtime Errors):</strong> Syntactically valid code that encounters an anomalous, unexpected, or invalid condition during execution (e.g., dividing by zero, accessing an absent dictionary key, attempting to read a non-existent file, network disconnection).</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–7 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">24-practice.py</code> before File 25. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+        <p><strong>Exception handling</strong> is the mechanism that prevents unhandled runtime exceptions from crashing the program, allowing applications to gracefully recover, log diagnostics, free critical operating system resources, and provide user-friendly error responses.</p>
+
+        <div class="callout">
+          <strong>Guiding Principle: EAFP vs LBYL:</strong> Python strongly favors <em>EAFP</em> ("Easier to Ask for Forgiveness than Permission") over <em>LBYL</em> ("Look Before You Leap"). Instead of writing deeply nested <code>if-else</code> checks verifying every condition beforehand, wrap the operation in a <code>try-except</code> block and handle the failure cleanly.
+        </div>
+
+        <h3>1.2. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction and default exception handling</strong></li>
-          <li><strong>Exception hierarchy; try/except</strong></li>
-          <li><strong>else and finally blocks</strong></li>
-          <li><strong>Nested try-except-finally control flow</strong></li>
-          <li><strong>Combinations of try/except/else/finally</strong></li>
-          <li><strong>Customized / user-defined exceptions</strong></li>
+          <li><strong>Introduction</strong> — Concepts, syntax errors vs exceptions, and the EAFP philosophy</li>
+          <li><strong>Introduction and default exception handling</strong> — Default runtime behavior and tracebacks</li>
+          <li><strong>Exception hierarchy; try/except</strong> — The <code>BaseException</code> tree, specific catching, and exception tuples</li>
+          <li><strong>else and finally blocks</strong> — Complete try-except-else-finally lifecycle and resource guarantees</li>
+          <li><strong>Nested try-except-finally control flow</strong> — Multi-level recovery and exception propagation</li>
+          <li><strong>Combinations of try/except/else/finally</strong> — Valid vs invalid syntax matrix</li>
+          <li><strong>Customized / user-defined exceptions</strong> — Domain hierarchies, custom attributes, and <code>raise ... from</code> chaining</li>
+          <li><strong>C. Common questions</strong> — High-yield interview questions and architectural nuances</li>
+          <li><strong>P. Practical Assignment</strong> — Hands-on drills, banking engine mini-project, and edge cases</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-introduction-and-default-exception-handling">
         <div class="heading-with-levels">
           <h2>2. Introduction and default exception handling</h2>
@@ -90,14 +98,59 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-introduction-and-default-exception-handling-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Introduction and default exception handling</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>2.1. Default Exception Handling (The Crash Lifecycle)</h3>
+        <p>When an error occurs inside a function, Python creates an <strong>exception object</strong> containing the error type, diagnostic message, and the complete call stack trace (traceback). If the current function has no <code>try-except</code> block to catch the exception, the function immediately terminates and passes the exception up to its caller.</p>
+        <p>This process of unwinding the call stack continues until either:</p>
+        <ol>
+          <li>An active <code>try-except</code> block catches and handles the exception object.</li>
+          <li>The exception reaches the top-level main thread without being caught. At that point, Python's <strong>default exception handler</strong> takes over: it prints the complete traceback to <code>sys.stderr</code> and forcefully terminates the interpreter process with a non-zero exit code.</li>
+        </ol>
+
+        <div class="code"><pre># Unhandled Exception demonstration (crashes execution)
+def calculate_unit_price(total_cost, quantity):
+    print("[STEP 1] Starting unit price calculation...")
+    # If quantity is 0, ZeroDivisionError is raised here:
+    unit_price = total_cost / quantity
+    print(f"[STEP 2] Unit price computed: {unit_price}")
+    return unit_price
+
+def process_order(order_id, cost, qty):
+    print(f"Processing order #{order_id}")
+    price = calculate_unit_price(cost, qty)
+    print("Order completed successfully!")
+
+# Calling with valid quantity:
+process_order(101, 500, 5)
+
+# Calling with 0 quantity:
+# process_order(102, 500, 0)
+# Traceback (most recent call last):
+#   File "script.py", line 16, in &lt;module&gt;
+#   File "script.py", line 10, in process_order
+#   File "script.py", line 4, in calculate_unit_price
+# ZeroDivisionError: division by zero</pre></div>
+
+        <h3 id="2-introduction-and-default-exception-handling-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Graceful Recovery with <code>try-except</code></h3>
+        <p>By wrapping risky code in a <code>try</code> block, any matching exception raised inside is caught by the <code>except</code> block. Normal program flow resumes right after the <code>try-except</code> construct rather than crashing the script.</p>
+
+        <div class="code"><pre>def safe_divide(a, b):
+    try:
+        result = a / b
+        print(f"Calculation success: {a} / {b} = {result}")
+        return result
+    except ZeroDivisionError as e:
+        print(f"[RECOVERED] Cannot divide by zero: {e}")
+        return None
+
+print("Result 1:", safe_divide(20, 4))   # 5.0
+print("Result 2:", safe_divide(20, 0))   # None (handled gracefully, program continues!)
+print("Application continues running smoothly.")</pre></div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-exception-hierarchy-try-except">
         <div class="heading-with-levels">
           <h2>3. Exception hierarchy; try/except</h2>
@@ -106,14 +159,84 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-exception-hierarchy-try-except-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Exception hierarchy; try/except</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>3.1. Python's Exception Class Hierarchy</h3>
+        <p>All built-in exceptions in Python form a class inheritance tree. At the very root sits <code>BaseException</code>:</p>
+
+        <div class="code"><pre>BaseException
+ ├── BaseExceptionGroup
+ ├── GeneratorExit
+ ├── KeyboardInterrupt          (Ctrl+C from terminal)
+ ├── SystemExit                 (sys.exit() calls)
+ └── Exception                  (ROOT FOR ALL APPLICATION &amp; USER EXCEPTIONS)
+      ├── ArithmeticError
+      │    ├── FloatingPointError
+      │    ├── OverflowError
+      │    └── ZeroDivisionError
+      ├── AssertionError
+      ├── AttributeError
+      ├── BufferError
+      ├── EOFError
+      ├── ImportError
+      │    └── ModuleNotFoundError
+      ├── LookupError
+      │    ├── IndexError
+      │    └── KeyError
+      ├── NameError
+      │    └── UnboundLocalError
+      ├── OSError
+      │    ├── FileNotFoundError
+      │    ├── PermissionError
+      │    ├── ConnectionError
+      │    └── TimeoutError
+      ├── RuntimeError
+      │    └── RecursionError
+      ├── TypeError
+      └── ValueError
+           └── UnicodeError</pre></div>
+
+        <div class="callout">
+          <strong>The Golden Rule of Exception Handling:</strong> Never catch <code>BaseException</code> directly, and avoid bare <code>except:</code> blocks! Catching <code>BaseException</code> intercepts <code>KeyboardInterrupt</code> (preventing users from stopping your script with <kbd>Ctrl+C</kbd>) and <code>SystemExit</code> (preventing clean script termination via <code>sys.exit()</code>). Always catch <code>Exception</code> or, even better, specific exceptions!
+        </div>
+
+        <h3 id="3-exception-hierarchy-try-except-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Specificity and Order of <code>except</code> Blocks</h3>
+        <p>When multiple <code>except</code> blocks are provided, Python evaluates them in top-to-bottom order. The first matching block is executed. If a parent exception class is listed before a child exception class, the parent will catch the exception and the child block will never execute (dead code).</p>
+
+        <div class="code"><pre># Handling multiple specific exceptions
+def parse_and_fetch(data_dict, key, divisor):
+    try:
+        val = data_dict[key]
+        num = int(val)
+        return 100 / num
+    except KeyError as e:
+        print(f"[ERROR] Missing required dictionary key: {e}")
+    except ValueError as e:
+        print(f"[ERROR] Value could not be parsed to integer: {e}")
+    except ZeroDivisionError as e:
+        print(f"[ERROR] Divisor evaluation resolved to zero: {e}")
+    except Exception as e:
+        # Fallback catch-all for any other unanticipated runtime error
+        print(f"[UNEXPECTED ERROR] {type(e).__name__}: {e}")
+
+data = {"score": "25", "zero": "0", "bad": "abc"}
+
+print(parse_and_fetch(data, "score", 1))   # 4.0
+print(parse_and_fetch(data, "missing", 1)) # Caught by KeyError
+print(parse_and_fetch(data, "bad", 1))     # Caught by ValueError
+print(parse_and_fetch(data, "zero", 1))    # Caught by ZeroDivisionError
+
+# Grouping multiple exceptions in a single tuple:
+def safe_cast(val):
+    try:
+        return int(val)
+    except (TypeError, ValueError) as err:
+        print(f"Conversion error: {err}")
+        return 0</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-else-and-finally-blocks">
         <div class="heading-with-levels">
           <h2>4. else and finally blocks</h2>
@@ -122,14 +245,57 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-else-and-finally-blocks-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>else and finally blocks</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>4.1. The <code>else</code> Block</h3>
+        <p>The <code>else</code> block in a <code>try-except</code> statement executes <strong>only if NO exception was raised in the <code>try</code> block</strong>. Placing code in the <code>else</code> block is much better practice than keeping it inside the <code>try</code> block because it prevents accidentally catching unintended exceptions from subsequent operations.</p>
+
+        <div class="code"><pre>def read_user_age(user_input):
+    try:
+        age = int(user_input)
+    except ValueError:
+        print("Invalid input! Please enter digits only.")
+    else:
+        # Executes ONLY if int(user_input) succeeded without raising ValueError!
+        print(f"Age successfully validated: {age}")
+        category = "Adult" if age >= 18 else "Minor"
+        print(f"Category: {category}")
+        return age
+
+read_user_age("28")    # try runs -> no error -> else runs!
+read_user_age("twenty") # try runs -> ValueError -> except runs -> else skipped!</pre></div>
+
+        <h3 id="4-else-and-finally-blocks-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. The <code>finally</code> Block: Unconditional Cleanup</h3>
+        <p>The <code>finally</code> block executes <strong>unconditionally</strong> under every circumstance: whether an exception occurred or not, whether it was caught or uncaught, and even if an early <code>return</code>, <code>break</code>, or <code>continue</code> statement was executed inside <code>try</code>, <code>except</code>, or <code>else</code>.</p>
+        <p>It is the designated place for releasing scarce system resources (e.g., closing file descriptors, releasing locks, terminating database connections, or tearing down network sockets).</p>
+
+        <div class="code"><pre>def process_file_with_cleanup(filepath):
+    f = None
+    try:
+        print(f"Opening file: {filepath}")
+        f = open(filepath, "r")
+        content = f.read()
+        return len(content)
+    except FileNotFoundError:
+        print(f"[RECOVERY] File '{filepath}' not found!")
+        return -1
+    finally:
+        # ALWAYS runs, even after 'return len(content)' or 'return -1'!
+        print("Executing finally block...")
+        if f is not None and not f.closed:
+            f.close()
+            print("File handle closed safely.")
+
+# Testing missing file:
+process_file_with_cleanup("non_existent_file.txt")</pre></div>
+
+        <div class="callout">
+          <strong>Gotcha: <code>return</code> in <code>finally</code> Overrides Everything:</strong> If a <code>finally</code> block explicitly executes a <code>return</code> statement, that return value will override any previous <code>return</code> or unhandled exception raised in <code>try</code> or <code>except</code>, effectively silencing errors! Avoid <code>return</code> in <code>finally</code>.
+        </div>
       </section>
+
+      <!-- SECTION 5 -->
       <section id="5-nested-try-except-finally-control-flow">
         <div class="heading-with-levels">
           <h2>5. Nested try-except-finally control flow</h2>
@@ -138,14 +304,44 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="5-nested-try-except-finally-control-flow-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Nested try-except-finally control flow</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>5.1. Nested Try Blocks</h3>
+        <p>You can nest a <code>try-except-finally</code> block inside another <code>try</code>, <code>except</code>, or <code>finally</code> block. If an exception is raised inside an inner <code>try</code>:</p>
+        <ol>
+          <li>The inner <code>except</code> blocks are inspected first.</li>
+          <li>If an inner <code>except</code> handles it, the inner <code>finally</code> runs, and execution continues in the outer <code>try</code>.</li>
+          <li>If no inner <code>except</code> matches, the inner <code>finally</code> runs, and the exception <strong>propagates up</strong> to the outer <code>try</code>'s <code>except</code> blocks.</li>
+          <li>Finally, the outer <code>finally</code> runs.</li>
+        </ol>
+
+        <div class="code"><pre>def complex_nested_flow(x, y, filename):
+    try:
+        print("1. Outer try starts")
+        try:
+            print("2. Inner try starts")
+            division_result = x / y
+            print(f"3. Division success: {division_result}")
+        except ZeroDivisionError:
+            print("4. Caught ZeroDivisionError in INNER except")
+        finally:
+            print("5. INNER finally always executes")
+
+        print("6. Continuing in outer try...")
+        # Now trigger an error that the outer try handles:
+        with open(filename, "r") as f:
+            data = f.read()
+
+    except FileNotFoundError:
+        print("7. Caught FileNotFoundError in OUTER except")
+    finally:
+        print("8. OUTER finally always executes")
+
+print("--- Scenario A: Division by zero (handled by inner) ---")
+complex_nested_flow(10, 0, "missing.txt")</pre></div>
       </section>
+
+      <!-- SECTION 6 -->
       <section id="6-combinations-of-try-except-else-finally">
         <div class="heading-with-levels">
           <h2>6. Combinations of try/except/else/finally</h2>
@@ -154,14 +350,63 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="6-combinations-of-try-except-else-finally-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Combinations of try/except/else/finally</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>6.1. Valid Syntax Combinations</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Combination</th>
+              <th>Valid?</th>
+              <th>Notes / Behavior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>try ... except</code></td>
+              <td><strong>VALID</strong></td>
+              <td>Standard minimal handling. At least one <code>except</code> block.</td>
+            </tr>
+            <tr>
+              <td><code>try ... finally</code></td>
+              <td><strong>VALID</strong></td>
+              <td>Guarantees cleanup without catching the exception (exception re-propagates).</td>
+            </tr>
+            <tr>
+              <td><code>try ... except ... else</code></td>
+              <td><strong>VALID</strong></td>
+              <td><code>else</code> runs only when <code>try</code> completes with zero exceptions.</td>
+            </tr>
+            <tr>
+              <td><code>try ... except ... finally</code></td>
+              <td><strong>VALID</strong></td>
+              <td>Handles error and guarantees cleanup.</td>
+            </tr>
+            <tr>
+              <td><code>try ... except ... else ... finally</code></td>
+              <td><strong>VALID</strong></td>
+              <td>Complete 4-clause statement. Strict order: <code>try -> except -> else -> finally</code>.</td>
+            </tr>
+            <tr>
+              <td><code>try</code> alone</td>
+              <td><span style="color:var(--danger)">INVALID</span></td>
+              <td><code>SyntaxError</code>: <code>try</code> must have at least one <code>except</code> or <code>finally</code>.</td>
+            </tr>
+            <tr>
+              <td><code>try ... else</code> without <code>except</code></td>
+              <td><span style="color:var(--danger)">INVALID</span></td>
+              <td><code>SyntaxError</code>: <code>else</code> cannot exist without an <code>except</code> block.</td>
+            </tr>
+            <tr>
+              <td><code>try ... finally ... except</code></td>
+              <td><span style="color:var(--danger)">INVALID</span></td>
+              <td><code>SyntaxError</code>: <code>finally</code> must always be the very last block.</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
+
+      <!-- SECTION 7 -->
       <section id="7-customized-user-defined-exceptions">
         <div class="heading-with-levels">
           <h2>7. Customized / user-defined exceptions</h2>
@@ -170,14 +415,74 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="7-customized-user-defined-exceptions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Customized / user-defined exceptions</strong>.</li>
-          <li>Write small demos in <code class="inline">24-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>7.1. Creating User-Defined Exceptions</h3>
+        <p>In production systems, built-in exceptions like <code>ValueError</code> or <code>KeyError</code> are too generic to represent specific business domain errors. Python allows defining custom exceptions by subclassing <code>Exception</code> (never <code>BaseException</code>).</p>
+
+        <div class="code"><pre># Base domain exception:
+class BankApplicationError(Exception):
+    """Base exception for all banking domain errors."""
+    pass
+
+class InsufficientFundsError(BankApplicationError):
+    """Raised when an account does not have enough balance for a withdrawal."""
+    def __init__(self, account_id, balance, requested_amount):
+        self.account_id = account_id
+        self.balance = balance
+        self.requested_amount = requested_amount
+        message = (f"Account '{account_id}' has insufficient funds. "
+                   f"Available: ${balance:.2f}, Requested: ${requested_amount:.2f}")
+        super().__init__(message)
+
+class AccountLockedError(BankApplicationError):
+    """Raised when operating on a locked or frozen bank account."""
+    pass
+
+# Using custom exceptions in business logic:
+def withdraw(account, amount):
+    if account["is_locked"]:
+        raise AccountLockedError(f"Account {account['id']} is locked due to security flags!")
+    if amount > account["balance"]:
+        raise InsufficientFundsError(account["id"], account["balance"], amount)
+    
+    account["balance"] -= amount
+    return account["balance"]
+
+my_account = {"id": "ACC-9982", "balance": 150.0, "is_locked": False}
+
+try:
+    withdraw(my_account, 500.0)
+except InsufficientFundsError as err:
+    print(f"[REJECTED] {err}")
+    print(f"Shortfall: ${err.requested_amount - err.balance:.2f}")
+except BankApplicationError as err:
+    print(f"[GENERAL BANK ERROR] {err}")</pre></div>
+
+        <h3 id="7-customized-user-defined-exceptions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>7.2. Exception Chaining with <code>raise ... from</code></h3>
+        <p>Introduced in PEP 3134, explicit exception chaining allows attaching the root cause exception to a new higher-level domain exception using <code>raise NewException(...) from original_exc</code>. This preserves the original traceback via the <code>__cause__</code> attribute.</p>
+
+        <div class="code"><pre>class DatabaseQueryError(Exception):
+    """Raised when database query execution fails."""
+    pass
+
+def execute_user_query(sql):
+    try:
+        # Simulating low-level socket timeout
+        raise ConnectionResetError("Remote server closed socket connection abruptly")
+    except ConnectionResetError as socket_err:
+        # Wrap low-level socket exception into high-level database error while preserving causality:
+        raise DatabaseQueryError(f"Failed to execute query: '{sql}'") from socket_err
+
+try:
+    execute_user_query("SELECT * FROM users")
+except DatabaseQueryError as query_err:
+    print("[APPLICATION LEVEL]:", query_err)
+    print("[ROOT CAUSE]:", repr(query_err.__cause__))</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -191,44 +496,116 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction and default exception handling?</span>
+            <span class="qa-question-title">C.1. What is the difference between an Error and an Exception in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>Syntax Errors</strong> (e.g. <code>SyntaxError</code>, <code>IndentationError</code>) occur at compile/parse time before the code starts executing. They cannot be handled using <code>try-except</code> blocks within the same module.</p>
+            <p><strong>Exceptions</strong> occur at runtime during execution of syntactically valid code (e.g. <code>ZeroDivisionError</code>, <code>FileNotFoundError</code>). Exceptions disrupt normal control flow and can be intercepted, handled, and recovered from using <code>try-except</code> statements.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Exception hierarchy; try/except?</span>
+            <span class="qa-question-title">C.2. What is the difference between <code>BaseException</code> and <code>Exception</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code>BaseException</code> is the absolute root class of all exceptions in Python. Its direct subclasses include system-exiting events: <code>SystemExit</code>, <code>KeyboardInterrupt</code>, <code>GeneratorExit</code>, and <code>Exception</code>.</p>
+            <p><code>Exception</code> inherits from <code>BaseException</code> and is the intended base class for all non-system-exiting exceptions, including built-in runtime errors and user-defined custom exceptions.</p>
+            <p>Catching <code>Exception</code> allows catching all normal application errors while letting terminal signals like <kbd>Ctrl+C</kbd> (<code>KeyboardInterrupt</code>) and <code>sys.exit()</code> pass through unhindered.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about else and finally blocks?</span>
+            <span class="qa-question-title">C.3. Why is a bare <code>except:</code> or <code>except BaseException:</code> considered an anti-pattern?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>A bare <code>except:</code> catches <strong>every possible exception</strong>, including <code>KeyboardInterrupt</code> and <code>SystemExit</code>. This means:</p>
+            <ul>
+              <li>The user cannot terminate an infinite loop or hanging script with <kbd>Ctrl+C</kbd>.</li>
+              <li>Calls to <code>sys.exit()</code> are silently intercepted and ignored.</li>
+              <li>Real programming bugs like <code>NameError</code> or <code>TypeError</code> are masked, making debugging painful.</li>
+            </ul>
+            <p>Always catch specific exception types (e.g., <code>except (ValueError, KeyError):</code>) or at least <code>except Exception:</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Nested try-except-finally control flow?</span>
+            <span class="qa-question-title">C.4. What is the purpose of the <code>else</code> clause in a <code>try-except</code> block?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The <code>else</code> block executes only if the <code>try</code> block completes without raising any exceptions.</p>
+            <p>It helps keep the <code>try</code> block minimal (containing strictly the risky code) while isolating follow-up code that should only run upon success. This prevents accidentally catching and masking errors generated by the follow-up code.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Under what circumstances will a <code>finally</code> block NOT execute?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <code>finally</code> block executes in nearly all scenarios, even during early returns or uncaught exceptions. However, it will <strong>NOT</strong> execute if:</p>
+            <ul>
+              <li>The process is killed abruptly by the operating system kernel (e.g., <code>SIGKILL</code> / <code>kill -9</code>).</li>
+              <li>A direct OS-level exit is performed via <code>os._exit()</code>, which terminates the process without unwinding Python stack frames or executing cleanups.</li>
+              <li>The host machine loses power, crashes, or the Python C-runtime segfaults.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What happens if a <code>finally</code> block contains an explicit <code>return</code> statement?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>If a <code>finally</code> block executes a <code>return</code> statement, that return value silently discards and suppresses any exception that was currently being propagated from <code>try</code> or <code>except</code>, as well as overriding any previous <code>return</code> value from <code>try</code> or <code>else</code>.</p>
+            <div class="code"><pre>def dangerous():
+    try:
+        raise ValueError("Critical error!")
+    finally:
+        return "Cleaned up!"  # Silences the ValueError completely!</pre></div>
+            <p>This is extremely dangerous and considered a major anti-pattern.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How does exception chaining work with <code>raise ... from ...</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python allows explicit exception chaining using <code>raise NewException() from original_exc</code>. This explicitly sets the <code>__cause__</code> attribute on the new exception object.</p>
+            <p>In tracebacks, Python will clearly print: <em>"The above exception was the direct cause of the following exception:"</em>. To explicitly suppress context chaining, use <code>raise NewException() from None</code> (which sets <code>__suppress_context__ = True</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How should custom exceptions be designed in production software?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Best practices for custom exceptions:</p>
+            <ul>
+              <li>Create a base exception class for your library or domain (e.g. <code>class ServiceError(Exception): pass</code>).</li>
+              <li>Inherit specific errors from this base class (e.g. <code>class ValidationError(ServiceError): pass</code>).</li>
+              <li>Store relevant diagnostic state as instance attributes (e.g. <code>self.status_code = 404</code>, <code>self.payload = payload</code>).</li>
+              <li>Always call <code>super().__init__(message)</code> to ensure proper string formatting and representation.</li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -237,38 +614,40 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">24-practice.py</code>. Run with <code class="inline">python3 24-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">24-practice.py</code>. Run with <code class="inline">python3 24-practice.py</code>. Complete all tasks and challenges.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction and default exception handling</strong>.</span>
+                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Exception hierarchy; try/except</strong>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Introduction and Default Exception Handling:
-# 1. An exception is a runtime event that disrupts the normal program instruction flow.
-# 2. If unhandled, Python terminates the thread and outputs a traceback with the exception type and details.
-# 3. Handled via try-except blocks, ensuring graceful recovery and resource cleanup.</pre></div>
+                <div class="code"><pre># Summary of Exception Hierarchy &amp; try/except:
+# 1. BaseException is the root of all exceptions; Exception is the root for application code.
+# 2. Never catch BaseException or use bare except; catch specific exceptions or Exception.
+# 3. Multiple except blocks are checked top-to-bottom; put child classes before parent classes.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Exception hierarchy; try/except</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example demonstrating <code>try-except-else-finally</code> and print the result.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Exception hierarchy and try/except:
+                <div class="code"><pre># Complete try-except-else-finally lifecycle
 try:
-    result = 10 / 0
-except ZeroDivisionError as e:
-    print(f&quot;Caught specific division error: {e}&quot;)
-except Exception as e:
-    print(f&quot;Caught generic error: {e}&quot;)</pre></div>
+    num = int("42")
+except ValueError:
+    print("Parsing failed!")
+else:
+    print("Parsed successfully:", num)
+finally:
+    print("Execution complete (finally always runs).")</pre></div>
               </div>
             </details>
           </li>
@@ -279,181 +658,210 @@ except Exception as e:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Exception Handling &amp; Robustness.
+                <div class="code"><pre>"""Chapter Practice: Python Exception Handling.
 
-Goal: Master try, except, else, finally control flow, built-in exception hierarchy,
-custom exception definitions, and context manager cleanup.
-&quot;&quot;&quot;</pre></div>
+Goal: Master try/except/else/finally control flow, the exception inheritance tree,
+nested exception propagation, and custom domain exceptions with raise ... from.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction and default exception handling</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Default exception handling</strong> — Demonstrate an unhandled exception vs a gracefully handled exception.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction and default exception handling
-# Demonstrating graceful error interception:
-def divide_safe(a, b):
+                <div class="code"><pre># Task 1: Handling runtime division gracefully
+def safe_calculate_ratio(a, b):
     try:
         return a / b
-    except ZeroDivisionError:
-        print(&quot;[Error] Cannot divide by zero. Returning fallback 0.0.&quot;)
+    except ZeroDivisionError as err:
+        print(f"[RECOVERED] Division failed: {err}")
         return 0.0
 
-print(&quot;divide_safe(10, 2):&quot;, divide_safe(10, 2))
-print(&quot;divide_safe(10, 0):&quot;, divide_safe(10, 0))</pre></div>
+print("Valid ratio: ", safe_calculate_ratio(10, 2))  # 5.0
+print("Zero ratio:  ", safe_calculate_ratio(10, 0))  # 0.0</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Exception hierarchy; try/except</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Exception hierarchy</strong> — Catch multiple specific exceptions in order and show tuple syntax.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Exception hierarchy; multiple except blocks
-def process_data(val):
+                <div class="code"><pre># Task 2: Multiple specific exception handlers
+def extract_element(items, index, key):
     try:
-        num = int(val)
-        return 100 / num
-    except ValueError:
-        print(f&quot;ValueError: &#x27;{val}&#x27; is not a valid integer&quot;)
-    except ZeroDivisionError:
-        print(&quot;ZeroDivisionError: denominator cannot be zero&quot;)
-    except Exception as general_err:
-        print(f&quot;Unexpected error: {type(general_err).__name__}&quot;)
+        container = items[index]
+        return container[key]
+    except IndexError:
+        print(f"[ERROR] Index {index} is out of bounds!")
+    except KeyError:
+        print(f"[ERROR] Key '{key}' not found in target dictionary!")
+    except (TypeError, ValueError) as e:
+        print(f"[ERROR] Type or value conversion issue: {e}")
 
-process_data(&quot;abc&quot;)
-process_data(0)
-print(&quot;Valid:&quot;, process_data(5))</pre></div>
+data = [{"id": 1, "name": "Alpha"}]
+extract_element(data, 5, "name")     # Caught by IndexError
+extract_element(data, 0, "salary")   # Caught by KeyError</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: else and finally blocks</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Nested try blocks</strong> — Demonstrate an inner try catching one error, and letting another propagate to outer try.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: else and finally blocks
-def open_and_process(data):
+                <div class="code"><pre># Task 3: Nested try-except-finally
+def nested_demo(x, y):
     try:
-        print(&quot;[try] Attempting calculation&quot;)
-        res = 50 / data
-    except ZeroDivisionError:
-        print(&quot;[except] Handled zero division&quot;)
-    else:
-        print(f&quot;[else] Succeeded! Result: {res}&quot;)
-    finally:
-        print(&quot;[finally] Cleanup always executes (guaranteed)&quot;)
-
-open_and_process(10)
-print(&quot;-&quot; * 30)
-open_and_process(0)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Nested try-except-finally control flow</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Nested try-except-finally control flow
-def nested_demo():
-    try:
-        print(&quot;Outer try start&quot;)
+        print("Outer try begins")
         try:
-            print(&quot;  Inner try executing&quot;)
-            val = int(&quot;invalid_number&quot;)
-        except ValueError:
-            print(&quot;  Inner except: caught ValueError&quot;)
+            print("Inner try begins")
+            res = x / y
+        except ZeroDivisionError:
+            print("Inner except handled ZeroDivisionError")
+            res = 0
         finally:
-            print(&quot;  Inner finally: executed&quot;)
+            print("Inner finally executed")
         
-        print(&quot;Outer try resumes smoothly&quot;)
+        # Now trigger an unhandled error inside inner that propagates to outer:
+        int("not_a_number")
+    except ValueError:
+        print("Outer except handled ValueError")
     finally:
-        print(&quot;Outer finally: complete cleanup&quot;)
+        print("Outer finally executed")
 
-nested_demo()</pre></div>
+nested_demo(10, 0)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 4: Custom exceptions</strong> — Define a custom domain exception with extra attributes and raise it.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 4: Custom domain exception
+class InventoryDepletedError(Exception):
+    def __init__(self, sku, requested, available):
+        self.sku = sku
+        self.requested = requested
+        self.available = available
+        super().__init__(f"SKU '{sku}' depleted: requested {requested}, but only {available} remain.")
+
+def order_stock(inventory, sku, quantity):
+    available = inventory.get(sku, 0)
+    if quantity > available:
+        raise InventoryDepletedError(sku, quantity, available)
+    inventory[sku] -= quantity
+    return inventory[sku]
+
+stock = {"BOOK-01": 2}
+try:
+    order_stock(stock, "BOOK-01", 5)
+except InventoryDepletedError as e:
+    print(e)
+    print(f"Shortfall count: {e.requested - e.available}")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Exception Handling.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a transactional bank transfer engine with rollback guarantees and custom exceptions.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Custom Exception Hierarchy for Banking API
+                <div class="code"><pre># Mini Project: Transactional Bank Transfer Engine
 class BankingError(Exception):
-    &quot;&quot;&quot;Base exception for all banking errors.&quot;&quot;&quot;
     pass
 
-class InsufficientFundsError(BankingError):
-    def __init__(self, balance, amount):
-        super().__init__(f&quot;Cannot withdraw ${amount:.2f}; balance is only ${balance:.2f}&quot;)
-        self.balance = balance
-        self.amount = amount
-
-class AccountLockedError(BankingError):
+class InsufficientBalanceError(BankingError):
     pass
 
-def withdraw_money(balance, amount, is_locked=False):
-    if is_locked:
-        raise AccountLockedError(&quot;Account is locked due to security policy.&quot;)
-    if amount &gt; balance:
-        raise InsufficientFundsError(balance, amount)
-    return balance - amount
+class InvalidAccountError(BankingError):
+    pass
 
+def transfer_money(accounts, from_acc, to_acc, amount):
+    if from_acc not in accounts:
+        raise InvalidAccountError(f"Sender account '{from_acc}' not found!")
+    if to_acc not in accounts:
+        raise InvalidAccountError(f"Recipient account '{to_acc}' not found!")
+    if accounts[from_acc] < amount:
+        raise InsufficientBalanceError(f"Account '{from_acc}' has ${accounts[from_acc]}, needed ${amount}")
+
+    # Transaction execution with rollback safety
+    print(f"[TRANSACTION] Transferring ${amount} from {from_acc} to {to_acc}...")
+    accounts[from_acc] -= amount
+    try:
+        # Simulate network or recipient failure
+        if amount > 1000:
+            raise ConnectionError("Payment gateway connection dropped")
+        accounts[to_acc] += amount
+    except Exception as exc:
+        print("[ROLLBACK] An error occurred; rolling back sender funds!")
+        accounts[from_acc] += amount  # Rollback
+        raise BankingError("Transfer aborted and rolled back") from exc
+    else:
+        print("[SUCCESS] Transaction confirmed.")
+    finally:
+        print(f"[AUDIT] Sender balance: ${accounts[from_acc]}, Recipient: ${accounts[to_acc]}")
+
+bank = {"Alice": 2000, "Bob": 500}
 try:
-    withdraw_money(100.0, 250.0)
-except InsufficientFundsError as err:
-    print(f&quot;Handled error: {err}&quot;)</pre></div>
+    transfer_money(bank, "Alice", "Bob", 1500)
+except BankingError as err:
+    print("Caught:", err)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate how a return statement inside a finally block silences errors.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Exception Handling Pitfalls &amp; Edge Cases:
-# 1. Bare except: &#x27;except:&#x27; catches KeyboardInterrupt and SystemExit!
-# Always use &#x27;except Exception:&#x27; instead of bare &#x27;except:&#x27;.
+                <div class="code"><pre># Edge Case: Return in finally overrides and silences exceptions!
+def buggy_function():
+    try:
+        raise RuntimeError("Something broke horribly!")
+    finally:
+        return "ALL_GOOD"  # OVERRIDES THE EXCEPTION!
 
-# 2. Catching general Exception BEFORE specific subclasses shadows them:
-# try: ... except Exception: ... except ValueError: (ValueError will NEVER run!)
-
-# 3. Using exceptions for regular control flow is anti-pattern (slower than checking).</pre></div>
+result = buggy_function()
+print("Result:", result)  # ALL_GOOD (RuntimeError was swallowed! Avoid this!)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Exception Handling) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I understand why catching <code>BaseException</code> or bare <code>except</code> is dangerous.</li>
+          <li>I can explain the exact execution order of <code>try-except-else-finally</code>.</li>
+          <li>I know how nested try blocks propagate exceptions up the call stack.</li>
+          <li>I can create custom exception hierarchies and chain exceptions using <code>raise ... from</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 23. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 24. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

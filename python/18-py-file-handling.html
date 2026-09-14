@@ -43,13 +43,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>18. File Handling</h1>
-        <p class="subtitle">File 18 — modes, read/write, with, seek/tell, binary/CSV/ZIP, directories.</p>
+        <p class="subtitle">File 18 — persistent file streams, context managers, binary/CSV/ZIP processing, filesystem operations, and subprocess execution.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">open() &amp; modes</span>
+          <span class="chip">with Context Manager</span>
+          <span class="chip">seek() &amp; tell()</span>
+          <span class="chip">Binary Streams (rb/wb)</span>
+          <span class="chip">csv Module</span>
+          <span class="chip">zipfile</span>
+          <span class="chip">os &amp; pathlib</span>
+          <span class="chip">subprocess.run</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -58,30 +65,31 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>File Handling</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>Data stored in variables, lists, or dictionaries is volatile and lives only in RAM; it disappears when the Python process exits. <strong>File Handling</strong> allows programs to persist data permanently on non-volatile storage (SSD/HDD).</li>
+          <li>In Python, file interactions are handled via file stream objects created by the built-in <code class="inline">open()</code> function.</li>
+          <li>Python provides robust support for text files, binary assets (images, PDFs), structured formats (CSV, JSON), archives (ZIP, TAR), and filesystem navigation.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–7 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">18-practice.py</code> before File 19. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>File types, open/close, modes, properties</strong></li>
-          <li><strong>Write and read operations</strong></li>
-          <li><strong>with statement; seek() and tell()</strong></li>
-          <li><strong>Binary, CSV, and ZIP files</strong></li>
-          <li><strong>Directories with os; file statistics</strong></li>
-          <li><strong>Running other programs from Python</strong></li>
+          <li><strong>File types, open/close, modes, properties</strong> — text vs binary, mode flags, and file attributes</li>
+          <li><strong>Write and read operations</strong> — write, writelines, read, readline, and memory-efficient streaming</li>
+          <li><strong>with statement; seek() and tell()</strong> — context managers, cursor positioning, and whence offsets</li>
+          <li><strong>Binary, CSV, and ZIP files</strong> — byte manipulation, DictReader/DictWriter, and zip archive compression</li>
+          <li><strong>Directories with os; file statistics</strong> — directory trees, os.walk, file stats, and pathlib</li>
+          <li><strong>Running other programs from Python</strong> — secure subprocess execution and output capture</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: FILE TYPES, OPEN/CLOSE, MODES, PROPERTIES -->
       <section id="2-file-types-open-close-modes-properties">
         <div class="heading-with-levels">
           <h2>2. File types, open/close, modes, properties</h2>
@@ -90,14 +98,86 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-file-types-open-close-modes-properties-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Text Files vs Binary Files</h3>
         <ul>
-          <li>Understand the main ideas in <strong>File types, open/close, modes, properties</strong>.</li>
-          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
+          <li><strong>Text Files (<code class="inline">t</code>):</strong> Store human-readable characters encoded with a character set (default UTF-8). Automatically translates newline characters (<code class="inline">\n</code> on Linux/macOS vs <code class="inline">\r\n</code> on Windows).</li>
+          <li><strong>Binary Files (<code class="inline">b</code>):</strong> Store raw byte sequences without character encoding or newline translation (images, audio, video, compiled bytecode, executable binaries).</li>
         </ul>
+
+        <h3>2.2. File Open Modes</h3>
+        <table>
+          <thead>
+            <tr><th>Mode</th><th>Action</th><th>File Exists</th><th>File Does NOT Exist</th><th>Cursor Position</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">'r'</code></td>
+              <td>Read-only (Default)</td>
+              <td>Opens for reading</td>
+              <td>Raises <code class="inline">FileNotFoundError</code></td>
+              <td>Beginning (0)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">'w'</code></td>
+              <td>Write-only</td>
+              <td><strong>Overwrites &amp; truncates</strong></td>
+              <td>Creates new file</td>
+              <td>Beginning (0)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">'a'</code></td>
+              <td>Append-only</td>
+              <td>Preserves existing data</td>
+              <td>Creates new file</td>
+              <td>End of file</td>
+            </tr>
+            <tr>
+              <td><code class="inline">'x'</code></td>
+              <td>Exclusive creation</td>
+              <td>Raises <code class="inline">FileExistsError</code></td>
+              <td>Creates new file</td>
+              <td>Beginning (0)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">'r+'</code></td>
+              <td>Read and Write</td>
+              <td>Does not truncate</td>
+              <td>Raises <code class="inline">FileNotFoundError</code></td>
+              <td>Beginning (0)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">'w+'</code></td>
+              <td>Write and Read</td>
+              <td><strong>Truncates existing</strong></td>
+              <td>Creates new file</td>
+              <td>Beginning (0)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">'a+'</code></td>
+              <td>Append and Read</td>
+              <td>Preserves data</td>
+              <td>Creates new file</td>
+              <td>End of file</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="2-file-types-open-close-modes-properties-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. File Object Attributes</h3>
+        <div class="code"><pre>f = open("sample.txt", "w", encoding="utf-8")
+print("File name:  ", f.name)       # sample.txt
+print("Open mode:  ", f.mode)       # w
+print("Is readable:", f.readable()) # False
+print("Is writable:", f.writable()) # True
+print("Is closed:  ", f.closed)     # False
+f.close()
+print("After close:", f.closed)     # True</pre></div>
       </section>
+
+      <!-- SECTION 3: WRITE AND READ OPERATIONS -->
       <section id="3-write-and-read-operations">
         <div class="heading-with-levels">
           <h2>3. Write and read operations</h2>
@@ -106,14 +186,64 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-write-and-read-operations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. Writing Data to Files</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Write and read operations</strong>.</li>
-          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
+          <li><code class="inline">f.write(string)</code>: Writes string to file. Returns total characters written. Does <strong>not</strong> append a newline automatically!</li>
+          <li><code class="inline">f.writelines(list_of_strings)</code>: Writes an iterable of strings. Does <strong>not</strong> add newlines between elements.</li>
         </ul>
+
+        <div class="code"><pre>with open("log.txt", "w", encoding="utf-8") as f:
+    f.write("Line 1: System initiated.\n")
+    f.write("Line 2: Service listening on port 8080.\n")
+    
+    lines = ["Line 3: Database connected.\n", "Line 4: All checks passed.\n"]
+    f.writelines(lines)</pre></div>
+
+        <h3 id="3-write-and-read-operations-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Reading Data from Files</h3>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Behavior</th><th>Return Type</th><th>Memory Impact</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">f.read([size])</code></td>
+              <td>Reads entire file (or up to <code class="inline">size</code> characters/bytes).</td>
+              <td><code class="inline">str</code> (or <code class="inline">bytes</code>)</td>
+              <td>High if file is large.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">f.readline()</code></td>
+              <td>Reads a single line up to and including <code class="inline">\n</code>. Returns <code class="inline">""</code> at EOF.</td>
+              <td><code class="inline">str</code></td>
+              <td>$O(1)$ low memory per line.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">f.readlines()</code></td>
+              <td>Reads all lines into a Python list of strings.</td>
+              <td><code class="inline">list[str]</code></td>
+              <td>High (loads entire file into memory).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">for line in f:</code></td>
+              <td><strong>Streaming line-by-line iterator (Idiomatic!).</strong></td>
+              <td>Yields <code class="inline">str</code></td>
+              <td><strong>Optimal $O(1)$ constant memory</strong>.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Idiomatic line-by-line processing for massive log files:
+with open("log.txt", "r", encoding="utf-8") as f:
+    for line_num, line in enumerate(f, start=1):
+        clean_line = line.rstrip("\n")
+        print(f"[{line_num}] {clean_line}")</pre></div>
       </section>
+
+      <!-- SECTION 4: WITH STATEMENT; SEEK() AND TELL() -->
       <section id="4-with-statement-seek-and-tell">
         <div class="heading-with-levels">
           <h2>4. with statement; seek() and tell()</h2>
@@ -122,14 +252,43 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-with-statement-seek-and-tell-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. The <code class="inline">with</code> Statement (Context Manager)</h3>
+        <div class="callout">
+          <strong>Why Always Use <code class="inline">with</code>?</strong>
+          Opening a file via <code class="inline">f = open(...)</code> requires an explicit <code class="inline">f.close()</code>. If an exception occurs before reaching <code class="inline">f.close()</code>, the operating system file descriptor remains leaked. The <code class="inline">with</code> statement binds the file to a <strong>Context Manager</strong> (<code class="inline">__enter__</code> and <code class="inline">__exit__</code>), guaranteeing that the file is <strong>automatically closed</strong> when execution leaves the block, even if an unhandled exception or crash occurs.
+        </div>
+
+        <h3 id="4-with-statement-seek-and-tell-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. File Pointer Navigation: <code class="inline">tell()</code> and <code class="inline">seek()</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>with statement; seek() and tell()</strong>.</li>
-          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
+          <li><strong><code class="inline">f.tell()</code>:</strong> Returns the current byte offset position of the read/write cursor from the start of the file.</li>
+          <li><strong><code class="inline">f.seek(offset, whence=0)</code>:</strong> Moves the cursor to a specific byte location:
+            <ul>
+              <li><code class="inline">whence=0</code> (default): Relative to file <strong>beginning</strong>.</li>
+              <li><code class="inline">whence=1</code>: Relative to <strong>current cursor</strong> (binary files only).</li>
+              <li><code class="inline">whence=2</code>: Relative to file <strong>end</strong> (binary files only).</li>
+            </ul>
+          </li>
         </ul>
+
+        <div class="code"><pre>with open("seek_demo.txt", "w+", encoding="utf-8") as f:
+    f.write("ABCDEFGHIJ")
+    print("Cursor after write:", f.tell())  # 10
+    
+    # Rewind cursor back to beginning:
+    f.seek(0)
+    print("Cursor after seek(0):", f.tell())# 0
+    print("Read first 4 chars:  ", f.read(4))# 'ABCD'
+    
+    # Jump to index 6:
+    f.seek(6)
+    print("Read from index 6:   ", f.read()) # 'GHIJ'</pre></div>
       </section>
+
+      <!-- SECTION 5: BINARY, CSV, AND ZIP FILES -->
       <section id="5-binary-csv-and-zip-files">
         <div class="heading-with-levels">
           <h2>5. Binary, CSV, and ZIP files</h2>
@@ -138,14 +297,54 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-binary-csv-and-zip-files-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Binary, CSV, and ZIP files</strong>.</li>
-          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. Handling Binary Files (<code class="inline">'rb'</code>, <code class="inline">'wb'</code>)</h3>
+        <p>Binary mode reads and writes raw <code class="inline">bytes</code> objects, ideal for copying media files:</p>
+
+        <div class="code"><pre># Binary file copy chunk-by-chunk (Memory-safe for 10GB files):
+def copy_binary_file(source_path, dest_path, chunk_size=65536):
+    with open(source_path, "rb") as src, open(dest_path, "wb") as dst:
+        while chunk := src.read(chunk_size):
+            dst.write(chunk)</pre></div>
+
+        <h3 id="5-binary-csv-and-zip-files-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Working with CSV Files (<code class="inline">csv</code> Module)</h3>
+        <div class="code"><pre>import csv
+
+# 1. Writing CSV with DictWriter:
+data = [
+    {"id": 101, "name": "Alice", "score": 92},
+    {"id": 102, "name": "Bob", "score": 85},
+    {"id": 103, "name": "Charlie", "score": 98}
+]
+
+with open("students.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=["id", "name", "score"])
+    writer.writeheader()
+    writer.writerows(data)
+
+# 2. Reading CSV with DictReader:
+with open("students.csv", "r", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(f"Student: {row['name']:<8} Score: {row['score']}")</pre></div>
+
+        <h3>5.3. ZIP Archive Compression (<code class="inline">zipfile</code> Module)</h3>
+        <div class="code"><pre>import zipfile
+
+# Create a zip archive and compress files:
+with zipfile.ZipFile("backup.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+    archive.write("students.csv", arcname="data/students.csv")
+
+# Extract archive:
+with zipfile.ZipFile("backup.zip", "r") as archive:
+    print("Files in ZIP:", archive.namelist())
+    archive.extractall("extracted_data")</pre></div>
       </section>
+
+      <!-- SECTION 6: DIRECTORIES WITH OS; FILE STATISTICS -->
       <section id="6-directories-with-os-file-statistics">
         <div class="heading-with-levels">
           <h2>6. Directories with os; file statistics</h2>
@@ -154,14 +353,61 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-directories-with-os-file-statistics-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Directories with os; file statistics</strong>.</li>
-          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>6.1. Essential <code class="inline">os</code> Filesystem Operations</h3>
+        <table>
+          <thead>
+            <tr><th>Function</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">os.getcwd()</code></td>
+              <td>Returns current working directory path string.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">os.mkdir(path)</code></td>
+              <td>Creates a single directory.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">os.makedirs(path, exist_ok=True)</code></td>
+              <td>Recursively creates intermediate parent directories safely.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">os.listdir(path)</code></td>
+              <td>Returns list of file and directory names inside path.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">os.remove(path)</code></td>
+              <td>Deletes a file.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">os.rmdir(path)</code></td>
+              <td>Deletes an empty directory.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="6-directories-with-os-file-statistics-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>6.2. Directory Walking (<code class="inline">os.walk</code>) and File Statistics</h3>
+        <div class="code"><pre>import os
+import time
+
+# Inspect file metadata with os.stat:
+stats = os.stat("sample.txt")
+print(f"File Size:     {stats.st_size} bytes")
+print(f"Last Modified: {time.ctime(stats.st_mtime)}")
+
+# Recursive directory walking:
+for root, dirs, files in os.walk("."):
+    for file in files:
+        if file.endswith(".py"):
+            rel_path = os.path.join(root, file)
+            print("Python file:", rel_path)</pre></div>
       </section>
+
+      <!-- SECTION 7: RUNNING OTHER PROGRAMS FROM PYTHON -->
       <section id="7-running-other-programs-from-python">
         <div class="heading-with-levels">
           <h2>7. Running other programs from Python</h2>
@@ -170,14 +416,26 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="7-running-other-programs-from-python-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Running other programs from Python</strong>.</li>
-          <li>Write small demos in <code class="inline">18-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>7.1. Modern Subprocess Execution: <code class="inline">subprocess.run()</code></h3>
+        <p>Avoid legacy <code class="inline">os.system()</code> due to security vulnerabilities (shell injection). Use the modern <code class="inline">subprocess</code> module:</p>
+
+        <div class="code"><pre>import subprocess
+
+# Run a CLI command safely without shell=True:
+result = subprocess.run(
+    ["echo", "Hello from Python subprocess!"],
+    capture_output=True,
+    text=True,
+    check=True
+)
+
+print("Exit code:", result.returncode)  # 0
+print("Output:   ", result.stdout.strip())</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -186,49 +444,104 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about File types, open/close, modes, properties?</span>
+            <span class="qa-question-title">C.1. Why should you always use with open(...) as f instead of open() and f.close()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Using <code class="inline">with open(...)</code> employs Python's Context Manager protocol (<code class="inline">__enter__</code> and <code class="inline">__exit__</code>). Even if an unexpected exception occurs inside the block or the program exits prematurely via a <code class="inline">return</code> statement, Python guarantees that the file descriptor is immediately flushed and closed.</p>
+            <p>Relying on manual <code class="inline">f.close()</code> frequently causes file descriptor leaks when exceptions interrupt execution before the close line is reached.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Write and read operations?</span>
+            <span class="qa-question-title">C.2. What is the difference between mode 'w', 'w+', 'r+', and 'a'?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">'w'</code>:</strong> Write-only. Overwrites/truncates existing file immediately to 0 bytes.</li>
+              <li><strong><code class="inline">'r+'</code>:</strong> Read and Write. Does <strong>not truncate</strong>. Raises <code class="inline">FileNotFoundError</code> if file does not exist. Cursor starts at byte 0.</li>
+              <li><strong><code class="inline">'w+'</code>:</strong> Write and Read. <strong>Truncates existing file to 0 bytes</strong> upon opening.</li>
+              <li><strong><code class="inline">'a'</code>:</strong> Append-only. Cursor always moves to the end of the file for writing, preserving old contents.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about with statement; seek() and tell()?</span>
+            <span class="qa-question-title">C.3. Why does open() require newline='' when writing CSV files on Windows?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The <code class="inline">csv.writer</code> module terminates rows with RFC 4180 standard CRLF (<code class="inline">\r\n</code>) by default. On Windows, Python's default text mode automatically translates every <code class="inline">\n</code> into <code class="inline">\r\n</code>, resulting in double carriage returns (<code class="inline">\r\r\n</code>) and blank lines between rows.</p>
+            <p>Specifying <code class="inline">newline=""</code> disables automatic platform newline translation in the file stream.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Binary, CSV, and ZIP files?</span>
+            <span class="qa-question-title">C.4. How does Python stream 10GB files without running out of RAM?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Using <code class="inline">for line in f:</code> treats the file object as a lazy generator iterator that buffers only a small chunk (typically 8KB) in memory at any given moment. It yields one line at a time, consuming constant $O(1)$ memory regardless of whether the file is 10 MB or 100 GB.</p>
+            <p>In contrast, <code class="inline">f.read()</code> or <code class="inline">f.readlines()</code> loads the entire file into RAM, causing an <code class="inline">OutOfMemoryError</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the difference between seek() and tell()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code class="inline">tell()</code>:</strong> Returns current integer byte offset position in the file.</li>
+              <li><strong><code class="inline">seek(offset, whence)</code>:</strong> Repositions the file cursor to a target byte offset. In text files, seeking relative to current or end (<code class="inline">whence=1</code> or <code class="inline">2</code>) is generally unsupported; it is only permitted in binary mode (<code class="inline">'rb'</code>).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Why should you avoid os.system() and use subprocess.run()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">os.system()</code> spawns a full underlying shell and executes strings directly, leaving the system vulnerable to <strong>Command Injection attacks</strong> if user input is concatenated. It also does not capture stdout/stderr easily.</p>
+            <p><code class="inline">subprocess.run(["cmd", "arg1", "arg2"])</code> executes the binary directly without a subshell by default, passing arguments as a safe array that prevents injection.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What does mode 'x' do in open()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">'x'</code> enables <strong>Exclusive Creation Mode</strong>. If the target file already exists, opening in <code class="inline">'x'</code> mode raises a <code class="inline">FileExistsError</code> immediately. This prevents accidental overwriting of critical configuration files or logs.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How does pathlib.Path modernise file interactions?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">pathlib.Path</code> replaces clumsy string path manipulations (<code class="inline">os.path.join</code>, <code class="inline">os.path.splitext</code>) with object-oriented syntax (<code class="inline">p / "sub" / "file.txt"</code>), provides cross-platform path resolution, and includes built-in convenience methods like <code class="inline">Path.read_text()</code> and <code class="inline">Path.write_text()</code>.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -237,247 +550,204 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">18-practice.py</code>. Run with <code class="inline">python3 18-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">18-practice.py</code>. Run with <code class="inline">python3 18-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>File types, open/close, modes, properties</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining the with open() context manager and file modes.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of File Types, Modes, and Properties:
-# 1. Files are opened with open(filename, mode) where modes include &#x27;r&#x27;, &#x27;w&#x27;, &#x27;a&#x27;, &#x27;r+&#x27;, &#x27;b&#x27; (binary).
-# 2. Files must always be closed to flush buffers and release operating system file descriptors.
-# 3. Built-in file object properties include: f.name, f.mode, f.closed, f.readable(), f.writable().</pre></div>
+                <div class="code"><pre># File Foundations:
+# 1. with open() guarantees automatic flushing and file closure even during exceptions.
+# 2. Mode 'w' overwrites, 'a' appends, 'r' reads, 'x' creates exclusively.
+# 3. Stream lines with 'for line in f:' for O(1) constant memory scaling.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Write and read operations</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Create a text file with 3 lines, then read it back line-by-line.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Write and read operations:
-# Writing text to a file:
-with open(&quot;sample_demo.txt&quot;, &quot;w&quot;) as f:
-    f.write(&quot;Line 1: Hello Python\nLine 2: File Handling Basics\n&quot;)
+                <div class="code"><pre>with open("warmup.txt", "w", encoding="utf-8") as f:
+    f.writelines(["Alpha\n", "Beta\n", "Gamma\n"])
 
-# Reading lines from the file:
-with open(&quot;sample_demo.txt&quot;, &quot;r&quot;) as f:
-    content = f.read()
-    print(&quot;File Content:\n&quot; + content)
-
-import os
-os.remove(&quot;sample_demo.txt&quot;)  # Clean up demo file</pre></div>
+with open("warmup.txt", "r", encoding="utf-8") as f:
+    for line in f:
+        print(line.strip())</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Check if a file exists using os.path.exists and retrieve its size.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python File Handling &amp; I/O Streams.
+                <div class="code"><pre>import os
 
-Goal: Master opening/closing modes, buffer management via context managers (with),
-stream positioning (seek/tell), and binary/CSV file operations.
-&quot;&quot;&quot;</pre></div>
+if os.path.exists("warmup.txt"):
+    size = os.path.getsize("warmup.txt")
+    print(f"warmup.txt exists! Size: {size} bytes")</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: File types, open/close, modes, properties</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Log File Error Counter — Scan a server log file and count all occurrences of [ERROR] tags.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: File types, open/close, modes, properties
-filename = &quot;properties_test.txt&quot;
-with open(filename, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
-    f.write(&quot;Exploring file properties\n&quot;)
-    print(f&quot;File Name: {f.name}&quot;)
-    print(f&quot;Mode: {f.mode}&quot;)
-    print(f&quot;Readable: {f.readable()}&quot;)
-    print(f&quot;Writable: {f.writable()}&quot;)
-    print(f&quot;Closed inside with block: {f.closed}&quot;)
+                <div class="code"><pre>def count_error_logs(filepath: str) -> int:
+    count = 0
+    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        for line in f:
+            if "[ERROR]" in line:
+                count += 1
+    return count
 
-print(f&quot;Closed outside with block: {f.closed}&quot;)
+# Demo test:
+with open("test_server.log", "w") as f:
+    f.write("[INFO] Start\n[ERROR] DB Connection Failed\n[INFO] Retry\n[ERROR] Timeout\n")
 
-import os
-os.remove(filename)</pre></div>
+print("Error count:", count_error_logs("test_server.log"))  # 2</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Write and read operations</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: CSV Data Filter &amp; Exporter — Read sales.csv and export only completed orders to filtered.csv.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Write and read operations
-lines = [
-    &quot;First line of log\n&quot;,
-    &quot;Second line of log\n&quot;,
-    &quot;Third line of log\n&quot;
-]
+                <div class="code"><pre>import csv
 
-with open(&quot;log_test.txt&quot;, &quot;w&quot;) as f:
-    f.writelines(lines)
-
-with open(&quot;log_test.txt&quot;, &quot;r&quot;) as f:
-    # readline() reads single line; readlines() reads list of lines
-    print(&quot;First line:&quot;, f.readline().strip())
-    print(&quot;Remaining lines:&quot;, [line.strip() for line in f.readlines()])
-
-import os
-os.remove(&quot;log_test.txt&quot;)</pre></div>
+def filter_completed_orders(src_csv, dst_csv):
+    with open(src_csv, "r", encoding="utf-8") as src, open(dst_csv, "w", newline="", encoding="utf-8") as dst:
+        reader = csv.DictReader(src)
+        writer = csv.DictWriter(dst, fieldnames=reader.fieldnames)
+        writer.writeheader()
+        for row in reader:
+            if row["status"].lower() == "completed":
+                writer.writerow(row)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: with statement; seek() and tell()</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Zip Archive File Collector — Search a directory for all .txt files and archive them into notes_archive.zip.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: with statement; seek() and tell()
-with open(&quot;seek_demo.txt&quot;, &quot;w+&quot;) as f:
-    f.write(&quot;0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;)
-    print(&quot;Position after writing:&quot;, f.tell())  # 36
-    
-    # Reposition pointer to index 10:
-    f.seek(10)
-    print(&quot;Position after seek(10):&quot;, f.tell())
-    print(&quot;Read 5 chars:&quot;, f.read(5))  # &#x27;ABCDE&#x27;
-    print(&quot;Position after reading:&quot;, f.tell())  # 15
-    
-    # Seek back to start:
-    f.seek(0)
-    print(&quot;Read first 4 chars:&quot;, f.read(4))  # &#x27;0123&#x27;
-
-import os
-os.remove(&quot;seek_demo.txt&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Binary, CSV, and ZIP files</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Binary, CSV, and ZIP files
-import csv
+                <div class="code"><pre>import os
 import zipfile
-import os
 
-# 1. Writing CSV:
-csv_file = &quot;employees.csv&quot;
-with open(csv_file, &quot;w&quot;, newline=&quot;&quot;) as f:
-    writer = csv.writer(f)
-    writer.writerow([&quot;ID&quot;, &quot;Name&quot;, &quot;Dept&quot;])
-    writer.writerow([101, &quot;Alice&quot;, &quot;Dev&quot;])
-    writer.writerow([102, &quot;Bob&quot;, &quot;QA&quot;])
+def archive_text_files(target_dir, output_zip):
+    with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zip_out:
+        for root, _, files in os.walk(target_dir):
+            for file in files:
+                if file.endswith(".txt"):
+                    abs_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(abs_path, target_dir)
+                    zip_out.write(abs_path, arcname=rel_path)
+    print(f"Archive created: {output_zip}")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Subprocess Git Version Checker — Run git --version using subprocess and capture output cleanly.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import subprocess
 
-# 2. Reading CSV:
-with open(csv_file, &quot;r&quot;) as f:
-    reader = csv.reader(f)
-    print(&quot;CSV Contents:&quot;)
-    for row in reader:
-        print(&quot; &quot;, row)
-
-# 3. Creating ZIP archive:
-zip_name = &quot;archive.zip&quot;
-with zipfile.ZipFile(zip_name, &quot;w&quot;) as zipf:
-    zipf.write(csv_file)
-print(f&quot;Created {zip_name} containing {csv_file}&quot;)
-
-# Clean up
-os.remove(csv_file)
-os.remove(zip_name)</pre></div>
+try:
+    res = subprocess.run(["git", "--version"], capture_output=True, text=True, check=True)
+    print("Detected Git Version:", res.stdout.strip())
+except (subprocess.CalledProcessError, FileNotFoundError) as e:
+    print("Git command failed or not installed:", e)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to File Handling.</span>
+                <span class="qa-question-title">Challenge 1: Tail -F Log Watcher Simulator — Continuously poll a file for new appended lines like UNIX tail.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Safe Log Rotator &amp; Word Counter
-import os
+                <div class="code"><pre>import time
 
-def analyze_and_backup_log(log_filename):
-    # Create sample log if not exists:
-    with open(log_filename, &quot;w&quot;) as f:
-        f.write(&quot;ERROR 2026-09-13 Database timeout\n&quot;)
-        f.write(&quot;INFO  2026-09-13 Server started\n&quot;)
-        f.write(&quot;ERROR 2026-09-13 Connection refused\n&quot;)
-    
-    # Analyze lines:
-    error_count = 0
-    with open(log_filename, &quot;r&quot;) as f:
-        for line in f:
-            if &quot;ERROR&quot; in line:
-                error_count += 1
-    
-    print(f&quot;Log analysis for {log_filename}: {error_count} error events detected.&quot;)
-    os.remove(log_filename)
-
-analyze_and_backup_log(&quot;server.log&quot;)</pre></div>
+def tail_file(filepath: str, max_iterations=5):
+    with open(filepath, "r", encoding="utf-8") as f:
+        # Move cursor to the end of the file:
+        f.seek(0, 2)
+        iterations = 0
+        while iterations < max_iterations:
+            line = f.readline()
+            if line:
+                print("New appended line:", line.strip())
+            else:
+                time.sleep(0.5)
+            iterations += 1</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: In-Memory File Integrity Checksum (SHA-256) — Compute cryptographic hash of a file using hashlib.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># File Handling Pitfalls &amp; Edge Cases:
-# 1. Not using context manager (&#x27;with&#x27;):
-# Forgetting f.close() leaks OS file handles and may result in unflushed data.
+                <div class="code"><pre>import hashlib
 
-# 2. FileNotFoundError when opening nonexistent file in &#x27;r&#x27; mode. Always handle with try/except:
-try:
-    with open(&quot;non_existent_file.txt&quot;, &quot;r&quot;) as f:
-        pass
-except FileNotFoundError as err:
-    print(&quot;Safely caught:&quot;, err)
+def calculate_sha256(filepath: str, chunk_size=65536) -> str:
+    sha = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        while chunk := f.read(chunk_size):
+            sha.update(chunk)
+    return sha.hexdigest()
 
-# 3. Always specify encoding=&#x27;utf-8&#x27; on Windows to avoid platform-dependent CP1252 decoding errors.</pre></div>
+# calculate_sha256("test_server.log")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (File Handling) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know why <code class="inline">with open(...)</code> prevents file descriptor leaks.</li>
+          <li>I can explain the difference between <code class="inline">'r+'</code> and <code class="inline">'w+'</code>.</li>
+          <li>I know how to read and write CSV files with <code class="inline">csv.DictReader</code> and <code class="inline">csv.DictWriter</code>.</li>
+          <li>I understand how to safely execute CLI commands using <code class="inline">subprocess.run()</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 17. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 18. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

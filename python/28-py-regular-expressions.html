@@ -42,13 +42,18 @@
       </nav>
       <header class="hero" id="intro">
         <h1>28. Regular Expressions</h1>
-        <p class="subtitle">File 28 — re module, character classes, applications, scraping intro.</p>
+        <p class="subtitle">Pattern matching, meta-characters, quantifiers, the re module API, validation, and data extraction.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">re module</span>
+          <span class="chip">Raw Strings r"..."</span>
+          <span class="chip">Character Classes</span>
+          <span class="chip">match / search / findall</span>
+          <span class="chip">re.sub</span>
+          <span class="chip">Web Scraping</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,29 +62,45 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. Overview: Why Regular Expressions?</h3>
+        <p>A <strong>regular expression (regex / regexp)</strong> is a powerful declarative sequence of characters that forms a search pattern. Instead of writing verbose procedural loops and string slicing to find, validate, or substitute text, regular expressions allow you to define patterns concisely.</p>
+        <p>Common real-world uses of regular expressions include:</p>
         <ul>
-          <li>This chapter covers <strong>Regular Expressions</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Input Validation:</strong> Verifying email formats, phone numbers, zip codes, and credit cards.</li>
+          <li><strong>Log Analysis &amp; Parsing:</strong> Extracting IP addresses, error codes, and HTTP statuses from massive server logs.</li>
+          <li><strong>Data Sanitization &amp; Masking:</strong> Redacting sensitive PII (Personally Identifiable Information) like Social Security or credit card numbers.</li>
+          <li><strong>Lexical Analysis:</strong> Building tokenizers, compilers, and text scrapers.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">28-practice.py</code> before File 29. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. The Crucial Role of Raw Strings: <code>r"..."</code></h3>
+        <p>In standard Python string literals, the backslash <code>\</code> is an escape character (e.g., <code>\n</code> is newline, <code>\t</code> is tab, <code>\b</code> is backspace). In regular expressions, backslash also has special meaning (e.g., <code>\b</code> means a word boundary, <code>\d</code> means a digit).</p>
+        <p>Without raw strings, to match a literal backslash in regex, you would need four backslashes: <code>"\\\\"</code>! Always prefix regular expression patterns with <code>r</code> (raw string literal) to disable Python's string-level escape sequence interpretation.</p>
+
+        <div class="code"><pre>import re
+
+# Without raw string: '\b' is treated as ASCII backspace (\x08)
+bad_pattern = "\bword\b"
+
+# With raw string: '\b' is passed literally to the regex engine as a word boundary
+good_pattern = r"\bword\b"
+
+text = "a word in a sentence"
+print("Match found:", bool(re.search(good_pattern, text)))  # True</pre></div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to regular expressions</strong></li>
-          <li><strong>Character classes, predefined classes, quantifiers</strong></li>
-          <li><strong>Important functions of re module</strong></li>
-          <li><strong>Practice applications</strong></li>
-          <li><strong>Web scraping with regex (intro)</strong></li>
+          <li><strong>Introduction</strong> — Concepts, use cases, and raw string prefixes</li>
+          <li><strong>Introduction to regular expressions</strong> — Compilation, Match objects, and pattern mechanics</li>
+          <li><strong>Character classes, predefined classes, quantifiers</strong> — Meta-characters, ranges, boundaries, and greedy vs lazy</li>
+          <li><strong>Important functions of re module</strong> — <code>match</code>, <code>search</code>, <code>findall</code>, <code>finditer</code>, <code>sub</code>, and flags</li>
+          <li><strong>Practice applications</strong> — Phone, email, and IP validation and masking</li>
+          <li><strong>Web scraping with regex (intro)</strong> — Extracting HTML tags, links, and text content</li>
+          <li><strong>C. Common questions</strong> — Key interview questions with in-depth answers</li>
+          <li><strong>P. Practical Assignment</strong> — Log sanitizer mini-project and edge case drills</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-introduction-to-regular-expressions">
         <div class="heading-with-levels">
           <h2>2. Introduction to regular expressions</h2>
@@ -88,14 +109,49 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-introduction-to-regular-expressions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+        <h3>2.1. Compiling Patterns with <code>re.compile()</code></h3>
+        <p>Python provides the built-in <code>re</code> module. You can either use module-level functions directly (<code>re.search(pattern, text)</code>) or compile the pattern first into a <strong>Pattern object</strong> via <code>re.compile()</code>.</p>
+        <p>If a regex pattern is used repeatedly in a loop or across requests, compiling it once caches the internal DFA/NFA state machine, offering significant performance improvements.</p>
+
+        <div class="code"><pre>import re
+
+# 1. Compiling a reusable Pattern object
+date_pattern = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+log_entry = "Audit event recorded on 2026-09-14 at 10:30 UTC"
+
+# 2. Searching using the compiled pattern:
+match = date_pattern.search(log_entry)
+if match:
+    print("Found date:", match.group())  # 2026-09-14</pre></div>
+
+        <h3 id="2-introduction-to-regular-expressions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. The <code>Match</code> Object</h3>
+        <p>When a search or match succeeds, Python returns a <code>re.Match</code> object (if no match is found, it returns <code>None</code>). A Match object provides several methods to inspect the matched substring:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Introduction to regular expressions</strong>.</li>
-          <li>Write small demos in <code class="inline">28-practice.py</code> covering this section.</li>
+          <li><code>match.group()</code> or <code>match.group(0)</code>: Returns the entire matched substring.</li>
+          <li><code>match.group(1), group(2), ...</code>: Returns specific captured group substrings.</li>
+          <li><code>match.groups()</code>: Returns a tuple containing all captured groups.</li>
+          <li><code>match.start()</code>: Starting index of the match in the original string.</li>
+          <li><code>match.end()</code>: Ending index of the match in the original string.</li>
+          <li><code>match.span()</code>: Returns a 2-tuple <code>(start, end)</code>.</li>
         </ul>
+
+        <div class="code"><pre>text = "User ID: USR-9842 logged in"
+pattern = r"USR-(\d+)"
+
+match = re.search(pattern, text)
+if match:
+    print("Full match:    ", match.group())    # USR-9842
+    print("Captured ID:   ", match.group(1))  # 9842
+    print("Start index:   ", match.start())    # 9
+    print("End index:     ", match.end())      # 17
+    print("Match span:    ", match.span())     # (9, 17)</pre></div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-character-classes-predefined-classes-quantifiers">
         <div class="heading-with-levels">
           <h2>3. Character classes, predefined classes, quantifiers</h2>
@@ -104,14 +160,123 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-character-classes-predefined-classes-quantifiers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+        <h3>3.1. Character Classes <code>[...]</code></h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Meaning</th>
+              <th>Example Matches</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>[abc]</code></td>
+              <td>Exactly one character: either <code>a</code>, <code>b</code>, or <code>c</code>.</td>
+              <td><code>apple</code> (matches 'a')</td>
+            </tr>
+            <tr>
+              <td><code>[^abc]</code></td>
+              <td>Negation: any character EXCEPT <code>a</code>, <code>b</code>, or <code>c</code>.</td>
+              <td><code>dog</code> (matches 'd')</td>
+            </tr>
+            <tr>
+              <td><code>[a-z]</code></td>
+              <td>Any lowercase alphabet character.</td>
+              <td><code>code</code></td>
+            </tr>
+            <tr>
+              <td><code>[A-Z]</code></td>
+              <td>Any uppercase alphabet character.</td>
+              <td><code>PYTHON</code></td>
+            </tr>
+            <tr>
+              <td><code>[0-9]</code></td>
+              <td>Any single digit between 0 and 9.</td>
+              <td><code>42</code> (matches '4', then '2')</td>
+            </tr>
+            <tr>
+              <td><code>[a-zA-Z0-9]</code></td>
+              <td>Any alphanumeric character.</td>
+              <td><code>user1</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3.2. Predefined Character Classes</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Character classes, predefined classes, quantifiers</strong>.</li>
-          <li>Write small demos in <code class="inline">28-practice.py</code> covering this section.</li>
+          <li><code>\d</code>: Any digit, equivalent to <code>[0-9]</code>.</li>
+          <li><code>\D</code>: Any non-digit character, equivalent to <code>[^0-9]</code>.</li>
+          <li><code>\s</code>: Any whitespace character (space, tab <code>\t</code>, newline <code>\n</code>).</li>
+          <li><code>\S</code>: Any non-whitespace character.</li>
+          <li><code>\w</code>: Any word character (alphanumeric plus underscore <code>_</code>), equivalent to <code>[a-zA-Z0-9_]</code>.</li>
+          <li><code>\W</code>: Any non-word character (symbols, spaces, punctuation).</li>
+          <li><code>.</code>: Any character whatsoever, <em>except newline</em> <code>\n</code> (unless <code>re.DOTALL</code> flag is enabled).</li>
         </ul>
+
+        <h3 id="3-character-classes-predefined-classes-quantifiers-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.3. Quantifiers</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Quantifier</th>
+              <th>Meaning</th>
+              <th>Example Pattern</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>*</code></td>
+              <td>0 or more occurrences.</td>
+              <td><code>ab*c</code> matches <code>ac</code>, <code>abc</code>, <code>abbc</code></td>
+            </tr>
+            <tr>
+              <td><code>+</code></td>
+              <td>1 or more occurrences.</td>
+              <td><code>ab+c</code> matches <code>abc</code>, <code>abbc</code> (not <code>ac</code>)</td>
+            </tr>
+            <tr>
+              <td><code>?</code></td>
+              <td>0 or 1 occurrence (optional).</td>
+              <td><code>colou?r</code> matches <code>color</code> and <code>colour</code></td>
+            </tr>
+            <tr>
+              <td><code>{n}</code></td>
+              <td>Exactly $n$ occurrences.</td>
+              <td><code>\d{4}</code> matches 4 digits (e.g. <code>2026</code>)</td>
+            </tr>
+            <tr>
+              <td><code>{n,}</code></td>
+              <td>At least $n$ occurrences.</td>
+              <td><code>\d{3,}</code> matches 3 or more digits</td>
+            </tr>
+            <tr>
+              <td><code>{n,m}</code></td>
+              <td>Between $n$ and $m$ occurrences (inclusive).</td>
+              <td><code>\d{2,4}</code> matches 2, 3, or 4 digits</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3.4. Greedy vs Lazy (Non-Greedy) Matching</h3>
+        <p>By default, quantifiers (<code>*</code>, <code>+</code>, <code>{n,m}</code>) are <strong>greedy</strong>: they match as much text as possible. Adding a <code>?</code> suffix (<code>*?</code>, <code>+?</code>, <code>{n,m}?</code>) makes them <strong>lazy (non-greedy)</strong>: they match the minimal text required.</p>
+
+        <div class="code"><pre>html_snippet = "&lt;b&gt;First&lt;/b&gt; and &lt;b&gt;Second&lt;/b&gt;"
+
+# Greedy: Matches from the first '<' to the absolute LAST '>'
+greedy_pattern = r"&lt;b&gt;.*&lt;/b&gt;"
+print("Greedy:", re.findall(greedy_pattern, html_snippet))
+# Output: ['&lt;b&gt;First&lt;/b&gt; and &lt;b&gt;Second&lt;/b&gt;']
+
+# Lazy: Matches from '<' to the NEAREST '>'
+lazy_pattern = r"&lt;b&gt;.*?&lt;/b&gt;"
+print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
+# Output: ['&lt;b&gt;First&lt;/b&gt;', '&lt;b&gt;Second&lt;/b&gt;']</pre></div>
       </section>
+
+      <!-- SECTION 4 -->
       <section id="4-important-functions-of-re-module">
         <div class="heading-with-levels">
           <h2>4. Important functions of re module</h2>
@@ -120,14 +285,96 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="4-important-functions-of-re-module-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+        <h3>4.1. The Primary <code>re</code> Functions</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Function</th>
+              <th>Description</th>
+              <th>Return Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>re.match(pattern, string)</code></td>
+              <td>Checks for match strictly at the <strong>beginning</strong> of the string.</td>
+              <td><code>Match</code> object or <code>None</code>.</td>
+            </tr>
+            <tr>
+              <td><code>re.search(pattern, string)</code></td>
+              <td>Scans the entire string for the <strong>first occurrence</strong>.</td>
+              <td><code>Match</code> object or <code>None</code>.</td>
+            </tr>
+            <tr>
+              <td><code>re.findall(pattern, string)</code></td>
+              <td>Finds <strong>all non-overlapping matches</strong> in the string.</td>
+              <td>List of strings (or list of tuples if groups are used).</td>
+            </tr>
+            <tr>
+              <td><code>re.finditer(pattern, string)</code></td>
+              <td>Finds all matches and yields them as an iterator.</td>
+              <td>Iterator yielding <code>Match</code> objects (memory friendly).</td>
+            </tr>
+            <tr>
+              <td><code>re.sub(pattern, repl, string)</code></td>
+              <td>Replaces matches with replacement string or callable.</td>
+              <td>New string with replacements.</td>
+            </tr>
+            <tr>
+              <td><code>re.split(pattern, string)</code></td>
+              <td>Splits string by regex delimiter.</td>
+              <td>List of split strings.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>sample_text = "Call 555-1234 or 555-5678 today"
+
+# 1. re.match vs re.search
+print("re.match:", re.match(r"\d{3}-\d{4}", sample_text))  # None (doesn't start with digits)
+print("re.search:", re.search(r"\d{3}-\d{4}", sample_text).group())  # 555-1234
+
+# 2. re.findall:
+print("re.findall:", re.findall(r"\d{3}-\d{4}", sample_text))  # ['555-1234', '555-5678']
+
+# 3. re.finditer:
+for m in re.finditer(r"\d{3}-\d{4}", sample_text):
+    print(f"Match found: {m.group()} at index span {m.span()}")
+
+# 4. re.sub (search & replace):
+sanitized = re.sub(r"\d{3}-\d{4}", "[REDACTED]", sample_text)
+print("Sanitized text:", sanitized)
+# Call [REDACTED] or [REDACTED] today
+
+# 5. re.split:
+data_row = "item1, item2; item3 | item4"
+tokens = re.split(r"[,;|]\s*", data_row)
+print("Split tokens:", tokens)  # ['item1', 'item2', 'item3', 'item4']</pre></div>
+
+        <h3 id="4-important-functions-of-re-module-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Regex Compilation Flags</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Important functions of re module</strong>.</li>
-          <li>Write small demos in <code class="inline">28-practice.py</code> covering this section.</li>
+          <li><code>re.IGNORECASE</code> (or <code>re.I</code>): Performs case-insensitive matching.</li>
+          <li><code>re.MULTILINE</code> (or <code>re.M</code>): Allows <code>^</code> and <code>$</code> to match at the beginning/end of each individual line (not just the entire string).</li>
+          <li><code>re.DOTALL</code> (or <code>re.S</code>): Makes the dot <code>.</code> match any character including newline characters <code>\n</code>.</li>
+          <li><code>re.VERBOSE</code> (or <code>re.X</code>): Allows writing formatted regex across multiple lines with comments and ignored whitespace.</li>
         </ul>
+
+        <div class="code"><pre># Using re.VERBOSE for clean, documented regular expressions:
+phone_regex = re.compile(r"""
+    ^(\+\d{1,3}[- ]?)?   # Optional country code (+1, +91)
+    (\(?\d{3}\)?[- ]?)   # Area code (e.g. 555 or (555))
+    \d{3}                # 3 digits
+    [- ]?                # Optional dash or space
+    \d{4}$               # 4 digits
+""", re.VERBOSE)
+
+print(bool(phone_regex.match("+1-555-019-2834")))  # True</pre></div>
       </section>
+
+      <!-- SECTION 5 -->
       <section id="5-practice-applications">
         <div class="heading-with-levels">
           <h2>5. Practice applications</h2>
@@ -136,14 +383,36 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="5-practice-applications-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Practice applications</strong>.</li>
-          <li>Write small demos in <code class="inline">28-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>5.1. Real-World Validation Patterns</h3>
+
+        <div class="code"><pre>import re
+
+# 1. Phone Number Validator (10-digit Indian mobile starting with 6, 7, 8, or 9):
+def is_valid_indian_mobile(phone):
+    pattern = r"^[6-9]\d{9}$"
+    return bool(re.match(pattern, phone))
+
+print("Valid mobile 9876543210:", is_valid_indian_mobile("9876543210"))  # True
+print("Invalid mobile 4567890123:", is_valid_indian_mobile("4567890123"))  # False
+
+# 2. Email Address Validator:
+def is_valid_email(email):
+    pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+    return bool(re.match(pattern, email))
+
+print("user@example.com:   ", is_valid_email("user@example.com"))     # True
+print("invalid-email@.com: ", is_valid_email("invalid-email@.com")) # False
+
+# 3. Extracting IPv4 Addresses from Server Logs:
+log_data = "Failed SSH connection from 192.168.1.45 to port 22, alternate attempt 10.0.0.1"
+ip_pattern = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
+extracted_ips = re.findall(ip_pattern, log_data)
+print("Extracted IPs:", extracted_ips)  # ['192.168.1.45', '10.0.0.1']</pre></div>
       </section>
+
+      <!-- SECTION 6 -->
       <section id="6-web-scraping-with-regex-intro">
         <div class="heading-with-levels">
           <h2>6. Web scraping with regex (intro)</h2>
@@ -152,14 +421,47 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="6-web-scraping-with-regex-intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Web scraping with regex (intro)</strong>.</li>
-          <li>Write small demos in <code class="inline">28-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>6.1. HTML Scraping with Regex</h3>
+        <p>While dedicated HTML parsers (like BeautifulSoup, lxml, or selectolax) are recommended for complex DOM hierarchies, regular expressions are very effective for quick, lightweight scraping of targeted tokens, URLs, titles, and metadata tags from raw HTML responses.</p>
+
+        <div class="code"><pre>import re
+
+html_content = """
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;Python Engineering Notes&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Welcome to Python Track&lt;/h1&gt;
+    &lt;a href="https://docs.python.org/3/"&gt;Official Docs&lt;/a&gt;
+    &lt;a href="https://pypi.org/project/requests/"&gt;PyPI Requests&lt;/a&gt;
+    &lt;p&gt;Contact support at support@example.org or sales@example.com&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+"""
+
+# 1. Extract Page Title:
+title_match = re.search(r"&lt;title&gt;(.*?)&lt;/title&gt;", html_content, re.IGNORECASE)
+if title_match:
+    print("Page Title:", title_match.group(1))
+
+# 2. Extract All Hyperlinks and Anchor Text:
+link_pattern = r'&lt;a\s+(?:[^&gt;]*?\s+)?href="([^"]*)"&gt;(.*?)&lt;/a&gt;'
+links = re.findall(link_pattern, html_content)
+print("\nExtracted Hyperlinks:")
+for url, text in links:
+    print(f"  - [{text}]: {url}")
+
+# 3. Extract All Email Addresses:
+emails = re.findall(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", html_content)
+print("\nFound Emails:", emails)</pre></div>
+
+        <div class="callout">
+          <strong>Scraping Caveat:</strong> Regular expressions cannot parse arbitrary, malformed, or nested HTML reliably because HTML is a context-free grammar with arbitrarily deep nesting. For production web crawlers, use <code>BeautifulSoup</code> or <code>lxml</code>.
+        </div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -173,44 +475,103 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction to regular expressions?</span>
+            <span class="qa-question-title">C.1. Why should you always use raw string literals <code>r"..."</code> for regex in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In standard Python string literals, backslashes are interpreted as escape sequences (e.g. <code>\n</code> for newline, <code>\t</code> for tab, <code>\b</code> for ASCII backspace). In regex, <code>\b</code> represents a word boundary and <code>\d</code> represents a digit.</p>
+            <p>Using raw strings (<code>r"..."</code>) prevents Python from interpreting backslashes, passing them unmodified to the <code>re</code> engine. This avoids double-escaping (e.g. having to write <code>"\\\\d"</code> instead of <code>r"\d"</code>).</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Character classes, predefined classes, quantifiers?</span>
+            <span class="qa-question-title">C.2. What is the difference between <code>re.match()</code>, <code>re.search()</code>, and <code>re.findall()</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code>re.match(pattern, string)</code>:</strong> Searches for a match ONLY at the beginning of the string (index 0). If the pattern does not match the first character, it returns <code>None</code>.</li>
+              <li><strong><code>re.search(pattern, string)</code>:</strong> Scans through the entire string looking for the FIRST location where the pattern matches, returning a single <code>Match</code> object.</li>
+              <li><strong><code>re.findall(pattern, string)</code>:</strong> Scans the entire string and returns ALL non-overlapping matches as a list of strings (or list of tuples if capturing groups are used).</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Important functions of re module?</span>
+            <span class="qa-question-title">C.3. What is the difference between <code>re.findall()</code> and <code>re.finditer()</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code>re.findall()</code> creates and returns an entire list containing all matched strings in memory at once. If the target string contains thousands of matches, it allocates significant RAM.</p>
+            <p><code>re.finditer()</code> lazily yields <code>re.Match</code> objects one at a time via an iterator. This is much more memory-efficient for large text files and provides access to full match metadata (start index, end index, spans, and individual captured groups).</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Practice applications?</span>
+            <span class="qa-question-title">C.4. What is the difference between greedy and lazy (non-greedy) quantifiers?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>Greedy Quantifiers (<code>*</code>, <code>+</code>, <code>{n,m}</code>):</strong> Match as many characters as possible to satisfy the pattern. For example, given <code>&lt;a&gt;foo&lt;/a&gt;&lt;a&gt;bar&lt;/a&gt;</code>, the greedy pattern <code>&lt;a&gt;.*&lt;/a&gt;</code> matches the entire string from the first <code>&lt;a&gt;</code> to the last <code>&lt;/a&gt;</code>.</p>
+            <p><strong>Lazy Quantifiers (<code>*?</code>, <code>+?</code>, <code>{n,m}?</code>):</strong> Match as few characters as possible. In the same example, <code>&lt;a&gt;.*?&lt;/a&gt;</code> matches <code>&lt;a&gt;foo&lt;/a&gt;</code> and <code>&lt;a&gt;bar&lt;/a&gt;</code> separately.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the difference between capturing groups <code>(...)</code> and non-capturing groups <code>(?:...)</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Capturing Group <code>(pattern)</code>:</strong> Groups characters together and remembers the matched text, which can be extracted via <code>match.group(1)</code>, <code>match.groups()</code>, or backreferenced via <code>\1</code>.</li>
+              <li><strong>Non-Capturing Group <code>(?:pattern)</code>:</strong> Groups characters for quantifier or alternation purposes (e.g. <code>(?:abc)+</code>), but does not store the matched substring in group memory, saving memory and processing overhead.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How does <code>re.sub()</code> work with replacement functions (callables)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In <code>re.sub(pattern, repl, string)</code>, the <code>repl</code> argument can be a Python function instead of a string. For each match, Python passes the <code>Match</code> object to your function, and replaces the match with the function's return value:</p>
+            <div class="code"><pre>def double_num(m):
+    return str(int(m.group()) * 2)
+
+print(re.sub(r"\d+", double_num, "Scores: 10, 25"))  # Scores: 20, 50</pre></div>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What does the <code>re.MULTILINE</code> (<code>re.M</code>) flag change?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>By default, <code>^</code> matches only at the beginning of the entire string, and <code>$</code> matches only at the very end of the string.</p>
+            <p>When <code>re.MULTILINE</code> is passed, <code>^</code> matches at the beginning of the string AND at the beginning of each line (immediately following each newline <code>\n</code>), and <code>$</code> matches at the end of the string AND at the end of each line (immediately preceding each newline).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why should you avoid using regular expressions to parse full HTML?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>HTML is not a regular language; it is a context-free grammar with arbitrary nesting, attributes with unescaped characters, CDATA blocks, script tags, and comments. Regex engines cannot maintain state across arbitrarily nested recursive structures. Regex will break on valid variations like multiline attributes, comments containing tags, or nested tags. Use specialized parsers like <code>BeautifulSoup</code> or <code>lxml</code> instead.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,7 +580,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">28-practice.py</code>. Run with <code class="inline">python3 28-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">28-practice.py</code>. Run with <code class="inline">python3 28-practice.py</code>. Test regex matching, extraction, substitution, and flags.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -230,29 +591,27 @@
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Introduction to Regular Expressions:
-# 1. Regular expressions (regex) define search patterns to match, validate, and extract string content.
-# 2. Handled via Python&#x27;s built-in &#x27;re&#x27; module.
-# 3. Raw string syntax (r&quot;...&quot;) prevents Python from interpreting escape sequences like \n or \t.</pre></div>
+                <div class="code"><pre># Summary of Regular Expressions:
+# 1. Regex defines declarative search patterns for validation, extraction, and text manipulation.
+# 2. Always use raw strings r"..." to prevent Python from parsing backslashes.
+# 3. re.compile() caches patterns for high performance when executed repeatedly.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Character classes, predefined classes, quantifiers</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example demonstrating <code>re.search</code> and printing match span.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Character classes, predefined classes, and quantifiers:
-import re
+                <div class="code"><pre>import re
 
-text = &quot;Invoice #INV-2026-4982 paid on 13-09-2026&quot;
-# Match pattern: INV followed by 4 digits, then 4 digits
-pattern = r&quot;INV-\d{4}-\d{4}&quot;
-match = re.search(pattern, text)
-if match:
-    print(&quot;Found Invoice:&quot;, match.group())</pre></div>
+text = "Error code: ERR-404 at endpoint"
+m = re.search(r"ERR-\d+", text)
+if m:
+    print("Match:", m.group())
+    print("Span: ", m.span())</pre></div>
               </div>
             </details>
           </li>
@@ -263,164 +622,141 @@ if match:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Regular Expressions (re module).
+                <div class="code"><pre>"""Chapter Practice: Python Regular Expressions.
 
-Goal: Master regex pattern syntax, raw string notation, character classes,
-quantifiers, re methods (match, search, findall, sub, split), and compiled patterns.
-&quot;&quot;&quot;</pre></div>
+Goal: Master meta-characters, quantifiers, the re module API (match, search, findall, sub),
+regex compilation flags, and practical data extraction and sanitization pipelines.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction to regular expressions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Predefined classes</strong> — Extract all digits and word characters from a string using <code>re.findall</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction to regular expressions
+                <div class="code"><pre># Task 1: Predefined character classes
 import re
 
-pattern = r&quot;\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b&quot;
-sample_text = &quot;Contact support at info@example.com or admin@corp.org for help.&quot;
+text = "Item #42 costs $199.99 (SKU_A1)"
+digits = re.findall(r"\d+", text)
+words = re.findall(r"\w+", text)
 
-emails = re.findall(pattern, sample_text)
-print(&quot;Extracted email addresses:&quot;, emails)</pre></div>
+print("Digits:", digits)  # ['42', '199', '99']
+print("Words: ", words)   # ['Item', '42', 'costs', '199', '99', 'SKU_A1']</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Character classes, predefined classes, quantifiers</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Greedy vs Lazy</strong> — Extract text inside quotation marks using both greedy and lazy matching.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Character classes, predefined classes, quantifiers
+                <div class="code"><pre># Task 2: Greedy vs Lazy
 import re
 
-# Predefined classes: \d (digit), \w (alphanumeric), \s (whitespace)
-# Quantifiers: * (0+), + (1+), ? (0 or 1), {min,max}
-pattern = r&quot;\w+@\w+\.\w+&quot;
-text = &quot;Users: user1@mail.com and dev_team@git.io&quot;
-print(&quot;Matches:&quot;, re.findall(pattern, text))
+line = 'The "cat" sat on the "mat".'
+greedy = re.findall(r'"(.*)"', line)
+lazy = re.findall(r'"(.*?)"', line)
 
-# Custom character class:
-vowels_or_digits = r&quot;[aeiou0-9]&quot;
-print(&quot;Vowels and digits in &#x27;Python3&#x27;:&quot;, re.findall(vowels_or_digits, &quot;Python3&quot;, re.I))</pre></div>
+print("Greedy:", greedy)  # ['cat" sat on the "mat']
+print("Lazy:  ", lazy)    # ['cat', 'mat']</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Important functions of re module</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 3: Text replacement with re.sub</strong> — Mask sensitive phone numbers in a string with asterisks.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Important functions of re module
+                <div class="code"><pre># Task 3: Sanitization with re.sub
 import re
 
-text = &quot;apple, orange; banana: grape&quot;
-# re.split with multiple delimiters:
-fruits = re.split(r&quot;[,;:]\s*&quot;, text)
-print(&quot;re.split:&quot;, fruits)
-
-# re.sub for replacement:
-censored = re.sub(r&quot;\d{4}&quot;, &quot;****&quot;, &quot;My pin is 1234 and card code is 5678&quot;)
-print(&quot;re.sub:&quot;, censored)
-
-# re.finditer for positions:
-for match in re.finditer(r&quot;\b\w{5}\b&quot;, &quot;seven apple tiger zebra&quot;):
-    print(f&quot;5-letter word: &#x27;{match.group()}&#x27; at [{match.start()}:{match.end()}]&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Practice applications</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Practice applications (Phone &amp; URL validator)
-import re
-
-def validate_phone(number):
-    # Matches (123) 456-7890 or 123-456-7890
-    regex = r&quot;^(\(\d{3}\)|\d{3})[- ]?\d{3}[- ]?\d{4}$&quot;
-    return bool(re.match(regex, number))
-
-test_numbers = [&quot;123-456-7890&quot;, &quot;(555) 123-4567&quot;, &quot;12345&quot;, &quot;999-abc-4567&quot;]
-for num in test_numbers:
-    print(f&quot;&#x27;{num}&#x27;: Valid = {validate_phone(num)}&quot;)</pre></div>
+customer_notes = "Contact customer at 9876543210 or alternate 9123456780."
+masked = re.sub(r"\b[6-9]\d{9}\b", "**********", customer_notes)
+print("Masked notes:", masked)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Regular Expressions.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build an Apache/Nginx Web Log Parser that extracts timestamp, HTTP method, status code, IP, and path into structured dictionaries.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Log File Analyzer &amp; Metric Extractor
+                <div class="code"><pre># Mini Project: Web Log Parser with Named Groups
 import re
 
-log_entries = [
-    &#x27;192.168.1.10 - [13/Sep/2026:10:00:01] &quot;GET /api/v1/users HTTP/1.1&quot; 200 452&#x27;,
-    &#x27;10.0.0.5 - [13/Sep/2026:10:00:02] &quot;POST /api/v1/login HTTP/1.1&quot; 401 128&#x27;,
-    &#x27;172.16.0.2 - [13/Sep/2026:10:00:05] &quot;GET /static/style.css HTTP/1.1&quot; 304 0&#x27;,
-    &#x27;192.168.1.10 - [13/Sep/2026:10:00:10] &quot;GET /api/v1/orders HTTP/1.1&quot; 500 230&#x27;
+log_lines = [
+    '192.168.1.10 - - [14/Sep/2026:12:00:01 +0000] "GET /api/v1/users HTTP/1.1" 200 4532',
+    '10.0.0.5 - - [14/Sep/2026:12:01:15 +0000] "POST /api/v1/login HTTP/1.1" 401 234',
+    '172.16.0.2 - - [14/Sep/2026:12:02:40 +0000] "GET /static/logo.png HTTP/1.1" 304 0'
 ]
 
-log_pattern = re.compile(
-    r&#x27;(?P&lt;ip&gt;[\d\.]+)\s-\s\[(?P&lt;time&gt;[^\]]+)\]\s&quot;(?P&lt;method&gt;\w+)\s(?P&lt;path&gt;[^\s]+)[^&quot;]*&quot;\s(?P&lt;status&gt;\d{3})&#x27;
-)
+log_regex = re.compile(r"""
+    ^(?P&lt;ip&gt;[\d.]+)\s+-\s+-\s+
+    \[(?P&lt;timestamp&gt;[^\]]+)\]\s+
+    "(?P&lt;method&gt;[A-Z]+)\s+(?P&lt;path&gt;\S+)\s+HTTP/[0-9.]+"\s+
+    (?P&lt;status&gt;\d{3})\s+
+    (?P&lt;bytes&gt;\d+)
+""", re.VERBOSE)
 
-print(&quot;Parsed Web Server Access Logs:&quot;)
-for entry in log_entries:
-    match = log_pattern.search(entry)
+parsed_records = []
+for line in log_lines:
+    match = log_regex.match(line)
     if match:
-        data = match.groupdict()
-        print(f&quot;IP: {data[&#x27;ip&#x27;]:&lt;14} | Method: {data[&#x27;method&#x27;]:&lt;4} | Status: {data[&#x27;status&#x27;]} | Route: {data[&#x27;path&#x27;]}&quot;)</pre></div>
+        parsed_records.append(match.groupdict())
+
+print(f"Parsed {len(parsed_records)} log entries:")
+for r in parsed_records:
+    print(f"  {r['ip']} | {r['method']} {r['path']} -&gt; Status {r['status']}")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate matching literal dots and plus signs by escaping them.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Regex Pitfalls &amp; Edge Cases:
-# 1. Greedy vs Non-greedy matching:
-# &#x27;&lt;div&gt;test&lt;/div&gt;&lt;div&gt;code&lt;/div&gt;&#x27; matching &#x27;&lt;.*&gt;&#x27; matches everything (greedy)!
-# Fix: Use non-greedy &#x27;&lt;.*?&gt;&#x27;
+                <div class="code"><pre># Edge Case: Escaping meta-characters
+import re
 
-# 2. Forgetting raw string prefix (r&quot;\d&quot;) leads to escape issues with backslashes.
-
-# 3. Catastrophic backtracking in nested quantifiers like (a+)+.</pre></div>
+price = "Item costs 3.50 + tax"
+# Matching literal '.' and '+':
+m = re.findall(r"\d+\.\d+|\+", price)
+print("Escaped matches:", m)  # ['3.50', '+']</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Regular Expressions) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I always use raw strings <code>r"..."</code> for regular expression patterns.</li>
+          <li>I can explain the difference between <code>match()</code>, <code>search()</code>, and <code>findall()</code>.</li>
+          <li>I understand greedy vs lazy quantifiers and when to use <code>.*?</code>.</li>
+          <li>I can extract captured groups and named groups using <code>re.VERBOSE</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 27. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 28. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

@@ -40,13 +40,19 @@
       </nav>
       <header class="hero" id="intro">
         <h1>17. Packages</h1>
-        <p class="subtitle">File 17 — packages, __init__.py, pip install.</p>
+        <p class="subtitle">File 17 — hierarchical modules, package architecture, __init__.py mechanics, relative imports, and pip dependency management.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Packages</span>
+          <span class="chip">__init__.py</span>
+          <span class="chip">Namespace Packages (PEP 420)</span>
+          <span class="chip">Relative vs Absolute Imports</span>
+          <span class="chip">pip &amp; PyPI</span>
+          <span class="chip">venv Isolation</span>
+          <span class="chip">pyproject.toml</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -55,27 +61,28 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Packages</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>While a <strong>Module</strong> is a single file (<code class="inline">.py</code>), a <strong>Package</strong> is a hierarchical folder structure that organizes multiple related modules and sub-packages under a common namespace.</li>
+          <li>Packages use dot-notation for module paths (e.g. <code class="inline">import urllib.request</code>, <code class="inline">from sklearn.metrics import accuracy_score</code>).</li>
+          <li>Packages prevent naming collisions across large software architectures and allow distribution on the <strong>Python Package Index (PyPI)</strong> via <code class="inline">pip</code>.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–4 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">17-practice.py</code> before File 18. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>What is a package and advantages</strong></li>
-          <li><strong>Importance of __init__.py</strong></li>
-          <li><strong>Installing packages with pip</strong></li>
+          <li><strong>What is a package and advantages</strong> — folder architecture, sub-packages, relative vs absolute imports, and PEP 420</li>
+          <li><strong>Importance of __init__.py</strong> — package initialization, API surface exposure, and <code class="inline">__all__</code></li>
+          <li><strong>Installing packages with pip</strong> — PyPI, requirements files, virtual environments, and modern build tooling</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: WHAT IS A PACKAGE AND ADVANTAGES -->
       <section id="2-what-is-a-package-and-advantages">
         <div class="heading-with-levels">
           <h2>2. What is a package and advantages</h2>
@@ -84,14 +91,54 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-what-is-a-package-and-advantages-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Anatomy of a Python Package</h3>
+        <p>A package is structured as a directory tree containing modules and an <code class="inline">__init__.py</code> file:</p>
+
+        <div class="code"><pre>ecommerce/                     # Root Package
+├── __init__.py                # Package initialization
+├── database.py                # Sibling module
+├── payments/                  # Sub-package
+│   ├── __init__.py
+│   ├── stripe.py
+│   └── paypal.py
+└── shipping/                  # Sub-package
+    ├── __init__.py
+    ├── fedex.py
+    └── tracking.py</pre></div>
+
+        <h3 id="2-what-is-a-package-and-advantages-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.2. Absolute vs Relative Imports</h3>
         <ul>
-          <li>Understand the main ideas in <strong>What is a package and advantages</strong>.</li>
-          <li>Write small demos in <code class="inline">17-practice.py</code> covering this section.</li>
+          <li><strong>Absolute Imports:</strong> Specify the full path from the project root or <code class="inline">sys.path</code>. Highly readable and recommended by PEP 8:
+            <div class="code"><pre>from ecommerce.payments.stripe import process_payment
+from ecommerce.database import get_db_connection</pre></div>
+          </li>
+          <li><strong>Relative Imports:</strong> Use leading dots (<code class="inline">.</code>) to navigate relative to the current module's location:
+            <ul>
+              <li><code class="inline">.</code> (single dot): Current package/directory.</li>
+              <li><code class="inline">..</code> (two dots): Parent package directory.</li>
+            </ul>
+            <div class="code"><pre># Inside ecommerce/payments/stripe.py:
+from .paypal import verify_account    # Same directory
+from ..database import execute_query  # Parent directory</pre></div>
+          </li>
+        </ul>
+
+        <div class="callout">
+          <strong>Rule on Relative Imports:</strong> Relative imports rely on the module's <code class="inline">__name__</code> attribute. If you run a file containing relative imports directly as the top-level script (<code class="inline">python3 stripe.py</code>), Python raises <code class="inline">ImportError: attempted relative import with no known parent package</code>. Run it from the root using module syntax: <code class="inline">python3 -m ecommerce.payments.stripe</code>.
+        </div>
+
+        <h3>2.3. Regular Packages vs Namespace Packages (PEP 420)</h3>
+        <ul>
+          <li><strong>Regular Packages (Classic):</strong> Any directory containing an <code class="inline">__init__.py</code> file.</li>
+          <li><strong>Namespace Packages (Python 3.3+, PEP 420):</strong> Directories <em>without</em> an <code class="inline">__init__.py</code> file. Allows splitting portions of a single logical package across different directories, virtual environments, or independent repositories (e.g. <code class="inline">company.auth</code> and <code class="inline">company.billing</code>).</li>
         </ul>
       </section>
+
+      <!-- SECTION 3: IMPORTANCE OF __INIT__.PY -->
       <section id="3-importance-of-init-py">
         <div class="heading-with-levels">
           <h2>3. Importance of __init__.py</h2>
@@ -100,14 +147,42 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-importance-of-init-py-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. What Happens When a Package is Imported?</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Importance of __init__.py</strong>.</li>
-          <li>Write small demos in <code class="inline">17-practice.py</code> covering this section.</li>
+          <li>When someone executes <code class="inline">import ecommerce</code>, Python implicitly executes the code inside <code class="inline">ecommerce/__init__.py</code>.</li>
+          <li>It can be an empty file (used merely as a package marker), but in professional libraries, it serves as the package's <strong>public API gatekeeper</strong>.</li>
         </ul>
+
+        <h3 id="3-importance-of-init-py-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Curating a Clean Public API via <code class="inline">__init__.py</code></h3>
+        <p>Without an export in <code class="inline">__init__.py</code>, consumers must navigate deep nested module paths. By importing classes into <code class="inline">__init__.py</code>, you provide a clean, convenient interface:</p>
+
+        <div class="code"><pre># ecommerce/__init__.py
+"""Public API for the eCommerce engine."""
+
+# Elevate internal symbols to package root:
+from .payments.stripe import StripeGateway
+from .shipping.tracking import ShipmentTracker
+
+# Expose package metadata:
+__version__ = "2.4.0"
+__author__ = "Bharat Sonwane"
+
+# Control wildcard import:
+__all__ = ["StripeGateway", "ShipmentTracker"]</pre></div>
+
+        <p>Now consumers can simply write:</p>
+        <div class="code"><pre># Clean consumer code:
+import ecommerce
+
+gateway = ecommerce.StripeGateway()
+print(f"eCommerce version: {ecommerce.__version__}")</pre></div>
       </section>
+
+      <!-- SECTION 4: INSTALLING PACKAGES WITH PIP -->
       <section id="4-installing-packages-with-pip">
         <div class="heading-with-levels">
           <h2>4. Installing packages with pip</h2>
@@ -116,14 +191,79 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-installing-packages-with-pip-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. Pip and the Python Package Index (PyPI)</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Installing packages with pip</strong>.</li>
-          <li>Write small demos in <code class="inline">17-practice.py</code> covering this section.</li>
+          <li><strong>PyPI (Python Package Index):</strong> The official third-party repository hosting hundreds of thousands of open-source packages (<code class="inline">requests</code>, <code class="inline">numpy</code>, <code class="inline">flask</code>, <code class="inline">fastapi</code>).</li>
+          <li><strong><code class="inline">pip</code>:</strong> The standard package installer for Python.</li>
         </ul>
+
+        <table>
+          <thead>
+            <tr><th>Task</th><th>Command</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Install package</td>
+              <td><code class="inline">pip install requests</code></td>
+              <td>Downloads and installs package and all dependencies.</td>
+            </tr>
+            <tr>
+              <td>Specific version</td>
+              <td><code class="inline">pip install requests==2.31.0</code></td>
+              <td>Pins exact package version.</td>
+            </tr>
+            <tr>
+              <td>Upgrade package</td>
+              <td><code class="inline">pip install --upgrade requests</code></td>
+              <td>Upgrades to latest release.</td>
+            </tr>
+            <tr>
+              <td>Uninstall</td>
+              <td><code class="inline">pip uninstall requests</code></td>
+              <td>Removes package from environment.</td>
+            </tr>
+            <tr>
+              <td>Export dependencies</td>
+              <td><code class="inline">pip freeze &gt; requirements.txt</code></td>
+              <td>Generates lockfile of exact installed versions.</td>
+            </tr>
+            <tr>
+              <td>Install dependencies</td>
+              <td><code class="inline">pip install -r requirements.txt</code></td>
+              <td>Reproduces exact environment from requirements file.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="4-installing-packages-with-pip-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. Virtual Environments (<code class="inline">venv</code>)</h3>
+        <div class="callout">
+          <strong>Best Practice:</strong> Never install third-party packages into your global operating system Python environment! Doing so causes version conflicts between different projects and can corrupt OS tools. Always isolate dependencies inside a virtual environment:
+        </div>
+
+        <div class="code"><pre># 1. Create virtual environment named '.venv':
+python3 -m venv .venv
+
+# 2. Activate virtual environment:
+# On macOS / Linux:
+source .venv/bin/activate
+# On Windows (cmd):
+# .venv\Scripts\activate.bat
+
+# 3. Verify Python points to virtual environment:
+which python3   # Points to project/.venv/bin/python3
+
+# 4. Install dependencies safely:
+pip install fastapi uvicorn
+
+# 5. Deactivate when finished:
+deactivate</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -132,39 +272,98 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about What is a package and advantages?</span>
+            <span class="qa-question-title">C.1. What is the fundamental difference between a Module and a Package?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong>Module:</strong> A single file containing Python code ending in <code class="inline">.py</code> (or compiled C extensions <code class="inline">.so</code> / <code class="inline">.pyd</code>).</li>
+              <li><strong>Package:</strong> A directory containing an <code class="inline">__init__.py</code> file (or a PEP 420 namespace directory) that groups multiple modules and sub-packages under a dot-separated hierarchy.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Importance of __init__.py?</span>
+            <span class="qa-question-title">C.2. Is __init__.py strictly mandatory in Python 3?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>No, but recommended:</strong> Since Python 3.3 (PEP 420), directories without an <code class="inline">__init__.py</code> are recognized as <strong>Implicit Namespace Packages</strong>.</p>
+            <p>However, for traditional single-distribution application code, keeping <code class="inline">__init__.py</code> is still best practice because it explicitly identifies the folder as a regular package, prevents IDE resolution ambiguities, and provides an initialization hook.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Installing packages with pip?</span>
+            <span class="qa-question-title">C.3. Why does running a file with relative imports directly cause an ImportError?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>When you execute a file directly via <code class="inline">python3 file.py</code>, Python sets its <code class="inline">__name__ = "__main__"</code> and treats it as the top-level script with no enclosing package hierarchy. Relative imports (<code class="inline">from . import helper</code>) require knowing the package parent. Because <code class="inline">__package__</code> is empty, Python raises <code class="inline">ImportError: attempted relative import with no known parent package</code>.</p>
+            <p><strong>Solution:</strong> Run the package from the parent directory using the module flag: <code class="inline">python3 -m mypkg.file</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What does pip freeze do and how does it relate to requirements.txt?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">pip freeze</code> inspects the currently active Python environment and outputs every installed third-party package and its exact version in standard requirements format (<code class="inline">package==version</code>).</p>
+            <p>Redirecting this into <code class="inline">requirements.txt</code> creates a reproducible snapshot lockfile that other developers or CI/CD pipelines can install with <code class="inline">pip install -r requirements.txt</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is a Wheel (.whl) file in Python packaging?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <strong>Wheel</strong> (PEP 427) is a ZIP-format archive with a <code class="inline">.whl</code> extension containing pre-built, ready-to-install package files. Unlike Source Distributions (<code class="inline">.tar.gz</code> / <code class="inline">sdist</code>) which require compiling C/C++ extensions during installation, wheels install in seconds without needing build tools or compilers on the target machine.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is pyproject.toml and how does it replace setup.py?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Introduced in PEP 518 and PEP 621, <code class="inline">pyproject.toml</code> is the modern, declarative configuration standard for Python projects. It replaces legacy <code class="inline">setup.py</code>, <code class="inline">setup.cfg</code>, and tool-specific config files, unifying build requirements (Hatch, Flit, Poetry, Setuptools), project metadata, and linter settings in a single file.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What happens if two packages have the same name in different sys.path directories?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python imports the package from whichever directory appears <strong>earlier in <code class="inline">sys.path</code></strong> (First Match Wins). Once found, it is loaded into <code class="inline">sys.modules</code> and search terminates. This is why having a local file named <code class="inline">math.py</code> or <code class="inline">random.py</code> in your project directory accidentally shadows the standard library!</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How do you create an editable install with pip?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Running <code class="inline">pip install -e .</code> installs the package in <strong>Editable Mode (Development Mode)</strong>. Instead of copying files to <code class="inline">site-packages</code>, pip links directly to your active project folder. Any code edits you make take effect immediately without needing to re-run <code class="inline">pip install</code>.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -173,207 +372,208 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">17-practice.py</code>. Run with <code class="inline">python3 17-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">17-practice.py</code>. Run with <code class="inline">python3 17-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>What is a package and advantages</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining package structure and the role of __init__.py.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Packages and Advantages:
-# 1. A package is a directory containing multiple modules and an __init__.py file.
-# 2. Packages provide hierarchical, dot-notated namespaces (e.g., urllib.request).
-# 3. They prevent naming collisions across large projects and simplify third-party distribution.</pre></div>
+                <div class="code"><pre># Package Foundations:
+# 1. A package is a directory containing modules and an __init__.py marker.
+# 2. __init__.py initializes the package and exposes the public API via __all__.
+# 3. Always use virtual environments (venv) to isolate pip dependencies per project.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Importance of __init__.py</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Inspect sys.modules to see if urllib.parse is currently loaded.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Importance of __init__.py:
-# 1. Marks directory as an importable Python package.
-# 2. Executes package initialization code on first import.
-# 3. Defines __all__ to control what symbols &#x27;from package import *&#x27; exposes.
+                <div class="code"><pre>import sys
+import urllib.parse
 
-# Sample __init__.py code:
-# __all__ = [&quot;models&quot;, &quot;services&quot;, &quot;utils&quot;]
-# print(&quot;Package initialized successfully&quot;)</pre></div>
+print("Is urllib.parse in sys.modules:", "urllib.parse" in sys.modules)  # True</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Generate a requirements.txt string from a list of packages and versions.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Packages and Modular Architecture.
-
-Goal: Master package organization, package initialization (__init__.py),
-relative vs absolute imports, and package installation via pip.
-&quot;&quot;&quot;</pre></div>
+                <div class="code"><pre>deps = [("fastapi", "0.110.0"), ("uvicorn", "0.28.0"), ("pydantic", "2.6.4")]
+reqs = "\n".join(f"{name}=={ver}" for name, ver in deps)
+print("requirements.txt output:\n" + reqs)</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: What is a package and advantages</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Programmatic Package Creator — Write a Python script that generates a complete package folder structure on disk.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: What is a package and advantages
-# Demonstrating package structure mentally or via filesystem mock:
-&quot;&quot;&quot;
-my_ecommerce_package/
-    ├── __init__.py
-    ├── cart/
-    │   ├── __init__.py
-    │   └── checkout.py
-    └── payments/
-        ├── __init__.py
-        ├── stripe_gateway.py
-        └── paypal_gateway.py
-&quot;&quot;&quot;
-import sys
-print(&quot;Package search path roots (sys.path):&quot;)
-for p in sys.path[:3]:
-    print(&quot; &quot;, p)</pre></div>
+                <div class="code"><pre>import os
+
+def create_package_scaffold(root_dir: str):
+    structure = [
+        os.path.join(root_dir, "mypackage", "__init__.py"),
+        os.path.join(root_dir, "mypackage", "core.py"),
+        os.path.join(root_dir, "mypackage", "utils", "__init__.py"),
+        os.path.join(root_dir, "mypackage", "utils", "helpers.py")
+    ]
+    for filepath in structure:
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        if not os.path.exists(filepath):
+            with open(filepath, "w") as f:
+                f.write(f"# Auto-generated: {os.path.basename(filepath)}\n")
+    print(f"Scaffold created successfully in {root_dir}")
+
+# create_package_scaffold("./sandbox")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Importance of __init__.py</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Dependency Conflict Checker — Compare two requirements lists and highlight version discrepancies.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Importance of __init__.py demo
-# Simulating package __init__.py namespace exposure:
-class PackageNamespace:
-    &quot;&quot;&quot;Simulates what package __init__.py exposes to callers.&quot;&quot;&quot;
-    VERSION = &quot;2.5.0&quot;
-    __all__ = [&quot;connect&quot;, &quot;disconnect&quot;]
-    
-    @staticmethod
-    def connect():
-        return &quot;Connected to service cluster&quot;
+                <div class="code"><pre>def check_dependency_conflicts(req1: dict, req2: dict):
+    conflicts = {}
+    for pkg, ver1 in req1.items():
+        if pkg in req2 and req2[pkg] != ver1:
+            conflicts[pkg] = {"env1": ver1, "env2": req2[pkg]}
+    return conflicts
 
-pkg = PackageNamespace()
-print(f&quot;Package Version: {pkg.VERSION}&quot;)
-print(&quot;Exposed method:&quot;, pkg.connect())</pre></div>
+service_a = {"requests": "2.31.0", "pydantic": "2.5.0", "click": "8.1.0"}
+service_b = {"requests": "2.28.0", "pydantic": "2.5.0", "click": "8.0.0"}
+
+conflicts = check_dependency_conflicts(service_a, service_b)
+print("Detected version conflicts:", conflicts)
+# Detected version conflicts: {'requests': {'env1': '2.31.0', 'env2': '2.28.0'}, 'click': {'env1': '8.1.0', 'env2': '8.0.0'}}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Installing packages with pip</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: SemVer (Semantic Version) Validator — Validate if a version string matches MAJOR.MINOR.PATCH syntax.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Installing packages with pip
-# CLI commands used to manage Python packages:
-commands = [
-    &quot;python3 -m pip install requests&quot;,
-    &quot;python3 -m pip install --upgrade requests&quot;,
-    &quot;python3 -m pip list&quot;,
-    &quot;python3 -m pip show requests&quot;,
-    &quot;python3 -m pip freeze &gt; requirements.txt&quot;,
-    &quot;python3 -m pip install -r requirements.txt&quot;
-]
+                <div class="code"><pre>def is_valid_semver(v_str: str) -> bool:
+    parts = v_str.split(".")
+    if len(parts) != 3:
+        return False
+    return all(part.isdigit() and (len(part) == 1 or part[0] != "0") for part in parts)
 
-print(&quot;Essential pip commands for development:&quot;)
-for cmd in commands:
-    print(f&quot;  $ {cmd}&quot;)</pre></div>
+test_versions = ["1.0.0", "2.14.3", "01.2.3", "3.4", "v1.2.3"]
+for v in test_versions:
+    print(f"{v:10} -> Valid SemVer: {is_valid_semver(v)}")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Public API Exporter via __all__ — Define an __init__.py string that restricts exported members.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>init_code = """
+from .client import APIClient
+from .exceptions import APIError
+
+_internal_secret = "do_not_export"
+
+__all__ = ["APIClient", "APIError"]
+"""
+print("Curated __init__.py code:\n" + init_code.strip())</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Packages.</span>
+                <span class="qa-question-title">Challenge 1: Minimal pyproject.toml Generator — Generate a standardized PEP 621 configuration file for a package.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Mock Plugin Architecture with Package-style Registry
-class PluginRegistry:
-    def __init__(self):
-        self.plugins = {}
-    
-    def register(self, name):
-        def decorator(cls):
-            self.plugins[name] = cls()
-            return cls
-        return decorator
-    
-    def run_all(self, data):
-        results = {}
-        for name, plugin in self.plugins.items():
-            results[name] = plugin.execute(data)
-        return results
+                <div class="code"><pre>def generate_pyproject(name: str, version: str, description: str, dependencies: list) -> str:
+    dep_lines = ",\n    ".join(f'"{d}"' for d in dependencies)
+    return f"""[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-registry = PluginRegistry()
+[project]
+name = "{name}"
+version = "{version}"
+description = "{description}"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    {dep_lines}
+]
+"""
 
-@registry.register(&quot;uppercase_transformer&quot;)
-class UppercasePlugin:
-    def execute(self, text):
-        return text.upper()
-
-@registry.register(&quot;word_counter&quot;)
-class WordCountPlugin:
-    def execute(self, text):
-        return len(text.split())
-
-results = registry.run_all(&quot;Python modular package architecture&quot;)
-print(&quot;Plugin execution results:&quot;, results)</pre></div>
+print(generate_pyproject("cloud-tool", "1.0.0", "Automated DevOps Utility", ["click>=8.0", "requests>=2.30"]))</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: In-Memory Namespace Package Simulator — Demonstrate how two separate paths contribute to one package.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Package Pitfalls &amp; Edge Cases:
-# 1. Relative import trap: Attempted relative import beyond top-level package:
-# Relative imports (.module, ..package) only work when executed as part of a package!
+                <div class="code"><pre>import sys
 
-# 2. Namespace packages (PEP 420): In Python 3.3+, __init__.py is technically optional,
-# but keeping it is strongly recommended for clarity and tooling compatibility.
+# Demonstrating namespace package path list:
+class MockNamespace:
+    __path__ = ["/site-packages-1/acme", "/site-packages-2/acme"]
+    __package__ = "acme"
 
-# 3. Naming collisions with pip packages.</pre></div>
+print("Namespace package searching multiple paths:", MockNamespace.__path__)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Packages) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain the difference between a module and a package.</li>
+          <li>I know how <code class="inline">__init__.py</code> controls the package API.</li>
+          <li>I know why relative imports fail when running files directly as top-level scripts.</li>
+          <li>I know how to create and activate a virtual environment with <code class="inline">python3 -m venv</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 16. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 17. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

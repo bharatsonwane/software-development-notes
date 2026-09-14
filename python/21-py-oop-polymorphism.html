@@ -19,14 +19,14 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-operator-overloading-and-str-repr">2. Operator overloading and __str__ / __repr__</a>
-        <a href="#3-method-and-constructor-overloading-patterns">3. Method and constructor overloading patterns</a>
-        <a href="#4-method-and-constructor-overriding">4. Method and constructor overriding</a>
-        <a href="#5-abstract-methods-and-abstract-classes">5. Abstract methods and abstract classes</a>
-        <a href="#6-interface-vs-abstract-vs-concrete-python-view">6. Interface vs abstract vs concrete (Python view)</a>
-        <a href="#7-public-protected-private-name-mangling">7. Public, protected, private; name mangling</a>
-        <a href="#8-data-hiding-abstraction-encapsulation">8. Data hiding, abstraction, encapsulation</a>
-        <a href="#9-bank-mini-project-outline">9. Bank / mini project outline</a>
+        <a href="#2-operator-overloading-and-str-repr">2. Operator overloading &amp; __str__ / __repr__</a>
+        <a href="#3-method-and-constructor-overloading-patterns">3. Overloading patterns</a>
+        <a href="#4-method-and-constructor-overriding">4. Overriding</a>
+        <a href="#5-abstract-methods-and-abstract-classes">5. Abstract classes &amp; ABC</a>
+        <a href="#6-interface-vs-abstract-vs-concrete-python-view">6. Duck typing &amp; Protocols</a>
+        <a href="#7-public-protected-private-name-mangling">7. Public, protected, private &amp; mangling</a>
+        <a href="#8-data-hiding-abstraction-encapsulation">8. @property getters &amp; setters</a>
+        <a href="#9-bank-mini-project-outline">9. Bank account mini project</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -45,13 +45,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>21. Polymorphism and Encapsulation</h1>
-        <p class="subtitle">File 21 — overloading, overriding, abstract, private/protected, pillars.</p>
+        <p class="subtitle">File 21 — operator overloading, magic methods, abstract base classes, duck typing, name mangling, and property encapsulation.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Polymorphism</span>
+          <span class="chip">Operator Overloading</span>
+          <span class="chip">__str__ vs __repr__</span>
+          <span class="chip">Method Overriding</span>
+          <span class="chip">abc.ABC</span>
+          <span class="chip">Duck Typing</span>
+          <span class="chip">Name Mangling</span>
+          <span class="chip">@property</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -60,32 +67,32 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Polymorphism and Encapsulation</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Polymorphism</strong> (Greek for "many forms") is the OOP ability to treat different underlying types through a uniform interface. In Python, this is manifested through operator overloading, method overriding, and duck typing.</li>
+          <li><strong>Encapsulation</strong> bundles data (attributes) and methods that operate on that data into a single unit while restricting direct outside access to internal representation (data hiding).</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–9 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">21-practice.py</code> before File 22. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Operator overloading and __str__ / __repr__</strong></li>
-          <li><strong>Method and constructor overloading patterns</strong></li>
-          <li><strong>Method and constructor overriding</strong></li>
-          <li><strong>Abstract methods and abstract classes</strong></li>
-          <li><strong>Interface vs abstract vs concrete (Python view)</strong></li>
-          <li><strong>Public, protected, private; name mangling</strong></li>
-          <li><strong>Data hiding, abstraction, encapsulation</strong></li>
-          <li><strong>Bank / mini project outline</strong></li>
+          <li><strong>Operator overloading &amp; __str__ / __repr__</strong> — dunder methods and object stringification</li>
+          <li><strong>Overloading patterns</strong> — why Python lacks static method overloading and pythonic alternatives</li>
+          <li><strong>Overriding</strong> — redefining parent methods with <code class="inline">super()</code></li>
+          <li><strong>Abstract classes &amp; ABC</strong> — <code class="inline">abc.ABC</code> and <code class="inline">@abstractmethod</code> enforcement</li>
+          <li><strong>Duck typing &amp; Protocols</strong> — "If it walks like a duck" and structural subtyping</li>
+          <li><strong>Public, protected, private &amp; mangling</strong> — conventions and <code class="inline">_ClassName__var</code></li>
+          <li><strong>@property getters &amp; setters</strong> — managed attributes and validation</li>
+          <li><strong>Bank account mini project</strong> — complete encapsulated banking system</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: OPERATOR OVERLOADING -->
       <section id="2-operator-overloading-and-str-repr">
         <div class="heading-with-levels">
           <h2>2. Operator overloading and __str__ / __repr__</h2>
@@ -94,14 +101,77 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-operator-overloading-and-str-repr-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Magic (Dunder) Methods for Operators</h3>
+        <p>In Python, operators are syntactic sugar for special double-underscore ("dunder") methods:</p>
+        <table>
+          <thead>
+            <tr><th>Operator</th><th>Expression</th><th>Underlying Dunder Method</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Addition (<code class="inline">+</code>)</td>
+              <td><code class="inline">a + b</code></td>
+              <td><code class="inline">a.__add__(b)</code></td>
+            </tr>
+            <tr>
+              <td>Subtraction (<code class="inline">-</code>)</td>
+              <td><code class="inline">a - b</code></td>
+              <td><code class="inline">a.__sub__(b)</code></td>
+            </tr>
+            <tr>
+              <td>Multiplication (<code class="inline">*</code>)</td>
+              <td><code class="inline">a * b</code></td>
+              <td><code class="inline">a.__mul__(b)</code></td>
+            </tr>
+            <tr>
+              <td>Equality (<code class="inline">==</code>)</td>
+              <td><code class="inline">a == b</code></td>
+              <td><code class="inline">a.__eq__(b)</code></td>
+            </tr>
+            <tr>
+              <td>Less Than (<code class="inline">&lt;</code>)</td>
+              <td><code class="inline">a &lt; b</code></td>
+              <td><code class="inline">a.__lt__(b)</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>class Vector2D:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, other):
+        if isinstance(other, Vector2D):
+            return Vector2D(self.x + other.x, self.y + other.y)
+        return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, Vector2D):
+            return self.x == other.x and self.y == other.y
+        return False
+
+    def __repr__(self):
+        return f"Vector2D({self.x}, {self.y})"
+
+v1 = Vector2D(2, 4)
+v2 = Vector2D(3, 1)
+v3 = v1 + v2
+print("v1 + v2 =", v3)          # Vector2D(5, 5)
+print("v1 == Vector2D(2, 4):", v1 == Vector2D(2, 4))  # True</pre></div>
+
+        <h3 id="2-operator-overloading-and-str-repr-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.2. <code class="inline">__str__</code> vs <code class="inline">__repr__</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>Operator overloading and __str__ / __repr__</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
+          <li><strong><code class="inline">__repr__(self)</code>:</strong> For developers and debugging. Should be unambiguous and, if possible, look like valid Python code to recreate the object (<code class="inline">eval(repr(obj)) == obj</code>). Fallback for <code class="inline">__str__</code> if <code class="inline">__str__</code> is not defined.</li>
+          <li><strong><code class="inline">__str__(self)</code>:</strong> For end users. Should be readable and user-friendly. Called by <code class="inline">print(obj)</code> and <code class="inline">str(obj)</code>.</li>
         </ul>
       </section>
+
+      <!-- SECTION 3: OVERLOADING PATTERNS -->
       <section id="3-method-and-constructor-overloading-patterns">
         <div class="heading-with-levels">
           <h2>3. Method and constructor overloading patterns</h2>
@@ -110,14 +180,42 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-method-and-constructor-overloading-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Method and constructor overloading patterns</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. Why Python Does Not Support Method Overloading</h3>
+        <p>In Java/C++, you can define multiple methods with the same name and different parameter types. In Python, defining two methods with identical names causes the <strong>second definition to overwrite the first</strong> in the class dictionary.</p>
+
+        <h3 id="3-method-and-constructor-overloading-patterns-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Pythonic Overloading Patterns</h3>
+        <div class="code"><pre># Pattern 1: Default arguments and type inspection:
+class Calculator:
+    def add(self, a, b=0, c=0):
+        return a + b + c
+
+calc = Calculator()
+print(calc.add(10))        # 10
+print(calc.add(10, 20))    # 30
+print(calc.add(10, 20, 30))# 60
+
+# Pattern 2: singledispatchmethod from functools (Python 3.8+):
+from functools import singledispatchmethod
+
+class Formatter:
+    @singledispatchmethod
+    def format(self, val):
+        return f"Unknown: {val}"
+
+    @format.register(int)
+    def _(self, val):
+        return f"Integer: {val:,}"
+
+    @format.register(list)
+    def _(self, val):
+        return f"List of {len(val)} items"</pre></div>
       </section>
+
+      <!-- SECTION 4: METHOD OVERRIDING -->
       <section id="4-method-and-constructor-overriding">
         <div class="heading-with-levels">
           <h2>4. Method and constructor overriding</h2>
@@ -126,14 +224,33 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-method-and-constructor-overriding-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Method and constructor overriding</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>4.1. Overriding Parent Methods</h3>
+        <p>When a subclass provides its own definition of a method already declared in its superclass, it <strong>overrides</strong> the parent's behavior:</p>
+
+        <div class="code"><pre>class NotificationService:
+    def send(self, recipient, message):
+        print(f"Generic notification to {recipient}: {message}")
+
+class EmailNotification(NotificationService):
+    def send(self, recipient, message):
+        # Override to send email
+        print(f"Sending SMTP email to {recipient}: {message}")
+
+class SMSNotification(NotificationService):
+    def send(self, recipient, message):
+        # Override to send SMS
+        print(f"Dispatching SMS to {recipient}: {message}")
+
+def notify_user(service: NotificationService, user, text):
+    service.send(user, text)  # Polymorphic dispatch
+
+notify_user(EmailNotification(), "sonwane@example.com", "Welcome!")
+notify_user(SMSNotification(), "+1-555-0199", "Code: 4920")</pre></div>
       </section>
+
+      <!-- SECTION 5: ABSTRACT CLASSES & ABC -->
       <section id="5-abstract-methods-and-abstract-classes">
         <div class="heading-with-levels">
           <h2>5. Abstract methods and abstract classes</h2>
@@ -142,78 +259,223 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-abstract-methods-and-abstract-classes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+
+        <h3>5.1. The <code class="inline">abc</code> Module &amp; Strict Contracts</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Abstract methods and abstract classes</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
+          <li>An <strong>Abstract Base Class (ABC)</strong> is a class that defines an interface contract that subclasses must implement.</li>
+          <li>Inherits from <code class="inline">abc.ABC</code> and decorates abstract methods with <code class="inline">@abstractmethod</code>.</li>
+          <li><strong>Cannot be instantiated directly:</strong> Attempting to instantiate an ABC with unimplemented abstract methods raises a <code class="inline">TypeError</code> at runtime.</li>
         </ul>
+
+        <div class="code"><pre>from abc import ABC, abstractmethod
+
+class PaymentGateway(ABC):
+    @abstractmethod
+    def process_payment(self, amount: float) -> bool:
+        """Must be implemented by concrete gateways."""
+        pass
+
+# Attempting direct instantiation:
+# p = PaymentGateway()  # TypeError: Can't instantiate abstract class PaymentGateway with abstract method process_payment
+
+class StripeGateway(PaymentGateway):
+    def process_payment(self, amount: float) -> bool:
+        print(f"Charging ${amount} via Stripe.")
+        return True
+
+s = StripeGateway()
+s.process_payment(99.0)</pre></div>
       </section>
+
+      <!-- SECTION 6: DUCK TYPING & PROTOCOLS -->
       <section id="6-interface-vs-abstract-vs-concrete-python-view">
         <div class="heading-with-levels">
-          <h2>6. Interface vs abstract vs concrete (Python view)</h2>
+          <h2>6. Duck typing &amp; Protocols</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-interface-vs-abstract-vs-concrete-python-view-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Interface vs abstract vs concrete (Python view)</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>6.1. Duck Typing Philosophy</h3>
+        <div class="callout">
+          <strong>"If it walks like a duck and quacks like a duck, it's a duck."</strong><br />
+          In Python, polymorphism does not require inheriting from a common base class. A function only cares that an object has the necessary method or attribute at runtime:
+        </div>
+
+        <div class="code"><pre>class PDFRenderer:
+    def render(self, content):
+        return f"Rendering PDF: {content}"
+
+class HTMLRenderer:
+    def render(self, content):
+        return f"&lt;html&gt;&lt;body&gt;{content}&lt;/body&gt;&lt;/html&gt;"
+
+def publish_document(renderer, text):
+    # Works for any object having a .render() method
+    print(renderer.render(text))
+
+publish_document(PDFRenderer(), "Financial Report")
+publish_document(HTMLRenderer(), "Financial Report")</pre></div>
       </section>
+
+      <!-- SECTION 7: PUBLIC, PROTECTED, PRIVATE & NAME MANGLING -->
       <section id="7-public-protected-private-name-mangling">
         <div class="heading-with-levels">
-          <h2>7. Public, protected, private; name mangling</h2>
+          <h2>7. Public, protected, private &amp; mangling</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="7-public-protected-private-name-mangling-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Public, protected, private; name mangling</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>7.1. Access Conventions in Python</h3>
+        <table>
+          <thead>
+            <tr><th>Access Level</th><th>Syntax Convention</th><th>Visibility Intent</th><th>Enforcement Mechanism</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Public</strong></td>
+              <td><code class="inline">self.name</code></td>
+              <td>Accessible from anywhere.</td>
+              <td>None (unrestricted).</td>
+            </tr>
+            <tr>
+              <td><strong>Protected</strong></td>
+              <td><code class="inline">self._name</code></td>
+              <td>Internal to class and subclasses.</td>
+              <td>Convention only (PEP 8 gentle reminder).</td>
+            </tr>
+            <tr>
+              <td><strong>Private</strong></td>
+              <td><code class="inline">self.__name</code></td>
+              <td>Strictly private to the defining class.</td>
+              <td><strong>Name Mangling</strong> (<code class="inline">_Class__name</code>).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="7-public-protected-private-name-mangling-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>7.2. Name Mangling in Detail</h3>
+        <p>When an attribute begins with at least two underscores and at most one trailing underscore, Python internally renames it to prevent accidental overrides in subclasses:</p>
+
+        <div class="code"><pre>class Vault:
+    def __init__(self, passcode):
+        self.__passcode = passcode  # Mangled to _Vault__passcode
+
+v = Vault("SecretPass123")
+
+# Direct access raises AttributeError:
+# print(v.__passcode)  # AttributeError: 'Vault' object has no attribute '__passcode'
+
+# Can still be accessed via mangled name (Python trusts consenting adults):
+print("Mangled access:", v._Vault__passcode)  # SecretPass123</pre></div>
       </section>
+
+      <!-- SECTION 8: PROPERTY GETTERS & SETTERS -->
       <section id="8-data-hiding-abstraction-encapsulation">
         <div class="heading-with-levels">
-          <h2>8. Data hiding, abstraction, encapsulation</h2>
+          <h2>8. @property getters &amp; setters</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="8-data-hiding-abstraction-encapsulation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Data hiding, abstraction, encapsulation</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>8.1. Managed Attributes via <code class="inline">@property</code></h3>
+        <p>In Python, you don't write Java-style <code class="inline">get_age()</code> and <code class="inline">set_age()</code> methods. You expose attributes cleanly and use the <code class="inline">@property</code> decorator when validation or computation is needed:</p>
+
+        <div class="code"><pre>class BankAccount:
+    def __init__(self, initial_balance: float):
+        self._balance = initial_balance
+
+    @property
+    def balance(self) -> float:
+        """Getter for balance."""
+        return self._balance
+
+    @balance.setter
+    def balance(self, new_balance: float):
+        """Setter with validation."""
+        if new_balance < 0:
+            raise ValueError("Balance cannot be negative!")
+        self._balance = new_balance
+
+acc = BankAccount(100.0)
+print("Balance:", acc.balance)  # 100.0 (Accessed like an attribute)
+acc.balance = 250.0             # Uses setter
+# acc.balance = -50.0           # Raises ValueError: Balance cannot be negative!</pre></div>
       </section>
+
+      <!-- SECTION 9: BANK MINI PROJECT -->
       <section id="9-bank-mini-project-outline">
         <div class="heading-with-levels">
-          <h2>9. Bank / mini project outline</h2>
+          <h2>9. Bank account mini project</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="9-bank-mini-project-outline-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>9.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Bank / mini project outline</strong>.</li>
-          <li>Write small demos in <code class="inline">21-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>9.1. Complete Encapsulated Banking Application</h3>
+        <div class="code"><pre>class SecureAccount:
+    def __init__(self, account_number: str, holder_name: str, pin: str, initial_deposit: float = 0.0):
+        self.account_number = account_number
+        self.holder_name = holder_name
+        self.__pin = pin
+        self.__balance = initial_deposit
+        self.__statement = []
+        self.__record_transaction("Account opened", initial_deposit)
+
+    def __record_transaction(self, action: str, amount: float):
+        self.__statement.append(f"{action}: ${amount:.2f} | Balance: ${self.__balance:.2f}")
+
+    def verify_pin(self, pin: str) -> bool:
+        return self.__pin == pin
+
+    def deposit(self, amount: float):
+        if amount <= 0:
+            raise ValueError("Deposit amount must be positive.")
+        self.__balance += amount
+        self.__record_transaction("Deposit", amount)
+
+    def withdraw(self, amount: float, pin: str) -> float:
+        if not self.verify_pin(pin):
+            raise PermissionError("Incorrect PIN.")
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be positive.")
+        if amount > self.__balance:
+            raise ValueError("Insufficient funds.")
+        self.__balance -= amount
+        self.__record_transaction("Withdrawal", -amount)
+        return amount
+
+    @property
+    def balance(self):
+        return self.__balance
+
+    def print_statement(self, pin: str):
+        if not self.verify_pin(pin):
+            raise PermissionError("Invalid PIN.")
+        print(f"Statement for {self.holder_name} ({self.account_number}):")
+        for entry in self.__statement:
+            print("  ", entry)
+
+# Demo:
+user_acc = SecureAccount("ACC-1002", "Bharat Sonwane", "4920", 500.0)
+user_acc.deposit(200.0)
+user_acc.withdraw(150.0, "4920")
+user_acc.print_statement("4920")</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -222,49 +484,97 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Operator overloading and __str__ / __repr__?</span>
+            <span class="qa-question-title">C.1. What is the difference between __str__ and __repr__?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">__str__</code>:</strong> Designed for end users. Returns an informal, readable string representation. Used by <code class="inline">print()</code>.</li>
+              <li><strong><code class="inline">__repr__</code>:</strong> Designed for developers and debugging. Should return an unambiguous representation that looks like valid Python code to reconstruct the instance. Fallback for <code class="inline">__str__</code>.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Method and constructor overloading patterns?</span>
+            <span class="qa-question-title">C.2. Does Python have true private variables? What is Name Mangling?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>No.</strong> Python operates on the philosophy: <em>"We are all consenting adults here."</em></p>
+            <p>Variables prefixed with two underscores (<code class="inline">__var</code>) undergo <strong>Name Mangling</strong>: the compiler renames them to <code class="inline">_ClassName__var</code> to avoid accidental name collisions in subclasses. It is not a security sandbox, and the attribute can still be accessed via its mangled name.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Method and constructor overriding?</span>
+            <span class="qa-question-title">C.3. Why does Python not support compile-time method overloading?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Python is a dynamically typed language where function signatures do not include static types at compile time. Method lookups occur in the class dictionary (<code class="inline">__dict__</code>) by name alone. If two methods share the same name, the second definition overwrites the first.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Abstract methods and abstract classes?</span>
+            <span class="qa-question-title">C.4. What is the difference between an Abstract Class and an Interface in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Python does not have a separate <code class="inline">interface</code> keyword. An interface is simply an Abstract Base Class (<code class="inline">abc.ABC</code>) whose methods are <strong>all abstract</strong> with no concrete implementations. In Python 3.8+, static structural interfaces can also be defined using <code class="inline">typing.Protocol</code> (PEP 544).</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How does @property improve over traditional get/set methods?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">@property</code> adheres to the <strong>Uniform Access Principle</strong>. Callers access attributes naturally using dot notation (<code class="inline">person.age = 30</code>) instead of method calls (<code class="inline">person.set_age(30)</code>). If validation logic is required later in development, you can convert a public attribute into a managed property without breaking existing consumer code.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What happens if a subclass does not implement all abstract methods of an ABC?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The subclass remains an abstract class itself. If code attempts to instantiate the subclass, Python raises a <strong><code class="inline">TypeError: Can't instantiate abstract class SubClass with abstract method ...</code></strong> at instantiation time.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What is NotImplemented and when should a dunder method return it?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">NotImplemented</code> is a special singleton. When an operator dunder method (like <code class="inline">__add__</code>) does not support the type of the second operand, returning <code class="inline">NotImplemented</code> tells Python to try the reflected method on the other operand (<code class="inline">other.__radd__(self)</code>) before finally raising a <code class="inline">TypeError</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How does duck typing differ from nominal subtyping?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Nominal Subtyping:</strong> Type compatibility is determined strictly by explicit inheritance hierarchies (<code class="inline">class Dog(Animal)</code>).</p>
+            <p><strong>Duck Typing:</strong> Type compatibility is determined solely by the presence of methods and attributes at runtime, regardless of class inheritance trees.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -273,241 +583,272 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">21-practice.py</code>. Run with <code class="inline">python3 21-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">21-practice.py</code>. Run with <code class="inline">python3 21-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Operator overloading and __str__ / __repr__</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining operator overloading, abstract classes, and name mangling.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Operator Overloading and __str__ / __repr__:
-# 1. Python supports polymorphism via dunder magic methods (__add__, __sub__, __mul__, etc.).
-# 2. __str__ is for end-user friendly display; __repr__ provides unambiguous debugging information.
-# 3. Method overloading in Python is handled dynamically via default arguments or *args rather than duplicate method signatures.</pre></div>
+                <div class="code"><pre># Polymorphism & Encapsulation Foundations:
+# 1. Operators map to dunder methods (__add__, __eq__, __str__).
+# 2. abc.ABC enforces strict implementation contracts on subclasses.
+# 3. Private variables (__var) undergo name mangling to _Class__var.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Method and constructor overloading patterns</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Implement __str__ and __repr__ for a Point2D class.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Method overloading pattern via default parameters:
-class Calculator:
-    def add(self, a, b=0, c=0):
-        # Emulates multiple method signatures in a single function
-        return a + b + c
+                <div class="code"><pre>class Point2D:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-calc = Calculator()
-print(&quot;add(10):&quot;, calc.add(10))
-print(&quot;add(10, 20):&quot;, calc.add(10, 20))
-print(&quot;add(10, 20, 30):&quot;, calc.add(10, 20, 30))</pre></div>
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+    def __repr__(self):
+        return f"Point2D(x={self.x}, y={self.y})"
+
+p = Point2D(5, 10)
+print("str(): ", str(p))   # (5, 10)
+print("repr():", repr(p))  # Point2D(x=5, y=10)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Build a Temperature class with Celsius to Fahrenheit @property getter and setter.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: OOP Polymorphism, Operator Overloading, and Abstraction.
+                <div class="code"><pre>class Temperature:
+    def __init__(self, celsius: float):
+        self._celsius = celsius
 
-Goal: Master operator overloading magic methods, string representations (__str__/__repr__),
-overriding dynamics, and ABC (Abstract Base Classes) with @abstractmethod.
-&quot;&quot;&quot;</pre></div>
+    @property
+    def fahrenheit(self) -> float:
+        return (self._celsius * 9/5) + 32
+
+    @fahrenheit.setter
+    def fahrenheit(self, val: float):
+        self._celsius = (val - 32) * 5/9
+
+t = Temperature(0.0)
+print("0°C in °F:", t.fahrenheit)  # 32.0
+t.fahrenheit = 212.0
+print("212°F in °C:", t._celsius)  # 100.0</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Operator overloading and __str__ / __repr__</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Complex Number Operator Overloading — Implement __add__, __sub__, and __eq__ for ComplexNum.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Operator overloading and __str__ / __repr__
-class Vector2D:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    
+                <div class="code"><pre>class ComplexNum:
+    def __init__(self, real: float, imag: float):
+        self.real = real
+        self.imag = imag
+
     def __add__(self, other):
-        if isinstance(other, Vector2D):
-            return Vector2D(self.x + other.x, self.y + other.y)
-        raise TypeError(&quot;Operand must be Vector2D&quot;)
-    
-    def __str__(self):
-        return f&quot;({self.x}, {self.y})&quot;
-    
+        return ComplexNum(self.real + other.real, self.imag + other.imag)
+
+    def __sub__(self, other):
+        return ComplexNum(self.real - other.real, self.imag - other.imag)
+
+    def __eq__(self, other):
+        return self.real == other.real and self.imag == other.imag
+
     def __repr__(self):
-        return f&quot;Vector2D(x={self.x}, y={self.y})&quot;
+        return f"{self.real} + {self.imag}i"
 
-v1 = Vector2D(3, 4)
-v2 = Vector2D(1, 2)
-v3 = v1 + v2
-print(&quot;v1 + v2 =&quot;, v3)
-print(&quot;repr(v3) =&quot;, repr(v3))</pre></div>
+c1 = ComplexNum(3, 4)
+c2 = ComplexNum(1, 2)
+print("c1 + c2 =", c1 + c2)  # 4 + 6i
+print("c1 - c2 =", c1 - c2)  # 2 + 2i</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Method and constructor overloading patterns</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Abstract Shape Hierarchy — Define Shape ABC with Circle and Rectangle concrete subclasses.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Method and constructor overloading patterns
-class UserProfile:
-    def __init__(self, username, email=None, **extra):
-        # Emulates constructor overloading
-        self.username = username
-        self.email = email or f&quot;{username}@default.org&quot;
-        self.extra = extra
-
-# Instantiation with 1 arg, 2 args, or kwargs:
-u1 = UserProfile(&quot;alice&quot;)
-u2 = UserProfile(&quot;bob&quot;, &quot;bob@corp.com&quot;)
-u3 = UserProfile(&quot;charlie&quot;, role=&quot;Admin&quot;, verified=True)
-
-print(f&quot;u1: {u1.username}, {u1.email}&quot;)
-print(f&quot;u2: {u2.username}, {u2.email}&quot;)
-print(f&quot;u3 extra: {u3.extra}&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Method and constructor overriding</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Method and constructor overriding
-class PaymentProcessor:
-    def process_payment(self, amount):
-        print(f&quot;Base processor: initiating ${amount:.2f} transaction&quot;)
-
-class StripeProcessor(PaymentProcessor):
-    def process_payment(self, amount):
-        super().process_payment(amount)
-        print(f&quot;Stripe: Tokenized card and charged ${amount:.2f} via Stripe API&quot;)
-
-proc = StripeProcessor()
-proc.process_payment(99.99)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Abstract methods and abstract classes</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Abstract methods and abstract classes (abc module)
-from abc import ABC, abstractmethod
+                <div class="code"><pre>from abc import ABC, abstractmethod
+import math
 
 class Shape(ABC):
     @abstractmethod
-    def area(self):
-        &quot;&quot;&quot;Subclasses must implement area.&quot;&quot;&quot;
+    def area(self) -> float:
         pass
 
 class Circle(Shape):
-    def __init__(self, radius):
+    def __init__(self, radius: float):
         self.radius = radius
-    def area(self):
-        return 3.14159 * (self.radius ** 2)
 
-c = Circle(5)
-print(&quot;Circle area:&quot;, round(c.area(), 2))
+    def area(self) -> float:
+        return math.pi * self.radius ** 2
 
-# Attempting to instantiate Shape directly would raise TypeError:
-# s = Shape() # TypeError: Can&#x27;t instantiate abstract class Shape with abstract method area</pre></div>
+class Rectangle(Shape):
+    def __init__(self, width: float, height: float):
+        self.width = width
+        self.height = height
+
+    def area(self) -> float:
+        return self.width * self.height
+
+shapes = [Circle(5), Rectangle(4, 6)]
+for s in shapes:
+    print(f"Area: {s.area():.2f}")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 3: Name Mangling Inspector — Inspect an object's __dict__ to examine mangled private variables.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class SecretBox:
+    def __init__(self, secret):
+        self.__secret_key = secret
+
+sb = SecretBox("VaultKey_9901")
+print("Instance keys:", list(sb.__dict__.keys()))
+# ['_SecretBox__secret_key']</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Polymorphic Audio Player — Play various audio objects using duck typing without inheritance.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>class MP3:
+    def play(self):
+        return "Playing MP3 stream"
+
+class WAV:
+    def play(self):
+        return "Playing uncompressed WAV"
+
+class OGG:
+    def play(self):
+        return "Playing OGG vorbis stream"
+
+def play_audio(audio_track):
+    print(audio_track.play())
+
+for track in [MP3(), WAV(), OGG()]:
+    play_audio(track)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Polymorphism and Encapsulation.</span>
+                <span class="qa-question-title">Challenge 1: Complete Money Value Object — Implement a Money class with currency validation and arithmetic operators.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Polymorphic Notification Dispatcher
-from abc import ABC, abstractmethod
+                <div class="code"><pre>class Money:
+    def __init__(self, amount: float, currency: str = "USD"):
+        self.amount = round(amount, 2)
+        self.currency = currency.upper()
 
-class Notifier(ABC):
-    @abstractmethod
-    def send(self, recipient, message):
-        pass
+    def __add__(self, other):
+        if not isinstance(other, Money) or self.currency != other.currency:
+            raise ValueError("Cannot add Money of different currencies!")
+        return Money(self.amount + other.amount, self.currency)
 
-class EmailNotifier(Notifier):
-    def send(self, recipient, message):
-        return f&quot;[EMAIL to {recipient}] {message}&quot;
+    def __mul__(self, factor: float):
+        return Money(self.amount * factor, self.currency)
 
-class SMSNotifier(Notifier):
-    def send(self, recipient, message):
-        return f&quot;[SMS to {recipient}] {message}&quot;
+    def __repr__(self):
+        return f"{self.currency} {self.amount:,.2f}"
 
-class PushNotifier(Notifier):
-    def send(self, recipient, message):
-        return f&quot;[PUSH to {recipient}] {message}&quot;
-
-# Polymorphic broadcast:
-notifiers = [
-    (EmailNotifier(), &quot;user@example.com&quot;),
-    (SMSNotifier(), &quot;+1-555-0199&quot;),
-    (PushNotifier(), &quot;device_token_xyz&quot;)
-]
-
-for notifier, target in notifiers:
-    print(notifier.send(target, &quot;System maintenance scheduled tonight at 11 PM UTC&quot;))</pre></div>
+m1 = Money(150.50, "USD")
+m2 = Money(49.50, "USD")
+print("Total:", m1 + m2)     # USD 200.00
+print("Tripled:", m1 * 3)    # USD 451.50</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Custom Validation Property Descriptor — Create a reusable validator descriptor ensuring positive numbers.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Polymorphism Pitfalls &amp; Edge Cases:
-# 1. Missing @abstractmethod in subclasses:
-# If child class fails to implement all abstract methods, Python prevents instantiation with TypeError.
+                <div class="code"><pre>class PositiveNumber:
+    def __set_name__(self, owner, name):
+        self.name = name
 
-# 2. Incompatible method overriding signatures (changing required parameter counts can break polymorphism).
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name, 0)
 
-# 3. Returning NotImplemented instead of raising TypeError in operator overloading allows Python to try reflected methods (__radd__).</pre></div>
+    def __set__(self, instance, value):
+        if value <= 0:
+            raise ValueError(f"{self.name} must be positive!")
+        instance.__dict__[self.name] = value
+
+class Product:
+    price = PositiveNumber()
+    stock = PositiveNumber()
+
+    def __init__(self, price, stock):
+        self.price = price
+        self.stock = stock
+
+p = Product(19.99, 50)
+print(f"Product: ${p.price}, Stock: {p.stock}")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Polymorphism and Encapsulation) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can overload arithmetic and comparison operators using dunder methods.</li>
+          <li>I understand the difference between <code class="inline">__str__</code> and <code class="inline">__repr__</code>.</li>
+          <li>I know how to define abstract base classes using <code class="inline">abc.ABC</code>.</li>
+          <li>I can explain name mangling and use <code class="inline">@property</code> for managed attributes.</li>
         </ul>
       </section>
-      <footer>Python Notes File 20. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 21. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

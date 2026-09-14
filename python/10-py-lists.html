@@ -41,13 +41,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>10. Lists</h1>
-        <p class="subtitle">File 10 — list methods, functions, list comprehension.</p>
+        <p class="subtitle">File 10 — dynamic arrays, mutable sequences, built-in list methods, nested matrices, memory internals, and idiomatic list comprehensions.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">list properties</span>
+          <span class="chip">Dynamic Array</span>
+          <span class="chip">append &amp; extend</span>
+          <span class="chip">pop &amp; remove</span>
+          <span class="chip">Timsort</span>
+          <span class="chip">Nested Lists</span>
+          <span class="chip">Comprehension</span>
+          <span class="chip">Shallow vs Deep Copy</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +63,39 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Lists</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>A <strong>List</strong> in Python is an <strong>ordered, mutable, indexed collection</strong> of arbitrary Python objects. It is represented by the built-in <code class="inline">list</code> type.</li>
+          <li>Lists are dynamic and heterogeneous: they can grow or shrink in size during program runtime and can store mixed data types (e.g., integers, strings, floats, booleans, functions, and nested lists) within the same collection.</li>
+          <li>Unlike static arrays in C, C++, or Java where the size and type must be declared upfront, Python lists automatically manage memory allocation and resizing behind the scenes.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">10-practice.py</code> before File 11. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Internal Implementation in CPython</h3>
+        <div class="callout">
+          <strong>Under the Hood (PyListObject):</strong>
+          In CPython, a list is implemented as a <strong>variable-length dynamic array of 8-byte object pointers</strong> (references), not a linked list.
+          <ul>
+            <li><strong>Contiguous Memory of Pointers:</strong> The list itself holds pointers to memory locations where the actual values reside. This allows heterogeneous storage and instantaneous $O(1)$ random access by index (<code class="inline">lst[i]</code>).</li>
+            <li><strong>Over-allocation Growth Strategy:</strong> When the current array capacity is filled, CPython allocates a new, larger contiguous block with extra space (roughly expanding by $\approx 1.125 \times$ plus 3 to 6 slots) and copies the pointers over. This amortizes the cost of <code class="inline">append()</code> to $O(1)$ time.</li>
+          </ul>
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>List properties and creation</strong></li>
-          <li><strong>List functions and methods</strong></li>
-          <li><strong>Nested lists</strong></li>
-          <li><strong>List comprehension</strong></li>
+          <li><strong>List properties and creation</strong> — characteristics, syntax, constructor, indexing, and slice assignment</li>
+          <li><strong>List functions and methods</strong> — insertion, deletion, searching, counting, sorting, and copying</li>
+          <li><strong>Nested lists</strong> — multidimensional matrices, the shallow multiplication trap, and matrix algorithms</li>
+          <li><strong>List comprehension</strong> — transformation, filtering, if-else expressions, and nested flattening</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: LIST PROPERTIES AND CREATION -->
       <section id="2-list-properties-and-creation">
         <div class="heading-with-levels">
           <h2>2. List properties and creation</h2>
@@ -86,14 +104,113 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-list-properties-and-creation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>List properties and creation</strong>.</li>
-          <li>Write small demos in <code class="inline">10-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>2.1. Core Characteristics of Python Lists</h3>
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Behavior</th><th>Details</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ordered</strong></td>
+              <td>Yes</td>
+              <td>Elements preserve their exact insertion order. Index positions remain stable unless modified.</td>
+            </tr>
+            <tr>
+              <td><strong>Mutable</strong></td>
+              <td>Yes</td>
+              <td>Items can be updated, appended, inserted, replaced, and deleted in-place without changing object identity.</td>
+            </tr>
+            <tr>
+              <td><strong>Heterogeneous</strong></td>
+              <td>Yes</td>
+              <td>A single list can hold elements of any distinct types: <code class="inline">[1, "hello", 3.14, True, None]</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Duplicates Allowed</strong></td>
+              <td>Yes</td>
+              <td>Lists allow duplicate values: <code class="inline">[10, 20, 10, 30, 10]</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Indexed</strong></td>
+              <td>Yes</td>
+              <td>Elements are accessed via 0-based positive indices and negative backward indices.</td>
+            </tr>
+            <tr>
+              <td><strong>Dynamic Sizing</strong></td>
+              <td>Yes</td>
+              <td>No fixed size declaration; grows and shrinks automatically on demand.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>2.2. Ways to Create a List</h3>
+        <div class="code"><pre># 1. Empty list:
+empty1 = []
+empty2 = list()
+
+# 2. Homogeneous and heterogeneous literals:
+numbers = [10, 20, 30, 40]
+mixed = [101, "Sonwane", 98.5, True, [1, 2]]
+
+# 3. Using the list() constructor on iterables:
+chars = list("PYTHON")              # ['P', 'Y', 'T', 'H', 'O', 'N']
+range_list = list(range(1, 6))      # [1, 2, 3, 4, 5]
+from_tuple = list((10, 20, 30))     # [10, 20, 30]
+from_set = list({1, 2, 3})          # [1, 2, 3]
+
+# 4. Using the repetition operator (*):
+zeros = [0] * 5                     # [0, 0, 0, 0, 0]
+placeholders = [None] * 4           # [None, None, None, None]
+
+# 5. Using split() on strings:
+words = "Python is clean and powerful".split()
+print("Words:", words)              # ['Python', 'is', 'clean', 'and', 'powerful']</pre></div>
+
+        <h3 id="2-list-properties-and-creation-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. Indexing and Slicing Operations</h3>
+        <p>Lists support the exact same indexing and slicing syntax as strings, with the vital addition that <strong>list slices can be modified in-place</strong> (slice assignment).</p>
+
+        <div class="code"><pre>nums = [10, 20, 30, 40, 50, 60]
+
+# Positive and negative indexing:
+print(nums[0])    # 10 (First item)
+print(nums[-1])   # 60 (Last item)
+
+# Mutating an element in-place:
+nums[2] = 99
+print(nums)       # [10, 20, 99, 40, 50, 60]
+
+# Slicing syntax: [start:stop:step]
+print(nums[1:4])   # [20, 99, 40]
+print(nums[::2])   # [10, 99, 50]
+print(nums[::-1])  # [60, 50, 40, 99, 20, 10] (Reversed copy)</pre></div>
+
+        <h3>2.4. In-Place Slice Assignment (Advanced Mutation)</h3>
+        <p>Unlike immutable sequences, you can assign an iterable to a slice of a list. This allows inserting, replacing, and deleting sub-ranges in a single statement:</p>
+
+        <div class="code"><pre>letters = ["a", "b", "c", "d", "e"]
+
+# 1. Replace a slice range:
+letters[1:3] = ["X", "Y"]
+print("Replaced [1:3]:", letters)   # ['a', 'X', 'Y', 'd', 'e']
+
+# 2. Insert items without replacing (empty slice):
+letters[1:1] = [100, 200]
+print("Inserted at index 1:", letters) # ['a', 100, 200, 'X', 'Y', 'd', 'e']
+
+# 3. Delete a slice range:
+letters[1:3] = []
+print("Deleted slice:", letters)       # ['a', 'X', 'Y', 'd', 'e']
+
+# 4. Clear list in-place:
+letters[:] = []
+print("Cleared in-place:", letters)    # []</pre></div>
       </section>
+
+      <!-- SECTION 3: LIST FUNCTIONS AND METHODS -->
       <section id="3-list-functions-and-methods">
         <div class="heading-with-levels">
           <h2>3. List functions and methods</h2>
@@ -102,14 +219,202 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-list-functions-and-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. Adding Elements: <code class="inline">append()</code>, <code class="inline">insert()</code>, <code class="inline">extend()</code></h3>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Syntax</th><th>Time Complexity</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">append(x)</code></td>
+              <td><code class="inline">lst.append(x)</code></td>
+              <td>$O(1)$ amortized</td>
+              <td>Appends item <code class="inline">x</code> as a single element to the very end of the list.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">insert(i, x)</code></td>
+              <td><code class="inline">lst.insert(index, x)</code></td>
+              <td>$O(N)$</td>
+              <td>Inserts item <code class="inline">x</code> before index <code class="inline">i</code>, shifting following elements to the right.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">extend(it)</code></td>
+              <td><code class="inline">lst.extend(iterable)</code></td>
+              <td>$O(K)$</td>
+              <td>Unpacks each element from <code class="inline">iterable</code> and appends them individually to the end.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>colors = ["red", "green"]
+
+# append() adds the argument as a SINGLE element:
+colors.append("blue")
+print(colors)               # ['red', 'green', 'blue']
+
+# If you append a list, it becomes a nested element:
+colors.append(["yellow", "purple"])
+print(colors)               # ['red', 'green', 'blue', ['yellow', 'purple']]
+colors.pop()                # Clean up nested list
+
+# insert() inserts at any arbitrary index:
+colors.insert(1, "orange")  # Shifts elements to right
+print(colors)               # ['red', 'orange', 'green', 'blue']
+
+# extend() unpacks and appends each element:
+colors.extend(["cyan", "magenta"])
+print(colors)               # ['red', 'orange', 'green', 'blue', 'cyan', 'magenta']</pre></div>
+
+        <h3>3.2. Removing Elements: <code class="inline">pop()</code>, <code class="inline">remove()</code>, <code class="inline">clear()</code>, <code class="inline">del</code></h3>
+        <table>
+          <thead>
+            <tr><th>Operation</th><th>Syntax</th><th>Return Value</th><th>Error on Absence</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">pop([i])</code></td>
+              <td><code class="inline">val = lst.pop()</code></td>
+              <td>Returns removed element</td>
+              <td>Raises <code class="inline">IndexError</code> if list is empty or index is out of bounds.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">remove(x)</code></td>
+              <td><code class="inline">lst.remove(x)</code></td>
+              <td>Returns <code class="inline">None</code></td>
+              <td>Raises <code class="inline">ValueError</code> if <code class="inline">x</code> is not found.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">clear()</code></td>
+              <td><code class="inline">lst.clear()</code></td>
+              <td>Returns <code class="inline">None</code></td>
+              <td>Empties list in-place without errors.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">del</code> statement</td>
+              <td><code class="inline">del lst[i]</code> or <code class="inline">del lst[a:b]</code></td>
+              <td>Statement (no return)</td>
+              <td>Raises <code class="inline">IndexError</code> if target index is out of bounds.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>tasks = ["design", "code", "test", "deploy", "monitor"]
+
+# pop() removes and returns last element:
+last = tasks.pop()
+print(f"Popped: {last}, Remaining: {tasks}")  # Popped: monitor
+
+# pop(index) removes from specific index:
+first = tasks.pop(0)
+print(f"Popped index 0: {first}, Remaining: {tasks}")  # Popped: design
+
+# remove(val) removes the FIRST matching value:
+tasks.remove("test")
+print("After remove('test'):", tasks)  # ['code', 'deploy']
+
+# remove() raises ValueError if missing:
+# tasks.remove("non_existent")  # ValueError: list.remove(x): x not in list
+
+# del statement for index or slice:
+del tasks[0]
+print("After del tasks[0]:", tasks)    # ['deploy']
+
+# clear() removes all elements:
+tasks.clear()
+print("After clear():", tasks)         # []</pre></div>
+
+        <h3 id="3-list-functions-and-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.3. Searching, Counting &amp; Membership Testing</h3>
+        <div class="code"><pre>items = ["apple", "banana", "cherry", "banana", "date"]
+
+# index(val[, start[, stop]])
+print(items.index("banana"))      # 1 (First occurrence)
+print(items.index("banana", 2))   # 3 (Search starting from index 2)
+# items.index("grape")            # Raises ValueError: 'grape' is not in list
+
+# count(val)
+print("banana count:", items.count("banana"))  # 2
+print("grape count: ", items.count("grape"))   # 0 (Safe, does not raise error)
+
+# Membership testing: O(N) linear time
+print("cherry" in items)      # True
+print("fig" not in items)      # True</pre></div>
+
+        <h3>3.4. Sorting and Reversing: <code class="inline">sort()</code> vs <code class="inline">sorted()</code></h3>
+        <div class="callout">
+          <strong>The Golden Distinction:</strong>
+          <ul>
+            <li><strong><code class="inline">lst.sort()</code>:</strong> List method that mutates the list <strong>in-place</strong>. Returns <code class="inline">None</code>. Only works on lists.</li>
+            <li><strong><code class="inline">sorted(iterable)</code>:</strong> Built-in function that takes <em>any</em> iterable and returns a <strong>brand new sorted list</strong>, leaving the original data untouched.</li>
+            <li>Both use <strong>Timsort</strong>: an adaptive, stable sorting algorithm with $O(N \log N)$ worst-case and $O(N)$ best-case time complexity.</li>
+          </ul>
+        </div>
+
+        <div class="code"><pre>nums = [5, 2, 9, 1, 7]
+
+# In-place sort (ascending):
+nums.sort()
+print("In-place sorted:", nums)        # [1, 2, 5, 7, 9]
+
+# In-place sort (descending):
+nums.sort(reverse=True)
+print("In-place descending:", nums)    # [9, 7, 5, 2, 1]
+
+# Custom key sorting:
+words = ["banana", "pie", "apple", "fig", "elderberry"]
+words.sort(key=len)                    # Sort by string length
+print("Sorted by length:", words)      # ['pie', 'fig', 'apple', 'banana', 'elderberry']
+
+# sorted() creates a new list:
+original = [40, 10, 30, 20]
+new_sorted = sorted(original)
+print("Original untouched:", original) # [40, 10, 30, 20]
+print("New sorted list:   ", new_sorted)# [10, 20, 30, 40]
+
+# reverse() in-place vs reversed() iterator:
+new_sorted.reverse()
+print("In-place reversed:", new_sorted)# [40, 30, 20, 10]</pre></div>
+
+        <h3>3.5. Copying Lists: Aliasing vs Shallow Copy vs Deep Copy</h3>
         <ul>
-          <li>Understand the main ideas in <strong>List functions and methods</strong>.</li>
-          <li>Write small demos in <code class="inline">10-practice.py</code> covering this section.</li>
+          <li><strong>Aliasing (<code class="inline">b = a</code>):</strong> Assigns a second reference to the same memory object. Modifying <code class="inline">b</code> mutates <code class="inline">a</code>.</li>
+          <li><strong>Shallow Copy (<code class="inline">b = a.copy()</code> or <code class="inline">b = a[:]</code>):</strong> Creates a new outer list, but nested mutable objects inside are still shared pointer references!</li>
+          <li><strong>Deep Copy (<code class="inline">copy.deepcopy(a)</code>):</strong> Recursively clones the entire object hierarchy, guaranteeing complete independence.</li>
         </ul>
+
+        <div class="code"><pre>import copy
+
+original = [1, [2, 3], 4]
+
+# 1. Aliasing:
+alias = original
+alias[0] = 999
+print("Aliasing mutates original:", original[0])  # 999
+
+# Reset original:
+original = [1, [2, 3], 4]
+
+# 2. Shallow Copy:
+shallow = original.copy()  # or original[:]
+shallow[0] = 100           # Modifying top-level primitive does NOT affect original
+shallow[1].append(444)     # Modifying nested list DOES mutate original!
+print("Original nested:", original)  # [1, [2, 3, 444], 4]
+print("Shallow nested: ", shallow)   # [100, [2, 3, 444], 4]
+
+# Reset original:
+original = [1, [2, 3], 4]
+
+# 3. Deep Copy:
+deep = copy.deepcopy(original)
+deep[1].append(999)
+print("Original after deepcopy:", original)  # [1, [2, 3], 4] (Completely isolated!)
+print("Deepcopy result:        ", deep)      # [1, [2, 3, 999], 4]</pre></div>
       </section>
+
+      <!-- SECTION 4: NESTED LISTS -->
       <section id="4-nested-lists">
         <div class="heading-with-levels">
           <h2>4. Nested lists</h2>
@@ -118,14 +423,84 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-nested-lists-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Nested lists</strong>.</li>
-          <li>Write small demos in <code class="inline">10-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>4.1. Concept &amp; 2D Matrix Representation</h3>
+        <p>A nested list is a list where elements are themselves lists. In Python, this serves as the natural representation for 2D matrices, grids, spreadsheets, and tabular records:</p>
+
+        <div class="code"><pre># 3x3 Matrix:
+matrix = [
+    [10, 20, 30],   # Row 0
+    [40, 50, 60],   # Row 1
+    [70, 80, 90]    # Row 2
+]
+
+# Coordinate access: matrix[row][col]
+print(matrix[0][0])  # 10
+print(matrix[1][2])  # 60
+print(matrix[2][1])  # 80
+
+# Iterating a 2D matrix:
+for r_idx, row in enumerate(matrix):
+    for c_idx, val in enumerate(row):
+        print(f"matrix[{r_idx}][{c_idx}] = {val}", end=" | ")
+    print()</pre></div>
+
+        <h3 id="4-nested-lists-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. The Dangerous Multiplication Trap: <code class="inline">[[0] * n] * m</code></h3>
+        <div class="callout">
+          <strong>Critical Gotcha:</strong> When you initialize a 2D matrix using <code class="inline">[[0] * cols] * rows</code>, the outer multiplication does NOT duplicate the inner list. Instead, it creates <code class="inline">rows</code> pointer copies of the <strong>exact same inner list object in memory</strong>. Mutating any single cell will simultaneously modify that column across every single row!
+        </div>
+
+        <div class="code"><pre># WRONG: Creates 3 references to ONE inner list
+bad_matrix = [[0] * 3] * 3
+bad_matrix[0][0] = 7
+print("Bad matrix:")
+for row in bad_matrix:
+    print(row)
+# Output:
+# [7, 0, 0]  <-- Row 0 modified
+# [7, 0, 0]  <-- Row 1 also modified!
+# [7, 0, 0]  <-- Row 2 also modified!
+
+# CORRECT: List comprehension generates independent list instances per row
+good_matrix = [[0] * 3 for _ in range(3)]
+good_matrix[0][0] = 7
+print("Good matrix:")
+for row in good_matrix:
+    print(row)
+# Output:
+# [7, 0, 0]  <-- Only Row 0 modified!
+# [0, 0, 0]
+# [0, 0, 0]</pre></div>
+
+        <h3>4.3. Matrix Transposition &amp; Flattening</h3>
+        <div class="code"><pre>matrix = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12]
+]
+
+# 1. Transpose using nested comprehension (swapping rows & cols):
+rows = len(matrix)
+cols = len(matrix[0])
+transposed = [[matrix[r][c] for r in range(rows)] for c in range(cols)]
+print("Transposed:")
+for row in transposed:
+    print(" ", row)
+
+# 2. Transpose using zip(*matrix):
+zip_transposed = [list(col) for col in zip(*matrix)]
+print("Zip Transposed:", zip_transposed)
+
+# 3. Flattening a 2D matrix into a 1D list:
+flattened = [val for row in matrix for val in row]
+print("Flattened:", flattened)
+# [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]</pre></div>
       </section>
+
+      <!-- SECTION 5: LIST COMPREHENSION -->
       <section id="5-list-comprehension">
         <div class="heading-with-levels">
           <h2>5. List comprehension</h2>
@@ -134,14 +509,80 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-list-comprehension-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+
+        <h3>5.1. Mental Model &amp; Syntax</h3>
+        <p>List comprehension provides an expressive, concise syntax for creating a new list by transforming or filtering elements of an existing iterable. In CPython, list comprehensions execute significantly faster than traditional manual <code class="inline">for</code> loops with <code class="inline">append()</code> because the bytecode loop runs directly in optimized C without repeated attribute lookups.</p>
+
+        <div class="code"><pre># General Syntax:
+# [ <expression> for <item> in <iterable> if <condition> ]
+
+# Traditional for-loop:
+squares = []
+for x in range(1, 6):
+    squares.append(x ** 2)
+
+# Equivalent List Comprehension:
+squares = [x ** 2 for x in range(1, 6)]
+print("Squares:", squares)  # [1, 4, 9, 16, 25]</pre></div>
+
+        <h3>5.2. Filtering with <code class="inline">if</code> Clauses</h3>
+        <p>The <code class="inline">if</code> condition at the end acts as a filter; only elements for which the condition evaluates to <code class="inline">True</code> are included:</p>
+
+        <div class="code"><pre># Filter even numbers from 1 to 20:
+evens = [x for x in range(1, 21) if x % 2 == 0]
+print("Evens:", evens)
+
+# Filter words longer than 4 characters and convert to uppercase:
+words = ["python", "is", "a", "clean", "and", "dynamic", "language"]
+long_words = [w.upper() for w in words if len(w) > 4]
+print("Long words:", long_words)  # ['PYTHON', 'CLEAN', 'DYNAMIC', 'LANGUAGE']</pre></div>
+
+        <h3 id="5-list-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.3. Conditional Expressions (<code class="inline">if-else</code> Transformation)</h3>
+        <div class="callout">
+          <strong>Syntax Note:</strong>
+          <ul>
+            <li><strong>Filtering (<code class="inline">if</code> at end):</strong> Keeps or drops elements: <code class="inline">[x for x in items if x &gt; 0]</code>.</li>
+            <li><strong>Mapping (<code class="inline">if-else</code> before <code class="inline">for</code>):</strong> Replaces or transforms every element: <code class="inline">[val_if_true if condition else val_if_false for x in items]</code>.</li>
+          </ul>
+        </div>
+
+        <div class="code"><pre># Label numbers as 'Even' or 'Odd':
+labels = ["Even" if x % 2 == 0 else "Odd" for x in range(1, 8)]
+print(labels)  # ['Odd', 'Even', 'Odd', 'Even', 'Odd', 'Even', 'Odd']
+
+# Normalize prices (apply 10% discount if over $100):
+prices = [45, 120, 80, 250, 95]
+discounted = [p * 0.9 if p > 100 else p for p in prices]
+print("Discounted:", discounted)  # [45, 108.0, 80, 225.0, 95]</pre></div>
+
+        <h3>5.4. Nested Comprehensions &amp; Cartesian Products</h3>
+        <p>Multiple <code class="inline">for</code> clauses inside a comprehension evaluate in order from left to right, matching the nesting order of traditional loops:</p>
+
+        <div class="code"><pre># Cartesian product of suits and ranks:
+suits = ["♠", "♥", "♦", "♣"]
+ranks = ["A", "K", "Q", "J", "10"]
+
+deck = [f"{r}{s}" for s in suits for r in ranks]
+print("Deck preview:", deck[:8])
+# Output: ['A♠', 'K♠', 'Q♠', 'J♠', '10♠', 'A♥', 'K♥', 'Q♥']
+
+# Flattening a 3-level deeply nested list:
+deep_nested = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+flat = [num for sub1 in deep_nested for sub2 in sub1 for num in sub2]
+print("Flat 3D:", flat)  # [1, 2, 3, 4, 5, 6, 7, 8]</pre></div>
+
+        <h3>5.5. Readability &amp; Best Practices: When NOT to use Comprehensions</h3>
         <ul>
-          <li>Understand the main ideas in <strong>List comprehension</strong>.</li>
-          <li>Write small demos in <code class="inline">10-practice.py</code> covering this section.</li>
+          <li><strong>Avoid deep nesting:</strong> More than 2 <code class="inline">for</code> clauses makes comprehensions unreadable. Use regular loops for complex pipelines.</li>
+          <li><strong>No side effects:</strong> Never use a comprehension just for side effects (e.g. <code class="inline">[print(x) for x in items]</code>). This builds an unnecessary list in memory and discards it.</li>
+          <li><strong>Memory considerations:</strong> For massive sequences (e.g., millions of items), prefer <strong>generator expressions</strong> (<code class="inline">(x**2 for x in huge_range)</code>) to stream items lazily with $O(1)$ memory consumption.</li>
         </ul>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -150,49 +591,162 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about List properties and creation?</span>
+            <span class="qa-question-title">C.1. How is a Python list implemented internally in CPython?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In CPython, a list (<code class="inline">PyListObject</code>) is implemented as a <strong>dynamic array of 8-byte pointer references</strong> to arbitrary Python objects, not a linked list.</p>
+            <ul>
+              <li><strong>Contiguous Memory of Pointers:</strong> The array slots store memory addresses pointing to values stored elsewhere on the heap. This enables $O(1)$ constant-time random access via index (<code class="inline">lst[i]</code>).</li>
+              <li><strong>Over-Allocation &amp; Amortized $O(1)$ Append:</strong> When full, Python reallocates a larger contiguous buffer with proportional headroom ($\approx 1.125 \times$). Because reallocation happens infrequently, the average cost of <code class="inline">append()</code> is amortized $O(1)$.</li>
+              <li><strong>Shifting Costs:</strong> Inserting or deleting at the beginning (<code class="inline">lst.insert(0, x)</code> or <code class="inline">lst.pop(0)</code>) requires shifting all $N$ pointers, resulting in $O(N)$ linear time.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about List functions and methods?</span>
+            <span class="qa-question-title">C.2. What is the difference between append() and extend()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The core distinction is how iterable arguments are handled:</p>
+            <ul>
+              <li><strong><code class="inline">lst.append(x)</code>:</strong> Adds its argument as a <strong>single entity</strong> to the end of the list. If <code class="inline">x</code> is a list or tuple, the entire collection is nested as one element:
+                <div class="code"><pre>a = [1, 2]
+a.append([3, 4])
+print(a)  # [1, 2, [3, 4]] (Length becomes 3)</pre></div>
+              </li>
+              <li><strong><code class="inline">lst.extend(iterable)</code>:</strong> Iterates through the argument and appends each element individually:
+                <div class="code"><pre>b = [1, 2]
+b.extend([3, 4])
+print(b)  # [1, 2, 3, 4] (Length becomes 4)</pre></div>
+              </li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Nested lists?</span>
+            <span class="qa-question-title">C.3. What is the difference between lst.sort() and the sorted(lst) built-in?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <table>
+              <thead>
+                <tr><th>Feature</th><th><code class="inline">lst.sort()</code></th><th><code class="inline">sorted(iterable)</code></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Target</strong></td>
+                  <td>Only works on <code class="inline">list</code> objects.</td>
+                  <td>Works on any iterable (tuple, set, dict, generator).</td>
+                </tr>
+                <tr>
+                  <td><strong>Mutation</strong></td>
+                  <td>Sorts <strong>in-place</strong>; mutates original list.</td>
+                  <td>Leaves original untouched; creates a new list.</td>
+                </tr>
+                <tr>
+                  <td><strong>Return Value</strong></td>
+                  <td>Returns <code class="inline">None</code>.</td>
+                  <td>Returns the newly created sorted <code class="inline">list</code>.</td>
+                </tr>
+                <tr>
+                  <td><strong>Memory Overhead</strong></td>
+                  <td>$O(1)$ auxiliary space (in-place).</td>
+                  <td>$O(N)$ additional memory for the new list.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about List comprehension?</span>
+            <span class="qa-question-title">C.4. Why does [[0] * 3] * 3 fail when updating an individual matrix cell?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>The expression <code class="inline">[0] * 3</code> creates a single list object <code class="inline">[0, 0, 0]</code>. When the outer multiplication <code class="inline">... * 3</code> is evaluated, Python does not create three independent sublists; it duplicates the <strong>memory pointer</strong> to that single inner list 3 times.</p>
+            <p>Consequently, all 3 rows reference the identical list in memory. Mutating <code class="inline">matrix[0][0] = 5</code> mutates the shared underlying object, reflecting changes across all rows.</p>
+            <p><strong>The Fix:</strong> Use a list comprehension to instantiate a brand new sublist for each row iteration:
+              <code class="inline">matrix = [[0] * 3 for _ in range(3)]</code>.
+            </p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why is modifying a list while iterating over it dangerous? How can you do it safely?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When you iterate over a list using <code class="inline">for item in lst:</code>, Python maintains an internal index pointer starting from <code class="inline">0</code> and increments it by 1 each step. If you remove an element during iteration (<code class="inline">lst.remove(item)</code>), all subsequent elements shift left by one position. The internal index increments normally, causing Python to <strong>silently skip the element immediately following the deleted item</strong>.</p>
+            <p><strong>Safe Approaches:</strong></p>
+            <ol>
+              <li><strong>Iterate over a shallow slice copy:</strong>
+                <div class="code"><pre>for item in lst[:]:  # lst[:] creates a shallow clone
+    if condition(item):
+        lst.remove(item)</pre></div>
+              </li>
+              <li><strong>Use a list comprehension to construct a new filtered list (Recommended):</strong>
+                <div class="code"><pre>lst = [item for item in lst if not condition(item)]</pre></div>
+              </li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the difference between del lst, del lst[:], and lst.clear()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code class="inline">del lst</code>:</strong> Unbinds the variable name <code class="inline">lst</code> from the current namespace. The object will be garbage collected if no other references exist. If you try to access <code class="inline">lst</code> afterwards, a <code class="inline">NameError</code> is raised.</li>
+              <li><strong><code class="inline">del lst[:]</code> and <code class="inline">lst.clear()</code>:</strong> Mutate the existing list object <strong>in-place</strong>, removing all elements while keeping the list object alive at the exact same memory address. Any other references or aliases pointing to that list will immediately see an empty list <code class="inline">[]</code>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. When should you use collections.deque instead of a Python list?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python lists are optimized for $O(1)$ operations at the <strong>end</strong> of the sequence (<code class="inline">append()</code>, <code class="inline">pop()</code>). However, operations at the <strong>beginning</strong> (<code class="inline">insert(0, x)</code> or <code class="inline">pop(0)</code>) run in $O(N)$ linear time because all subsequent pointers must be shifted.</p>
+            <p>If your application requires a <strong>Queue (FIFO)</strong> or frequent insertions and deletions at both ends, use <code class="inline">collections.deque</code> (Double-Ended Queue):</p>
+            <ul>
+              <li><code class="inline">deque.appendleft()</code> and <code class="inline">deque.popleft()</code> run in guaranteed <strong>$O(1)$ constant time</strong>.</li>
+              <li>Lists are superior when you need fast random index access (<code class="inline">lst[i]</code>), which is $O(1)$ in lists but $O(N)$ in deques.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. What makes Timsort adaptive and stable?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Timsort</strong> (created by Tim Peters for Python in 2002) is a hybrid sorting algorithm derived from Merge Sort and Insertion Sort:</p>
+            <ul>
+              <li><strong>Adaptive:</strong> It inspects the dataset for existing natural runs of ordered data (consecutive increasing or decreasing elements). On partially sorted or already sorted data, it completes in $O(N)$ linear time instead of $O(N \log N)$.</li>
+              <li><strong>Stable:</strong> If two elements have equal keys (e.g. two employees with the same salary), their original relative order is strictly preserved. This allows chained sorting across multiple criteria.</li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,220 +755,222 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">10-practice.py</code>. Run with <code class="inline">python3 10-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">10-practice.py</code>. Run with <code class="inline">python3 10-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>List properties and creation</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise summary of Python list properties and memory internals.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of List Properties and Creation:
-# 1. Lists in Python are ordered, mutable, indexed collections that allow duplicate elements.
-# 2. Elements can be of heterogeneous data types (int, str, objects, other lists).
-# 3. Lists are dynamic arrays in memory, resizing automatically as items are appended or removed.</pre></div>
+                <div class="code"><pre># List Foundations:
+# 1. Lists are ordered, mutable, indexed dynamic arrays holding object references.
+# 2. CPython over-allocates memory so append() runs in amortized O(1) time.
+# 3. Operations at index 0 (insert/pop) run in O(N) due to pointer shifting.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>List functions and methods</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Demonstrate in-place slice assignment to replace, insert, and delete elements in a list.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># List functions and methods:
-numbers = [10, 5, 20, 15]
-numbers.append(25)
-numbers.insert(1, 8)
-numbers.sort()
-print(&quot;Sorted numbers:&quot;, numbers)
-popped = numbers.pop()
-print(f&quot;Popped: {popped}, Remaining: {numbers}&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Lists and Dynamic Sequences.
+                <div class="code"><pre>items = [10, 20, 30, 40, 50]
 
-Goal: Master list initialization, mutation operations (append, extend, insert, pop, remove),
-nested multidimensional arrays, and idiomatic list comprehensions.
-&quot;&quot;&quot;</pre></div>
+# Replace sub-range [1:3] (elements 20, 30):
+items[1:3] = [99, 88]
+print("Replaced:", items)       # [10, 99, 88, 40, 50]
+
+# Insert without replacing at index 2:
+items[2:2] = [777]
+print("Inserted:", items)       # [10, 99, 777, 88, 40, 50]
+
+# Delete elements [1:4]:
+items[1:4] = []
+print("Deleted slice:", items)  # [10, 88, 40, 50]</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Warm-up 3: Generate a list of squares of even numbers between 1 and 25 using list comprehension.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>even_squares = [x**2 for x in range(1, 26) if x % 2 == 0]
+print("Even squares (1-25):", even_squares)
+# [4, 16, 36, 64, 100, 144, 196, 256, 324, 400, 484, 576]</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: List properties and creation</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Deduplicate List Preserving Original Order — Remove duplicate values without altering first appearance sequence.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: List properties and creation
-# Multiple ways to create lists:
-l1 = [1, 2, 3]
-l2 = list(&quot;hello&quot;)
-l3 = list(range(5))
-l4 = [0] * 5  # Repeated sequence
+                <div class="code"><pre>def deduplicate_preserve_order(lst: list) -> list:
+    seen = set()
+    result = []
+    for item in lst:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
 
-print(&quot;l1:&quot;, l1)
-print(&quot;l2 from str:&quot;, l2)
-print(&quot;l3 from range:&quot;, l3)
-print(&quot;l4 repeated:&quot;, l4)
-print(&quot;Heterogeneous list:&quot;, [42, &quot;text&quot;, 3.14, True, [1, 2]])</pre></div>
+sample = [10, 20, 30, 20, 40, 10, 50, 30]
+print("Deduplicated:", deduplicate_preserve_order(sample))
+# [10, 20, 30, 40, 50]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: List functions and methods</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Move Zeros to End In-Place — Shift all 0s to the end of a list in-place maintaining relative order of non-zero numbers.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: List functions and methods
-nums = [4, 2, 8, 5, 1]
-print(&quot;len:&quot;, len(nums), &quot;| min:&quot;, min(nums), &quot;| max:&quot;, max(nums), &quot;| sum:&quot;, sum(nums))
+                <div class="code"><pre>def move_zeros_to_end(nums: list) -> None:
+    non_zero_pos = 0
+    for i in range(len(nums)):
+        if nums[i] != 0:
+            nums[non_zero_pos], nums[i] = nums[i], nums[non_zero_pos]
+            non_zero_pos += 1
 
-nums.extend([9, 3])
-print(&quot;After extend:&quot;, nums)
-
-nums.remove(8)  # Remove by value
-print(&quot;After remove(8):&quot;, nums)
-
-nums.reverse()
-print(&quot;After reverse:&quot;, nums)
-
-nums.sort(reverse=True)
-print(&quot;After sort desc:&quot;, nums)</pre></div>
+data = [0, 1, 0, 3, 12, 0, 9]
+move_zeros_to_end(data)
+print("Zeros moved to end:", data)
+# [1, 3, 12, 9, 0, 0, 0]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Nested lists</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Second Largest Unique Number — Find the second distinct maximum number in a list without using sort().</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Nested lists (2D Matrix operations)
-matrix = [
+                <div class="code"><pre>def second_largest(nums: list):
+    first = second = float("-inf")
+    for n in nums:
+        if n > first:
+            second = first
+            first = n
+        elif first > n > second:
+            second = n
+    return second if second != float("-inf") else None
+
+print("Second largest [12, 35, 1, 10, 35, 34]:", second_largest([12, 35, 1, 10, 35, 34]))  # 34
+print("Second largest [10, 10, 10]:", second_largest([10, 10, 10]))                          # None</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Matrix Transpose and Diagonal Sum — Compute the transpose and the sum of principal diagonals of an n x n matrix.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>matrix = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9]
 ]
+n = len(matrix)
 
-print(&quot;Access row 1, col 2:&quot;, matrix[1][2]) # 6
+# 1. Transpose:
+transposed = [[matrix[r][c] for r in range(n)] for c in range(n)]
+print("Transposed:", transposed)
 
-# Transpose matrix:
-transposed = [[row[col] for row in matrix] for col in range(len(matrix[0]))]
-print(&quot;Transposed:&quot;)
-for r in transposed:
-    print(&quot; &quot;, r)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: List comprehension</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: List comprehension
-# Squares of even numbers from 1 to 20:
-evens_squared = [x**2 for x in range(1, 21) if x % 2 == 0]
-print(&quot;Evens squared:&quot;, evens_squared)
-
-# Flattening a 2D list with comprehension:
-nested = [[1, 2], [3, 4], [5, 6]]
-flat = [item for sublist in nested for item in sublist]
-print(&quot;Flattened:&quot;, flat)</pre></div>
+# 2. Main and anti-diagonal sums:
+main_diag = sum(matrix[i][i] for i in range(n))
+anti_diag = sum(matrix[i][n - 1 - i] for i in range(n))
+print(f"Main Diagonal Sum: {main_diag}, Anti Diagonal Sum: {anti_diag}")
+# Main Diagonal Sum: 15, Anti Diagonal Sum: 15</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Lists.</span>
+                <span class="qa-question-title">Challenge 1: Flatten Arbitrarily Deeply Nested List — Recursively flatten a list with irregular nested sublists into a 1D list.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Student Gradebook &amp; Statistics Aggregator
-students = [
-    {&quot;name&quot;: &quot;Alice&quot;, &quot;grades&quot;: [88, 92, 79]},
-    {&quot;name&quot;: &quot;Bob&quot;, &quot;grades&quot;: [75, 80, 85]},
-    {&quot;name&quot;: &quot;Charlie&quot;, &quot;grades&quot;: [95, 98, 92]},
-    {&quot;name&quot;: &quot;Diana&quot;, &quot;grades&quot;: [60, 65, 70]}
-]
+                <div class="code"><pre>def deep_flatten(nested: list) -> list:
+    flat = []
+    for item in nested:
+        if isinstance(item, list):
+            flat.extend(deep_flatten(item))
+        else:
+            flat.append(item)
+    return flat
 
-# Calculate averages using list comprehensions:
-report = [
-    {
-        &quot;name&quot;: s[&quot;name&quot;],
-        &quot;avg&quot;: sum(s[&quot;grades&quot;]) / len(s[&quot;grades&quot;]),
-        &quot;highest&quot;: max(s[&quot;grades&quot;])
-    }
-    for s in students
-]
-
-# Sort students by average descending:
-report.sort(key=lambda item: item[&quot;avg&quot;], reverse=True)
-
-print(f&quot;{&#x27;Student&#x27;:&lt;10} {&#x27;Average&#x27;:&lt;8} {&#x27;Highest&#x27;:&lt;8}&quot;)
-print(&quot;-&quot; * 28)
-for r in report:
-    print(f&quot;{r[&#x27;name&#x27;]:&lt;10} {r[&#x27;avg&#x27;]:&lt;8.2f} {r[&#x27;highest&#x27;]:&lt;8}&quot;)</pre></div>
+irregular = [1, [2, [3, 4], 5], [[6, 7], 8], [9, [10, [11]]]]
+print("Deep flattened:", deep_flatten(irregular))
+# [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Subarray with Target Sum — Find contiguous subarray that sums to a target value in O(N) linear time.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># List Pitfalls &amp; Edge Cases:
-# 1. Pitfall: [[]] * 3 creates shallow copies pointing to SAME inner list:
-bad_matrix = [[]] * 3
-bad_matrix[0].append(1)
-print(&quot;Bad matrix (all rows mutated!):&quot;, bad_matrix)  # [[1], [1], [1]]
+                <div class="code"><pre>def find_subarray_sum(nums: list, target: int):
+    prefix_map = {0: -1}  # prefix_sum: index
+    current_sum = 0
+    for i, num in enumerate(nums):
+        current_sum += num
+        diff = current_sum - target
+        if diff in prefix_map:
+            start_idx = prefix_map[diff] + 1
+            return nums[start_idx : i + 1]
+        prefix_map[current_sum] = i
+    return None
 
-# Fix: Use list comprehension for independent instances:
-good_matrix = [[] for _ in range(3)]
-good_matrix[0].append(1)
-print(&quot;Good matrix (independent):&quot;, good_matrix)      # [[1], [], []]
-
-# 2. remove() raises ValueError if element is not in list.</pre></div>
+arr = [10, 2, -2, -20, 10]
+target_val = -10
+print("Subarray summing to -10:", find_subarray_sum(arr, target_val))
+# [10, 2, -2, -20] or [-20, 10]</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Lists) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain how Python lists are implemented internally as dynamic arrays of pointers.</li>
+          <li>I know the difference between <code class="inline">append()</code> and <code class="inline">extend()</code>, and <code class="inline">sort()</code> vs <code class="inline">sorted()</code>.</li>
+          <li>I understand the multiplication gotcha with nested lists: <code class="inline">[[0] * n] * m</code> vs comprehension.</li>
+          <li>I can write idiomatic list comprehensions with filters (<code class="inline">if</code>) and conditional transforms (<code class="inline">if-else</code>).</li>
         </ul>
       </section>
-      <footer>Python Notes File 09. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 10. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

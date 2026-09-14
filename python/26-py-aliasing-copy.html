@@ -39,13 +39,17 @@
       </nav>
       <header class="hero" id="intro">
         <h1>26. Aliasing, Cloning, and Copy</h1>
-        <p class="subtitle">File 26 — aliasing, shallow copy, deep copy.</p>
+        <p class="subtitle">Reference assignment, identity vs equality, shallow copy mechanics, and recursive deep copy.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Aliasing</span>
+          <span class="chip">is vs ==</span>
+          <span class="chip">copy.copy()</span>
+          <span class="chip">copy.deepcopy()</span>
+          <span class="chip">Mutable Compound Objects</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -54,26 +58,35 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3>1.1. Overview: How Python Manages Variables and Memory</h3>
+        <p>In Python, variables are not direct memory "boxes" that store raw values. Instead, a variable is a <strong>name tag (reference pointer)</strong> bound to an object in heap memory. Multiple variables can point to the exact same object simultaneously.</p>
+        <p>When working with mutable compound objects (like lists, dictionaries, sets, or custom class instances), misunderstanding the distinction between <strong>aliasing</strong>, <strong>shallow copying</strong>, and <strong>deep copying</strong> is one of the most frequent causes of silent data corruption bugs.</p>
+
+        <h3>1.2. Identity (<code>is</code>) vs Equality (<code>==</code>)</h3>
         <ul>
-          <li>This chapter covers <strong>Aliasing, Cloning, and Copy</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li><strong>Equality (<code>==</code>):</strong> Evaluates whether two objects contain the same values or state (invokes <code>__eq__</code>).</li>
+          <li><strong>Identity (<code>is</code>):</strong> Evaluates whether two variables point to the exact same memory address (compares <code>id(a) == id(b)</code>).</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–3 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">26-practice.py</code> before File 27. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <div class="code"><pre>list_a = [1, 2, 3]
+list_b = [1, 2, 3]
+list_c = list_a  # Aliasing
+
+print("list_a == list_b:", list_a == list_b)  # True (equal content)
+print("list_a is list_b:", list_a is list_b)  # False (distinct objects in RAM)
+print("list_a is list_c:", list_a is list_c)  # True (same memory location!)</pre></div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Aliasing vs cloning</strong></li>
-          <li><strong>Shallow copy vs deep copy</strong></li>
+          <li><strong>Introduction</strong> — Memory references, variable name tags, and <code>is</code> vs <code>==</code></li>
+          <li><strong>Aliasing vs cloning</strong> — Pointer sharing vs top-level container cloning</li>
+          <li><strong>Shallow copy vs deep copy</strong> — Nested mutable objects, <code>copy.copy</code> vs <code>copy.deepcopy</code>, cyclic reference safety, and custom <code>__copy__</code></li>
+          <li><strong>C. Common questions</strong> — Key interview questions and memory model diagrams</li>
+          <li><strong>P. Practical Assignment</strong> — Hands-on drills, config manager mini-project, and edge cases</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-aliasing-vs-cloning">
         <div class="heading-with-levels">
           <h2>2. Aliasing vs cloning</h2>
@@ -82,14 +95,43 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-aliasing-vs-cloning-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+        <h3>2.1. Aliasing: Multiple Names for One Object</h3>
+        <p><strong>Aliasing</strong> happens when you assign one variable to another using the assignment operator <code>=</code> (e.g., <code>b = a</code>). This creates a second reference to the exact same object; no new object is allocated in memory.</p>
+        <p>If the underlying object is mutable, modifying it through any alias immediately affects all other references to it.</p>
+
+        <div class="code"><pre>original_users = ["Alice", "Bob"]
+alias_users = original_users  # Aliasing: both point to the same list
+
+# Mutating via the alias:
+alias_users.append("Charlie")
+
+print("original_users:", original_users)  # ['Alice', 'Bob', 'Charlie']
+print("alias_users:   ", alias_users)     # ['Alice', 'Bob', 'Charlie']
+print("id(original):", id(original_users))
+print("id(alias):   ", id(alias_users))   # Identical IDs</pre></div>
+
+        <h3 id="2-aliasing-vs-cloning-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Cloning: Independent Top-Level Containers</h3>
+        <p><strong>Cloning</strong> creates a brand new top-level container object with its own distinct memory address. Common ways to clone a list include:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Aliasing vs cloning</strong>.</li>
-          <li>Write small demos in <code class="inline">26-practice.py</code> covering this section.</li>
+          <li>Slice notation: <code>clone = original[:]</code></li>
+          <li>The <code>.copy()</code> method: <code>clone = original.copy()</code></li>
+          <li>Constructor function: <code>clone = list(original)</code></li>
         </ul>
+
+        <div class="code"><pre>original_nums = [10, 20, 30]
+cloned_nums = original_nums[:]  # Creating a clone
+
+cloned_nums.append(40)
+
+print("Original:", original_nums)  # [10, 20, 30] (Unchanged!)
+print("Cloned:  ", cloned_nums)    # [10, 20, 30, 40]
+print("original is cloned:", original_nums is cloned_nums)  # False</pre></div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-shallow-copy-vs-deep-copy">
         <div class="heading-with-levels">
           <h2>3. Shallow copy vs deep copy</h2>
@@ -98,14 +140,71 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-shallow-copy-vs-deep-copy-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Shallow copy vs deep copy</strong>.</li>
-          <li>Write small demos in <code class="inline">26-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>3.1. The Limitation of Shallow Copy</h3>
+        <p>Both slicing (<code>[:]</code>) and <code>copy.copy()</code> produce a <strong>shallow copy</strong>. A shallow copy constructs a new compound object and then inserts <em>references</em> into it to the objects found in the original.</p>
+        <p>If the original object contains <strong>nested mutable objects</strong> (e.g. a list of lists, or a dictionary containing lists), the outer container is duplicated, but the nested inner objects are <strong>shared by reference</strong>!</p>
+
+        <div class="code"><pre>import copy
+
+# Matrix with nested lists
+matrix = [[1, 2], [3, 4]]
+
+# Creating a shallow copy
+shallow_matrix = copy.copy(matrix)
+
+# 1. Mutating the outer container:
+shallow_matrix.append([5, 6])
+print("matrix length:", len(matrix))                # 2 (matrix unaffected)
+print("shallow_matrix length:", len(shallow_matrix)) # 3
+
+# 2. Mutating an INNER nested element:
+shallow_matrix[0][0] = 999  # Modifies the shared inner list [1, 2]!
+
+print("Original matrix[0]:", matrix[0])         # [999, 2] (UNEXPECTED MUTATION!)
+print("Shallow matrix[0]: ", shallow_matrix[0]) # [999, 2]
+print("Inner list identity:", matrix[0] is shallow_matrix[0])  # True!</pre></div>
+
+        <h3 id="3-shallow-copy-vs-deep-copy-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. Deep Copy: True Recursive Duplication</h3>
+        <p>A <strong>deep copy</strong> constructed via <code>copy.deepcopy()</code> creates a new compound object and then <strong>recursively</strong> copies all nested objects found within it, creating completely independent duplicate copies at every level of depth.</p>
+
+        <div class="code"><pre>import copy
+
+original_data = {
+    "project": "Alpha",
+    "teams": ["Engineering", "DevOps"],
+    "meta": {"version": 1.0}
+}
+
+# Deep copy
+deep_data = copy.deepcopy(original_data)
+
+# Mutating nested structures in the deep copy:
+deep_data["teams"].append("Security")
+deep_data["meta"]["version"] = 2.0
+
+print("Original teams:", original_data["teams"])  # ['Engineering', 'DevOps'] (Pristine!)
+print("Deep copy teams:", deep_data["teams"])      # ['Engineering', 'DevOps', 'Security']
+
+print("Original version:", original_data["meta"]["version"])  # 1.0
+print("Deep copy version:", deep_data["meta"]["version"])      # 2.0</pre></div>
+
+        <h3>3.3. Cyclic References and Memoization</h3>
+        <p>In complex data structures, an object may reference itself (circular reference). If <code>copy.deepcopy()</code> simply used naive recursion, it would crash with a <code>RecursionError</code>. Instead, <code>deepcopy()</code> maintains an internal <code>memo</code> dictionary tracking already-copied objects to safely handle self-referencing and cyclic graphs.</p>
+
+        <div class="code"><pre># Self-referencing list:
+cyclic_list = [1, 2]
+cyclic_list.append(cyclic_list)  # Index 2 points to cyclic_list itself!
+
+# Deep copy handles cycles safely without infinite recursion:
+safe_copy = copy.deepcopy(cyclic_list)
+print("Safe copy element 0:", safe_copy[0])
+print("Safe copy cycle check:", safe_copy[2] is safe_copy)  # True (Preserves cycle structure!)</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -119,24 +218,106 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Aliasing vs cloning?</span>
+            <span class="qa-question-title">C.1. What is the fundamental difference between aliasing and copying in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>Aliasing (<code>b = a</code>):</strong> Does not create a new object. It assigns a new variable name pointing to the exact same object in memory (<code>a is b</code> is <code>True</code>). Changes made via one name affect the other.</p>
+            <p><strong>Copying (<code>b = a.copy()</code>):</strong> Allocates a brand new object in memory with identical contents (<code>a == b</code> is <code>True</code>, but <code>a is b</code> is <code>False</code>). Modifying the top-level container <code>b</code> does not affect <code>a</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Shallow copy vs deep copy?</span>
+            <span class="qa-question-title">C.2. What is the difference between <code>==</code> and <code>is</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code>==</code> checks for <strong>value equality</strong> (calls <code>__eq__</code>), checking whether two objects contain identical data.</p>
+            <p><code>is</code> checks for <strong>object identity</strong>, comparing their memory addresses (<code>id(a) == id(b)</code>). Two distinct objects can be equal in value (<code>[1, 2] == [1, 2]</code>) while not being identical (<code>[1, 2] is [1, 2]</code> is <code>False</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What is the exact difference between a shallow copy and a deep copy?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A <strong>shallow copy</strong> (via <code>copy.copy()</code> or <code>lst[:]</code>) duplicates only the outermost container. Nested objects (like sub-lists or dictionaries) inside the container are not cloned; their memory references are shared between the original and the copy.</p>
+            <p>A <strong>deep copy</strong> (via <code>copy.deepcopy()</code>) recursively duplicates all nested objects at every level of depth, ensuring that modifying any nested component in the copy has zero effect on the original.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What are the common ways to create a shallow copy?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Lists:</strong> <code>lst.copy()</code>, slice <code>lst[:]</code>, or type constructor <code>list(lst)</code>.</li>
+              <li><strong>Dictionaries:</strong> <code>d.copy()</code> or type constructor <code>dict(d)</code>.</li>
+              <li><strong>Sets:</strong> <code>s.copy()</code> or type constructor <code>set(s)</code>.</li>
+              <li><strong>Generic:</strong> <code>copy.copy(obj)</code> from the standard <code>copy</code> module.</li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. How does <code>copy.deepcopy()</code> prevent infinite loops with cyclic references?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>copy.deepcopy()</code> accepts an internal <code>memo</code> dictionary (mapping <code>id(orig_object)</code> to <code>copied_object</code>). Before copying an object, <code>deepcopy()</code> checks if its ID already exists in the memo map.</p>
+            <p>If it exists, it returns the already-created copy reference instead of re-entering recursion, elegantly handling self-referencing and circular object graphs without stack overflow.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How do immutable objects behave when passed to <code>copy.copy()</code> and <code>copy.deepcopy()</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because immutable objects (integers, floats, strings, frozensets, and tuples containing only immutables) can never be modified in-place, Python optimizes copying by returning the original object reference directly:</p>
+            <div class="code"><pre>import copy
+s = "hello"
+print(copy.copy(s) is s)      # True
+print(copy.deepcopy(s) is s)  # True</pre></div>
+            <p>However, if a tuple contains a mutable object (e.g. <code>t = ([1, 2], 3)</code>), <code>deepcopy(t)</code> will create a new tuple containing a deep-copied list.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How do custom classes implement custom copying behavior?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Custom classes can define two special dunder methods:</p>
+            <ul>
+              <li><code>__copy__(self)</code>: Called by <code>copy.copy(obj)</code> to implement custom shallow copying.</li>
+              <li><code>__deepcopy__(self, memo)</code>: Called by <code>copy.deepcopy(obj, memo)</code> to implement custom deep copying, passing <code>memo</code> to any child copies via <code>copy.deepcopy(child, memo)</code>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why should you avoid <code>deepcopy()</code> in performance-critical loops?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>copy.deepcopy()</code> is relatively slow because it performs extensive Python-level reflection, inspects object dictionaries, maintains the <code>memo</code> table, and handles recursion. In high-throughput systems (such as processing 50,000 JSON payloads/sec), deep copying large graphs introduces significant CPU and memory overhead. Instead, consider immutable data patterns or manual shallow updates.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -145,7 +326,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">26-practice.py</code>. Run with <code class="inline">python3 26-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">26-practice.py</code>. Run with <code class="inline">python3 26-practice.py</code>. Test aliasing, shallow copying, and deep copying.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -157,32 +338,28 @@
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Summary of Aliasing vs Cloning:
-# 1. Aliasing (&#x27;b = a&#x27;) gives an existing object another reference name (same memory address).
-# 2. Cloning creates a separate copy of the object in memory (different memory address).
-# 3. Changes to an alias affect the original object; changes to a clone do not.</pre></div>
+# 1. Aliasing ('b = a') gives an existing object another reference name (same memory address).
+# 2. Cloning ('b = a[:]') creates an independent top-level container object.
+# 3. For nested structures, shallow cloning still shares inner references; deepcopy is needed.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Shallow copy vs deep copy</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example demonstrating shallow copy vs deep copy.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Shallow copy vs deep copy:
-import copy
+                <div class="code"><pre>import copy
 
-original = [1, [2, 3]]
-shallow = copy.copy(original)
-deep = copy.deepcopy(original)
+orig = [[10, 20]]
+shallow = copy.copy(orig)
+deep = copy.deepcopy(orig)
 
-shallow[1].append(4)  # Mutates inner list in original too!
-print(&quot;Original after shallow mutate:&quot;, original) # [1, [2, 3, 4]]
-
-deep[1].append(99)   # Completely independent!
-print(&quot;Original after deep mutate:&quot;, original)    # [1, [2, 3, 4]]
-print(&quot;Deep copy contents:&quot;, deep)               # [1, [2, 3, 99]]</pre></div>
+orig[0][0] = 999
+print("Shallow affected:", shallow[0][0])  # 999
+print("Deep isolated:   ", deep[0][0])     # 10</pre></div>
               </div>
             </details>
           </li>
@@ -193,151 +370,159 @@ print(&quot;Deep copy contents:&quot;, deep)               # [1, [2, 3, 99]]</pr
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Aliasing, Cloning, and Copy Semantics.
+                <div class="code"><pre>"""Chapter Practice: Python Aliasing, Shallow Copy, and Deep Copy.
 
-Goal: Master object identity vs equality, slice cloning, copy.copy (shallow),
-copy.deepcopy (recursive), and avoiding unintended mutation side-effects.
-&quot;&quot;&quot;</pre></div>
+Goal: Master reference semantics, memory identity vs value equality,
+shallow copy vulnerabilities with nested mutables, and deep copy isolation.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Aliasing vs cloning</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Aliasing demonstration</strong> — Show how modifying an aliased list changes the original; verify with <code>id()</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Aliasing vs cloning
-# Aliasing:
-orig_list = [10, 20, 30]
-alias_list = orig_list
-print(&quot;id(orig):&quot;, id(orig_list), &quot;== id(alias):&quot;, id(alias_list))
-alias_list.append(40)
-print(&quot;orig_list modified through alias:&quot;, orig_list)  # [10, 20, 30, 40]
+                <div class="code"><pre># Task 1: Aliasing
+a = ["dev", "prod"]
+b = a
 
-# Cloning via slicing:
-clone_list = orig_list[:]
-clone_list.append(50)
-print(&quot;orig_list after clone append:&quot;, orig_list)      # [10, 20, 30, 40]
-print(&quot;clone_list:&quot;, clone_list)                      # [10, 20, 30, 40, 50]</pre></div>
+b.append("stage")
+print("List a:", a)
+print("List b:", b)
+print("Same object?", id(a) == id(b))  # True</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Shallow copy vs deep copy</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: Shallow copy trap</strong> — Demonstrate a dictionary shallow copy where inner lists are mutated unintentionally.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Shallow copy vs deep copy
+                <div class="code"><pre># Task 2: Shallow copy trap
+config_a = {"env": "prod", "ports": [80, 443]}
+config_b = config_a.copy()  # Shallow copy
+
+# Top-level change is safe:
+config_b["env"] = "stage"
+print("config_a env:", config_a["env"])  # prod
+
+# Nested change affects both!
+config_b["ports"].append(8080)
+print("config_a ports:", config_a["ports"])  # [80, 443, 8080] (MUTATED!)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>Task 3: Deep copy resolution</strong> — Solve Task 2 using <code>copy.deepcopy()</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Task 3: Deep copy resolution
 import copy
 
-nested = {&quot;user&quot;: &quot;Alice&quot;, &quot;preferences&quot;: {&quot;theme&quot;: &quot;dark&quot;, &quot;zoom&quot;: 100}}
+config_orig = {"env": "prod", "ports": [80, 443]}
+config_clone = copy.deepcopy(config_orig)
 
-shallow_dict = copy.copy(nested)
-deep_dict = copy.deepcopy(nested)
-
-# Mutate nested dictionary:
-shallow_dict[&quot;preferences&quot;][&quot;theme&quot;] = &quot;light&quot;
-print(&quot;Original theme after shallow change:&quot;, nested[&quot;preferences&quot;][&quot;theme&quot;]) # &#x27;light&#x27;
-
-deep_dict[&quot;preferences&quot;][&quot;theme&quot;] = &quot;sepia&quot;
-print(&quot;Original theme after deep change:&quot;, nested[&quot;preferences&quot;][&quot;theme&quot;])    # &#x27;light&#x27; (unaffected!)
-print(&quot;Deep dict theme:&quot;, deep_dict[&quot;preferences&quot;][&quot;theme&quot;])                 # &#x27;sepia&#x27;</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Cheat sheet</strong> — Comment 5 key facts about Aliasing, Cloning, and Copy.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Cheat sheet — 5 Key Facts about Aliasing, Cloning, and Copy:
-# 1. Assignment (&#x27;=&#x27;) NEVER creates a copy; it only binds another name to the existing object.
-# 2. &#x27;is&#x27; checks if two references share the same id; &#x27;==&#x27; checks if values are equal.
-# 3. Slice operator [:], list.copy(), and dict.copy() all perform SHALLOW copies.
-# 4. Shallow copy duplicates outer container but copies references to nested objects.
-# 5. copy.deepcopy() recursively traverses and duplicates every nested container and object.</pre></div>
+config_clone["ports"].append(8080)
+print("Original ports:", config_orig["ports"])   # [80, 443] (Safe!)
+print("Clone ports:   ", config_clone["ports"])  # [80, 443, 8080]</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Aliasing, Cloning, and Copy.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a Configuration Manager class that provides safe snapshot rollbacks using <code>copy.deepcopy()</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Safe Configuration Snapshot &amp; Rollback Engine
+                <div class="code"><pre># Mini Project: Config Snapshot Manager
 import copy
 
 class ConfigManager:
     def __init__(self, initial_config):
-        self.config = initial_config
+        self.config = copy.deepcopy(initial_config)
         self.snapshots = []
-    
-    def take_snapshot(self):
-        # Deep copy ensures snapshots are immutable records of past state
+
+    def set(self, key_path, value):
+        keys = key_path.split(".")
+        target = self.config
+        for k in keys[:-1]:
+            target = target[k]
+        target[keys[-1]] = value
+
+    def create_snapshot(self):
         self.snapshots.append(copy.deepcopy(self.config))
-        print(f&quot;Snapshot taken at version {len(self.snapshots)}&quot;)
-    
+        print("[SNAPSHOT] Saved state.")
+
     def rollback(self):
-        if self.snapshots:
-            self.config = self.snapshots.pop()
-            print(&quot;Rolled back to previous snapshot successfully.&quot;)
-        else:
-            print(&quot;No snapshot available to rollback.&quot;)
+        if not self.snapshots:
+            raise IndexError("No snapshots available for rollback!")
+        self.config = self.snapshots.pop()
+        print("[ROLLBACK] Restored previous state.")
 
-mgr = ConfigManager({&quot;server&quot;: {&quot;host&quot;: &quot;localhost&quot;, &quot;port&quot;: 8000}})
-mgr.take_snapshot()
+initial = {"database": {"host": "localhost", "replicas": ["db1", "db2"]}}
+mgr = ConfigManager(initial)
+mgr.create_snapshot()
 
-# Mutate nested configuration:
-mgr.config[&quot;server&quot;][&quot;port&quot;] = 9999
-print(&quot;Mutated config:&quot;, mgr.config)
+mgr.set("database.host", "remote.host.com")
+mgr.set("database.replicas", ["remote1"])
+print("Modified config:", mgr.config)
 
-# Rollback:
 mgr.rollback()
-print(&quot;Restored config:&quot;, mgr.config)</pre></div>
+print("Restored config:", mgr.config)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate copying cyclic references safely with <code>copy.deepcopy()</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Copy Pitfalls &amp; Edge Cases:
-# 1. Default arguments with mutable collections (classic aliasing bug):
-# def add_item(item, basket=[]): ...
+                <div class="code"><pre># Edge Case: Circular references
+import copy
 
-# 2. Performance penalty: deepcopy() is slow on very large nested structures or cyclic graphs.
+node_a = {"name": "A"}
+node_b = {"name": "B"}
+node_a["neighbor"] = node_b
+node_b["neighbor"] = node_a  # Cycle!
 
-# 3. Copying objects with thread locks, open files, or network sockets fails with TypeError.</pre></div>
+deep_nodes = copy.deepcopy(node_a)
+print("Node name:", deep_nodes["name"])
+print("Neighbor name:", deep_nodes["neighbor"]["name"])
+print("Cycle preserved?", deep_nodes["neighbor"]["neighbor"] is deep_nodes)  # True</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Aliasing, Cloning, and Copy) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain the difference between <code>==</code> and <code>is</code>.</li>
+          <li>I know why aliasing mutable objects can cause bugs.</li>
+          <li>I understand why shallow copy fails on nested data structures.</li>
+          <li>I know when to use <code>copy.deepcopy()</code> and how it handles cycles.</li>
         </ul>
       </section>
-      <footer>Python Notes File 25. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 26. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

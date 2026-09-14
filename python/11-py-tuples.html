@@ -41,13 +41,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>11. Tuples</h1>
-        <p class="subtitle">File 11 — tuple methods, functions, comprehension, vs list.</p>
+        <p class="subtitle">File 11 — immutable sequences, packing &amp; unpacking, tuple methods, generator expressions, and structural differences vs lists.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Immutable Sequence</span>
+          <span class="chip">Packing &amp; Unpacking</span>
+          <span class="chip">Single-Element Comma Trap</span>
+          <span class="chip">Tuple Methods</span>
+          <span class="chip">Generator Expression</span>
+          <span class="chip">Tuple vs List</span>
+          <span class="chip">NamedTuple</span>
+          <span class="chip">CPython Freelist</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +63,39 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Tuples</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>A <strong>Tuple</strong> in Python is an <strong>ordered, immutable, indexed collection</strong> of objects, represented by the built-in <code class="inline">tuple</code> type.</li>
+          <li>Like lists, tuples can hold elements of heterogeneous data types and allow duplicate values.</li>
+          <li>Unlike lists, once a tuple is constructed, its element bindings cannot be modified, inserted, replaced, or deleted in place. This immutability gives tuples integrity, thread-safety, hashability, and memory optimization advantages.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">11-practice.py</code> before File 12. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. CPython Internals: Tuples vs Lists</h3>
+        <div class="callout">
+          <strong>Under the Hood (PyTupleObject):</strong>
+          Because a tuple has a fixed size known at allocation time:
+          <ul>
+            <li><strong>No Over-allocation Overhead:</strong> Unlike <code class="inline">PyListObject</code>, which over-allocates spare capacity to support future appends, a <code class="inline">PyTupleObject</code> allocates exactly the number of pointer slots required. It has lower memory overhead.</li>
+            <li><strong>CPython Tuple Freelist Optimization:</strong> CPython maintains a cache (freelist) of deallocated tuple objects of length up to 20. When a small tuple is destroyed, its memory is not released back to the OS; it is recycled for immediate allocation of new tuples, making tuple instantiation substantially faster than list creation.</li>
+          </ul>
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to tuple</strong></li>
-          <li><strong>Tuple methods and functions</strong></li>
-          <li><strong>Tuple comprehension patterns</strong></li>
-          <li><strong>Tuple vs list differences</strong></li>
+          <li><strong>Introduction to tuple</strong> — syntax, parentheses rules, single-element comma trap, packing &amp; unpacking</li>
+          <li><strong>Tuple methods and functions</strong> — <code class="inline">count()</code>, <code class="inline">index()</code>, and built-in aggregates</li>
+          <li><strong>Tuple comprehension patterns</strong> — why <code class="inline">(x for x in seq)</code> creates a generator and how to construct tuples</li>
+          <li><strong>Tuple vs list differences</strong> — detailed comparative analysis, hashability, performance benchmarks, and <code class="inline">namedtuple</code></li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: INTRODUCTION TO TUPLE -->
       <section id="2-introduction-to-tuple">
         <div class="heading-with-levels">
           <h2>2. Introduction to tuple</h2>
@@ -86,14 +104,83 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-introduction-to-tuple-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Tuple Creation Syntax</h3>
+        <p>Tuples are defined using parentheses <code class="inline">()</code> with comma-separated elements:</p>
+        <div class="code"><pre># 1. Empty tuple:
+t1 = ()
+t2 = tuple()
+
+# 2. Multi-element tuple:
+point = (10, 20)
+user = ("Sonwane", 29, "Engineer", True)
+
+# 3. From any iterable via tuple():
+from_str = tuple("PYTHON")          # ('P', 'Y', 'T', 'H', 'O', 'N')
+from_list = tuple([1, 2, 3])        # (1, 2, 3)
+from_range = tuple(range(1, 6))     # (1, 2, 3, 4, 5)</pre></div>
+
+        <h3>2.2. The Single-Element Comma Trap</h3>
+        <div class="callout">
+          <strong>Critical Syntactic Rule:</strong> In Python, parentheses alone do NOT define a tuple; <strong>the comma (,) defines a tuple</strong>. Writing <code class="inline">(10)</code> is treated as mathematical grouping parentheses containing the integer <code class="inline">10</code>. To create a single-element tuple, a trailing comma is mandatory: <code class="inline">(10,)</code>.
+        </div>
+
+        <div class="code"><pre>not_a_tuple = (10)
+print(type(not_a_tuple))  # &lt;class 'int'&gt;
+
+is_a_tuple = (10,)
+print(type(is_a_tuple))   # &lt;class 'tuple'&gt;
+
+str_test = ("hello")
+print(type(str_test))     # &lt;class 'str'&gt;
+
+str_tuple = ("hello",)
+print(type(str_tuple))    # &lt;class 'tuple'&gt;</pre></div>
+
+        <h3 id="2-introduction-to-tuple-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. Tuple Packing and Unpacking</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Introduction to tuple</strong>.</li>
-          <li>Write small demos in <code class="inline">11-practice.py</code> covering this section.</li>
+          <li><strong>Tuple Packing:</strong> Placing comma-separated values without parentheses automatically bundles them into a tuple.</li>
+          <li><strong>Tuple Unpacking:</strong> Assigning a tuple into multiple variables unpacks each value into its corresponding position (must match length, or use starred unpacking).</li>
         </ul>
+
+        <div class="code"><pre># Tuple packing (Parentheses are optional):
+coordinates = 18.5204, 73.8567
+print(type(coordinates))  # &lt;class 'tuple'&gt;
+
+# Tuple unpacking:
+lat, lon = coordinates
+print(f"Latitude: {lat}, Longitude: {lon}")  # Latitude: 18.5204, Longitude: 73.8567
+
+# Pythonic variable swap uses tuple packing and unpacking under the hood:
+a = 10
+b = 20
+a, b = b, a  # (b, a) packed then unpacked into a, b
+print(f"a = {a}, b = {b}")  # a = 20, b = 10
+
+# Extended / Starred Unpacking (PEP 3132):
+numbers = (1, 2, 3, 4, 5, 6)
+first, *middle, last = numbers
+print("First: ", first)   # 1
+print("Middle:", middle)  # [2, 3, 4, 5] (Unpacked as list)
+print("Last:  ", last)    # 6</pre></div>
+
+        <h3>2.4. Immutability &amp; The "Mutable Object Inside Tuple" Nuance</h3>
+        <p>A tuple's element bindings cannot change. However, if a tuple contains a reference to a mutable object (like a list), that nested object can still be mutated in-place:</p>
+
+        <div class="code"><pre>t = (1, [10, 20], "hello")
+
+# Cannot reassign tuple index:
+# t[0] = 99  # TypeError: 'tuple' object does not support item assignment
+
+# But the nested list can be mutated in-place:
+t[1].append(30)
+print(t)  # (1, [10, 20, 30], 'hello')</pre></div>
       </section>
+
+      <!-- SECTION 3: TUPLE METHODS AND FUNCTIONS -->
       <section id="3-tuple-methods-and-functions">
         <div class="heading-with-levels">
           <h2>3. Tuple methods and functions</h2>
@@ -102,14 +189,70 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-tuple-methods-and-functions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Tuple methods and functions</strong>.</li>
-          <li>Write small demos in <code class="inline">11-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. Built-in Tuple Methods</h3>
+        <p>Because tuples are immutable, they do not have methods like <code class="inline">append()</code>, <code class="inline">extend()</code>, <code class="inline">insert()</code>, <code class="inline">pop()</code>, or <code class="inline">sort()</code>. Python tuples have exactly <strong>two built-in methods</strong>:</p>
+
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Description</th><th>Time Complexity</th><th>Return Value</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">t.count(val)</code></td>
+              <td>Counts total occurrences of <code class="inline">val</code> in the tuple.</td>
+              <td>$O(N)$</td>
+              <td>Integer count (0 if missing)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">t.index(val[, start[, stop]])</code></td>
+              <td>Finds index of the first occurrence of <code class="inline">val</code>.</td>
+              <td>$O(N)$</td>
+              <td>Zero-based index (raises <code class="inline">ValueError</code> if missing)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>t = (10, 20, 30, 20, 40, 20, 50)
+
+# count():
+print("Count of 20:", t.count(20))  # 3
+print("Count of 99:", t.count(99))  # 0
+
+# index():
+print("First 20 index:   ", t.index(20))     # 1
+print("Second 20 index:  ", t.index(20, 2))  # 3 (Search starting from index 2)
+# t.index(99)  # Raises ValueError: tuple.index(x): x not in tuple</pre></div>
+
+        <h3 id="3-tuple-methods-and-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Universal Built-in Sequence Functions on Tuples</h3>
+        <p>All read-only built-in functions operating on iterables work seamlessly with tuples:</p>
+        <div class="code"><pre>nums = (5, 2, 9, 1, 7)
+
+print("len:", len(nums))      # 5
+print("min:", min(nums))      # 1
+print("max:", max(nums))      # 9
+print("sum:", sum(nums))      # 24
+
+# sorted() returns a NEW sorted list (leaving tuple untouched):
+sorted_list = sorted(nums)
+print("sorted():", sorted_list)         # [1, 2, 5, 7, 9]
+
+# any() and all():
+bool_tuple = (True, False, True)
+print("any():", any(bool_tuple))       # True
+print("all():", all(bool_tuple))       # False
+
+# Concatenation (+) and Repetition (*):
+t1 = (1, 2)
+t2 = (3, 4)
+print("Concat: ", t1 + t2)  # (1, 2, 3, 4) (Creates a brand new tuple)
+print("Repeat: ", t1 * 3)   # (1, 2, 1, 2, 1, 2)</pre></div>
       </section>
+
+      <!-- SECTION 4: TUPLE COMPREHENSION PATTERNS -->
       <section id="4-tuple-comprehension-patterns">
         <div class="heading-with-levels">
           <h2>4. Tuple comprehension patterns</h2>
@@ -118,14 +261,40 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-tuple-comprehension-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Tuple comprehension patterns</strong>.</li>
-          <li>Write small demos in <code class="inline">11-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>4.1. The "Tuple Comprehension" Myth</h3>
+        <div class="callout">
+          <strong>Language Rule:</strong> There is <strong>no such thing as a "tuple comprehension" syntax in Python</strong>. Writing <code class="inline">(x**2 for x in range(5))</code> does NOT create a tuple; it creates a <strong>Generator Object</strong> (lazy evaluation iterator).
+        </div>
+
+        <div class="code"><pre>gen = (x**2 for x in range(5))
+print(type(gen))  # &lt;class 'generator'&gt;
+print(gen)        # &lt;generator object &lt;genexpr&gt; at 0x...&gt;
+
+# Elements are generated on-the-fly:
+print(next(gen))  # 0
+print(next(gen))  # 1</pre></div>
+
+        <h3 id="4-tuple-comprehension-patterns-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. Idiomatic Tuple Construction via Comprehension</h3>
+        <p>To produce a tuple from a comprehension, wrap the generator expression or list comprehension in the <code class="inline">tuple()</code> constructor:</p>
+
+        <div class="code"><pre># Pattern 1: Passing generator expression to tuple() constructor (Recommended):
+even_squares = tuple(x**2 for x in range(1, 11) if x % 2 == 0)
+print("Tuple from genexpr:", even_squares)
+# (4, 16, 36, 64, 100)
+
+# Pattern 2: Passing a list comprehension to tuple():
+# Note: Creates temporary intermediate list in memory first
+words = ["python", "tuples", "immutability"]
+capitalized = tuple([w.upper() for w in words])
+print("Capitalized tuple: ", capitalized)
+# ('PYTHON', 'TUPLES', 'IMMUTABILITY')</pre></div>
       </section>
+
+      <!-- SECTION 5: TUPLE VS LIST DIFFERENCES -->
       <section id="5-tuple-vs-list-differences">
         <div class="heading-with-levels">
           <h2>5. Tuple vs list differences</h2>
@@ -134,14 +303,98 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-tuple-vs-list-differences-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Tuple vs list differences</strong>.</li>
-          <li>Write small demos in <code class="inline">11-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. Comprehensive Comparison Table</h3>
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>List (<code class="inline">list</code>)</th><th>Tuple (<code class="inline">tuple</code>)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Mutability</strong></td>
+              <td>Mutable (can add, remove, and update elements in-place).</td>
+              <td>Immutable (cannot modify elements once created).</td>
+            </tr>
+            <tr>
+              <td><strong>Syntax</strong></td>
+              <td>Square brackets: <code class="inline">[1, 2, 3]</code></td>
+              <td>Parentheses: <code class="inline">(1, 2, 3)</code> or comma <code class="inline">1, 2, 3</code></td>
+            </tr>
+            <tr>
+              <td><strong>Memory Footprint</strong></td>
+              <td>Larger (over-allocates pointer slots for future growth).</td>
+              <td>Smaller (allocates exact size needed; no spare slots).</td>
+            </tr>
+            <tr>
+              <td><strong>Iteration Speed</strong></td>
+              <td>Slightly slower.</td>
+              <td>Faster (compiler and CPython freelist optimizations).</td>
+            </tr>
+            <tr>
+              <td><strong>Hashability</strong></td>
+              <td>Unhashable (cannot be used as dict keys or set elements).</td>
+              <td>Hashable (if all its elements are immutable).</td>
+            </tr>
+            <tr>
+              <td><strong>Methods Available</strong></td>
+              <td>11 built-in methods (<code class="inline">append</code>, <code class="inline">sort</code>, <code class="inline">pop</code>, etc.).</td>
+              <td>Only 2 methods (<code class="inline">count</code>, <code class="inline">index</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Semantic Purpose</strong></td>
+              <td>Homogeneous collections of variable length.</td>
+              <td>Heterogeneous fixed-size data records (like a DB row or struct).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="5-tuple-vs-list-differences-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Memory &amp; Speed Demonstration</h3>
+        <div class="code"><pre>import sys
+import timeit
+
+# 1. Memory comparison:
+list_data = [1, 2, 3, 4, 5]
+tuple_data = (1, 2, 3, 4, 5)
+print(f"List bytes:  {sys.getsizeof(list_data)}")   # Typically ~104 bytes
+print(f"Tuple bytes: {sys.getsizeof(tuple_data)}")  # Typically ~80 bytes
+
+# 2. Instantiation speed comparison:
+list_time = timeit.timeit(stmt="[1, 2, 3, 4, 5]", number=1_000_000)
+tuple_time = timeit.timeit(stmt="(1, 2, 3, 4, 5)", number=1_000_000)
+print(f"List creation 1M times:  {list_time:.4f} s")
+print(f"Tuple creation 1M times: {tuple_time:.4f} s (Significantly faster due to freelist)")</pre></div>
+
+        <h3>5.3. Tuples as Dictionary Keys</h3>
+        <p>Because tuples are immutable and hashable, they are frequently used as compound keys in dictionaries (e.g. grid coordinates, geographical points):</p>
+        <div class="code"><pre># Geographical coordinate cache:
+city_coords = {
+    (18.5204, 73.8567): "Pune, India",
+    (19.0760, 72.8777): "Mumbai, India",
+    (40.7128, -74.0060): "New York, USA"
+}
+
+print(city_coords[(18.5204, 73.8567)])  # Pune, India
+
+# A list CANNOT be a dictionary key:
+# bad_key = {[18.52, 73.85]: "Pune"} # TypeError: unhashable type: 'list'</pre></div>
+
+        <h3>5.4. NamedTuples (<code class="inline">collections.namedtuple</code>)</h3>
+        <p>Provides tuple memory efficiency while adding self-documenting field names accessible via dot notation:</p>
+        <div class="code"><pre>from collections import namedtuple
+
+# Define a Point structure:
+Point = namedtuple("Point", ["x", "y", "z"])
+p = Point(x=10, y=20, z=30)
+
+print(p.x, p.y, p.z)       # Access by name: 10 20 30
+print(p[0], p[1], p[2])    # Access by index: 10 20 30
+print(isinstance(p, tuple))# True (It is a real tuple!)</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -150,49 +403,117 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction to tuple?</span>
+            <span class="qa-question-title">C.1. Why does (10) create an int while (10,) creates a tuple?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In Python's grammar, parentheses <code class="inline">()</code> are overloaded: they are used for function calls, mathematical operator precedence, and tuple grouping. To resolve ambiguity when an expression contains a single item, Python requires a trailing comma <code class="inline">,</code> to denote a tuple.</p>
+            <p>Without the comma, <code class="inline">(10)</code> is simply evaluated as an integer with grouping parentheses.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Tuple methods and functions?</span>
+            <span class="qa-question-title">C.2. Can a tuple be modified if it contains a list? Is such a tuple hashable?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>Modification:</strong> Yes, the nested list can be mutated in-place (e.g. <code class="inline">t[0].append(5)</code>). The tuple itself maintains fixed pointer references, but the object pointed to can change.</p>
+            <p><strong>Hashability:</strong> <strong>No</strong>, such a tuple is <strong>NOT hashable</strong>. A tuple is only hashable if all of its constituent items are hashable. Attempting <code class="inline">hash((1, [2, 3]))</code> raises <code class="inline">TypeError: unhashable type: 'list'</code>. Consequently, a tuple containing a list cannot be used as a dictionary key.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Tuple comprehension patterns?</span>
+            <span class="qa-question-title">C.3. Why is tuple instantiation faster than list instantiation in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Two key optimizations make tuples faster:</p>
+            <ol>
+              <li><strong>CPython Tuple Freelist:</strong> CPython caches up to 20,000 deallocated tuples (for lengths between 1 and 20). When creating a small tuple, CPython simply reclaims a pre-allocated struct from the freelist without requesting new memory from the system.</li>
+              <li><strong>Fixed Allocation:</strong> Unlike lists, tuples do not require allocating spare headroom for dynamic resizes.</li>
+            </ol>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Tuple vs list differences?</span>
+            <span class="qa-question-title">C.4. What happens when you execute (x for x in range(5))?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>It creates a <strong>Generator Expression</strong>, not a tuple. A generator expression evaluates items lazily on demand using the iterator protocol (<code class="inline">next()</code>), consuming minimal $O(1)$ memory.</p>
+            <p>To actually construct a tuple, you must pass the generator to the <code class="inline">tuple()</code> constructor: <code class="inline">tuple(x for x in range(5))</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the semantic difference between when to use a List vs a Tuple?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Lists represent homogeneous sequences:</strong> Collections of similar items where the length varies over time (e.g. a list of student names, prices, or log messages).</li>
+              <li><strong>Tuples represent heterogeneous records:</strong> Fixed structures where position gives semantic meaning (e.g. <code class="inline">(first_name, last_name, age, email)</code> like a database row or C struct).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the result of t = (1, 2, [3, 4]); t[2] += [5, 6]?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>This is a classic Python interview puzzle. The statement results in <strong>BOTH</strong> an error and a mutation:</p>
+            <ol>
+              <li>The <code class="inline">+=</code> operator calls <code class="inline">__iadd__()</code> on the list, which extends the list in-place to <code class="inline">[3, 4, 5, 6]</code>.</li>
+              <li>Then, Python attempts to reassign the result back to <code class="inline">t[2]</code>.</li>
+              <li>Because <code class="inline">t</code> is an immutable tuple, item assignment fails, raising a <strong><code class="inline">TypeError: 'tuple' object does not support item assignment</code></strong>.</li>
+              <li>However, the list inside the tuple <strong>has already been modified</strong> in-place! The final value of <code class="inline">t</code> is <code class="inline">(1, 2, [3, 4, 5, 6])</code>.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How does starred unpacking (*rest) work in Python?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Introduced in PEP 3132, starred unpacking captures unassigned elements into a new list. You can place the starred target at the beginning, middle, or end:</p>
+            <div class="code"><pre>head, *tail = (1, 2, 3, 4)      # head=1, tail=[2, 3, 4]
+*start, end = (1, 2, 3, 4)      # start=[1, 2, 3], end=4
+first, *mid, last = (1, 2, 3, 4)# first=1, mid=[2, 3], last=4</pre></div>
+            <p>Only one starred expression is permitted in an unpacking assignment.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why should you prefer collections.namedtuple or typing.NamedTuple over plain tuples?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Plain tuples rely purely on numeric index positions (<code class="inline">row[2]</code>), which makes code fragile and hard to read. <code class="inline">namedtuple</code> provides:</p>
+            <ul>
+              <li><strong>Self-documenting field access:</strong> <code class="inline">user.email</code> instead of <code class="inline">user[3]</code>.</li>
+              <li><strong>Zero memory penalty:</strong> Identical memory usage and performance as regular tuples (no <code class="inline">__dict__</code> overhead).</li>
+              <li><strong>Full backward compatibility:</strong> Can still be unpacked or indexed like standard tuples.</li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,206 +522,207 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">11-practice.py</code>. Run with <code class="inline">python3 11-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">11-practice.py</code>. Run with <code class="inline">python3 11-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction to tuple</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining tuple immutability and the single-element comma rule.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Introduction to Tuple:
-# 1. Tuples are ordered, immutable sequences defined using parentheses () or commas.
-# 2. Because of immutability, tuples are hashable (can serve as dict keys or set items).
-# 3. Single-element tuples require a trailing comma: (42,) instead of (42).</pre></div>
+                <div class="code"><pre># Tuple Foundations:
+# 1. Tuples are ordered, immutable, indexed sequences of object references.
+# 2. A single-element tuple requires a trailing comma: (10,) is a tuple, (10) is an int.
+# 3. Tuples consume less memory than lists and benefit from CPython's freelist cache.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Tuple methods and functions</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Demonstrate packing, unpacking, and starred unpacking with a 6-element tuple.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Tuple methods and functions:
-coords = (10, 20, 10, 30, 10, 40)
-print(&quot;count of 10:&quot;, coords.count(10))  # 3
-print(&quot;index of 30:&quot;, coords.index(30))  # 3
-print(&quot;len:&quot;, len(coords), &quot;| min:&quot;, min(coords), &quot;| max:&quot;, max(coords))</pre></div>
+                <div class="code"><pre>data = 10, 20, 30, 40, 50, 60  # Tuple packing
+first, *middle, last = data    # Starred unpacking
+print("First: ", first)        # 10
+print("Middle:", middle)       # [20, 30, 40, 50]
+print("Last:  ", last)         # 60</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Construct a tuple of uppercase vowels from a string using a generator expression.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Tuples and Immutable Sequences.
-
-Goal: Master tuple construction, packing/unpacking, immutable collection safety,
-namedtuple patterns, and understanding performance/memory differences vs lists.
-&quot;&quot;&quot;</pre></div>
+                <div class="code"><pre>text = "engineering excellence"
+vowels = tuple(ch.upper() for ch in text if ch.lower() in "aeiou")
+print("Vowels tuple:", vowels)
+# ('E', 'I', 'E', 'E', 'I', 'E', 'E', 'E', 'E')</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction to tuple</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Frequency &amp; All Indices Finder — Return total count and a list of all index positions of an item in a tuple.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction to tuple
-# Tuple packing and unpacking:
-point = 4, 5, 6  # Parentheses are optional in packing
-x, y, z = point  # Unpacking
-print(f&quot;Point: {point}, x={x}, y={y}, z={z}&quot;)
+                <div class="code"><pre>def find_all_indices(tup: tuple, target) -> tuple:
+    indices = [idx for idx, val in enumerate(tup) if val == target]
+    return len(indices), indices
 
-# Single element tuple trap:
-not_a_tuple = (&quot;apple&quot;)
-is_a_tuple = (&quot;apple&quot;,)
-print(&quot;not_a_tuple type:&quot;, type(not_a_tuple)) # str
-print(&quot;is_a_tuple type:&quot;, type(is_a_tuple))   # tuple</pre></div>
+sample = (10, 20, 30, 20, 40, 20, 50)
+count, positions = find_all_indices(sample, 20)
+print(f"Target 20 occurred {count} times at indices: {positions}")
+# Target 20 occurred 3 times at indices: [1, 3, 5]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Tuple methods and functions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Sort List of Tuples by Multiple Keys — Sort student records (name, grade, age) primarily by grade descending, secondarily by age ascending.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Tuple methods and functions
-data = (&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;, &quot;banana&quot;)
-print(&quot;Occurrences of &#x27;banana&#x27;:&quot;, data.count(&quot;banana&quot;))
-print(&quot;First index of &#x27;cherry&#x27;:&quot;, data.index(&quot;cherry&quot;))
+                <div class="code"><pre>students = [
+    ("Alice", 85, 21),
+    ("Bob", 92, 23),
+    ("Charlie", 85, 19),
+    ("Diana", 92, 20)
+]
 
-# Tuples support concatenation and repetition (+ and *):
-t1 = (1, 2)
-t2 = (3, 4)
-t_combined = t1 + t2
-t_repeated = t1 * 3
-print(&quot;Combined:&quot;, t_combined)
-print(&quot;Repeated:&quot;, t_repeated)</pre></div>
+# Sort key: (-grade, age)
+students.sort(key=lambda s: (-s[1], s[2]))
+print("Sorted students:")
+for s in students:
+    print(f"  {s[0]:<8} Grade: {s[1]}, Age: {s[2]}")
+# Diana   Grade: 92, Age: 20
+# Bob     Grade: 92, Age: 23
+# Charlie Grade: 85, Age: 19
+# Alice   Grade: 85, Age: 21</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Tuple comprehension patterns</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: NamedTuple Database Record Modeling — Create an Employee structure with computed annual salary property.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Tuple comprehension patterns
-# Note: (x for x in ...) creates a generator expression, NOT a tuple!
-gen = (x * 2 for x in range(5))
-print(&quot;Generator expression:&quot;, gen)
+                <div class="code"><pre>from collections import namedtuple
 
-# To create a tuple from comprehension, pass the generator to tuple():
-t_comp = tuple(x * 2 for x in range(5))
-print(&quot;Tuple from generator:&quot;, t_comp)</pre></div>
+class Employee(namedtuple("EmployeeBase", ["id", "name", "monthly_salary", "department"])):
+    @property
+    def annual_salary(self):
+        return self.monthly_salary * 12
+
+emp = Employee(101, "Bharat Sonwane", 8500, "Engineering")
+print(f"{emp.name} ({emp.department}) earns ${emp.annual_salary:,} annually.")
+# Bharat Sonwane (Engineering) earns $102,000 annually.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Tuple vs list differences</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 4: Nested Tuple Flattener — Recursively unpack arbitrarily nested tuples into a single flat tuple.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Tuple vs list differences
-import sys
+                <div class="code"><pre>def flatten_tuple(nested: tuple) -> tuple:
+    flat = []
+    for item in nested:
+        if isinstance(item, tuple):
+            flat.extend(flatten_tuple(item))
+        else:
+            flat.append(item)
+    return tuple(flat)
 
-lst = [1, 2, 3, 4, 5]
-tpl = (1, 2, 3, 4, 5)
-
-print(&quot;List size in bytes:&quot;, sys.getsizeof(lst))
-print(&quot;Tuple size in bytes:&quot;, sys.getsizeof(tpl)) # Significantly smaller!
-
-# Tuples can be dictionary keys:
-locations = {
-    (40.7128, -74.0060): &quot;New York&quot;,
-    (34.0522, -118.2437): &quot;Los Angeles&quot;
-}
-print(&quot;Location lookup:&quot;, locations[(40.7128, -74.0060)])
-# {[1, 2]: &#x27;Error&#x27;} would raise TypeError: unhashable type: &#x27;list&#x27;</pre></div>
+nested = (1, (2, (3, 4)), 5, ((6,), 7))
+print("Flat tuple:", flatten_tuple(nested))
+# (1, 2, 3, 4, 5, 6, 7)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Tuples.</span>
+                <span class="qa-question-title">Challenge 1: Immutable Coordinate Grid Pathfinding Cache — Cache path costs between (x1, y1) and (x2, y2) using tuples as keys.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Transaction Record Keeper using collections.namedtuple
-from collections import namedtuple
+                <div class="code"><pre>import math
 
-Transaction = namedtuple(&quot;Transaction&quot;, [&quot;id&quot;, &quot;user&quot;, &quot;amount&quot;, &quot;status&quot;])
+path_cache = {}
 
-ledger = [
-    Transaction(101, &quot;Alice&quot;, 250.00, &quot;COMPLETED&quot;),
-    Transaction(102, &quot;Bob&quot;, 15.50, &quot;PENDING&quot;),
-    Transaction(103, &quot;Charlie&quot;, 420.00, &quot;COMPLETED&quot;),
-    Transaction(104, &quot;Diana&quot;, 85.00, &quot;FAILED&quot;)
-]
+def get_distance(point_a: tuple, point_b: tuple) -> float:
+    # Use sorted tuple pair as dictionary key to make distance direction-agnostic:
+    key = tuple(sorted([point_a, point_b]))
+    if key not in path_cache:
+        dist = math.sqrt((point_a[0] - point_b[0])**2 + (point_a[1] - point_b[1])**2)
+        path_cache[key] = round(dist, 3)
+    return path_cache[key]
 
-completed_total = sum(t.amount for t in ledger if t.status == &quot;COMPLETED&quot;)
-print(&quot;Ledger Transactions:&quot;)
-for t in ledger:
-    print(f&quot;  Tx #{t.id} - {t.user:&lt;8}: ${t.amount:&gt;7.2f} [{t.status}]&quot;)
-print(&quot;-&quot; * 35)
-print(f&quot;Total Completed Volume: ${completed_total:.2f}&quot;)</pre></div>
+p1, p2 = (0, 0), (3, 4)
+print("Distance p1 -> p2:", get_distance(p1, p2))  # 5.0
+print("Distance p2 -> p1 (cached):", get_distance(p2, p1))  # 5.0
+print("Cache state:", path_cache)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: In-Place Mutation Trap Analysis — Demonstrate and explain the t[idx] += [val] puzzle with try-except.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Tuple Pitfalls &amp; Edge Cases:
-# 1. Mutability inside a tuple:
-# A tuple itself cannot be altered, but mutable objects inside it CAN be modified:
-t = (1, [2, 3])
-t[1].append(4)
-print(&quot;Tuple with mutated inner list:&quot;, t)  # (1, [2, 3, 4])
+                <div class="code"><pre>t = (1, [10, 20])
+try:
+    t[1] += [30, 40]
+except TypeError as e:
+    print("Caught expected TypeError:", e)
 
-# 2. Single-element comma requirement:
-x = (5)   # int!
-y = (5,)  # tuple!
-print(&quot;type(5):&quot;, type(x), &quot;| type((5,)):&quot;, type(y))</pre></div>
+# The inner list was mutated despite the exception!
+print("Final tuple state:", t)
+# Final tuple state: (1, [10, 20, 30, 40])</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Tuples) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know why <code class="inline">(10,)</code> is a tuple while <code class="inline">(10)</code> is an integer.</li>
+          <li>I understand why tuples are faster and use less memory than lists (CPython freelist).</li>
+          <li>I know how to unpack tuples using standard and starred (<code class="inline">*rest</code>) syntax.</li>
+          <li>I can explain why tuples make valid dictionary keys while lists do not.</li>
         </ul>
       </section>
-      <footer>Python Notes File 10. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 11. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

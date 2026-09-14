@@ -42,13 +42,19 @@
       </nav>
       <header class="hero" id="intro">
         <h1>16. Modules</h1>
-        <p class="subtitle">File 16 — import forms, dir/help, random, math.</p>
+        <p class="subtitle">File 16 — code modularity, import mechanisms, module attributes, sys.path resolution, random, and math modules.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">Modules</span>
+          <span class="chip">sys.path &amp; sys.modules</span>
+          <span class="chip">import forms</span>
+          <span class="chip">__name__ == '__main__'</span>
+          <span class="chip">importlib.reload</span>
+          <span class="chip">random</span>
+          <span class="chip">math</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -57,29 +63,30 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Modules</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>A <strong>Module</strong> in Python is simply a file containing Python definitions, functions, classes, and executable statements with a <code class="inline">.py</code> extension.</li>
+          <li>As programs grow in size, putting all code in a single file becomes unmaintainable. Modules allow dividing large applications into self-contained, logically cohesive units that can be reused across different projects.</li>
+          <li>Modules provide <strong>namespace isolation</strong>: functions or variables defined in one module do not automatically clash with identical names in other modules.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–6 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">16-practice.py</code> before File 17. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to modules</strong></li>
-          <li><strong>import forms, naming conflicts, reloading</strong></li>
-          <li><strong>dir(), help(), __doc__, __file__, __name__</strong></li>
-          <li><strong>random module and applications</strong></li>
-          <li><strong>math module</strong></li>
+          <li><strong>Introduction to modules</strong> — file structure, benefits, and <code class="inline">sys.path</code> lookup order</li>
+          <li><strong>import forms, naming conflicts, reloading</strong> — 5 import syntaxes, <code class="inline">sys.modules</code> caching, and <code class="inline">importlib.reload()</code></li>
+          <li><strong>dir(), help(), __doc__, __file__, __name__</strong> — introspection tools and the <code class="inline">__main__</code> execution guard</li>
+          <li><strong>random module and applications</strong> — pseudo-random generation, shuffling, sampling, and OTP generation</li>
+          <li><strong>math module</strong> — constants, rounding, number theory, powers, and trigonometry</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: INTRODUCTION TO MODULES -->
       <section id="2-introduction-to-modules">
         <div class="heading-with-levels">
           <h2>2. Introduction to modules</h2>
@@ -88,14 +95,56 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-introduction-to-modules-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>Introduction to modules</strong>.</li>
-          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>2.1. Creating a Module</h3>
+        <p>Any valid Python file is automatically an importable module. Suppose we save a file named <code class="inline">calc.py</code>:</p>
+
+        <div class="code"><pre># calc.py
+"""A simple arithmetic utility module."""
+
+PI = 3.14159
+
+def add(a, b):
+    return a + b
+
+def multiply(a, b):
+    return a * b</pre></div>
+
+        <p>In another file located in the same directory, we can import and utilize it immediately:</p>
+
+        <div class="code"><pre># main.py
+import calc
+
+print(calc.PI)               # 3.14159
+print(calc.add(10, 20))      # 30
+print(calc.multiply(5, 6))   # 30</pre></div>
+
+        <h3 id="2-introduction-to-modules-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.2. The Module Search Path: <code class="inline">sys.path</code></h3>
+        <div class="callout">
+          <strong>How Python Finds Modules:</strong> When executing an <code class="inline">import foo</code> statement, Python searches for <code class="inline">foo.py</code> sequentially through the list of directory strings stored in <code class="inline">sys.path</code>:
+          <ol>
+            <li><strong>Current Working Directory:</strong> The directory containing the input script (or the current directory in interactive sessions).</li>
+            <li><strong>PYTHONPATH Environment Variable:</strong> List of directory paths set by the operating system environment.</li>
+            <li><strong>Standard Library Directories:</strong> Where Python's built-in modules (<code class="inline">math</code>, <code class="inline">os</code>, <code class="inline">sys</code>, <code class="inline">json</code>) are installed.</li>
+            <li><strong>Site-Packages:</strong> Third-party libraries installed via <code class="inline">pip</code> (in your active virtual environment or global Python install).</li>
+          </ol>
+          If the module is not found in any of these paths, Python raises a <code class="inline">ModuleNotFoundError: No module named 'foo'</code>.
+        </div>
+
+        <div class="code"><pre>import sys
+
+print("Module search path (first 3 entries):")
+for path in sys.path[:3]:
+    print(" ", path)
+
+# Dynamically adding a custom directory to search path at runtime:
+# sys.path.append("/custom/path/to/modules")</pre></div>
       </section>
+
+      <!-- SECTION 3: IMPORT FORMS, NAMING CONFLICTS, RELOADING -->
       <section id="3-import-forms-naming-conflicts-reloading">
         <div class="heading-with-levels">
           <h2>3. import forms, naming conflicts, reloading</h2>
@@ -104,14 +153,66 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-import-forms-naming-conflicts-reloading-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. The 5 Forms of Import Statements</h3>
+        <table>
+          <thead>
+            <tr><th>Syntax Form</th><th>Example</th><th>Access Pattern</th><th>Pros &amp; Cons</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. Basic <code class="inline">import</code></td>
+              <td><code class="inline">import math</code></td>
+              <td><code class="inline">math.sqrt(16)</code></td>
+              <td>Clear namespace origin; no name collisions.</td>
+            </tr>
+            <tr>
+              <td>2. Aliased <code class="inline">import as</code></td>
+              <td><code class="inline">import numpy as np</code></td>
+              <td><code class="inline">np.array([1, 2])</code></td>
+              <td>Convenient shorthand for long module names.</td>
+            </tr>
+            <tr>
+              <td>3. Specific member import</td>
+              <td><code class="inline">from math import sqrt, pi</code></td>
+              <td><code class="inline">sqrt(16)</code></td>
+              <td>Direct member access without prefix.</td>
+            </tr>
+            <tr>
+              <td>4. Member import with alias</td>
+              <td><code class="inline">from math import sqrt as sq</code></td>
+              <td><code class="inline">sq(16)</code></td>
+              <td>Resolves local naming collisions.</td>
+            </tr>
+            <tr>
+              <td>5. Wildcard import (<code class="inline">*</code>)</td>
+              <td><code class="inline">from math import *</code></td>
+              <td><code class="inline">sin(pi / 2)</code></td>
+              <td><strong>Discouraged:</strong> Pollutes local namespace, hides origin, can accidentally overwrite variables.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="3-import-forms-naming-conflicts-reloading-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Module Caching in <code class="inline">sys.modules</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>import forms, naming conflicts, reloading</strong>.</li>
-          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
+          <li>When a module is imported for the first time, Python executes its top-level code and caches the resulting module object in the <code class="inline">sys.modules</code> dictionary.</li>
+          <li>Subsequent <code class="inline">import</code> statements referencing that module anywhere in the program simply retrieve the cached instance from <code class="inline">sys.modules</code> without re-executing the file.</li>
         </ul>
+
+        <h3>3.3. Dynamic Reloading with <code class="inline">importlib.reload()</code></h3>
+        <p>If you modify a module file on disk while a long-running process (like an interactive shell or server) is running, executing <code class="inline">import calc</code> again will NOT re-read the file. You must explicitly reload it using <code class="inline">importlib.reload()</code>:</p>
+
+        <div class="code"><pre>import importlib
+import math
+
+# Reload the module fresh from disk:
+importlib.reload(math)</pre></div>
       </section>
+
+      <!-- SECTION 4: DIR, HELP, __DOC__, __FILE__, __NAME__ -->
       <section id="4-dir-help-doc-file-name">
         <div class="heading-with-levels">
           <h2>4. dir(), help(), __doc__, __file__, __name__</h2>
@@ -120,14 +221,69 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-dir-help-doc-file-name-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. Introspection Built-ins: <code class="inline">dir()</code> and <code class="inline">help()</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>dir(), help(), __doc__, __file__, __name__</strong>.</li>
-          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
+          <li><strong><code class="inline">dir(module)</code>:</strong> Returns an alphabetical list of all valid attribute and function names defined inside the module.</li>
+          <li><strong><code class="inline">help(module)</code>:</strong> Launches the interactive help documentation viewer generated from the module's docstrings.</li>
         </ul>
+
+        <div class="code"><pre>import math
+
+# Inspect all symbols in math:
+symbols = dir(math)
+print("Total symbols in math:", len(symbols))
+print("First 10 symbols:", symbols[:10])</pre></div>
+
+        <h3 id="4-dir-help-doc-file-name-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. Special Module Attributes</h3>
+        <table>
+          <thead>
+            <tr><th>Attribute</th><th>Type</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">__doc__</code></td>
+              <td><code class="inline">str</code></td>
+              <td>The module-level docstring defined at the very top of the file.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">__file__</code></td>
+              <td><code class="inline">str</code></td>
+              <td>The absolute filesystem path where the module's source code resides.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">__name__</code></td>
+              <td><code class="inline">str</code></td>
+              <td>The module name string, or <code class="inline">"__main__"</code> if executed directly as the entry point.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>4.3. The Execution Guard: <code class="inline">if __name__ == "__main__":</code></h3>
+        <div class="callout">
+          <strong>How <code class="inline">__name__</code> Works:</strong>
+          <ul>
+            <li>When you run a file directly from the terminal (<code class="inline">python3 app.py</code>), Python sets its <code class="inline">__name__</code> attribute to the string <strong><code class="inline">"__main__"</code></strong>.</li>
+            <li>When the file is imported by another script (<code class="inline">import app</code>), Python sets its <code class="inline">__name__</code> attribute to its actual filename: <strong><code class="inline">"app"</code></strong>.</li>
+            <li>Wrapping executable demo code inside <code class="inline">if __name__ == "__main__":</code> ensures that test code or CLI execution runs only when launched directly, and remains completely silent when imported as a library.</li>
+          </ul>
+        </div>
+
+        <div class="code"><pre># service.py
+def start_server():
+    print("Server running on port 8080...")
+
+if __name__ == "__main__":
+    # This block ONLY runs when executed via: python3 service.py
+    # It does NOT run when another file does: import service
+    print("Executing service.py directly in standalone mode.")
+    start_server()</pre></div>
       </section>
+
+      <!-- SECTION 5: RANDOM MODULE AND APPLICATIONS -->
       <section id="5-random-module-and-applications">
         <div class="heading-with-levels">
           <h2>5. random module and applications</h2>
@@ -136,14 +292,75 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-random-module-and-applications-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+
+        <h3>5.1. Core Functions in the <code class="inline">random</code> Module</h3>
+        <table>
+          <thead>
+            <tr><th>Function</th><th>Range / Description</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">random.random()</code></td>
+              <td>Floating point in $[0.0, 1.0)$</td>
+              <td><code class="inline">0.734912</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">random.uniform(a, b)</code></td>
+              <td>Floating point in $[a, b]$</td>
+              <td><code class="inline">random.uniform(10.5, 20.5)</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">random.randint(a, b)</code></td>
+              <td>Integer $N$ such that $a \le N \le b$ <strong>(Both bounds inclusive!)</strong></td>
+              <td><code class="inline">random.randint(1, 6)</code> (Dice roll)</td>
+            </tr>
+            <tr>
+              <td><code class="inline">random.randrange(start, stop[, step])</code></td>
+              <td>Item from <code class="inline">range(start, stop, step)</code> (Stop is exclusive)</td>
+              <td><code class="inline">random.randrange(0, 100, 5)</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="5-random-module-and-applications-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Sequence Operations: <code class="inline">choice()</code>, <code class="inline">choices()</code>, <code class="inline">sample()</code>, <code class="inline">shuffle()</code></h3>
         <ul>
-          <li>Understand the main ideas in <strong>random module and applications</strong>.</li>
-          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
+          <li><code class="inline">random.choice(seq)</code>: Picks 1 random item from a non-empty sequence.</li>
+          <li><code class="inline">random.choices(seq, k=N)</code>: Picks $N$ items <strong>with replacement</strong> (duplicates possible).</li>
+          <li><code class="inline">random.sample(seq, k=N)</code>: Picks $N$ unique items <strong>without replacement</strong> (lottery/sampling).</li>
+          <li><code class="inline">random.shuffle(list)</code>: Shuffles a mutable list <strong>in-place</strong>. Returns <code class="inline">None</code>.</li>
         </ul>
+
+        <div class="code"><pre>import random
+
+deck = ["A♠", "K♠", "Q♠", "J♠", "10♠", "A♥", "K♥", "Q♥", "J♥", "10♥"]
+
+# Pick one card:
+print("Single pick: ", random.choice(deck))
+
+# Lottery draw (3 unique cards without replacement):
+print("Sample draw: ", random.sample(deck, k=3))
+
+# Shuffle deck in-place:
+cards = list(deck)
+random.shuffle(cards)
+print("Shuffled:    ", cards[:4])
+
+# OTP / Verification Code Generator:
+def generate_otp(length=6) -> str:
+    digits = [str(random.randint(0, 9)) for _ in range(length)]
+    return "".join(digits)
+
+print("Generated 6-digit OTP:", generate_otp())</pre></div>
+
+        <div class="callout">
+          <strong>Security Note:</strong> The <code class="inline">random</code> module uses the Mersenne Twister algorithm, which is completely deterministic and <strong>unsuitable for cryptographic purposes</strong> (passwords, auth tokens, crypto keys). For secure generation, use the standard library <strong><code class="inline">secrets</code></strong> module: <code class="inline">secrets.token_hex(16)</code>.
+        </div>
       </section>
+
+      <!-- SECTION 6: MATH MODULE -->
       <section id="6-math-module">
         <div class="heading-with-levels">
           <h2>6. math module</h2>
@@ -152,14 +369,64 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="6-math-module-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>math module</strong>.</li>
-          <li>Write small demos in <code class="inline">16-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>6.1. Mathematical Constants &amp; Rounding Functions</h3>
+        <table>
+          <thead>
+            <tr><th>Function / Constant</th><th>Return Value</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">math.pi</code> / <code class="inline">math.e</code> / <code class="inline">math.tau</code></td>
+              <td>Mathematical constants</td>
+              <td>$\pi \approx 3.14159$, $e \approx 2.71828$, $\tau = 2\pi$</td>
+            </tr>
+            <tr>
+              <td><code class="inline">math.ceil(x)</code></td>
+              <td>Smallest integer $\ge x$ (rounds up)</td>
+              <td><code class="inline">math.ceil(4.1) -&gt; 5</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">math.floor(x)</code></td>
+              <td>Largest integer $\le x$ (rounds down)</td>
+              <td><code class="inline">math.floor(4.9) -&gt; 4</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">math.trunc(x)</code></td>
+              <td>Truncates decimal part towards zero</td>
+              <td><code class="inline">math.trunc(-4.9) -&gt; -4</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="6-math-module-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>6.2. Number Theory, Powers &amp; Logarithms</h3>
+        <div class="code"><pre>import math
+
+# Number theory:
+print("GCD(48, 18):       ", math.gcd(48, 18))       # 6
+print("LCM(48, 18):       ", math.lcm(48, 18))       # 144 (Python 3.9+)
+print("Combinations (5C2):", math.comb(5, 2))        # 10 (Python 3.8+)
+print("Permutations (5P2):", math.perm(5, 2))        # 20 (Python 3.8+)
+print("Factorial (5!):    ", math.factorial(5))      # 120
+
+# Powers and square roots:
+print("Square root:       ", math.sqrt(25))          # 5.0
+print("Cube root:         ", math.cbrt(27))          # 3.0 (Python 3.11+)
+
+# Logarithms:
+print("Natural log ln(e): ", math.log(math.e))       # 1.0
+print("Log base 10 (1000):", math.log10(1000))       # 3.0
+print("Log base 2 (64):   ", math.log2(64))          # 6.0
+
+# Trigonometry (Expects radians; use math.radians()):
+angle_rad = math.radians(90)
+print("sin(90 deg):       ", math.sin(angle_rad))    # 1.0</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -168,49 +435,117 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Introduction to modules?</span>
+            <span class="qa-question-title">C.1. What is the purpose of if __name__ == "__main__":?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Every Python module has a built-in <code class="inline">__name__</code> attribute:</p>
+            <ul>
+              <li>If the file is run directly as the entry point program (<code class="inline">python3 file.py</code>), Python sets <code class="inline">__name__ = "__main__"</code>.</li>
+              <li>If the file is imported by another module (<code class="inline">import file</code>), Python sets <code class="inline">__name__ = "file"</code>.</li>
+            </ul>
+            <p>The guard <code class="inline">if __name__ == "__main__":</code> ensures that unit tests, CLI parsers, or demo scripts execute only when the file is run as a script, preventing unwanted side effects when the file is imported elsewhere.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about import forms, naming conflicts, reloading?</span>
+            <span class="qa-question-title">C.2. Why is from module import * considered bad practice?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Wildcard imports are strongly discouraged for three reasons:</p>
+            <ol>
+              <li><strong>Namespace Pollution &amp; Shadowing:</strong> It dumps hundreds of symbols into the local namespace, potentially overwriting existing variables or built-in functions silently.</li>
+              <li><strong>Readability:</strong> Code reviewers cannot determine where a function originated (e.g. is <code class="inline">dump()</code> from <code class="inline">os</code>, <code class="inline">sys</code>, or <code class="inline">json</code>?).</li>
+              <li><strong>Static Analysis:</strong> Linters (Flake8, Pylance, Ruff) cannot detect undefined variables or unused imports effectively.</li>
+            </ol>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about dir(), help(), __doc__, __file__, __name__?</span>
+            <span class="qa-question-title">C.3. How does sys.modules optimize repeated imports?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><code class="inline">sys.modules</code> is an internal dictionary that maps module names to already loaded module objects. When an import statement is encountered:</p>
+            <ol>
+              <li>Python checks if the module name is in <code class="inline">sys.modules</code>.</li>
+              <li>If present, it returns the cached module object immediately ($O(1)$ dictionary lookup), skipping disk I/O and code execution.</li>
+              <li>If absent, it locates the file via <code class="inline">sys.path</code>, compiles it to bytecode, executes its top-level statements, stores it in <code class="inline">sys.modules</code>, and returns it.</li>
+            </ol>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about random module and applications?</span>
+            <span class="qa-question-title">C.4. What is the difference between random.randint() and random.randrange()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">random.randint(a, b)</code>:</strong> Returns an integer in range $[a, b]$ where <strong>both $a$ and $b$ are inclusive</strong>. <code class="inline">randint(1, 6)</code> can return 1, 2, 3, 4, 5, or 6.</li>
+              <li><strong><code class="inline">random.randrange(start, stop[, step])</code>:</strong> Follows standard Python slicing/range semantics where <strong>stop is exclusive</strong> ($[start, stop)$). <code class="inline">randrange(1, 6)</code> can return 1, 2, 3, 4, or 5 (never 6). Also accepts an optional <code class="inline">step</code> argument.</li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why shouldn't the random module be used for generating passwords or tokens?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The <code class="inline">random</code> module uses the <strong>Mersenne Twister algorithm</strong>. It is a pseudo-random number generator (PRNG) designed for statistical simulations, not cryptography.</p>
+            <p>After observing 624 consecutive generated outputs, an attacker can completely reconstruct the internal 2,496-byte state and accurately predict all future and past numbers. For cryptographic tokens, passwords, and security nonces, always use the <strong><code class="inline">secrets</code></strong> module, which interfaces with OS-level entropy sources (<code class="inline">/dev/urandom</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the difference between random.choices() and random.sample()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code class="inline">random.choices(population, k=N)</code>:</strong> Sampling <strong>with replacement</strong>. An item can be chosen multiple times. Can accept item weights.</li>
+              <li><strong><code class="inline">random.sample(population, k=N)</code>:</strong> Sampling <strong>without replacement</strong>. Every selected element is guaranteed to be unique. Raises <code class="inline">ValueError</code> if $k > \text{len}(population)$.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What does the __all__ variable inside a module do?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">__all__</code> is a list of strings defined at the module level that specifies the exact public API exported when a consumer executes <code class="inline">from module import *</code>.</p>
+            <p>Any symbol not listed in <code class="inline">__all__</code> is treated as private and will not be imported during a wildcard import.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How does Python prevent circular import deadlocks?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>A circular import occurs when Module A imports Module B, which in turn imports Module A.</p>
+            <p>Because Module A is already registered in <code class="inline">sys.modules</code> when it begins executing, Module B receives an uninitialized / partially executed Module A object. If Module B attempts to access a function from A that has not yet been defined in the file, Python raises an <code class="inline">AttributeError</code> or <code class="inline">ImportError</code>.</p>
+            <p><strong>Remedies:</strong> Move imports inside functions (deferred imports), merge the modules, or refactor shared dependencies into a separate third module.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -219,208 +554,218 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">16-practice.py</code>. Run with <code class="inline">python3 16-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">16-practice.py</code>. Run with <code class="inline">python3 16-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Introduction to modules</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining sys.path resolution and __name__ == '__main__'.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Introduction to Modules:
-# 1. A module is simply a Python source file (.py) containing definitions, classes, and statements.
-# 2. Modules encourage code reusability, organization, and namespace isolation.
-# 3. Python searches for modules in sys.path (current directory, PYTHONPATH, standard library, site-packages).</pre></div>
+                <div class="code"><pre># Module Foundations:
+# 1. Modules are .py files searched via sys.path (cwd -> PYTHONPATH -> stdlib -> site-packages).
+# 2. sys.modules caches imported modules for O(1) subsequent import retrieval.
+# 3. if __name__ == '__main__': ensures code executes only when run as standalone script.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>import forms, naming conflicts, reloading</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Inspect attributes of the math module using dir() and filter functions starting with 'c'.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Import forms and avoiding conflicts:
-import math as m          # Aliasing
-from math import sqrt, pi # Specific members
-from math import gcd as math_gcd # Renaming to prevent collision
+                <div class="code"><pre>import math
 
-print(&quot;sqrt(16):&quot;, sqrt(16))
-print(&quot;pi:&quot;, pi)
-print(&quot;gcd(24, 36):&quot;, math_gcd(24, 36))</pre></div>
+c_funcs = [fn for fn in dir(math) if fn.startswith("c")]
+print("Math functions starting with 'c':", c_funcs)
+# ['cbrt', 'ceil', 'comb', 'copysign', 'cos', 'cosh']</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Generate a random 4-digit PIN using random.randint.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Modules and Code Architecture.
+                <div class="code"><pre>import random
 
-Goal: Master module import syntax, namespace management, standard introspection tools
-(__name__, __file__, dir(), help()), and the random module.
-&quot;&quot;&quot;</pre></div>
+pin = f"{random.randint(0, 9999):04d}"
+print("Random 4-digit PIN:", pin)</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Introduction to modules</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Secure Password Generator — Generate a randomized password with mixed character sets.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Introduction to modules
-# Exploring standard library modules (os, sys, platform):
-import sys
-import platform
+                <div class="code"><pre>import random
+import string
 
-print(&quot;Python Version:&quot;, platform.python_version())
-print(&quot;Operating System:&quot;, platform.system())
-print(&quot;Architecture:&quot;, platform.machine())
-print(&quot;Loaded modules count:&quot;, len(sys.modules))</pre></div>
+def generate_password(length=12) -> str:
+    pool = string.ascii_letters + string.digits + "!@#$%^&*"
+    # Ensure at least 1 lower, 1 upper, 1 digit, 1 special
+    pwd = [
+        random.choice(string.ascii_lowercase),
+        random.choice(string.ascii_uppercase),
+        random.choice(string.digits),
+        random.choice("!@#$%^&*")
+    ]
+    pwd += random.choices(pool, k=length - 4)
+    random.shuffle(pwd)
+    return "".join(pwd)
+
+print("Generated password:", generate_password(16))</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: import forms, naming conflicts, reloading</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Geometric Calculations with math — Calculate distance and angle between 2D Cartesian points.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Import forms, naming conflicts, reloading
-import importlib
-import math
+                <div class="code"><pre>import math
 
-# Direct alias:
-from datetime import datetime as dt
-now = dt.now()
-print(&quot;Current timestamp:&quot;, now.strftime(&quot;%Y-%m-%d %H:%M:%S&quot;))
+p1 = (0, 0)
+p2 = (3, 4)
 
-# Reloading a module dynamically at runtime:
-importlib.reload(math)
-print(&quot;Module math reloaded successfully.&quot;)</pre></div>
+# Distance: math.dist() in Python 3.8+
+distance = math.dist(p1, p2)
+
+# Angle in degrees from X axis:
+dx = p2[0] - p1[0]
+dy = p2[1] - p1[1]
+angle_deg = math.degrees(math.atan2(dy, dx))
+
+print(f"Distance: {distance}, Angle: {angle_deg:.2f}°")
+# Distance: 5.0, Angle: 53.13°</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: dir(), help(), __doc__, __file__, __name__</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Lottery Ball Drawer without Replacement — Draw 6 unique lottery balls from 1 to 49.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: dir(), help(), __doc__, __file__, __name__
-import math
+                <div class="code"><pre>import random
 
-print(&quot;__name__ of current script:&quot;, __name__)
-print(&quot;math.__file__ location:&quot;, getattr(math, &#x27;__file__&#x27;, &#x27;built-in C module&#x27;))
-print(&quot;math.__doc__ excerpt:&quot;, math.__doc__[:60] if math.__doc__ else &quot;N/A&quot;)
-
-# dir() introspects all symbols exported by a module:
-math_symbols = [s for s in dir(math) if not s.startswith(&quot;_&quot;)]
-print(f&quot;math exports {len(math_symbols)} symbols. Samples:&quot;, math_symbols[:8])</pre></div>
+balls = list(range(1, 50))
+winning_draw = sorted(random.sample(balls, k=6))
+print("Winning Lottery Numbers:", winning_draw)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: random module and applications</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 4: Dynamic Module Inspector — Print all public functions and their docstrings from a given module.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Random module and applications
-import random
+                <div class="code"><pre>import math
 
-# Reproducible randomness with seed:
-random.seed(42)
+def inspect_public_functions(mod):
+    funcs = {}
+    for name in dir(mod):
+        if not name.startswith("_"):
+            obj = getattr(mod, name)
+            if callable(obj):
+                funcs[name] = (obj.__doc__ or "").strip().split("\n")[0]
+    return funcs
 
-print(&quot;random() float in [0.0, 1.0):&quot;, random.random())
-print(&quot;randint(1, 100):&quot;, random.randint(1, 100))
-print(&quot;randrange(0, 100, 10):&quot;, random.randrange(0, 100, 10))
-
-colors = [&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;gold&quot;, &quot;purple&quot;]
-print(&quot;choice():&quot;, random.choice(colors))
-print(&quot;sample() 3 unique:&quot;, random.sample(colors, 3))
-
-deck = list(range(1, 11))
-random.shuffle(deck)
-print(&quot;shuffled deck:&quot;, deck)</pre></div>
+math_docs = inspect_public_functions(math)
+for fn_name in sorted(list(math_docs.keys()))[:5]:
+    print(f"{fn_name:<10}: {math_docs[fn_name]}")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Modules.</span>
+                <span class="qa-question-title">Challenge 1: Monte Carlo Pi Estimation — Estimate the value of pi using random coordinates inside a unit circle.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Dice Simulator &amp; Probability Estimator
-import random
+                <div class="code"><pre>import random
+import math
 
-def estimate_dice_probabilities(trials=10000):
-    sums_count = {}
-    for _ in range(trials):
-        dice1 = random.randint(1, 6)
-        dice2 = random.randint(1, 6)
-        total = dice1 + dice2
-        sums_count[total] = sums_count.get(total, 0) + 1
-    
-    print(f&quot;Simulation Results over {trials:,} rolls of two dice:&quot;)
-    print(f&quot;{&#x27;Sum&#x27;:&lt;5} {&#x27;Count&#x27;:&lt;8} {&#x27;Estimated %&#x27;:&lt;12}&quot;)
-    print(&quot;-&quot; * 28)
-    for total in sorted(sums_count.keys()):
-        pct = (sums_count[total] / trials) * 100
-        print(f&quot;{total:&lt;5} {sums_count[total]:&lt;8} {pct:&gt;6.2f}%&quot;)
+def estimate_pi(num_samples=100_000) -> float:
+    inside_circle = 0
+    for _ in range(num_samples):
+        x = random.random()
+        y = random.random()
+        if x**2 + y**2 <= 1.0:
+            inside_circle += 1
+    return (inside_circle / num_samples) * 4
 
-estimate_dice_probabilities(5000)</pre></div>
+est = estimate_pi(100_000)
+print(f"Estimated Pi: {est:.5f} | Actual math.pi: {math.pi:.5f} | Error: {abs(est - math.pi):.5f}")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Plugin Loader System via sys.modules — Dynamically import and register handlers at runtime.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Module Pitfalls &amp; Edge Cases:
-# 1. Pitfall: from module import * pollutes namespace and causes shadowing:
-# Avoid wildcard imports! Always be explicit.
+                <div class="code"><pre>import importlib
 
-# 2. Circular imports: Module A imports B, B imports A:
-# Fix: Move shared dependencies to a third module or import inside the function.
+plugin_registry = {}
 
-# 3. Overriding standard library names (e.g. naming your file random.py or math.py).</pre></div>
+def load_plugin(module_name: str):
+    try:
+        mod = importlib.import_module(module_name)
+        plugin_registry[module_name] = mod
+        print(f"Successfully loaded plugin: {module_name}")
+        return mod
+    except ModuleNotFoundError as e:
+        print(f"Plugin load failed: {e}")
+        return None
+
+load_plugin("json")
+load_plugin("math")
+print("Registry contains:", list(plugin_registry.keys()))</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Modules) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know how Python searches for modules through <code class="inline">sys.path</code>.</li>
+          <li>I can explain the role of <code class="inline">if __name__ == '__main__':</code>.</li>
+          <li>I understand the difference between <code class="inline">random.sample()</code> and <code class="inline">random.choices()</code>.</li>
+          <li>I know why <code class="inline">secrets</code> should be preferred over <code class="inline">random</code> for cryptographic tokens.</li>
         </ul>
       </section>
-      <footer>Python Notes File 15. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 16. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

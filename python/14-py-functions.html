@@ -20,8 +20,8 @@
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
         <a href="#2-defining-functions-parameters-return">2. Defining functions, parameters, return</a>
-        <a href="#3-positional-keyword-default-variable-length-args">3. Positional, keyword, default, variable-length args</a>
-        <a href="#4-local-and-global-variables-global-keyword">4. Local and global variables; global keyword</a>
+        <a href="#3-positional-keyword-default-variable-length-args">3. Positional, keyword, default, variable args</a>
+        <a href="#4-local-and-global-variables-global-keyword">4. Local &amp; global scope, global keyword</a>
         <a href="#5-recursive-functions">5. Recursive functions</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
@@ -41,13 +41,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>14. Functions</h1>
-        <p class="subtitle">File 14 — def, arguments, local/global, recursion.</p>
+        <p class="subtitle">File 14 — def syntax, parameter semantics (*args, **kwargs, /, *), scope rules (LEGB), and recursion mechanics.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">def &amp; return</span>
+          <span class="chip">First-Class Objects</span>
+          <span class="chip">*args &amp; **kwargs</span>
+          <span class="chip">Mutable Default Trap</span>
+          <span class="chip">Positional-Only (/)</span>
+          <span class="chip">LEGB Scope</span>
+          <span class="chip">global &amp; nonlocal</span>
+          <span class="chip">Recursion</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +63,29 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Functions</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>A <strong>Function</strong> is a reusable, named block of organized code designed to perform a single, coherent task.</li>
+          <li>Functions eliminate redundancy (the DRY principle — <em>Don't Repeat Yourself</em>), enhance modularity, and make programs testable, maintainable, and debuggable.</li>
+          <li>In Python, functions are <strong>First-Class Citizens (First-Class Objects)</strong>. This means functions can be assigned to variables, passed as arguments into other functions, returned from functions, and stored inside data structures.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">14-practice.py</code> before File 15. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Defining functions, parameters, return</strong></li>
-          <li><strong>Positional, keyword, default, variable-length args</strong></li>
-          <li><strong>Local and global variables; global keyword</strong></li>
-          <li><strong>Recursive functions</strong></li>
+          <li><strong>Defining functions, parameters, return</strong> — <code class="inline">def</code>, docstrings, returning multiple values, implicit <code class="inline">None</code></li>
+          <li><strong>Positional, keyword, default, variable-length args</strong> — <code class="inline">*args</code>, <code class="inline">**kwargs</code>, mutable default trap, <code class="inline">/</code> and <code class="inline">*</code> markers</li>
+          <li><strong>Local and global variables; global keyword</strong> — LEGB scope resolution, <code class="inline">global</code>, <code class="inline">nonlocal</code>, and <code class="inline">UnboundLocalError</code></li>
+          <li><strong>Recursive functions</strong> — base conditions, stack overflow limits, memoization, and lack of tail call optimization</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: DEFINING FUNCTIONS, PARAMETERS, RETURN -->
       <section id="2-defining-functions-parameters-return">
         <div class="heading-with-levels">
           <h2>2. Defining functions, parameters, return</h2>
@@ -86,46 +94,211 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-defining-functions-parameters-return-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Anatomy of a Python Function</h3>
+        <div class="code"><pre>def function_name(param1, param2):
+    """Optional docstring explaining what the function accomplishes (PEP 257)."""
+    # Function body / statements
+    return result</pre></div>
+
         <ul>
-          <li>Understand the main ideas in <strong>Defining functions, parameters, return</strong>.</li>
-          <li>Write small demos in <code class="inline">14-practice.py</code> covering this section.</li>
+          <li><strong><code class="inline">def</code> keyword:</strong> Tells Python to create a function object and bind it to the identifier name.</li>
+          <li><strong>Parameters vs Arguments:</strong>
+            <ul>
+              <li><strong>Parameters:</strong> The variable names listed in the function definition header.</li>
+              <li><strong>Arguments:</strong> The concrete values or references passed into the function upon invocation.</li>
+            </ul>
+          </li>
+          <li><strong>Docstrings (<code class="inline">"""..."""</code>):</strong> Triple-quoted explanation placed on the first line inside the function. Accessible programmatically via <code class="inline">function_name.__doc__</code> and interactive <code class="inline">help()</code>.</li>
         </ul>
+
+        <div class="code"><pre>def calculate_area(width: float, height: float) -> float:
+    """Calculate the area of a rectangle given width and height."""
+    return width * height
+
+print(calculate_area(5.0, 3.0))      # 15.0
+print(calculate_area.__doc__)        # Displays docstring</pre></div>
+
+        <h3 id="2-defining-functions-parameters-return-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.2. The <code class="inline">return</code> Statement</h3>
+        <ul>
+          <li><strong>Explicit Return:</strong> The <code class="inline">return</code> statement exits the function immediately and passes back a value to the caller.</li>
+          <li><strong>Implicit Return:</strong> If a function finishes executing its body without hitting a <code class="inline">return</code> statement, or uses a bare <code class="inline">return</code>, it implicitly returns <strong><code class="inline">None</code></strong>.</li>
+          <li><strong>Returning Multiple Values:</strong> When multiple comma-separated values are returned (<code class="inline">return a, b, c</code>), Python packs them into a single <strong>tuple</strong>, which the caller can unpack directly.</li>
+        </ul>
+
+        <div class="code"><pre># Implicit return None:
+def log_message(msg):
+    print(f"[LOG] {msg}")
+
+res = log_message("System boot")
+print("Return value:", res)  # None
+
+# Returning multiple values (Tuple packing & unpacking):
+def min_max_sum(numbers):
+    return min(numbers), max(numbers), sum(numbers)
+
+low, high, total = min_max_sum([10, 20, 5, 40, 15])
+print(f"Low: {low}, High: {high}, Total: {total}")
+# Low: 5, High: 40, Total: 90</pre></div>
       </section>
+
+      <!-- SECTION 3: POSITIONAL, KEYWORD, DEFAULT, VARIABLE-LENGTH ARGS -->
       <section id="3-positional-keyword-default-variable-length-args">
         <div class="heading-with-levels">
-          <h2>3. Positional, keyword, default, variable-length args</h2>
+          <h2>3. Positional, keyword, default, variable args</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-positional-keyword-default-variable-length-args-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. Positional &amp; Keyword Arguments</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Positional, keyword, default, variable-length args</strong>.</li>
-          <li>Write small demos in <code class="inline">14-practice.py</code> covering this section.</li>
+          <li><strong>Positional Arguments:</strong> Bound to parameters strictly based on their order in the call.</li>
+          <li><strong>Keyword Arguments:</strong> Bound by parameter name (<code class="inline">param=value</code>), allowing arguments to be passed in any order.</li>
+          <li><strong>Rule:</strong> In any function call, positional arguments must <strong>always precede</strong> keyword arguments.</li>
         </ul>
+
+        <div class="code"><pre>def greet(name, greeting="Hello", punctuation="!"):
+    return f"{greeting}, {name}{punctuation}"
+
+# Positional:
+print(greet("Bharat"))                     # Hello, Bharat!
+
+# Keyword:
+print(greet(punctuation=".", name="Rahul"))# Hello, Rahul.
+
+# SyntaxError if positional follows keyword:
+# greet(greeting="Hi", "Suresh")  # SyntaxError: positional argument follows keyword argument</pre></div>
+
+        <h3 id="3-positional-keyword-default-variable-length-args-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. The Infamous Mutable Default Argument Trap</h3>
+        <div class="callout">
+          <strong>Critical Interview Trap:</strong> Default parameter expressions are evaluated <strong>once at function definition time</strong>, NOT every time the function is called! If you use a mutable object (like <code class="inline">[]</code> or <code class="inline">{}</code>) as a default value, that same instance is shared across all subsequent invocations.
+        </div>
+
+        <div class="code"><pre># BAD: Mutable default argument shared across calls
+def append_bad(item, target_list=[]):
+    target_list.append(item)
+    return target_list
+
+print(append_bad("apple"))   # ['apple']
+print(append_bad("banana"))  # ['apple', 'banana'] <-- Unintended shared state!
+
+# GOOD: Use None as default sentinel and initialize in body
+def append_good(item, target_list=None):
+    if target_list is None:
+        target_list = []
+    target_list.append(item)
+    return target_list
+
+print(append_good("apple"))   # ['apple']
+print(append_good("banana"))  # ['banana'] (Clean instance each call)</pre></div>
+
+        <h3>3.3. Variable-Length Arguments: <code class="inline">*args</code> and <code class="inline">**kwargs</code></h3>
+        <ul>
+          <li><strong><code class="inline">*args</code>:</strong> Gathers excess positional arguments into a <strong>tuple</strong>.</li>
+          <li><strong><code class="inline">**kwargs</code>:</strong> Gathers excess keyword arguments into a <strong>dictionary</strong>.</li>
+        </ul>
+
+        <div class="code"><pre>def make_request(method, url, *headers, **options):
+    print(f"Method: {method} -> {url}")
+    print(f"Headers tuple: {headers}")
+    print(f"Options dict:  {options}")
+
+make_request(
+    "GET", "https://api.example.com",
+    "Accept: application/json", "Authorization: Bearer xyz",
+    timeout=30, retries=3, verify_ssl=True
+)</pre></div>
+
+        <h3>3.4. Special Parameter Markers: Positional-Only (<code class="inline">/</code>) and Keyword-Only (<code class="inline">*</code>)</h3>
+        <p>Python 3.8+ allows precise architectural control over how callers can pass arguments:</p>
+        <div class="code"><pre>def full_signature(pos_only, /, standard, *, kw_only):
+    print(pos_only, standard, kw_only)
+
+# pos_only MUST be passed by position (no keyword)
+# standard can be passed by position OR by keyword
+# kw_only MUST be passed by keyword
+
+full_signature(10, standard=20, kw_only=30)  # Valid
+full_signature(10, 20, kw_only=30)           # Valid
+# full_signature(pos_only=10, 20, kw_only=30) # TypeError: pos_only is positional-only
+# full_signature(10, 20, 30)                  # TypeError: kw_only must be keyword</pre></div>
       </section>
+
+      <!-- SECTION 4: LOCAL AND GLOBAL SCOPE -->
       <section id="4-local-and-global-variables-global-keyword">
         <div class="heading-with-levels">
-          <h2>4. Local and global variables; global keyword</h2>
+          <h2>4. Local &amp; global scope, global keyword</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-local-and-global-variables-global-keyword-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. The LEGB Scope Resolution Rule</h3>
+        <p>When resolving variable names, Python searches four concentric scope namespaces in strict order:</p>
+        <ol>
+          <li><strong>L — Local:</strong> Names assigned within the current function body.</li>
+          <li><strong>E — Enclosing:</strong> Names in the local scope of enclosing/outer functions (closures).</li>
+          <li><strong>G — Global:</strong> Names defined at the module top level or declared via <code class="inline">global</code>.</li>
+          <li><strong>B — Built-in:</strong> Pre-assigned built-in names (<code class="inline">len</code>, <code class="inline">range</code>, <code class="inline">print</code>, <code class="inline">ValueError</code>).</li>
+        </ol>
+
+        <h3 id="4-local-and-global-variables-global-keyword-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. The <code class="inline">global</code> and <code class="inline">nonlocal</code> Keywords</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Local and global variables; global keyword</strong>.</li>
-          <li>Write small demos in <code class="inline">14-practice.py</code> covering this section.</li>
+          <li>Reading a global variable from inside a function works freely without keywords.</li>
+          <li>However, <strong>assigning</strong> to a variable inside a function creates a new local variable by default. To reassign a module-level variable, declare it with <code class="inline">global &lt;var&gt;</code>.</li>
+          <li>To reassign a variable in an outer enclosing function from an inner closure, declare it with <code class="inline">nonlocal &lt;var&gt;</code>.</li>
         </ul>
+
+        <div class="code"><pre>counter = 0
+
+def increment():
+    global counter
+    counter += 1
+
+increment()
+increment()
+print("Global counter:", counter)  # 2
+
+# nonlocal example (Closure state):
+def make_accumulator(initial=0):
+    total = initial
+    def add(amount):
+        nonlocal total
+        total += amount
+        return total
+    return add
+
+acc = make_accumulator(100)
+print(acc(25))  # 125
+print(acc(50))  # 175</pre></div>
+
+        <h3>4.3. The Classic <code class="inline">UnboundLocalError</code></h3>
+        <div class="callout">
+          <strong>Under the Hood:</strong> Python's compiler scans function bodies at compile-time. If a variable is assigned anywhere inside the function, Python marks it as <strong>local</strong> for the entire function. Accessing it before the assignment triggers an <code class="inline">UnboundLocalError</code>.
+        </div>
+
+        <div class="code"><pre>x = 10
+
+def broken_func():
+    # print(x)  # Raises UnboundLocalError: cannot access local variable 'x' where it is not associated with a value
+    x = 20    # Because 'x' is assigned here, the compiler treats 'x' as local throughout!
+
+# broken_func()</pre></div>
       </section>
+
+      <!-- SECTION 5: RECURSIVE FUNCTIONS -->
       <section id="5-recursive-functions">
         <div class="heading-with-levels">
           <h2>5. Recursive functions</h2>
@@ -134,14 +307,50 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-recursive-functions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
+
+        <h3>5.1. Anatomy of Recursion</h3>
+        <p>A recursive function is a function that calls itself directly or indirectly to solve smaller instances of the same problem. Every recursive function must contain two essential parts:</p>
+        <ol>
+          <li><strong>Base Case:</strong> A terminating condition that stops recursion and returns a concrete value without making further recursive calls.</li>
+          <li><strong>Recursive Step:</strong> Moving toward the base case by calling itself with reduced input.</li>
+        </ol>
+
+        <div class="code"><pre>def factorial(n: int) -> int:
+    # 1. Base case:
+    if n <= 1:
+        return 1
+    # 2. Recursive step:
+    return n * factorial(n - 1)
+
+print("5! =", factorial(5))  # 120</pre></div>
+
+        <h3 id="5-recursive-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. Recursion Limit &amp; Lack of Tail Call Optimization (TCO)</h3>
         <ul>
-          <li>Understand the main ideas in <strong>Recursive functions</strong>.</li>
-          <li>Write small demos in <code class="inline">14-practice.py</code> covering this section.</li>
+          <li>In Python, each function call consumes a new stack frame. To prevent runaway recursion from causing C-level stack overflow crashes, Python imposes a default recursion depth limit (typically 1,000 frames).</li>
+          <li>Exceeding this raises a <code class="inline">RecursionError: maximum recursion depth exceeded</code>.</li>
+          <li>You can inspect and adjust the limit using <code class="inline">sys.getrecursionlimit()</code> and <code class="inline">sys.setrecursionlimit()</code>.</li>
+          <li><strong>No Tail Call Optimization:</strong> Python does not optimize tail-recursive calls into loops. Guido van Rossum deliberately rejected TCO to preserve complete stack traces for debugging.</li>
         </ul>
+
+        <div class="code"><pre>import sys
+print("Current recursion limit:", sys.getrecursionlimit())  # Typically 1000
+
+# Memoization: Transforming O(2^N) exponential recursion into O(N) linear time:
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fibonacci(n: int) -> int:
+    if n < 2:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print("Fibonacci(50):", fibonacci(50))  # 12586269025 (Instantaneous with cache!)</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -150,49 +359,121 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Defining functions, parameters, return?</span>
+            <span class="qa-question-title">C.1. What does it mean that functions are "First-Class Citizens" in Python?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>It means functions are treated like any other object (integers, strings, lists):</p>
+            <ul>
+              <li>Can be assigned to variables: <code class="inline">f = print; f("hello")</code>.</li>
+              <li>Can be passed as arguments into other functions (Higher-Order Functions like <code class="inline">map</code>, <code class="inline">filter</code>, or decorators).</li>
+              <li>Can be returned from functions (Closures).</li>
+              <li>Can be stored inside collections (e.g. dispatch dictionaries <code class="inline">{"add": add_func, "sub": sub_func}</code>).</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Positional, keyword, default, variable-length args?</span>
+            <span class="qa-question-title">C.2. Why does def append_to(item, lst=[]) retain elements between separate calls?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In Python, default parameter values are evaluated <strong>only once when the function is defined</strong> (at compile/module loading time), NOT when the function is called.</p>
+            <p>The empty list <code class="inline">[]</code> is bound to the function object's <code class="inline">__defaults__</code> tuple. Each function call that relies on the default receives a reference to this exact same list. Mutating it modifies the persistent object in <code class="inline">__defaults__</code>.</p>
+            <p><strong>Solution:</strong> Always use <code class="inline">def f(item, lst=None): if lst is None: lst = []</code>.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Local and global variables; global keyword?</span>
+            <span class="qa-question-title">C.3. What is the difference between *args and **kwargs?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong><code class="inline">*args</code>:</strong> Variable-length <strong>positional arguments</strong>. Python collects all excess positional arguments into an immutable <strong>tuple</strong>.</li>
+              <li><strong><code class="inline">**kwargs</code>:</strong> Variable-length <strong>keyword arguments</strong>. Python collects all excess keyword arguments into a mutable <strong>dictionary</strong>.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Recursive functions?</span>
+            <span class="qa-question-title">C.4. What causes an UnboundLocalError and how do you resolve it?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>An <code class="inline">UnboundLocalError</code> occurs when a variable is referenced before it has been assigned inside the local scope of a function.</p>
+            <p>If Python sees an assignment statement anywhere in a function (<code class="inline">x = 10</code>), it classifies <code class="inline">x</code> as a local variable for the entire function body. If code attempts to read <code class="inline">x</code> before that assignment line executes, Python cannot fall back to the global scope and raises <code class="inline">UnboundLocalError</code>.</p>
+            <p><strong>Fix:</strong> Declare <code class="inline">global x</code> at the top of the function if you intend to modify the global variable.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the difference between the global and nonlocal keywords?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code class="inline">global</code>:</strong> Binds the variable name directly to the top-level <strong>module namespace</strong>.</li>
+              <li><strong><code class="inline">nonlocal</code>:</strong> Binds the variable name to the nearest <strong>enclosing function scope</strong> (excluding the global scope). Used in closures to maintain state across invocations.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. What is the purpose of the / and * markers in function parameter lists?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong><code class="inline">/</code> (Positional-only marker, PEP 570):</strong> All parameters before <code class="inline">/</code> must be passed by position, never by keyword. Useful for library authors to rename parameters in future releases without breaking user keyword calls.</li>
+              <li><strong><code class="inline">*</code> (Keyword-only marker):</strong> All parameters after <code class="inline">*</code> must be passed as keyword arguments (<code class="inline">arg=val</code>). Prevents subtle bugs where callers pass boolean flags positionally.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. Why does Python not support Tail Call Optimization (TCO)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Guido van Rossum deliberately decided against implementing TCO for two primary reasons:</p>
+            <ol>
+              <li><strong>Preserving Debugging Stack Traces:</strong> TCO overwrites the current stack frame with the recursive call, which destroys the call history and makes post-mortem traceback debugging much harder.</li>
+              <li><strong>Pythonic Iteration:</strong> Python emphasizes explicit loops (<code class="inline">for</code>, <code class="inline">while</code>, comprehensions) over recursion as the idiomatic mechanism for repetition.</li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How are arguments passed in Python: by value or by reference?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python uses <strong>Call by Object Reference</strong> (or <strong>Call by Sharing</strong>):</p>
+            <ul>
+              <li>The parameter receives a copy of the <em>reference</em> (pointer) to the object.</li>
+              <li>If you pass a <strong>mutable object</strong> (like a list) and mutate it in-place (<code class="inline">lst.append(5)</code>), the caller sees the change.</li>
+              <li>If you rebind the parameter name (<code class="inline">lst = [1, 2]</code>), it points to a new object, leaving the caller's reference unaffected.</li>
+              <li>If you pass an <strong>immutable object</strong> (int, string, tuple), it cannot be modified in-place, behaving effectively like call-by-value.</li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,214 +482,212 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">14-practice.py</code>. Run with <code class="inline">python3 14-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">14-practice.py</code>. Run with <code class="inline">python3 14-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Defining functions, parameters, return</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment explaining the LEGB scope rule and first-class functions.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Defining Functions, Parameters, and Return:
-# 1. Functions are defined with def keyword and return None by default if no return statement is given.
-# 2. Multiple values can be returned as a tuple: return a, b.
-# 3. Parameters receive references to caller arguments (call-by-object-reference).</pre></div>
+                <div class="code"><pre># Function Foundations:
+# 1. Functions are first-class citizens (can be assigned, passed, and returned).
+# 2. Scope resolution follows LEGB: Local -> Enclosing -> Global -> Built-in.
+# 3. Always use immutable default arguments (def f(x=None)) to avoid shared state bugs.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Positional, keyword, default, variable-length args</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Define a function returning multiple values and unpack them into separate variables.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Positional, keyword, default, and variable-length arguments:
-def greet(name, greeting=&quot;Hello&quot;, *titles, **metadata):
-    full_title = &quot; &quot;.join(titles) + &quot; &quot; if titles else &quot;&quot;
-    print(f&quot;{greeting}, {full_title}{name}!&quot;)
-    if metadata:
-        print(&quot;Metadata:&quot;, metadata)
+                <div class="code"><pre>def compute_stats(nums):
+    return min(nums), max(nums), sum(nums) / len(nums)
 
-greet(&quot;Bharat&quot;)
-greet(&quot;Sonwane&quot;, &quot;Welcome&quot;, &quot;Dr.&quot;, &quot;Prof.&quot;, department=&quot;Engineering&quot;)</pre></div>
+lowest, highest, avg = compute_stats([10, 20, 30, 40, 50])
+print(f"Min: {lowest}, Max: {highest}, Avg: {avg}")  # Min: 10, Max: 50, Avg: 30.0</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Create a function using both *args and **kwargs to format an event log.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Functions and Modular Code.
+                <div class="code"><pre>def log_event(event_name, *tags, **metadata):
+    print(f"Event: {event_name}")
+    print(f"Tags: {', '.join(tags)}")
+    for k, v in metadata.items():
+        print(f"  {k}: {v}")
 
-Goal: Master function definitions, argument parsing (*args, **kwargs),
-scope resolution (LEGB rule, global keyword), and recursion patterns.
-&quot;&quot;&quot;</pre></div>
+log_event("USER_LOGIN", "security", "auth", user="sonwanebr", ip="192.168.1.1")</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Defining functions, parameters, return</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Positional-Only and Keyword-Only Validation — Implement an API request builder enforcing parameter boundaries.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Defining functions, parameters, return
-def calculate_metrics(numbers):
-    &quot;&quot;&quot;Return count, sum, and average of a list of numbers.&quot;&quot;&quot;
-    if not numbers:
-        return 0, 0, 0.0
-    total = sum(numbers)
-    count = len(numbers)
-    avg = total / count
-    return count, total, avg
+                <div class="code"><pre>def build_url(protocol, domain, /, path, *, use_https=True, timeout=10):
+    proto = "https" if use_https else protocol
+    return f"{proto}://{domain}/{path.lstrip('/')} (timeout={timeout}s)"
 
-c, s, a = calculate_metrics([10, 20, 30, 40])
-print(f&quot;Count: {c}, Sum: {s}, Average: {a:.2f}&quot;)</pre></div>
+# protocol & domain are positional-only; use_https & timeout are keyword-only
+url = build_url("http", "api.example.com", "v1/users", use_https=True, timeout=5)
+print("Built URL:", url)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Positional, keyword, default, variable-length args</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: State-Preserving Closure (Counter) — Create a counter function maintaining state using the nonlocal keyword.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Positional, keyword, default, variable-length args (*args, **kwargs)
-def build_query(table, *columns, **filters):
-    cols_str = &quot;, &quot;.join(columns) if columns else &quot;*&quot;
-    conditions = &quot; AND &quot;.join(f&quot;{k}=&#x27;{v}&#x27;&quot; for k, v in filters.items())
-    query = f&quot;SELECT {cols_str} FROM {table}&quot;
-    if conditions:
-        query += f&quot; WHERE {conditions}&quot;
-    return query
+                <div class="code"><pre>def create_counter(start=0, step=1):
+    current = start
+    def counter():
+        nonlocal current
+        val = current
+        current += step
+        return val
+    return counter
 
-print(build_query(&quot;users&quot;, &quot;id&quot;, &quot;name&quot;, &quot;email&quot;, status=&quot;active&quot;, role=&quot;admin&quot;))
-print(build_query(&quot;orders&quot;, status=&quot;shipped&quot;))</pre></div>
+c1 = create_counter(start=10, step=5)
+print("c1:", c1())  # 10
+print("c1:", c1())  # 15
+print("c1:", c1())  # 20</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Local and global variables; global keyword</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Recursive Deep Sum — Calculate the sum of all numbers inside irregular nested lists.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: Local and global variables; global keyword
-counter = 0  # Global variable
+                <div class="code"><pre>def deep_sum(nested_list: list) -> int:
+    total = 0
+    for item in nested_list:
+        if isinstance(item, list):
+            total += deep_sum(item)
+        elif isinstance(item, (int, float)):
+            total += item
+    return total
 
-def increment():
-    global counter  # Declare intent to modify global variable
-    counter += 1
-
-def read_only():
-    # Reading global without modification does not require global keyword
-    print(&quot;Reading global counter:&quot;, counter)
-
-increment()
-increment()
-read_only()
-print(&quot;Final counter value:&quot;, counter)</pre></div>
+data = [1, [2, [3, 4], 5], [[6, 7], 8], 9]
+print("Deep Sum:", deep_sum(data))  # 45</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: Recursive functions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 4: GCD (Greatest Common Divisor) via Euclidean Algorithm — Implement Euclidean recursion with a base case.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: Recursive functions
-def factorial(n):
-    &quot;&quot;&quot;Compute factorial recursively with base case n &lt;= 1.&quot;&quot;&quot;
-    if n &lt; 0:
-        raise ValueError(&quot;Factorial not defined for negative numbers&quot;)
-    if n &lt;= 1:
-        return 1
-    return n * factorial(n - 1)
+                <div class="code"><pre>def gcd(a: int, b: int) -> int:
+    # Base case:
+    if b == 0:
+        return a
+    # Recursive step: gcd(b, a % b)
+    return gcd(b, a % b)
 
-print(&quot;5! =&quot;, factorial(5))  # 120
-print(&quot;7! =&quot;, factorial(7))  # 5040</pre></div>
+print("GCD(48, 18):", gcd(48, 18))    # 6
+print("GCD(101, 10):", gcd(101, 10))  # 1</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Functions.</span>
+                <span class="qa-question-title">Challenge 1: Manual Memoization Decorator — Build a caching wrapper for recursive functions without using functools.lru_cache.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Flexible Math Expression Pipeline
-def math_pipeline(*funcs):
-    &quot;&quot;&quot;Return a function that chains multiple transformations.&quot;&quot;&quot;
-    def pipeline(val):
-        result = val
-        for f in funcs:
-            result = f(result)
-        return result
-    return pipeline
+                <div class="code"><pre>def memoize(fn):
+    cache = {}
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = fn(*args)
+        return cache[args]
+    return wrapper
 
-double = lambda x: x * 2
-add_ten = lambda x: x + 10
-square = lambda x: x ** 2
+@memoize
+def fib(n: int) -> int:
+    if n < 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
 
-compute = math_pipeline(double, add_ten, square)
-# (5 * 2 = 10) -&gt; (10 + 10 = 20) -&gt; (20 ** 2 = 400)
-print(&quot;Pipeline result for 5:&quot;, compute(5))</pre></div>
+print("Fibonacci(40):", fib(40))  # 102334155 (Instantaneous with manual memoize)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Pipeline Function Composer — Implement a compose(*functions) utility executing functions from left to right.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Function Pitfalls &amp; Edge Cases:
-# 1. Dangerous Default Argument Trap (mutable default):
-# def append_to(item, lst=[]): lst.append(item); return lst
-# Fix: Use None as default:
-def safe_append(item, lst=None):
-    if lst is None:
-        lst = []
-    lst.append(item)
-    return lst
+                <div class="code"><pre>def compose_pipeline(*functions):
+    def execute(initial_value):
+        res = initial_value
+        for f in functions:
+            res = f(res)
+        return res
+    return execute
 
-print(&quot;Call 1:&quot;, safe_append(1))  # [1]
-print(&quot;Call 2:&quot;, safe_append(2))  # [2] (independent!)
+# Example pipeline: string sanitization
+cleanse = compose_pipeline(
+    str.strip,
+    str.lower,
+    lambda s: s.replace(" ", "-"),
+    lambda s: f"https://example.com/tags/{s}"
+)
 
-# 2. Maximum recursion depth exceeded (default limit ~1000).</pre></div>
+print(cleanse("   Python Best Practices   "))
+# https://example.com/tags/python-best-practices</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Functions) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I know why functions are first-class citizens in Python.</li>
+          <li>I can explain the mutable default argument trap and its <code class="inline">None</code> sentinel fix.</li>
+          <li>I understand the LEGB scope resolution rule and when to use <code class="inline">global</code> vs <code class="inline">nonlocal</code>.</li>
+          <li>I know how to construct recursive functions with robust base conditions.</li>
         </ul>
       </section>
-      <footer>Python Notes File 13. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 14. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

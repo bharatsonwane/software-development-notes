@@ -39,13 +39,17 @@
       </nav>
       <header class="hero" id="intro">
         <h1>27. Assertions</h1>
-        <p class="subtitle">File 27 — assert for debugging.</p>
+        <p class="subtitle">Internal invariants, sanity checking during development, production caveats, and the -O optimization flag.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">assert</span>
+          <span class="chip">AssertionError</span>
+          <span class="chip">Internal Invariants</span>
+          <span class="chip">-O Optimization</span>
+          <span class="chip">Syntax Pitfalls</span>
         </div>
       </header>
+
+      <!-- SECTION 1 -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -54,26 +58,25 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
-        <ul>
-          <li>This chapter covers <strong>Assertions</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
-        </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–3 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">27-practice.py</code> before File 28. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+        <h3>1.1. Overview: What is an Assertion?</h3>
+        <p>An <strong>assertion</strong> is a debugging aid that tests a boolean condition that developer assumptions dictate <em>must always be true</em> at that specific point in code. If the condition evaluates to <code>True</code>, program execution continues unimpeded.</p>
+        <p>If the condition evaluates to <code>False</code>, the Python runtime immediately raises an <code>AssertionError</code>, halting execution and pointing directly to the invalid internal state.</p>
+
+        <div class="callout">
+          <strong>Key Mental Model:</strong> Assertions are internal guard rails for the developer, not error-handling mechanisms for end users. An assertion failure represents a <strong>bug in the software itself</strong>, indicating that an internal invariant or assumption was violated.
+        </div>
+
+        <h3>1.2. Section Map</h3>
         <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Debugging with assertions</strong></li>
-          <li><strong>assert forms and when to use</strong></li>
+          <li><strong>Introduction</strong> — Concepts and developer guard rails</li>
+          <li><strong>Debugging with assertions</strong> — Syntax forms, custom messages, and failure lifecycles</li>
+          <li><strong>assert forms and when to use</strong> — Invariants vs validation, the critical <code>-O</code> flag, and tuple syntax pitfalls</li>
+          <li><strong>C. Common questions</strong> — Core interview questions with in-depth explanations</li>
+          <li><strong>P. Practical Assignment</strong> — Validation exercises, invariant matrix mini-project, and edge cases</li>
         </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
+
+      <!-- SECTION 2 -->
       <section id="2-debugging-with-assertions">
         <div class="heading-with-levels">
           <h2>2. Debugging with assertions</h2>
@@ -82,14 +85,51 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="2-debugging-with-assertions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+        <h3>2.1. The Two Forms of the <code>assert</code> Statement</h3>
+        <p>Python provides two syntactic forms for assertions:</p>
         <ul>
-          <li>Understand the main ideas in <strong>Debugging with assertions</strong>.</li>
-          <li>Write small demos in <code class="inline">27-practice.py</code> covering this section.</li>
+          <li><strong>Simple Form:</strong> <code>assert &lt;condition&gt;</code></li>
+          <li><strong>Augmented Form (with descriptive message):</strong> <code>assert &lt;condition&gt;, &lt;error_message&gt;</code></li>
         </ul>
+
+        <div class="code"><pre># Form 1: Simple assertion without message
+total_count = 15
+assert total_count > 0
+
+# Form 2: Augmented assertion with descriptive diagnostic message (BEST PRACTICE)
+def apply_discount(price, discount_percent):
+    assert 0 &lt;= discount_percent &lt;= 100, f"Discount must be between 0 and 100%, got {discount_percent}"
+    assert price >= 0, f"Price cannot be negative, got {price}"
+    discounted_price = price * (1 - discount_percent / 100)
+    assert 0 &lt;= discounted_price &lt;= price, "Postcondition failure: discounted price out of bounds!"
+    return discounted_price
+
+print("Discounted price:", apply_discount(200, 20))  # 160.0
+
+try:
+    apply_discount(200, 150)  # Invalid discount
+except AssertionError as err:
+    print("Assertion caught:", err)</pre></div>
+
+        <h3 id="2-debugging-with-assertions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>2.2. Assertions for Internal Invariants</h3>
+        <p>Invariants are conditions that must hold true at specific points in program execution (e.g. loop invariants, state machine transitions, unreachable default cases).</p>
+
+        <div class="code"><pre>def process_transaction_state(state):
+    if state == "PENDING":
+        return "Waiting for payment"
+    elif state == "CONFIRMED":
+        return "Order in fulfillment"
+    elif state == "SHIPPED":
+        return "Package in transit"
+    else:
+        # If code reaches here, an illegal unhandled state was introduced!
+        raise AssertionError(f"Unreachable branch reached: unknown state '{state}'")</pre></div>
       </section>
+
+      <!-- SECTION 3 -->
       <section id="3-assert-forms-and-when-to-use">
         <div class="heading-with-levels">
           <h2>3. assert forms and when to use</h2>
@@ -98,14 +138,63 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
+
         <h3 id="3-assert-forms-and-when-to-use-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>assert forms and when to use</strong>.</li>
-          <li>Write small demos in <code class="inline">27-practice.py</code> covering this section.</li>
-        </ul>
+        <h3>3.1. When to Use vs When NOT to Use Assertions</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Good Uses for <code>assert</code></th>
+              <th>Dangerous / Bad Uses for <code>assert</code></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Internal function postconditions and sanity checks.</td>
+              <td><strong>User input validation</strong> (form fields, query params, CLI args).</td>
+            </tr>
+            <tr>
+              <td>Validating private helper function arguments.</td>
+              <td><strong>Security &amp; authentication checks</strong> (checking user roles/permissions).</td>
+            </tr>
+            <tr>
+              <td>Defensive programming against impossible states.</td>
+              <td>Checking conditions that depend on external resources (files, network).</td>
+            </tr>
+            <tr>
+              <td>Unit testing (e.g., test case assertions in <code>pytest</code>).</td>
+              <td>Operations with side effects inside the condition (e.g., <code>assert pop_item()</code>).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="3-assert-forms-and-when-to-use-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.2. The <code>-O</code> (Optimize) Production Caveat</h3>
+        <p>When Python is run with the <code>-O</code> (optimize) or <code>-OO</code> flag (e.g., <code>python -O script.py</code>), the bytecode compiler sets the built-in constant <code>__debug__</code> to <code>False</code> and <strong>completely removes and strips all <code>assert</code> statements</strong> from the compiled <code>.pyc</code> bytecode files!</p>
+
+        <div class="callout">
+          <strong>CRITICAL SECURITY HAZARD:</strong> If you use <code>assert is_admin(user)</code> to guard sensitive operations, running your application with <code>python -O</code> will strip the check completely, allowing ANY unauthorized user full administrative access! Always use standard <code>if not is_admin(user): raise PermissionError()</code> for runtime logic and security checks.
+        </div>
+
+        <h3>3.3. The Parentheses Tuple Gotcha</h3>
+        <p>In Python, <code>assert</code> is a statement, not a function. If you write parentheses around the condition and message like a function call (<code>assert (condition, "message")</code>), Python parses it as asserting the truthiness of a 2-element tuple!</p>
+        <p>Because any non-empty tuple evaluates to <code>True</code> in Python boolean logic, <strong>the assertion will NEVER fail</strong>, even if the condition is <code>False</code>!</p>
+
+        <div class="code"><pre># THE FATAL BUG:
+x = -5
+
+# This creates a 2-tuple: (False, "x must be positive")
+# A non-empty tuple is ALWAYS truthy in Python!
+assert (x > 0, "x must be positive")  # NEVER FAILS! (Silent bug)
+
+# THE CORRECT SYNTAX (No wrapping parentheses):
+try:
+    assert x > 0, "x must be positive"  # Properly raises AssertionError!
+except AssertionError as e:
+    print("Caught proper assertion:", e)</pre></div>
       </section>
+
+      <!-- SECTION C -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -119,24 +208,99 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Debugging with assertions?</span>
+            <span class="qa-question-title">C.1. What is an assertion in Python and what does it do when evaluated?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>An assertion is an internal sanity-check statement that verifies a boolean condition expected to always hold true during normal execution. If the condition evaluates to <code>False</code>, an <code>AssertionError</code> is raised, signaling that a programming bug or invalid internal state has occurred.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about assert forms and when to use?</span>
+            <span class="qa-question-title">C.2. What is the difference between an assertion and an exception check?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong>Assertions (<code>assert</code>):</strong> Test internal invariants and developer assumptions that should never happen if the software has no bugs. They can be disabled globally at compile time via the <code>-O</code> flag.</li>
+              <li><strong>Exceptions (<code>if ... raise</code>):</strong> Handle expected, recoverable, or external runtime conditions (e.g. bad user input, missing configuration files, network timeouts). They can never be disabled by optimization flags.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why must assertions never be used for user input validation or security?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Running Python with optimization flags (<code>python -O</code> or <code>python -OO</code>) completely ignores and strips all <code>assert</code> statements from the compiled bytecode. If validation or authorization relies on assertions, running in optimized production mode completely disables security guards.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. What is the syntax trap when using parentheses with <code>assert</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because <code>assert</code> is a keyword statement and not a function, writing <code>assert(x > 0, "Error")</code> evaluates the expression as a non-empty 2-element tuple <code>(x > 0, "Error")</code>. In Python, all non-empty tuples evaluate to boolean <code>True</code>, meaning the assertion will always pass and never raise an error.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What does the built-in constant <code>__debug__</code> represent?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code>__debug__</code> is a built-in boolean constant. Under normal Python execution, <code>__debug__</code> is <code>True</code>. When Python is executed with the <code>-O</code> flag, <code>__debug__</code> is set to <code>False</code>. The statement <code>assert cond, msg</code> is compiled under the hood as:</p>
+            <div class="code"><pre>if __debug__:
+    if not cond:
+        raise AssertionError(msg)</pre></div>
+            <p>When <code>__debug__</code> is <code>False</code>, the entire block is omitted from bytecode generation.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Should you catch <code>AssertionError</code> in production <code>try-except</code> blocks?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Generally, <strong>no</strong>. An <code>AssertionError</code> signals a developer logic bug rather than a recoverable runtime event. Catching and swallowing it hides bugs and allows the program to continue running with corrupted internal state. The only common exception is within automated testing frameworks (like <code>pytest</code> or <code>unittest</code>) which catch <code>AssertionError</code> to report test failures.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. What are preconditions, postconditions, and class invariants?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Precondition:</strong> A condition that must be true before a function executes (e.g. arguments meet internal requirements).</li>
+              <li><strong>Postcondition:</strong> A condition that must be true after a function completes (e.g. output is within calculated bounds).</li>
+              <li><strong>Class Invariant:</strong> A condition that an object must satisfy throughout its entire lifetime (e.g. an account balance must never be negative).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why should assertion conditions avoid expressions with side effects?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>If an assertion condition executes a function that mutates state (e.g., <code>assert items.pop() == "target"</code>), the program will behave differently in normal mode (where the item is popped) versus optimized <code>-O</code> mode (where the assert is stripped and the item is NOT popped). Assertion conditions must always be pure, side-effect-free evaluations.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -145,7 +309,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">27-practice.py</code>. Run with <code class="inline">python3 27-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write <code class="inline">27-practice.py</code>. Run with <code class="inline">python3 27-practice.py</code>. Test assert forms, postconditions, and invariants.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -158,29 +322,25 @@
               <div class="qa-answer-body">
                 <div class="code"><pre># Summary of Debugging with Assertions:
 # 1. Assertions test internal invariants and developer assumptions that should never be violated if the code is correct.
-# 2. Syntax: &#x27;assert condition, message&#x27; raises AssertionError with message if condition is False.
-# 3. Assertions can be globally disabled in production using Python&#x27;s optimization flag (python -O).</pre></div>
+# 2. They raise AssertionError when False, with an optional diagnostic message.
+# 3. Running Python with -O strips all assertions from compiled bytecode.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>assert forms and when to use</strong> and print the result.</span>
+                <span class="qa-question-title">Create a tiny example demonstrating a function with preconditions and postconditions.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># assert forms:
-# Simple form:
-x = 10
-assert x &gt; 0
+                <div class="code"><pre>def compute_square_root(x):
+    assert x >= 0, f"Precondition failed: x must be non-negative, got {x}"
+    result = x ** 0.5
+    assert result >= 0, "Postcondition failed: square root cannot be negative"
+    return result
 
-# Augmented form with descriptive error message:
-def calculate_discount(price, discount_rate):
-    assert 0.0 &lt;= discount_rate &lt;= 1.0, f&quot;Invalid discount rate: {discount_rate}&quot;
-    return price * (1.0 - discount_rate)
-
-print(&quot;Discounted:&quot;, calculate_discount(100.0, 0.2))</pre></div>
+print("Square root of 25:", compute_square_root(25))</pre></div>
               </div>
             </details>
           </li>
@@ -191,136 +351,129 @@ print(&quot;Discounted:&quot;, calculate_discount(100.0, 0.2))</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Assertions &amp; Internal Invariant Testing.
+                <div class="code"><pre>"""Chapter Practice: Python Assertions and Defensive Programming.
 
-Goal: Master assertion mechanics, augmented messages, distinguishing assertions from
-business logic validation, and handling Python -O flag optimization implications.
-&quot;&quot;&quot;</pre></div>
+Goal: Master assert syntax forms, internal invariants, production caveats with -O,
+and distinguishing assertions from runtime validation exceptions.
+"""</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Debugging with assertions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 1: Basic and augmented assertions</strong> — Write examples of both forms of <code>assert</code>; catch and print the message.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Debugging with assertions
-def parse_positive_int(s):
-    val = int(s)
-    # Assertion acts as an internal sanity check for developer logic
-    assert val &gt; 0, f&quot;Expected positive integer, received: {val}&quot;
-    return val
+                <div class="code"><pre># Task 1: Both assert forms
+# Form 1:
+val = 10
+assert val == 10
 
-print(&quot;Parsed:&quot;, parse_positive_int(&quot;42&quot;))
+# Form 2 with message:
 try:
-    parse_positive_int(&quot;-5&quot;)
+    assert val == 20, f"Expected val to be 20, but was {val}"
 except AssertionError as err:
-    print(f&quot;Caught assertion failure: {err}&quot;)</pre></div>
+    print("Caught assertion:", err)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: assert forms and when to use</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title"><strong>Task 2: The parentheses tuple pitfall</strong> — Demonstrate how <code>assert (False, "message")</code> behaves vs <code>assert False, "message"</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Assert forms and when to use
-class Account:
-    def __init__(self, balance):
-        # Assert invariant: balance cannot be negative on initialization
-        assert balance &gt;= 0, &quot;Account cannot start with negative balance&quot;
-        self.balance = balance
-    
-    def deposit(self, amount):
-        assert amount &gt; 0, &quot;Deposit amount must be positive&quot;
-        self.balance += amount
+                <div class="code"><pre># Task 2: Parentheses tuple pitfall
+# BAD: evaluates tuple truthiness (non-empty tuple is always True):
+assert (False, "This error will never be raised because the tuple is truthy!")
+print("Tuple assert incorrectly passed!")
 
-acc = Account(100)
-acc.deposit(50)
-print(f&quot;Account balance verified: ${acc.balance}&quot;)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Cheat sheet</strong> — Comment 5 key facts about Assertions.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Cheat sheet — 5 Key Facts about Assertions:
-# 1. Assertions are strictly for debugging and checking internal invariants; NEVER for user input validation.
-# 2. In production, running &#x27;python -O main.py&#x27; disables ALL assert statements completely (__debug__ is False).
-# 3. If you use assertions for security or permissions, running -O bypasses all checks!
-# 4. Never put parentheses around assert condition and message: &#x27;assert(cond, msg)&#x27; tests a truthy tuple!
-# 5. An assertion should never perform mutations with side effects (e.g., assert pop() == 1).</pre></div>
+# GOOD: properly raises AssertionError:
+try:
+    assert False, "Properly caught assertion error!"
+except AssertionError as err:
+    print("Caught correct assertion:", err)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Assertions.</span>
+                <span class="qa-question-title"><strong>Mini project</strong> — Build a 2D Vector or Matrix math helper using internal assertions to verify dimension invariants.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Data Pipeline Pre-condition and Post-condition Auditor
-def process_batch(items):
-    # Pre-condition check:
-    assert isinstance(items, list), &quot;Batch input must be a list&quot;
-    assert len(items) &gt; 0, &quot;Batch cannot be empty&quot;
-    
-    processed = [x * 2 for x in items if x is not None]
-    
-    # Post-condition check:
-    assert len(processed) &lt;= len(items), &quot;Processed count cannot exceed input count&quot;
-    assert all(x &gt;= 0 for x in processed), &quot;All processed results must be non-negative&quot;
-    return processed
+                <div class="code"><pre># Mini Project: Matrix Dimension Invariant Validator
+class Matrix:
+    def __init__(self, data):
+        assert isinstance(data, list) and len(data) > 0, "Matrix data must be a non-empty list"
+        self.rows = len(data)
+        self.cols = len(data[0])
+        # Invariant: all rows must have identical column count
+        for row in data:
+            assert len(row) == self.cols, f"Row length mismatch: expected {self.cols}, got {len(row)}"
+        self.data = data
 
-result = process_batch([1, 2, 3, 4])
-print(&quot;Batch processed and verified:&quot;, result)</pre></div>
+    def add(self, other):
+        # Invariant: matrices must have identical dimensions for addition
+        assert self.rows == other.rows and self.cols == other.cols, \
+            f"Dimension mismatch: ({self.rows}x{self.cols}) vs ({other.rows}x{other.cols})"
+        result = [
+            [self.data[r][c] + other.data[r][c] for c in range(self.cols)]
+            for r in range(self.rows)
+        ]
+        return Matrix(result)
+
+m1 = Matrix([[1, 2], [3, 4]])
+m2 = Matrix([[5, 6], [7, 8]])
+m3 = m1.add(m2)
+print("Matrix addition result:", m3.data)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title"><strong>Edge cases</strong> — Demonstrate state-altering expressions in assertions (why they should be avoided).</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Assertion Pitfalls &amp; Edge Cases:
-# 1. The Parentheses Trap:
-# assert(False, &quot;Message&quot;) evaluates bool((False, &quot;Message&quot;)) which is ALWAYS TRUE!
-# Correct: assert False, &quot;Message&quot;
+                <div class="code"><pre># Edge Case: Side-effects in assertions
+queue = ["job1", "job2"]
 
-# 2. Never validate API requests or web inputs with assert. Use exceptions:
-# if not user_id: raise ValueError(&quot;user_id required&quot;)
+# BAD: Mutating state inside assert:
+# In normal mode, queue.pop(0) runs. Under python -O, it is skipped entirely!
+assert queue.pop(0) == "job1"
 
-# 3. Assertions with side effects (disappear when -O flag is passed).</pre></div>
+# GOOD: Mutate explicitly outside assert, then assert invariant:
+item = queue.pop(0)
+assert item == "job2"</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Assertions) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain why assertions are for internal bugs rather than user input validation.</li>
+          <li>I know what the <code>-O</code> flag does to assertions in production.</li>
+          <li>I understand the parentheses tuple syntax trap.</li>
+          <li>I can write clean preconditions and postconditions.</li>
         </ul>
       </section>
-      <footer>Python Notes File 26. Structure ready; expand section notes over time. Open from the Python index.</footer>
+      <footer>HTML note for Python File 27. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

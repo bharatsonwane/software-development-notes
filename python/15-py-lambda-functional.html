@@ -41,13 +41,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>15. Lambda, filter, map, reduce</h1>
-        <p class="subtitle">File 15 — anonymous functions and functional tools.</p>
+        <p class="subtitle">File 15 — functional programming tools, anonymous expressions, lazy iterators, mapping pipelines, and accumulator reduction.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">lambda expression</span>
+          <span class="chip">Anonymous Functions</span>
+          <span class="chip">filter()</span>
+          <span class="chip">map()</span>
+          <span class="chip">functools.reduce()</span>
+          <span class="chip">Higher-Order Functions</span>
+          <span class="chip">Lazy Iterators</span>
+          <span class="chip">Functional vs Comprehensions</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +63,34 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+
+        <h3>1.1. Functional Programming in Python</h3>
         <ul>
-          <li>This chapter covers <strong>Lambda, filter, map, reduce</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>Although Python is primarily an object-oriented and imperative language, it borrows powerful concepts from <strong>Functional Programming (FP)</strong>:
+            <ol>
+              <li><strong>Higher-Order Functions:</strong> Functions that take other functions as arguments or return functions.</li>
+              <li><strong>Pure Functions:</strong> Functions with no side-effects that always return the same output for identical inputs.</li>
+              <li><strong>Anonymous (Lambda) Functions:</strong> Quick inline callables defined without explicit names.</li>
+              <li><strong>Stream Processing Primitives:</strong> <code class="inline">map()</code>, <code class="inline">filter()</code>, and <code class="inline">reduce()</code> for transforming collections.</li>
+            </ol>
+          </li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">15-practice.py</code> before File 16. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Anonymous / lambda functions</strong></li>
-          <li><strong>filter() with lambda</strong></li>
-          <li><strong>map() with lambda</strong></li>
-          <li><strong>reduce() (functools)</strong></li>
+          <li><strong>Anonymous / lambda functions</strong> — syntax, single-expression rule, sorting keys, and inline conditions</li>
+          <li><strong>filter() with lambda</strong> — predicate selection, lazy evaluation, and truthy filtering</li>
+          <li><strong>map() with lambda</strong> — parallel transformations, multi-sequence mapping, and type conversions</li>
+          <li><strong>reduce() (functools)</strong> — rolling accumulators, binary operators, initializers, and modern alternatives</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: ANONYMOUS / LAMBDA FUNCTIONS -->
       <section id="2-anonymous-lambda-functions">
         <div class="heading-with-levels">
           <h2>2. Anonymous / lambda functions</h2>
@@ -86,14 +99,69 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="2-anonymous-lambda-functions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Goals</h3>
+
+        <h3>2.1. Syntax &amp; Single-Expression Limitation</h3>
+        <p>An anonymous function is a function defined without a name using the <code class="inline">lambda</code> keyword:</p>
+        <div class="code"><pre>lambda arguments: expression</pre></div>
+
         <ul>
-          <li>Understand the main ideas in <strong>Anonymous / lambda functions</strong>.</li>
-          <li>Write small demos in <code class="inline">15-practice.py</code> covering this section.</li>
+          <li><strong>Implicit Return:</strong> The single <code class="inline">expression</code> is automatically evaluated and returned. You <strong>cannot use the <code class="inline">return</code> keyword</strong> inside a lambda.</li>
+          <li><strong>No Statements Allowed:</strong> A lambda cannot contain assignments (<code class="inline">=</code>), loops (<code class="inline">for</code>, <code class="inline">while</code>), control flow statements (<code class="inline">pass</code>, <code class="inline">break</code>, <code class="inline">continue</code>), docstrings, or annotations.</li>
+          <li><strong>Short Lifespan:</strong> Typically used as throwaway inline arguments to higher-order functions.</li>
         </ul>
+
+        <div class="code"><pre># Standard def function:
+def square(x):
+    return x ** 2
+
+# Equivalent lambda:
+square_lambda = lambda x: x ** 2
+
+print(square(5))         # 25
+print(square_lambda(5))  # 25
+
+# Multiple parameters:
+add = lambda a, b, c: a + b + c
+print("Sum:", add(10, 20, 30))  # 60</pre></div>
+
+        <h3 id="2-anonymous-lambda-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.2. Conditional Expressions in Lambdas</h3>
+        <p>While <code class="inline">if-elif-else</code> statements are forbidden, single-line ternary conditional expressions are fully supported:</p>
+
+        <div class="code"><pre># lambda param: val_if_true if condition else val_if_false
+even_odd = lambda n: "Even" if n % 2 == 0 else "Odd"
+print(even_odd(8))   # Even
+print(even_odd(15))  # Odd
+
+# Nested conditional:
+classify = lambda score: "A" if score >= 90 else ("B" if score >= 80 else "C")
+print("Grade:", classify(85))  # B</pre></div>
+
+        <h3>2.3. Lambdas as Custom Sorting Keys</h3>
+        <p>The most ubiquitous and idiomatic use case for lambdas is the <code class="inline">key=</code> argument in <code class="inline">sort()</code>, <code class="inline">sorted()</code>, <code class="inline">min()</code>, and <code class="inline">max()</code>:</p>
+
+        <div class="code"><pre># Sorting records by multiple criteria:
+employees = [
+    {"name": "Alice", "salary": 90000, "age": 30},
+    {"name": "Bob", "salary": 65000, "age": 24},
+    {"name": "Charlie", "salary": 90000, "age": 28},
+    {"name": "Diana", "salary": 110000, "age": 35}
+]
+
+# Sort primarily by salary descending, secondarily by age ascending:
+employees.sort(key=lambda e: (-e["salary"], e["age"]))
+print("Sorted employees:")
+for emp in employees:
+    print(f"  {emp['name']:<8} Salary: ${emp['salary']:,}, Age: {emp['age']}")
+# Diana    Salary: $110,000, Age: 35
+# Charlie  Salary: $90,000, Age: 28
+# Alice    Salary: $90,000, Age: 30
+# Bob      Salary: $65,000, Age: 24</pre></div>
       </section>
+
+      <!-- SECTION 3: FILTER WITH LAMBDA -->
       <section id="3-filter-with-lambda">
         <div class="heading-with-levels">
           <h2>3. filter() with lambda</h2>
@@ -102,14 +170,33 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-filter-with-lambda-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>filter() with lambda</strong>.</li>
-          <li>Write small demos in <code class="inline">15-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>3.1. Mechanics &amp; Lazy Evaluation</h3>
+        <p><code class="inline">filter(function, iterable)</code> constructs an iterator from elements of <code class="inline">iterable</code> for which <code class="inline">function(item)</code> returns <code class="inline">True</code>:</p>
+
+        <div class="code"><pre>nums = [12, 5, 8, 19, 24, 7, 30]
+
+# Filter even numbers:
+evens_iter = filter(lambda x: x % 2 == 0, nums)
+print(type(evens_iter))  # &lt;class 'filter'&gt; (Lazy generator-like iterator)
+
+# Consume iterator into a list:
+evens = list(evens_iter)
+print("Evens:", evens)   # [12, 8, 24, 30]</pre></div>
+
+        <h3 id="3-filter-with-lambda-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.2. Truthiness Filtering with <code class="inline">filter(None, iterable)</code></h3>
+        <p>If <code class="inline">function</code> is <code class="inline">None</code>, Python's identity truth-testing is used; all falsy elements (<code class="inline">0</code>, <code class="inline">""</code>, <code class="inline">None</code>, <code class="inline">False</code>, <code class="inline">[]</code>) are stripped away:</p>
+
+        <div class="code"><pre>raw_data = ["active", "", None, "pending", 0, False, "archived", []]
+cleaned = list(filter(None, raw_data))
+print("Truthy values only:", cleaned)
+# ['active', 'pending', 'archived']</pre></div>
       </section>
+
+      <!-- SECTION 4: MAP WITH LAMBDA -->
       <section id="4-map-with-lambda">
         <div class="heading-with-levels">
           <h2>4. map() with lambda</h2>
@@ -118,14 +205,36 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-map-with-lambda-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>map() with lambda</strong>.</li>
-          <li>Write small demos in <code class="inline">15-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>4.1. Mechanics &amp; Single-Iterable Transformation</h3>
+        <p><code class="inline">map(function, iterable)</code> applies <code class="inline">function</code> to every item of <code class="inline">iterable</code> and yields the results lazily:</p>
+
+        <div class="code"><pre># Transform strings: strip whitespace and capitalize
+users = ["  alice ", "BOB", "  charlie  "]
+cleaned = list(map(lambda s: s.strip().title(), users))
+print("Cleaned users:", cleaned)  # ['Alice', 'Bob', 'Charlie']
+
+# Convert temperatures Celsius to Fahrenheit:
+celsius = [0, 20, 37, 100]
+fahrenheit = list(map(lambda c: round((c * 9/5) + 32, 1), celsius))
+print("Fahrenheit:", fahrenheit)  # [32.0, 68.0, 98.6, 212.0]</pre></div>
+
+        <h3 id="4-map-with-lambda-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.2. Multi-Iterable Mapping in Parallel</h3>
+        <p><code class="inline">map()</code> accepts multiple iterables. The function must accept as many parameters as there are iterables. Iteration stops when the shortest iterable is exhausted:</p>
+
+        <div class="code"><pre># Vector addition across parallel lists:
+v1 = [10, 20, 30]
+v2 = [1, 2, 3]
+v3 = [100, 200, 300]
+
+sums = list(map(lambda x, y, z: x + y + z, v1, v2, v3))
+print("Parallel sum:", sums)  # [111, 222, 333]</pre></div>
       </section>
+
+      <!-- SECTION 5: REDUCE (FUNCTOOLS) -->
       <section id="5-reduce-functools">
         <div class="heading-with-levels">
           <h2>5. reduce() (functools)</h2>
@@ -134,14 +243,52 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-reduce-functools-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>reduce() (functools)</strong>.</li>
-          <li>Write small demos in <code class="inline">15-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. Rolling Accumulator Mechanics</h3>
+        <p>Unlike <code class="inline">map</code> and <code class="inline">filter</code> which are built-ins, <code class="inline">reduce()</code> resides in the <code class="inline">functools</code> module. It applies a two-argument function cumulatively to the sequence elements to boil them down to a <strong>single scalar value</strong>:</p>
+
+        <div class="code"><pre>from functools import reduce
+
+# Calculating cumulative product (Factorial of 5):
+nums = [1, 2, 3, 4, 5]
+product = reduce(lambda acc, x: acc * x, nums)
+print("Product (5!):", product)  # 120
+
+# Execution flow:
+# Step 1: acc=1, x=2 -> 1*2 = 2
+# Step 2: acc=2, x=3 -> 2*3 = 6
+# Step 3: acc=6, x=4 -> 6*4 = 24
+# Step 4: acc=24, x=5 -> 24*5 = 120</pre></div>
+
+        <h3 id="5-reduce-functools-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.2. The Initializer Argument &amp; Safety</h3>
+        <div class="callout">
+          <strong>Safety Best Practice:</strong> If an iterable is empty and no initializer is provided, <code class="inline">reduce()</code> raises <code class="inline">TypeError: reduce() of empty iterable with no initial value</code>. Always pass an <code class="inline">initializer</code> as the 3rd argument to serve as a safe default fallback.
+        </div>
+
+        <div class="code"><pre># Finding maximum element using reduce:
+nums = [45, 12, 89, 34, 78, 23]
+max_num = reduce(lambda a, b: a if a > b else b, nums)
+print("Maximum:", max_num)  # 89
+
+# Using initializer for safe sum:
+empty_list = []
+safe_sum = reduce(lambda a, b: a + b, empty_list, 0)
+print("Safe sum:", safe_sum)  # 0 (No TypeError)</pre></div>
+
+        <h3>5.3. When to Use Comprehensions Instead of map/filter</h3>
+        <p>In modern Python, list and generator comprehensions are almost universally preferred over <code class="inline">map</code> and <code class="inline">filter</code> with lambdas for readability and performance:</p>
+        <div class="code"><pre># map + filter with lambda:
+res1 = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(10))))
+
+# Equivalent List Comprehension (Far more readable and faster in Python):
+res2 = [x**2 for x in range(10) if x % 2 == 0]
+print(res1 == res2)  # True</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -150,49 +297,113 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Anonymous / lambda functions?</span>
+            <span class="qa-question-title">C.1. Why can't a lambda contain statements like return, pass, or assignments?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In Python's formal grammar, a <code class="inline">lambda</code> is classified strictly as an <strong>expression</strong> (which evaluates to a value), not a <strong>statement</strong>. Statements (such as <code class="inline">return</code>, <code class="inline">try/except</code>, <code class="inline">for</code>, <code class="inline">pass</code>, and variable assignments) perform actions but do not evaluate directly to a single object.</p>
+            <p>This design constraint was intentionally imposed by Guido van Rossum to keep lambdas strictly one-line and simple, preventing developers from nesting unreadable multi-line logic inside expressions.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about filter() with lambda?</span>
+            <span class="qa-question-title">C.2. Why was reduce() moved from built-ins to functools in Python 3?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Guido van Rossum moved <code class="inline">reduce()</code> out of built-ins into <code class="inline">functools</code> because 99% of its common uses were either:</p>
+            <ul>
+              <li>Better served by dedicated built-ins like <code class="inline">sum()</code>, <code class="inline">any()</code>, <code class="inline">all()</code>, <code class="inline">max()</code>, or <code class="inline">math.prod()</code>.</li>
+              <li>Far more readable when written as an explicit <code class="inline">for</code> loop with a clear accumulator variable.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about map() with lambda?</span>
+            <span class="qa-question-title">C.3. How do map() and filter() differ in Python 2 vs Python 3?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <ul>
+              <li><strong>Python 2:</strong> Returned concrete <code class="inline">list</code> objects directly, allocating full memory for all results immediately.</li>
+              <li><strong>Python 3:</strong> Return <strong>lazy iterator objects</strong> (<code class="inline">map</code> and <code class="inline">filter</code> objects) that compute elements one-by-one on demand via <code class="inline">next()</code>. This enables processing arbitrarily massive or infinite streams in $O(1)$ memory.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about reduce() (functools)?</span>
+            <span class="qa-question-title">C.4. What happens when multiple iterables of unequal length are passed to map()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>In Python 3, <code class="inline">map()</code> terminates immediately when the <strong>shortest iterable is exhausted</strong>, discarding remaining elements in longer iterables without raising errors.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why is [lambda: i for i in range(3)] a classic late-binding trap?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>This is the famous <strong>late-binding closure trap</strong>:</p>
+            <div class="code"><pre>funcs = [lambda: i for i in range(3)]
+print([f() for f in funcs])  # Outputs [2, 2, 2], NOT [0, 1, 2]!</pre></div>
+            <p><strong>Cause:</strong> The variable <code class="inline">i</code> is not evaluated when the lambda is created; it is looked up when the lambda is <em>called</em>. By that time, the loop has completed and <code class="inline">i</code> is 2.</p>
+            <p><strong>The Fix:</strong> Bind <code class="inline">i</code> immediately as a default parameter:
+              <code class="inline">funcs = [lambda i=i: i for i in range(3)]</code>.
+            </p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Should you assign a lambda to a variable (f = lambda x: x)? What does PEP 8 advise?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>PEP 8 strongly discourages named lambdas:</strong></p>
+            <p>Instead of <code class="inline">f = lambda x: 2 * x</code>, you should always write <code class="inline">def f(x): return 2 * x</code>.</p>
+            <p><strong>Reason:</strong> A function created via <code class="inline">def</code> has a meaningful <code class="inline">__name__</code> property (<code class="inline">f.__name__ == 'f'</code>), which renders accurate, readable tracebacks during debugging. A named lambda has <code class="inline">__name__ == '&lt;lambda&gt;'</code>, obscuring error logs.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How does operator module optimize functional pipelines?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The standard library <code class="inline">operator</code> module provides C-level implementations of standard arithmetic and item-getter operations:</p>
+            <ul>
+              <li><code class="inline">reduce(operator.mul, nums)</code> runs much faster than <code class="inline">reduce(lambda a, b: a * b, nums)</code> because it avoids Python bytecode evaluation overhead for each step.</li>
+              <li><code class="inline">operator.itemgetter(1)</code> and <code class="inline">operator.attrgetter('name')</code> are faster alternatives to lambdas for sorting keys.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why are list comprehensions faster than map() with lambdas?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>When using <code class="inline">map(lambda x: x*2, nums)</code>, Python must create a new Python stack frame and execute function call overhead for every single item in the sequence.</p>
+            <p>In contrast, a list comprehension <code class="inline">[x * 2 for x in nums]</code> inlines the multiplication operation directly into the bytecode loop, avoiding thousands of function call frame creations and disposals.</p>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -201,211 +412,210 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">15-practice.py</code>. Run with <code class="inline">python3 15-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">15-practice.py</code>. Run with <code class="inline">python3 15-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>Anonymous / lambda functions</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise summary of anonymous lambdas and functional tools.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of Anonymous / Lambda Functions:
-# 1. Lambdas are small, anonymous one-expression functions created using &#x27;lambda args: expression&#x27;.
-# 2. They cannot contain statements (no if/else blocks, assignments, or multiple lines).
-# 3. Best suited for short throwaway functions passed into higher-order utilities (filter, map, sorted).</pre></div>
+                <div class="code"><pre># Functional Foundations:
+# 1. Lambdas are inline expressions returning evaluated values without statements.
+# 2. filter() selects items matching a predicate; map() applies a function across items.
+# 3. functools.reduce() folds a sequence into a scalar value via an accumulator.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>filter() with lambda</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Sort a list of tuples representing products by price descending using a lambda key.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># filter() with lambda:
-numbers = [12, 7, 19, 24, 33, 40, 55, 60]
-# Filter numbers divisible by 6:
-div_by_6 = list(filter(lambda x: x % 6 == 0, numbers))
-print(&quot;Divisible by 6:&quot;, div_by_6)  # [12, 24, 60]</pre></div>
+                <div class="code"><pre>products = [("Keyboard", 80), ("Mouse", 30), ("Monitor", 350), ("Headset", 120)]
+products.sort(key=lambda item: item[1], reverse=True)
+print("Sorted products:", products)
+# [('Monitor', 350), ('Headset', 120), ('Keyboard', 80), ('Mouse', 30)]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
+                <span class="qa-question-title">Warm-up 3: Filter non-empty strings and strip whitespace using filter() and map().</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Lambda Functions &amp; Functional Programming.
-
-Goal: Master anonymous functions, higher-order functions (filter, map, functools.reduce),
-custom sorting keys, and functional composition patterns.
-&quot;&quot;&quot;</pre></div>
+                <div class="code"><pre>raw = ["  python ", "", "   ", "javascript", None, "  rust "]
+cleaned = list(map(str.strip, filter(lambda s: bool(s and s.strip()), raw)))
+print("Cleaned:", cleaned)  # ['python', 'javascript', 'rust']</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: Anonymous / lambda functions</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: Email Domain Extractor &amp; Deduplicator — Use map() and set() to extract unique domains.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Anonymous / lambda functions
-# Basic lambda syntax:
-multiply = lambda a, b: a * b
-is_even = lambda n: n % 2 == 0
-get_last_char = lambda s: s[-1] if s else &quot;&quot;
+                <div class="code"><pre>emails = [
+    "alice@gmail.com", "bob@yahoo.com", "charlie@gmail.com",
+    "diana@company.org", "evan@yahoo.com"
+]
 
-print(&quot;multiply(6, 7):&quot;, multiply(6, 7))
-print(&quot;is_even(14):&quot;, is_even(14))
-print(&quot;get_last_char(&#x27;Python&#x27;):&quot;, get_last_char(&quot;Python&quot;))
-
-# Custom sort key using lambda:
-users = [(&quot;Alice&quot;, 25), (&quot;Bob&quot;, 19), (&quot;Charlie&quot;, 32)]
-users.sort(key=lambda u: u[1])  # Sort by age
-print(&quot;Sorted by age:&quot;, users)</pre></div>
+domains = set(map(lambda email: email.split("@")[1], emails))
+print("Unique domains:", domains)
+# {'gmail.com', 'yahoo.com', 'company.org'}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: filter() with lambda</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Flatten Nested Lists with reduce() — Flatten a 2D list into a 1D list using functools.reduce.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: filter() with lambda
-data = [&quot;apple&quot;, &quot;&quot;, &quot;banana&quot;, None, &quot;cherry&quot;, False, &quot;date&quot;]
-# Filter out truthy non-empty strings:
-valid_words = list(filter(lambda item: isinstance(item, str) and len(item) &gt; 0, data))
-print(&quot;Valid words:&quot;, valid_words)
+                <div class="code"><pre>from functools import reduce
 
-# Filter prime candidates (odd numbers &gt; 2):
-numbers = range(1, 20)
-odd_gt_2 = list(filter(lambda x: x &gt; 2 and x % 2 != 0, numbers))
-print(&quot;Odd numbers &gt; 2:&quot;, odd_gt_2)</pre></div>
+matrix = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
+flattened = reduce(lambda acc, sublist: acc + sublist, matrix, [])
+print("Flattened via reduce:", flattened)
+# [1, 2, 3, 4, 5, 6, 7, 8, 9]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: map() with lambda</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 3: Late-Binding Closure Fixer — Create a list of multiplier functions avoiding the late-binding bug.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: map() with lambda
-prices_usd = [19.99, 49.50, 99.00, 150.25]
-tax_rate = 1.08
+                <div class="code"><pre># Binding multiplier parameter n=n at definition time:
+multipliers = [lambda x, n=n: x * n for n in range(1, 5)]
 
-# Calculate final price including tax:
-final_prices = list(map(lambda p: round(p * tax_rate, 2), prices_usd))
-print(&quot;Prices with tax:&quot;, final_prices)
-
-# Parallel map across two iterables:
-first_names = [&quot;Bharat&quot;, &quot;John&quot;, &quot;Sarah&quot;]
-last_names = [&quot;Sonwane&quot;, &quot;Doe&quot;, &quot;Smith&quot;]
-full_names = list(map(lambda fn, ln: f&quot;{fn} {ln}&quot;, first_names, last_names))
-print(&quot;Full names:&quot;, full_names)</pre></div>
+# Test with input 10:
+results = [m(10) for m in multipliers]
+print("Results [10*1, 10*2, 10*3, 10*4]:", results)
+# [10, 20, 30, 40]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: reduce() (functools)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 4: Group &amp; Tally with reduce() — Count word occurrences using functools.reduce and dictionary aggregation.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: reduce() (functools)
-from functools import reduce
+                <div class="code"><pre>from functools import reduce
 
-nums = [1, 2, 3, 4, 5]
+tokens = ["apple", "banana", "apple", "cherry", "banana", "apple"]
 
-# Cumulative product (factorial of 5):
-product = reduce(lambda acc, x: acc * x, nums)
-print(&quot;Product (1*2*3*4*5):&quot;, product)  # 120
+def tally_reducer(acc, token):
+    acc[token] = acc.get(token, 0) + 1
+    return acc
 
-# Find maximum element using reduce:
-values = [42, 17, 99, 83, 25]
-maximum = reduce(lambda a, b: a if a &gt; b else b, values)
-print(&quot;Maximum value:&quot;, maximum)  # 99</pre></div>
+counts = reduce(tally_reducer, tokens, {})
+print("Word counts via reduce:", counts)
+# {'apple': 3, 'banana': 2, 'cherry': 1}</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Lambda, filter, map, reduce.</span>
+                <span class="qa-question-title">Challenge 1: Functional Map-Filter-Reduce Pipeline — Process sales transactions into category totals.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Functional Data Processing Pipeline
-from functools import reduce
+                <div class="code"><pre>from functools import reduce
 
 transactions = [
-    {&quot;id&quot;: 1, &quot;type&quot;: &quot;DEPOSIT&quot;, &quot;amount&quot;: 1000.0},
-    {&quot;id&quot;: 2, &quot;type&quot;: &quot;WITHDRAWAL&quot;, &quot;amount&quot;: 250.0},
-    {&quot;id&quot;: 3, &quot;type&quot;: &quot;DEPOSIT&quot;, &quot;amount&quot;: 500.0},
-    {&quot;id&quot;: 4, &quot;type&quot;: &quot;FEE&quot;, &quot;amount&quot;: 15.0},
-    {&quot;id&quot;: 5, &quot;type&quot;: &quot;DEPOSIT&quot;, &quot;amount&quot;: 750.0}
+    {"category": "Electronics", "amount": 120.0, "status": "completed"},
+    {"category": "Groceries",   "amount": 45.0,  "status": "completed"},
+    {"category": "Electronics", "amount": 250.0, "status": "refunded"},
+    {"category": "Electronics", "amount": 80.0,  "status": "completed"},
+    {"category": "Groceries",   "amount": 65.0,  "status": "completed"}
 ]
 
-# 1. filter() deposits:
-deposits = filter(lambda t: t[&quot;type&quot;] == &quot;DEPOSIT&quot;, transactions)
+# 1. Filter completed transactions
+completed = filter(lambda t: t["status"] == "completed", transactions)
 
-# 2. map() extract amounts:
-amounts = map(lambda t: t[&quot;amount&quot;], deposits)
+# 2. Reduce to aggregate amounts per category
+def aggregate(acc, t):
+    cat = t["category"]
+    acc[cat] = acc.get(cat, 0.0) + t["amount"]
+    return acc
 
-# 3. reduce() calculate total:
-total_deposits = reduce(lambda acc, val: acc + val, amounts, 0.0)
-
-print(f&quot;Total verified deposits: ${total_deposits:,.2f}&quot;)</pre></div>
+totals = reduce(aggregate, completed, {})
+print("Category Totals:", totals)
+# {'Electronics': 200.0, 'Groceries': 110.0}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Multi-Criteria Dynamic Object Sorter — Build a reusable sorting helper using lambdas and operator module.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Lambda &amp; Functional Pitfalls:
-# 1. Late binding in closures inside loops:
-funcs = [lambda: i for i in range(3)]
-print(&quot;Late binding pitfall:&quot;, [f() for f in funcs])  # [2, 2, 2] !
-# Fix: default argument forces early binding:
-fixed_funcs = [lambda i=i: i for i in range(3)]
-print(&quot;Fixed early binding:&quot;, [f() for f in fixed_funcs])  # [0, 1, 2]
+                <div class="code"><pre>def dynamic_sort(dataset: list, *sort_keys) -> list:
+    """Sort list of dicts by arbitrary keys with ascending/descending indicators."""
+    def sort_extractor(item):
+        key_tuple = []
+        for k, descending in sort_keys:
+            val = item[k]
+            key_tuple.append(-val if descending and isinstance(val, (int, float)) else val)
+        return tuple(key_tuple)
 
-# 2. Don&#x27;t overuse lambda where list comprehensions are clearer:
-# Prefer: [x * 2 for x in nums] over list(map(lambda x: x * 2, nums))</pre></div>
+    return sorted(dataset, key=sort_extractor)
+
+items = [
+    {"dept": "Sales", "salary": 50000},
+    {"dept": "Engineering", "salary": 90000},
+    {"dept": "Engineering", "salary": 110000},
+    {"dept": "Sales", "salary": 70000}
+]
+
+# Sort by dept ascending, salary descending:
+sorted_items = dynamic_sort(items, ("dept", False), ("salary", True))
+for it in sorted_items:
+    print(it)</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Lambda, filter, map, reduce) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I can explain why lambdas are restricted to a single expression without statements.</li>
+          <li>I know how <code class="inline">filter()</code> and <code class="inline">map()</code> operate as lazy iterators in Python 3.</li>
+          <li>I understand how <code class="inline">functools.reduce()</code> works with an accumulator and initializer.</li>
+          <li>I know how to resolve the late-binding closure trap in lambda loops.</li>
         </ul>
       </section>
-      <footer>Python Notes File 14. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 15. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
