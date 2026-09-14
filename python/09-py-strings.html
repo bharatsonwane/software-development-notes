@@ -21,7 +21,7 @@
         <a href="#1-introduction">1. Introduction</a>
         <a href="#2-str-creation-and-indexing">2. str creation and indexing</a>
         <a href="#3-slice-operator">3. Slice operator</a>
-        <a href="#4-string-functions-i-ii">4. String functions (I &amp;amp; II)</a>
+        <a href="#4-string-functions-i-ii">4. String functions (I &amp; II)</a>
         <a href="#5-string-practice-programs">5. String practice programs</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
@@ -41,13 +41,20 @@
       </nav>
       <header class="hero" id="intro">
         <h1>09. Strings</h1>
-        <p class="subtitle">File 09 — slice operator, string functions, practice programs.</p>
+        <p class="subtitle">File 09 — immutable character sequences, indexing, slice syntax [begin:end:step], built-in string methods, and algorithmic string processing.</p>
         <div class="chip-row">
-          <span class="chip">Outline</span>
-          <span class="chip">Practice</span>
-          <span class="chip">Interview</span>
+          <span class="chip">str creation</span>
+          <span class="chip">Immutability</span>
+          <span class="chip">Indexing (+ / -)</span>
+          <span class="chip">Slice [::]</span>
+          <span class="chip">String Methods</span>
+          <span class="chip">join &amp; split</span>
+          <span class="chip">PEP 393</span>
+          <span class="chip">Algorithms</span>
         </div>
       </header>
+
+      <!-- SECTION 1: INTRODUCTION -->
       <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
@@ -56,28 +63,39 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>1.1. Overview</h3>
         <ul>
-          <li>This chapter covers <strong>Strings</strong> from the course syllabus. Narrative notes are still being filled; the structure and practice match the rest of the track.</li>
+          <li>In Python, a string is represented by the built-in <code class="inline">str</code> class. It is an <strong>immutable sequence of Unicode characters</strong> (code points).</li>
+          <li>Every character in a Python string is stored as a Unicode point. Unlike languages such as C or Java, Python does not have a distinct single-character <code class="inline">char</code> data type; a single character is simply a <code class="inline">str</code> of length 1.</li>
+          <li>Because strings are sequences, they support common sequence operations: forward and backward indexing, slicing, concatenation (<code class="inline">+</code>), repetition (<code class="inline">*</code>), membership testing (<code class="inline">in</code>, <code class="inline">not in</code>), and iteration via loops.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice from the outline even before full notes land. Prefer a <strong>venv</strong> and <strong>f-strings</strong>.</div>
-        <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">09-practice.py</code> before File 10. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
+
+        <h3>1.2. PEP 393 — Flexible String Representation</h3>
+        <div class="callout">
+          <strong>Under the Hood (Python 3.3+):</strong> Python optimizes string memory footprint dynamically using <strong>PEP 393</strong>. Instead of always allocating 4 bytes per character, the CPython interpreter chooses the smallest possible character size depending on the highest Unicode code point in the string:
+          <ul>
+            <li><strong>Latin-1 (1 byte per char):</strong> Characters within ASCII / Latin-1 range (code points $\le 255$).</li>
+            <li><strong>UCS-2 (2 bytes per char):</strong> Characters within the Basic Multilingual Plane (code points $\le 65535$).</li>
+            <li><strong>UCS-4 (4 bytes per char):</strong> Characters outside the BMP, such as emojis and rare mathematical symbols (code points $\le 1114111$).</li>
+          </ul>
+        </div>
+
+        <h3>1.3. Section Map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>str creation and indexing</strong></li>
-          <li><strong>Slice operator</strong></li>
-          <li><strong>String functions (I &amp;amp; II)</strong></li>
-          <li><strong>String practice programs</strong></li>
+          <li><strong>str creation and indexing</strong> — literal syntax, raw strings, immutability, and dual indexing</li>
+          <li><strong>Slice operator</strong> — step formula, negative slicing, boundary clamping, and slice objects</li>
+          <li><strong>String functions (I &amp; II)</strong> — casing, classification, searching, stripping, splitting, joining, and replacement</li>
+          <li><strong>String practice programs</strong> — reversal, palindromes, anagrams, frequencies, and string compression</li>
         </ol>
         <ul>
-          <li><strong>C.</strong> Common questions</li>
+          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
           <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
+
+      <!-- SECTION 2: STR CREATION AND INDEXING -->
       <section id="2-str-creation-and-indexing">
         <div class="heading-with-levels">
           <h2>2. str creation and indexing</h2>
@@ -89,54 +107,122 @@
         <h3 id="2-str-creation-and-indexing-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <h3>2.1. String Literal Creation</h3>
-        <p>A string (<code class="inline">str</code>) is an immutable sequence of Unicode characters. In Python, string literals can be created using several quote styles:</p>
-        <ul>
-          <li><strong>Single quotes (<code class="inline">'...'</code>):</strong> Standard representation: <code class="inline">s = 'Python'</code></li>
-          <li><strong>Double quotes (<code class="inline">"..."</code>):</strong> Useful when the text contains single quotes: <code class="inline">s = "It's easy"</code></li>
-          <li><strong>Triple quotes (<code class="inline">'''...'''</code> or <code class="inline">"""..."""</code>):</strong> Multiline strings and docstrings, preserving embedded newlines and spaces.</li>
-        </ul>
+        <p>A string literal in Python can be defined using four distinct quotation styles:</p>
+        <table>
+          <thead>
+            <tr><th>Quote Style</th><th>Example</th><th>Primary Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Single Quotes (<code class="inline">'...'</code>)</td>
+              <td><code class="inline">s = 'Python'</code></td>
+              <td>Short identifiers, dictionary keys, single-word tokens.</td>
+            </tr>
+            <tr>
+              <td>Double Quotes (<code class="inline">"..."</code>)</td>
+              <td><code class="inline">s = "User's guide"</code></td>
+              <td>Sentences or strings containing embedded single quotes/apostrophes without escaping.</td>
+            </tr>
+            <tr>
+              <td>Triple Single Quotes (<code class="inline">'''...'''</code>)</td>
+              <td><code class="inline">s = '''Line 1\nLine 2'''</code></td>
+              <td>Multiline text, SQL queries, templates.</td>
+            </tr>
+            <tr>
+              <td>Triple Double Quotes (<code class="inline">"""..."""</code>)</td>
+              <td><code class="inline">s = """Docstring text"""</code></td>
+              <td>Standard PEP 257 docstrings for modules, classes, and functions.</td>
+            </tr>
+          </tbody>
+        </table>
 
         <div class="callout">
-          <strong>Escape Characters:</strong> For the complete table and mechanics of escape characters (<code class="inline">\n</code>, <code class="inline">\t</code>, <code class="inline">\r</code>, <code class="inline">\b</code>, <code class="inline">\'</code>, <code class="inline">\"</code>, <code class="inline">\\</code>), see <a href="./07-py-input-output.html#4-print-formatting"><strong>07. Input and Output — Section 4.2</strong></a>.
+          <strong>Escape Characters:</strong> For the complete reference table and mechanics of escape sequences (<code class="inline">\n</code>, <code class="inline">\t</code>, <code class="inline">\r</code>, <code class="inline">\b</code>, <code class="inline">\'</code>, <code class="inline">\"</code>, <code class="inline">\\</code>), see <a href="./07-py-input-output.html#4-print-formatting"><strong>07. Input and Output — Section 4.2</strong></a>.
         </div>
-
-        <h3 id="2-str-creation-and-indexing-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3>2.2. Raw Strings (<code class="inline">r"..."</code>)</h3>
         <ul>
-          <li>Prefixing a string literal with <code class="inline">r</code> or <code class="inline">R</code> creates a <strong>raw string</strong>.</li>
-          <li>In raw strings, escape characters are <strong>not interpreted</strong>; backslashes are treated as literal characters.</li>
-          <li>Commonly used for regular expressions (<code class="inline">r"\d+\.\d+"</code>) and Windows file paths.</li>
+          <li>Prefixing any string literal with <code class="inline">r</code> or <code class="inline">R</code> produces a <strong>raw string</strong>.</li>
+          <li>In raw strings, backslashes are treated as literal characters rather than escape triggers.</li>
+          <li>Crucial for <strong>Regular Expressions</strong> (<code class="inline">re</code> module) and Windows file directory paths.</li>
         </ul>
 
-        <div class="code"><pre># Normal string treats '\n' as newline:
-normal_str = "C:\new_folder\test.txt"
-print(normal_str)  # Prints 'C:' followed by newline, then 'ew_folder...'
+        <div class="code"><pre># Normal string: '\n' is interpreted as a newline character
+path_normal = "C:\new_project\tools"
+print(path_normal)
+# Output:
+# C:
+# ew_project  ools
 
-# Raw string treats '\n' as literal '\' and 'n':
-raw_str = r"C:\new_folder\test.txt"
-print(raw_str)     # C:\new_folder\test.txt</pre></div>
+# Raw string: backslashes remain literal characters
+path_raw = r"C:\new_project\tools"
+print(path_raw)  # C:\new_project\tools
 
-        <h3>2.3. String Indexing (Positive &amp; Negative)</h3>
+# Regex pattern using raw string:
+import re
+pattern = r"\d{3}-\d{2}-\d{4}"  # Matches US SSN format</pre></div>
+
+        <h3 id="2-str-creation-and-indexing-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>2.3. String Immutability &amp; Memory Interning</h3>
         <ul>
-          <li>Strings support 0-based indexing:
-            <ul>
-              <li><strong>Positive index:</strong> Left-to-right from <code class="inline">0</code> to <code class="inline">len(s) - 1</code>.</li>
-              <li><strong>Negative index:</strong> Right-to-left from <code class="inline">-1</code> (last character) down to <code class="inline">-len(s)</code>.</li>
-            </ul>
-          </li>
-          <li>Accessing an index outside this range raises an <code class="inline">IndexError: string index out of range</code>.</li>
+          <li><strong>Immutability Guarantee:</strong> Once created, the contents of a <code class="inline">str</code> object cannot be modified in place. Any string manipulation method (such as <code class="inline">upper()</code>, <code class="inline">replace()</code>, or slicing) constructs and returns a <strong>brand new string object</strong> in memory.</li>
+          <li>Attempting item assignment or item deletion directly raises a <code class="inline">TypeError</code>.</li>
         </ul>
+
+        <div class="code"><pre>s = "Python"
+# Attempting in-place modification:
+# s[0] = "J"   # Raises: TypeError: 'str' object does not support item assignment
+# del s[0]     # Raises: TypeError: 'str' object doesn't support item deletion
+
+# Correct modification: construct a new string
+s = "J" + s[1:]
+print(s)  # 'Jython'</pre></div>
+
+        <div class="callout">
+          <strong>Why Immutability?</strong>
+          <ol>
+            <li><strong>Hashability &amp; Dictionary Keys:</strong> Because strings cannot change, their hash value computed via <code class="inline">hash(s)</code> remains constant throughout program execution. This allows strings to safely serve as dictionary keys and set members.</li>
+            <li><strong>Thread Safety:</strong> Multiple threads can read immutable strings concurrently without locks or race conditions.</li>
+            <li><strong>Memory Optimization (String Interning):</strong> Python automatically interns small strings, string literals that look like Python identifiers, and compile-time constants. Interned strings share the exact same memory address (<code class="inline">a is b == True</code>), accelerating comparison from $O(N)$ string character scans to $O(1)$ pointer comparison. You can explicitly intern strings using <code class="inline">sys.intern(s)</code>.</li>
+          </ol>
+        </div>
+
+        <h3>2.4. String Indexing (Positive &amp; Negative)</h3>
+        <p>Python provides dual 0-based indexing for character access:</p>
+        <ul>
+          <li><strong>Positive Indexing (Left-to-Right):</strong> Begins at index <code class="inline">0</code> for the first character and ends at <code class="inline">len(s) - 1</code>.</li>
+          <li><strong>Negative Indexing (Right-to-Left):</strong> Begins at index <code class="inline">-1</code> for the last character and moves backwards to <code class="inline">-len(s)</code>.</li>
+        </ul>
+
+        <table>
+          <thead>
+            <tr><th>Character</th><th>P</th><th>Y</th><th>T</th><th>H</th><th>O</th><th>N</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Positive Index</strong></td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+            <tr><td><strong>Negative Index</strong></td><td>-6</td><td>-5</td><td>-4</td><td>-3</td><td>-2</td><td>-1</td></tr>
+          </tbody>
+        </table>
 
         <div class="code"><pre>s = "PYTHON"
-# Positive indexing:
-print(s[0])   # 'P'
-print(s[3])   # 'H'
 
-# Negative indexing:
-print(s[-1])  # 'N' (last character)
-print(s[-6])  # 'P' (first character)</pre></div>
+# Positive access:
+print(s[0])   # 'P'
+print(s[2])   # 'T'
+print(s[5])   # 'N'
+
+# Negative access:
+print(s[-1])  # 'N' (Last character)
+print(s[-4])  # 'T'
+print(s[-6])  # 'P' (First character)
+
+# Out-of-bounds index raises IndexError:
+# print(s[10])   # IndexError: string index out of range
+# print(s[-10])  # IndexError: string index out of range</pre></div>
       </section>
+
+      <!-- SECTION 3: SLICE OPERATOR -->
       <section id="3-slice-operator">
         <div class="heading-with-levels">
           <h2>3. Slice operator</h2>
@@ -145,30 +231,276 @@ print(s[-6])  # 'P' (first character)</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="3-slice-operator-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Goals</h3>
+
+        <h3>3.1. Syntax &amp; Step Mechanics</h3>
+        <p>The slice operator allows extracting a contiguous or patterned substring from a string without mutating the original object:</p>
+        <div class="code"><pre>substring = s[begin : end : step]</pre></div>
+
         <ul>
-          <li>Understand the main ideas in <strong>Slice operator</strong>.</li>
-          <li>Write small demos in <code class="inline">09-practice.py</code> covering this section.</li>
+          <li><strong><code class="inline">begin</code>:</strong> Starting index (inclusive). Defaults to <code class="inline">0</code> if <code class="inline">step &gt; 0</code>, or <code class="inline">-1</code> if <code class="inline">step &lt; 0</code>.</li>
+          <li><strong><code class="inline">end</code>:</strong> Stopping index (exclusive). Defaults to <code class="inline">len(s)</code> if <code class="inline">step &gt; 0</code>, or before the beginning of the string if <code class="inline">step &lt; 0</code>.</li>
+          <li><strong><code class="inline">step</code>:</strong> Increment value (direction and stride). Defaults to <code class="inline">+1</code>. Can be positive (forward traversal) or negative (reverse traversal). Must never be <code class="inline">0</code> (raises <code class="inline">ValueError: slice step cannot be zero</code>).</li>
         </ul>
+
+        <h3>3.2. Slicing with Positive Step (<code class="inline">step &gt; 0</code>)</h3>
+        <p>When the step is positive, extraction proceeds strictly from left to right. If <code class="inline">begin &gt;= end</code>, an empty string <code class="inline">""</code> is returned.</p>
+
+        <div class="code"><pre>s = "ABCDEFGHIJ"
+# Indices:  0123456789
+
+print(s[2:7])      # 'CDEFG' (From index 2 up to 6)
+print(s[:5])       # 'ABCDE' (From start up to index 4)
+print(s[5:])       # 'FGHIJ' (From index 5 to end)
+print(s[:])        # 'ABCDEFGHIJ' (Full shallow copy)
+print(s[1:8:2])    # 'BDFH'  (Indices 1, 3, 5, 7)
+print(s[::3])      # 'ADGJ'  (Indices 0, 3, 6, 9)
+print(s[6:2])      # ''      (Empty string because begin > end with positive step)</pre></div>
+
+        <h3 id="3-slice-operator-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>3.3. Slicing with Negative Step (<code class="inline">step &lt; 0</code>)</h3>
+        <p>When the step is negative, extraction proceeds from right to left. The default <code class="inline">begin</code> is <code class="inline">-1</code> (end of string), and default <code class="inline">end</code> goes all the way back to the start.</p>
+
+        <div class="code"><pre>s = "ABCDEFGHIJ"
+
+# String reversal:
+print(s[::-1])     # 'JIHGFEDCBA'
+
+# Stepping backwards from index 7 down to 3:
+print(s[7:2:-1])   # 'HGFED' (Indices 7, 6, 5, 4, 3)
+
+# Negative indices with negative step:
+print(s[-2:-7:-1]) # 'IHGFE' (From index -2 down to -6)
+
+# Negative step with begin < end produces empty string:
+print(s[2:7:-1])   # '' (Cannot step backwards from index 2 towards index 7)</pre></div>
+
+        <h3>3.4. Boundary Clamping (No IndexError in Slicing)</h3>
+        <div class="callout">
+          <strong>Key Difference: Indexing vs Slicing:</strong> Direct character access <code class="inline">s[i]</code> raises <code class="inline">IndexError</code> if index is out of bounds. In contrast, <strong>slicing never raises an IndexError</strong>. Python automatically clamps out-of-bounds slice endpoints to the string boundaries.
+        </div>
+
+        <div class="code"><pre>s = "Python"  # length 6
+
+# Out-of-bounds indexing:
+# print(s[100])    # Raises IndexError: string index out of range
+
+# Out-of-bounds slicing (Clamped gracefully):
+print(s[2:100])    # 'thon' (Clamped to len(s))
+print(s[-100:4])   # 'Pyth' (Clamped to index 0)
+print(s[10:20])    # ''     (Empty string, no error)</pre></div>
+
+        <h3>3.5. The Built-in <code class="inline">slice</code> Object</h3>
+        <p>Python provides a first-class <code class="inline">slice</code> type. You can create named, reusable slice definitions instead of hardcoding colon syntax, which is particularly valuable when parsing fixed-width records, logs, and tabular data.</p>
+
+        <div class="code"><pre># Fixed-width record format: ID (0-4), Name (5-15), Salary (16-24)
+ID_SLICE = slice(0, 4)
+NAME_SLICE = slice(5, 15)
+SALARY_SLICE = slice(16, 24)
+
+record = "1001 Rahul_Sharma  00095000"
+emp_id = record[ID_SLICE].strip()
+name = record[NAME_SLICE].strip()
+salary = int(record[SALARY_SLICE])
+
+print(f"ID: {emp_id}, Name: {name}, Salary: ${salary:,}")
+# Output: ID: 1001, Name: Rahul_Sharma, Salary: $95,000</pre></div>
       </section>
+
+      <!-- SECTION 4: STRING FUNCTIONS (I & II) -->
       <section id="4-string-functions-i-ii">
         <div class="heading-with-levels">
-          <h2>4. String functions (I &amp;amp; II)</h2>
+          <h2>4. String functions (I &amp; II)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="4-string-functions-i-ii-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Goals</h3>
+
+        <h3>4.1. Case Conversion &amp; Normalization Methods</h3>
+        <p>Because strings are immutable, all casing methods return a newly transformed string object:</p>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Description</th><th>Example Output</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">s.upper()</code></td>
+              <td>Converts all characters to uppercase.</td>
+              <td><code class="inline">"py".upper() -&gt; "PY"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.lower()</code></td>
+              <td>Converts all characters to lowercase.</td>
+              <td><code class="inline">"PY".lower() -&gt; "py"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.title()</code></td>
+              <td>Capitalizes the first character of each word.</td>
+              <td><code class="inline">"hello world".title() -&gt; "Hello World"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.capitalize()</code></td>
+              <td>Capitalizes only the very first character of the string.</td>
+              <td><code class="inline">"hello world".capitalize() -&gt; "Hello world"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.swapcase()</code></td>
+              <td>Inverts casing: lowercase becomes upper, uppercase becomes lower.</td>
+              <td><code class="inline">"PyThOn".swapcase() -&gt; "pYtHoN"</code></td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.casefold()</code></td>
+              <td>Aggressive lowercase conversion for caseless Unicode comparison.</td>
+              <td><code class="inline">"ß".casefold() -&gt; "ss"</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>4.2. Character Classification &amp; Validation Predicates</h3>
+        <p>Boolean testing methods return <code class="inline">True</code> or <code class="inline">False</code>:</p>
         <ul>
-          <li>Understand the main ideas in <strong>String functions (I &amp;amp; II)</strong>.</li>
-          <li>Write small demos in <code class="inline">09-practice.py</code> covering this section.</li>
+          <li><code class="inline">s.isalpha()</code>: <code class="inline">True</code> if all characters are alphabetic and length $\ge 1$.</li>
+          <li><code class="inline">s.isdigit()</code>: <code class="inline">True</code> if all characters are digits ($0-9$).</li>
+          <li><code class="inline">s.isalnum()</code>: <code class="inline">True</code> if all characters are alphanumeric (alphabets or digits).</li>
+          <li><code class="inline">s.isspace()</code>: <code class="inline">True</code> if all characters are whitespace (<code class="inline">' '</code>, <code class="inline">'\t'</code>, <code class="inline">'\n'</code>).</li>
+          <li><code class="inline">s.islower()</code> / <code class="inline">s.isupper()</code>: Checks whether cased characters are all lower or uppercase.</li>
+          <li><code class="inline">s.isidentifier()</code>: <code class="inline">True</code> if the string is a valid Python identifier syntax name.</li>
         </ul>
+
+        <div class="code"><pre>print("Python3".isalnum())   # True
+print("Python".isalpha())    # True
+print("12345".isdigit())     # True
+print("   \t\n".isspace())   # True
+print("valid_var".isidentifier())  # True
+print("2nd_var".isidentifier())    # False (Cannot start with digit)</pre></div>
+
+        <h3 id="4-string-functions-i-ii-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>4.3. Searching, Counting &amp; Prefix/Suffix Tests</h3>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Found Action</th><th>Not Found Action</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">s.find(sub[, start[, end]])</code></td>
+              <td>Returns lowest zero-based index.</td>
+              <td>Returns <code class="inline">-1</code> (Safe for conditionals).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.index(sub[, start[, end]])</code></td>
+              <td>Returns lowest zero-based index.</td>
+              <td>Raises <code class="inline">ValueError: substring not found</code>.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.rfind()</code> / <code class="inline">s.rindex()</code></td>
+              <td>Returns highest (rightmost) index.</td>
+              <td><code class="inline">-1</code> (rfind) / <code class="inline">ValueError</code> (rindex).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.count(sub[, start[, end]])</code></td>
+              <td>Returns total non-overlapping occurrences.</td>
+              <td>Returns <code class="inline">0</code>.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.startswith(prefix | tuple)</code></td>
+              <td>Returns <code class="inline">True</code> if string starts with prefix.</td>
+              <td>Returns <code class="inline">False</code>.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">s.endswith(suffix | tuple)</code></td>
+              <td>Returns <code class="inline">True</code> if string ends with suffix.</td>
+              <td>Returns <code class="inline">False</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre>msg = "learning python with python documentation"
+
+# find vs index:
+print(msg.find("python"))    # 9
+print(msg.find("java"))      # -1 (Does not raise error)
+
+print(msg.index("python"))   # 9
+# print(msg.index("java"))   # Raises ValueError: substring not found
+
+# Rightmost search:
+print(msg.rfind("python"))   # 21
+
+# Counting:
+print(msg.count("python"))   # 2
+
+# Checking multiple prefixes or extensions with tuples:
+filename = "report.pdf"
+print(filename.endswith((".pdf", ".docx", ".xlsx")))  # True
+print(filename.startswith(("http://", "https://")))   # False</pre></div>
+
+        <h3>4.4. Stripping, Trimming &amp; Python 3.9+ Prefix Removal</h3>
+        <ul>
+          <li><code class="inline">s.strip([chars])</code>: Removes leading and trailing characters (defaults to whitespace).</li>
+          <li><code class="inline">s.lstrip([chars])</code> / <code class="inline">s.rstrip([chars])</code>: Removes characters from left-only or right-only.</li>
+          <li><code class="inline">removeprefix(prefix)</code> &amp; <code class="inline">removesuffix(suffix)</code>: Introduced in <strong>Python 3.9 (PEP 616)</strong>. Removes exact substring once, avoiding the classic bug where <code class="inline">strip()</code> strips a character set greedily.</li>
+        </ul>
+
+        <div class="code"><pre># Classic strip() traps (strips individual characters, NOT substring):
+url = "www.python.org"
+print(url.strip("w.org"))  # 'python' (stripped 'w', '.', 'o', 'r', 'g' from edges!)
+
+test = "Arthur: three!"
+print(test.lstrip("Arthur: ")) # 'three!'
+test2 = "Order: 123"
+print(test2.lstrip("Order: ")) # '123'
+test3 = "Error: 500"
+print(test3.lstrip("Error: ")) # '500' but also strips 'E', 'r', 'o', etc.!
+
+# Safe Python 3.9+ methods (Exact substring removal):
+filename = "draft_invoice_2026.pdf"
+clean = filename.removeprefix("draft_").removesuffix(".pdf")
+print(clean)  # 'invoice_2026'</pre></div>
+
+        <h3>4.5. Splitting, Joining &amp; Partitioning</h3>
+        <ul>
+          <li><code class="inline">s.split(sep=None, maxsplit=-1)</code>: Splits string by delimiter into a list. When <code class="inline">sep=None</code>, runs of consecutive whitespace characters are collapsed together and leading/trailing whitespace is ignored.</li>
+          <li><code class="inline">delimiter.join(iterable)</code>: Concatenates elements of an iterable into a single string using delimiter. <strong>Crucial performance idiom:</strong> <code class="inline">"".join(list)</code> runs in $O(N)$ linear time, whereas repeated string concatenation in loops with <code class="inline">+=</code> runs in $O(N^2)$ quadratic time due to reallocations.</li>
+          <li><code class="inline">s.partition(sep)</code>: Splits string at the <em>first</em> occurrence of separator and returns a 3-tuple: <code class="inline">(before, sep, after)</code>. If not found, returns <code class="inline">(s, "", "")</code>.</li>
+        </ul>
+
+        <div class="code"><pre># split vs split(' '):
+text = "apple   banana  orange"
+print(text.split())       # ['apple', 'banana', 'orange'] (Collapses consecutive spaces)
+print(text.split(" "))   # ['apple', '', '', 'banana', '', 'orange'] (Exact space match)
+
+# Efficient joining:
+words = ["Python", "is", "fast", "and", "clean"]
+sentence = " ".join(words)
+print(sentence)  # 'Python is fast and clean'
+
+# Partitioning URLs and emails:
+email = "developer@domain.com"
+user, at_sym, domain = email.partition("@")
+print(f"User: {user}, Domain: {domain}")  # User: developer, Domain: domain.com</pre></div>
+
+        <h3>4.6. String Replacement &amp; Translation Tables</h3>
+        <div class="code"><pre># replace(old, new[, count])
+code_snippet = "var x = 10; var y = 20; var z = 30;"
+updated = code_snippet.replace("var", "let", 2)  # Replace only first 2 occurrences
+print(updated)  # 'let x = 10; let y = 20; var z = 30;'
+
+# translate() with str.maketrans() for bulk 1-to-1 character substitutions:
+vowel_map = str.maketrans("aeiou", "12345")
+cipher = "hello world".translate(vowel_map)
+print(cipher)  # 'h2ll4 w4rld'
+
+# Bulk deletion using 3-argument maketrans(x, y, delete_chars):
+remove_punct = str.maketrans("", "", ",.!?")
+clean_text = "Wait! Are you sure, really sure?".translate(remove_punct)
+print(clean_text)  # 'Wait Are you sure really sure'</pre></div>
       </section>
+
+      <!-- SECTION 5: STRING PRACTICE PROGRAMS -->
       <section id="5-string-practice-programs">
         <div class="heading-with-levels">
           <h2>5. String practice programs</h2>
@@ -177,14 +509,121 @@ print(s[-6])  # 'P' (first character)</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Use the Practical Assignment below to practice from the syllabus outline.</div>
         <h3 id="5-string-practice-programs-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Goals</h3>
-        <ul>
-          <li>Understand the main ideas in <strong>String practice programs</strong>.</li>
-          <li>Write small demos in <code class="inline">09-practice.py</code> covering this section.</li>
-        </ul>
+
+        <h3>5.1. Program 1: String Reversal (3 Approaches)</h3>
+        <p>Comparison of slice reversal, built-in sequence inversion, and two-pointer manual traversal:</p>
+        <div class="code"><pre># Approach 1: Slicing (Fastest, C-level implementation)
+def reverse_slice(s: str) -> str:
+    return s[::-1]
+
+# Approach 2: reversed() generator joined
+def reverse_builtin(s: str) -> str:
+    return "".join(reversed(s))
+
+# Approach 3: Two-pointer in-place on list representation (Classic algorithm)
+def reverse_twopointer(s: str) -> str:
+    chars = list(s)
+    left, right = 0, len(chars) - 1
+    while left < right:
+        chars[left], chars[right] = chars[right], chars[left]
+        left += 1
+        right -= 1
+    return "".join(chars)
+
+sample = "PythonMastery"
+print("Slice:      ", reverse_slice(sample))
+print("Builtin:    ", reverse_builtin(sample))
+print("Two-pointer:", reverse_twopointer(sample))</pre></div>
+
+        <h3>5.2. Program 2: Advanced Palindrome Verification</h3>
+        <p>Checks whether a sentence reads identically forwards and backwards, ignoring casing, punctuation, and whitespaces:</p>
+        <div class="code"><pre>def is_palindrome(text: str) -> bool:
+    # Filter only alphanumeric characters and normalize to lowercase
+    filtered = [c.lower() for c in text if c.isalnum()]
+    return filtered == filtered[::-1]
+
+print(is_palindrome("A man, a plan, a canal: Panama"))  # True
+print(is_palindrome("race a car"))                      # False
+print(is_palindrome("Was it a car or a cat I saw?"))    # True</pre></div>
+
+        <h3 id="5-string-practice-programs-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>5.3. Program 3: Anagram Detection</h3>
+        <p>Two strings are anagrams if they contain identical character frequencies:</p>
+        <div class="code"><pre>def are_anagrams_sort(s1: str, s2: str) -> bool:
+    # O(N log N) approach using sorted()
+    return sorted(s1.replace(" ", "").lower()) == sorted(s2.replace(" ", "").lower())
+
+def are_anagrams_count(s1: str, s2: str) -> bool:
+    # O(N) linear time approach using dictionary frequency map
+    clean1 = [c.lower() for c in s1 if c.isalnum()]
+    clean2 = [c.lower() for c in s2 if c.isalnum()]
+    if len(clean1) != len(clean2):
+        return False
+    freq = {}
+    for c in clean1:
+        freq[c] = freq.get(c, 0) + 1
+    for c in clean2:
+        if c not in freq or freq[c] == 0:
+            return False
+        freq[c] -= 1
+    return True
+
+print(are_anagrams_count("listen", "silent"))          # True
+print(are_anagrams_count("Astronomer", "Moon starer")) # True
+print(are_anagrams_count("hello", "world"))            # False</pre></div>
+
+        <h3>5.4. Program 4: Run-Length String Compression</h3>
+        <p>Compresses consecutive repeated characters into character + count (e.g. <code class="inline">"a4b3c2"</code>):</p>
+        <div class="code"><pre>def compress_string(s: str) -> str:
+    if not s:
+        return ""
+    result = []
+    current_char = s[0]
+    count = 1
+    for i in range(1, len(s)):
+        if s[i] == current_char:
+            count += 1
+        else:
+            result.append(f"{current_char}{count}")
+            current_char = s[i]
+            count = 1
+    result.append(f"{current_char}{count}")
+    compressed = "".join(result)
+    return compressed if len(compressed) < len(s) else s
+
+print(compress_string("aaaabbbcc"))      # 'a4b3c2'
+print(compress_string("aabcccccaaa"))    # 'a2b1c5a3'
+print(compress_string("abcdef"))         # 'abcdef' (Returns original if no compression gained)</pre></div>
+
+        <h3>5.5. Program 5: Character Classifier &amp; Segregation</h3>
+        <p>Separates a mixed string into distinct alphabet, digit, and special symbol components:</p>
+        <div class="code"><pre>def segregate_characters(s: str) -> dict:
+    alphas = []
+    digits = []
+    specials = []
+    for char in s:
+        if char.isalpha():
+            alphas.append(char)
+        elif char.isdigit():
+            digits.append(char)
+        else:
+            specials.append(char)
+    return {
+        "alphabets": "".join(alphas),
+        "digits": "".join(digits),
+        "specials": "".join(specials)
+    }
+
+raw_data = "PY10@thon_2026!#Code"
+classified = segregate_characters(raw_data)
+print("Alphabets:", classified["alphabets"])  # PYthonCode
+print("Digits:   ", classified["digits"])     # 102026
+print("Specials: ", classified["specials"])   # @!#</pre></div>
       </section>
+
+      <!-- SECTION C: COMMON QUESTIONS -->
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -193,49 +632,153 @@ print(s[-6])  # 'P' (first character)</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
-
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about str creation and indexing?</span>
+            <span class="qa-question-title">C.1. Why are Python strings immutable? What architectural benefits does this provide?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Python strings are immutable for three major reasons:</p>
+            <ol>
+              <li><strong>Hashability &amp; Dictionary Keys:</strong> A dictionary key or set item must be hashable, meaning its hash value must never change over its lifetime. Because strings cannot be altered, their hash value is calculated once and cached, ensuring robust and fast lookup tables.</li>
+              <li><strong>Thread Safety:</strong> Multiple execution threads can access string objects concurrently without requiring synchronization locks, because read-only memory cannot produce race conditions.</li>
+              <li><strong>Memory Optimization (Interning):</strong> Because strings cannot be mutated, Python can safely share identical string literal instances across different variables without risk of unexpected side effects.</li>
+            </ol>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Slice operator?</span>
+            <span class="qa-question-title">C.2. What is Python String Interning, and when does CPython automatically intern strings?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p><strong>String Interning</strong> is a memory optimization where CPython maintains a central lookup table of unique string objects. When an interned string is referenced, Python reuses the existing memory address rather than creating a new instance.</p>
+            <ul>
+              <li><strong>Automatic Interning:</strong> CPython automatically interns string constants that look like valid Python identifiers (letters, numbers, underscores), strings of length 0 or 1, and compile-time constants.</li>
+              <li><strong>Performance Advantage:</strong> Comparing two interned strings for equality (<code class="inline">a is b</code> or <code class="inline">a == b</code>) collapses from an $O(N)$ character-by-character scan into a single $O(1)$ memory pointer address comparison.</li>
+              <li><strong>Manual Interning:</strong> Dynamic or runtime strings can be explicitly interned using the <code class="inline">sys.intern()</code> function:
+                <div class="code"><pre>import sys
+s1 = sys.intern("long_dynamic_identifier_" + str(10))
+s2 = sys.intern("long_dynamic_identifier_" + str(10))
+print(s1 is s2)  # True</pre></div>
+              </li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about String functions (I &amp;amp; II)?</span>
+            <span class="qa-question-title">C.3. What is the difference between str.find() and str.index()?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>Both methods search for the first occurrence of a substring from left to right, but handle missing elements differently:</p>
+            <ul>
+              <li><strong><code class="inline">s.find(sub)</code>:</strong> Returns the lowest index if found; returns <strong><code class="inline">-1</code></strong> if the substring does not exist. Ideal for conditional branching (<code class="inline">if s.find(sub) != -1:</code>).</li>
+              <li><strong><code class="inline">s.index(sub)</code>:</strong> Returns the lowest index if found; raises <strong><code class="inline">ValueError: substring not found</code></strong> if absent. Requires a <code class="inline">try...except ValueError:</code> block when the presence of the substring is uncertain.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about String practice programs?</span>
+            <span class="qa-question-title">C.4. Why does str.strip("abc") behave differently than str.removeprefix("abc")?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it in your own words and show a short code example. Full notes will expand this answer.</p>
+            <p>This is one of the most common beginner traps in Python:</p>
+            <ul>
+              <li><strong><code class="inline">s.strip(chars)</code>:</strong> Treats the argument as a <strong>set of individual characters</strong> to peel away from both edges until a character not in the set is reached. For example:
+                <div class="code"><pre>"banana".strip("ab")  # Returns '' because all edge chars 'b' and 'a' match the set</pre></div>
+              </li>
+              <li><strong><code class="inline">s.removeprefix(prefix)</code> (Python 3.9+):</strong> Treats the argument as an <strong>exact atomic substring</strong>. If the string starts with that exact prefix, it is removed once; otherwise, the original string is returned unchanged:
+                <div class="code"><pre>"banana".removeprefix("ba")  # Returns 'nana'
+"banana".removeprefix("ab")  # Returns 'banana' (Prefix does not match)</pre></div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why is string concatenation using += in a loop an anti-pattern? What should you use instead?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because strings are immutable, executing <code class="inline">s += item</code> inside an $N$-iteration loop cannot append to the existing buffer. In the worst case, Python must allocate a new string buffer of size $(K + \text{item\_len})$, copy all existing bytes into it, and discard the old buffer. This results in <strong>$O(N^2)$ quadratic time complexity</strong>.</p>
+            <p><strong>The Idiomatic Solution:</strong> Collect strings in a list and assemble them once using <code class="inline">str.join()</code>, which computes total memory required upfront and copies characters in a single <strong>$O(N)$ linear pass</strong>:</p>
+            <div class="code"><pre># Bad: O(N^2)
+res = ""
+for word in words:
+    res += word + " "
+
+# Good: O(N)
+res = " ".join(words)</pre></div>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How does Python 3 store strings in memory under PEP 393?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Prior to Python 3.3, Python was compiled with either "narrow" 2-byte builds or "wide" 4-byte builds, which wasted significant RAM on pure ASCII data.</p>
+            <p><strong>PEP 393 (Flexible String Representation)</strong> dynamically selects the character representation based on the maximum Unicode code point ($U$):</p>
+            <ul>
+              <li>$U \le 255$: <strong>1 byte per character</strong> (Latin-1/ASCII encoding). Pure ASCII text consumes only 1 byte per char plus object header.</li>
+              <li>$256 \le U \le 65535$: <strong>2 bytes per character</strong> (UCS-2).</li>
+              <li>$U &gt; 65535$: <strong>4 bytes per character</strong> (UCS-4, required for emojis like 🐍 and special scripts).</li>
+            </ul>
+            <p>This provides constant-time $O(1)$ random index access (<code class="inline">s[i]</code>) while maintaining optimal memory utilization.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How does str.split() without arguments differ from str.split(" ")?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The distinction lies in whitespace normalization:</p>
+            <ul>
+              <li><strong><code class="inline">s.split()</code> (delimiter=None):</strong> Strips leading and trailing whitespace first, and collapses any run of contiguous whitespace (spaces, tabs, newlines) into a single split point. It will <strong>never produce empty strings</strong> in the resulting list.</li>
+              <li><strong><code class="inline">s.split(" ")</code> (explicit delimiter):</strong> Treats every individual space character literally. Two consecutive spaces will result in an empty string <code class="inline">""</code> between them:
+                <div class="code"><pre>line = "  alpha   beta  "
+print(line.split())      # ['alpha', 'beta']
+print(line.split(" "))   # ['', '', 'alpha', '', '', 'beta', '', '']</pre></div>
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. How does casefold() differ from lower()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">lower()</code> converts ASCII and simple Unicode characters to lowercase. However, certain languages contain special casing rules defined in the Unicode Standard:</p>
+            <ul>
+              <li>For instance, the German lowercase sharp s (<code class="inline">'ß'</code>) is already lowercase, so <code class="inline">'ß'.lower()</code> remains <code class="inline">'ß'</code>.</li>
+              <li>However, in German capitalization, <code class="inline">'ß'</code> corresponds to <code class="inline">'SS'</code>.</li>
+              <li><code class="inline">casefold()</code> performs full Unicode case folding. <code class="inline">'ß'.casefold()</code> converts to <code class="inline">'ss'</code>, allowing accurate, language-agnostic caseless equality comparisons:
+                <div class="code"><pre>s1 = "der Fluß"
+s2 = "der Fluss"
+print(s1.lower() == s2.lower())       # False
+print(s1.casefold() == s2.casefold()) # True</pre></div>
+              </li>
+            </ul>
           </div>
         </details>
       </section>
+
+      <!-- SECTION P: PRACTICAL ASSIGNMENT -->
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -244,228 +787,208 @@ print(s[-6])  # 'P' (first character)</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">09-practice.py</code>. Run with <code class="inline">python3 09-practice.py</code>. Notes for this chapter may still be expanding — practice from the outline.</div>
+        <div class="callout">Write and verify all tasks in <code class="inline">09-practice.py</code>. Run with <code class="inline">python3 09-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Skim the section map; write a 3-bullet comment summarizing <strong>str creation and indexing</strong>.</span>
+                <span class="qa-question-title">Warm-up 1: Write a concise comment summarizing string immutability and dual indexing in Python.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Summary of String Creation and Indexing:
-# 1. Strings in Python are immutable sequences of Unicode code points enclosed in quotes.
-# 2. Positive indexing starts from 0 (left-to-right); negative indexing starts from -1 (right-to-left).
-# 3. Item assignment (s[0] = &#x27;x&#x27;) raises TypeError because strings cannot be mutated in-place.</pre></div>
+                <div class="code"><pre># String Foundations:
+# 1. Strings (str) are immutable sequences of Unicode characters (PEP 393).
+# 2. Positive indexing runs 0 to len-1 (left-to-right); negative indexing runs -1 down to -len (right-to-left).
+# 3. Direct item mutation (s[0] = 'a') raises TypeError.</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create a tiny example related to <strong>Slice operator</strong> and print the result.</span>
+                <span class="qa-question-title">Warm-up 2: Demonstrate slice variations: first 4 chars, last 3 chars, step by 2, and complete reversal.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Slice operator syntax: s[begin:end:step]
-message = &quot;PythonMastery&quot;
-print(&quot;Full:&quot;, message[:])
-print(&quot;First 6 chars:&quot;, message[:6])     # &#x27;Python&#x27;
-print(&quot;Last 7 chars:&quot;, message[6:])      # &#x27;Mastery&#x27;
-print(&quot;Step by 2:&quot;, message[::2])        # &#x27;PtoMser&#x27;
-print(&quot;Reversed string:&quot;, message[::-1]) # &#x27;yretsaMnohtyP&#x27;</pre></div>
+                <div class="code"><pre>msg = "DEVELOPER"
+print("First 4:", msg[:4])       # DEVE
+print("Last 3: ", msg[-3:])      # PER
+print("Every 2:", msg[::2])       # DVLPRe
+print("Reverse:", msg[::-1])      # REPOLEVED</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Format dynamic strings using an f-string combined with string methods (e.g. <code class="inline">f"{name.strip().title()}"</code>).</span>
+                <span class="qa-question-title">Warm-up 3: Format a user record using f-string combined with string sanitization methods.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Dynamic string formatting combining f-strings with methods:
-user_input = &quot;   bHaRat sOnWaNe   &quot;
-clean_name = user_input.strip().title()
-role = &quot;senior software engineer&quot;
+                <div class="code"><pre>raw_name = "   bHaRat sOnWaNe   "
+clean_name = raw_name.strip().title()
+role = "senior software engineer"
 
-formatted_banner = f&quot;Welcome, {clean_name} | Role: {role.upper()} | Initials: {&#x27;&#x27;.join(part[0].upper() for part in clean_name.split())}&quot;
-print(formatted_banner)</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">Add a docstring at the top of your practice file stating the goal of this chapter.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre>&quot;&quot;&quot;Chapter Practice: Python Strings Deep Dive.
-
-Goal: Master string creation, positive/negative indexing, advanced slicing,
-built-in transformation &amp; search methods, and practical text processing algorithms.
-&quot;&quot;&quot;</pre></div>
+profile = f"User: {clean_name} | Role: {role.upper()} | Initials: {''.join(w[0] for w in clean_name.split())}"
+print(profile)</pre></div>
               </div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+
+        <h3>P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 1: str creation and indexing</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 1: URL &amp; Filename Parser — Extract domain, extension, and sanitize slug using string methods.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: str creation and indexing
-# Single, double, and triple-quoted multiline strings:
-s1 = &#x27;Hello&#x27;
-s2 = &quot;World&quot;
-s3 = &quot;&quot;&quot;Multiline
-Python
-String&quot;&quot;&quot;
+                <div class="code"><pre>url = "https://www.example.com/docs/python-notes-v2.pdf"
 
-text = &quot;PYTHON&quot;
-print(&quot;Length:&quot;, len(text))
-print(&quot;Forward indexing:&quot;, [text[i] for i in range(len(text))])
-print(&quot;Negative indexing:&quot;, [text[-i] for i in range(1, len(text) + 1)])</pre></div>
+# Extract protocol:
+protocol, _, rest = url.partition("://")
+
+# Extract domain:
+domain = rest.split("/")[0]
+
+# Extract filename & extension:
+filename = rest.split("/")[-1]
+basename, _, ext = filename.rpartition(".")
+
+print(f"Protocol: {protocol}")  # https
+print(f"Domain:   {domain}")    # www.example.com
+print(f"Basename: {basename}")  # python-notes-v2
+print(f"Ext:      {ext}")       # pdf</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Slice operator</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
+                <span class="qa-question-title">Task 2: Character Frequency Counter — Build a dictionary map of character counts without importing external modules.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 2: Slice operator demo
-data = &quot;ABCDEFGHIJ&quot;
-print(&quot;Slice [2:7]:&quot;, data[2:7])       # &#x27;CDEFG&#x27;
-print(&quot;Slice [:5]:&quot;, data[:5])         # &#x27;ABCDE&#x27;
-print(&quot;Slice [5:]:&quot;, data[5:])         # &#x27;FGHIJ&#x27;
-print(&quot;Slice [1:9:2]:&quot;, data[1:9:2])   # &#x27;BDFH&#x27;
-print(&quot;Slice [::-1]:&quot;, data[::-1])     # &#x27;JIHGFEDCBA&#x27; (Reversal)
-print(&quot;Negative slice [-5:-2]:&quot;, data[-5:-2]) # &#x27;FGH&#x27;</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: String functions (I &amp;amp; II)</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 3: String functions (I &amp; II)
-raw = &quot;  --apple,banana,orange,grape--  &quot;
-stripped = raw.strip(&quot; -&quot;)
-fruits = stripped.split(&quot;,&quot;)
-print(&quot;Stripped &amp; split:&quot;, fruits)
-
-joined = &quot; | &quot;.join(fruits).upper()
-print(&quot;Joined uppercase:&quot;, joined)
-
-sentence = &quot;The quick brown fox jumps over the lazy dog&quot;
-print(&quot;find(&#x27;fox&#x27;):&quot;, sentence.find(&quot;fox&quot;))
-print(&quot;startswith(&#x27;The&#x27;):&quot;, sentence.startswith(&quot;The&quot;))
-print(&quot;endswith(&#x27;dog&#x27;):&quot;, sentence.endswith(&quot;dog&quot;))
-print(&quot;replace &#x27;dog&#x27; with &#x27;cat&#x27;:&quot;, sentence.replace(&quot;dog&quot;, &quot;cat&quot;))</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 4: String practice programs</strong> — Write a small working demo (10–20 lines) covering the idea; print outputs.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># Task 4: String practice programs
-# 1. Palindrome check:
-def is_palindrome(word):
-    clean = &quot;&quot;.join(c.lower() for c in word if c.isalnum())
-    return clean == clean[::-1]
-
-print(&quot;is_palindrome(&#x27;A man, a plan, a canal: Panama&#x27;):&quot;, is_palindrome(&quot;A man, a plan, a canal: Panama&quot;))
-
-# 2. Word frequency count:
-quote = &quot;code clean code fast debug code&quot;
+                <div class="code"><pre>text = "engineering"
 freq = {}
-for w in quote.split():
-    freq[w] = freq.get(w, 0) + 1
-print(&quot;Word frequency:&quot;, freq)</pre></div>
+for char in text:
+    freq[char] = freq.get(char, 0) + 1
+
+for char, count in sorted(freq.items()):
+    print(f"'{char}': {count}")</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 3: Word Reversal in Sentence — Reverse individual words while preserving sentence word order.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>sentence = "Python is amazingly elegant"
+# Target: "nohtyP si ylgnizama tnagele"
+reversed_words = " ".join(word[::-1] for word in sentence.split())
+print("Original:", sentence)
+print("Reversed:", reversed_words)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Task 4: Substring Counter without count() — Implement a function that returns all overlapping occurrences of a pattern.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>def count_overlapping(text: str, pattern: str) -> int:
+    if not pattern:
+        return 0
+    count = 0
+    start = 0
+    while True:
+        idx = text.find(pattern, start)
+        if idx == -1:
+            break
+        count += 1
+        start = idx + 1  # Advance by 1 for overlapping matches
+    return count
+
+print("Occurrences of 'ANA' in 'BANANA':", count_overlapping("BANANA", "ANA"))  # 2</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Mini project</strong> — Combine two topics from this file into one short script related to Strings.</span>
+                <span class="qa-question-title">Challenge 1: String Permutations &amp; Anagram Grouping — Group words from a list that are anagrams of each other.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Mini Project: Text Sanitizer &amp; Slug Generator
-import re
+                <div class="code"><pre>words = ["eat", "tea", "tan", "ate", "nat", "bat"]
 
-def create_url_slug(title, max_length=50):
-    # Normalize and remove special characters:
-    slug = title.strip().lower()
-    slug = re.sub(r&#x27;[^a-z0-9\s-]&#x27;, &#x27;&#x27;, slug)
-    slug = re.sub(r&#x27;[\s-]+&#x27;, &#x27;-&#x27;, slug)
-    slug = slug[:max_length].rstrip(&#x27;-&#x27;)
-    return slug
+# Group by sorted tuple signature:
+anagram_groups = {}
+for w in words:
+    key = "".join(sorted(w))
+    anagram_groups.setdefault(key, []).append(w)
 
-titles = [
-    &quot;10 Essential Python Tips for 2026!&quot;,
-    &quot;Building Fast, Scalable REST APIs with Python &amp; FastAPI&quot;,
-    &quot;Understanding Memory Interning &amp; Garbage Collection...&quot;
-]
-
-for t in titles:
-    print(f&quot;Title: {t}\nSlug:  https://example.com/posts/{create_url_slug(t)}\n&quot;)</pre></div>
+print("Anagram Groups:", list(anagram_groups.values()))
+# [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Edge cases</strong> — List 3 edge cases or mistakes beginners make; demonstrate at least one safely.</span>
+                <span class="qa-question-title">Challenge 2: Robust IPv4 Address Validator — Validate an IPv4 address string without using ipaddress module or regex.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># String Pitfalls &amp; Edge Cases:
-# 1. Strings are immutable:
-s = &quot;hello&quot;
-# s[0] = &#x27;H&#x27; # TypeError: &#x27;str&#x27; object does not support item assignment
-s = &quot;H&quot; + s[1:] # Correct way
+                <div class="code"><pre>def is_valid_ipv4(ip: str) -> bool:
+    octets = ip.split(".")
+    if len(octets) != 4:
+        return False
+    for octet in octets:
+        if not octet.isdigit():
+            return False
+        # Leading zero check: "01" is invalid, but "0" is valid
+        if len(octet) > 1 and octet[0] == "0":
+            return False
+        val = int(octet)
+        if not (0 <= val <= 255):
+            return False
+    return True
 
-# 2. find() returns -1 on not found; index() raises ValueError:
-print(&quot;&#x27;python&#x27;.find(&#x27;z&#x27;):&quot;, &#x27;python&#x27;.find(&#x27;z&#x27;)) # -1
-
-# 3. Accidental repeated concatenation in loops is O(N^2); prefer str.join():
-words = [&quot;python&quot;, &quot;is&quot;, &quot;awesome&quot;]
-result = &quot; &quot;.join(words) # O(N) efficient</pre></div>
+test_ips = ["192.168.1.1", "256.100.0.1", "192.168.01.1", "10.0.0.0", "abc.def.gha.xyz"]
+for ip in test_ips:
+    print(f"{ip:18} -> Valid: {is_valid_ipv4(ip)}")</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can explain what this chapter (Strings) is for.</li>
-          <li>I ran at least the warm-up and one core task myself.</li>
-          <li>I know which later file builds on this topic (see Python index).</li>
+          <li>I understand why strings are immutable and how PEP 393 optimizes memory allocation.</li>
+          <li>I can confidently predict the output of slice syntax with positive and negative steps: <code class="inline">s[begin:end:step]</code>.</li>
+          <li>I know why <code class="inline">"".join(seq)</code> is preferred over <code class="inline">+=</code> for concatenating strings in loops.</li>
+          <li>I can distinguish <code class="inline">find()</code> vs <code class="inline">index()</code>, and <code class="inline">strip()</code> vs <code class="inline">removeprefix()</code>.</li>
         </ul>
       </section>
-      <footer>Python Notes File 08. Structure ready; expand section notes over time. Open from the Python index.</footer>
+
+      <footer>HTML note for Python File 09. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>
