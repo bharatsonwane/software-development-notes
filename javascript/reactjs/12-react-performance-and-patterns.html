@@ -129,6 +129,25 @@
         <ul>
           <li>Fix by <strong>lifting state down</strong>, <strong>memo</strong>, or <strong>splitting</strong> state into smaller subtrees.</li>
         </ul>
+
+        <h3>3.3. Fiber Reconciler Lifecycle: Render Phase vs Commit Phase</h3>
+        <ul>
+          <li><strong>Phase 1: Render Phase (Pure, Asynchronous, Interruptible):</strong>
+            <ul>
+              <li>React calls your component functions, calculates new Virtual DOM trees, and runs the reconciliation diffing algorithm.</li>
+              <li>In React 18 Concurrency, this phase can be <strong>paused, aborted, or restarted</strong> if higher-priority user input arrives (e.g. typing in an input).</li>
+              <li><strong>Critical rule:</strong> Components MUST be pure functions without side effects during this phase, because React may render a component multiple times without committing it.</li>
+            </ul>
+          </li>
+          <li><strong>Phase 2: Commit Phase (Synchronous, Uninterruptible):</strong>
+            <ul>
+              <li>React applies calculated mutations to the actual browser DOM (inserting, updating, deleting nodes).</li>
+              <li>Runs <code class="inline">useLayoutEffect</code> synchronously before paint.</li>
+              <li>The browser performs layout and paints pixels to the screen.</li>
+              <li>React asynchronously fires <code class="inline">useEffect</code> callbacks.</li>
+            </ul>
+          </li>
+        </ul>
       </section>
       <section id="4-react-memo">
         <div class="heading-with-levels">
@@ -302,6 +321,60 @@ const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre
         <ul>
           <li>File 10 — opt-in when your stack supports it.</li>
         </ul>
+
+        <h3>8.3. Concurrent Transitions: useTransition vs useDeferredValue</h3>
+        <ul>
+          <li><strong>Urgent vs Transition Updates:</strong>
+            <ul>
+              <li><strong>Urgent updates:</strong> Direct user interactions like typing in an input, selecting a radio button, or clicking a button. These require instant screen feedback (0–16ms) to avoid feeling sluggish.</li>
+              <li><strong>Non-urgent transitions:</strong> Heavy filtering, rendering complex charts, or switching tabs. These can yield to urgent input without degrading UX.</li>
+            </ul>
+          </li>
+          <li><strong>useTransition (Wrapping State Setters):</strong></li>
+        </ul>
+        <div class="code"><pre>import { useState, useTransition } from "react";
+
+function SearchPage() {
+  const [input, setInput] = useState("");
+  const [query, setQuery] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  function handleChange(e) {
+    // 1. Urgent update: input field updates immediately
+    setInput(e.target.value);
+
+    // 2. Non-urgent transition: filtering 10,000 items yields to user typing
+    startTransition(() =&gt; {
+      setQuery(e.target.value);
+    });
+  }
+
+  return (
+    &lt;&gt;
+      &lt;input value={input} onChange={handleChange} /&gt;
+      {isPending &amp;&amp; &lt;span&gt;Filtering list...&lt;/span&gt;}
+      &lt;HugeFilteredList query={query} /&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
+        <ul>
+          <li><strong>useDeferredValue (Deferring Props/Values):</strong>
+            <p>When you don't control the state setter (e.g. receiving a value via props), <code class="inline">useDeferredValue</code> defers re-rendering the child tree until urgent work completes:</p>
+            <div class="code"><pre>import { useDeferredValue } from "react";
+
+function ProductSearch({ query }) {
+  // Defers expensive list re-render while query is being typed
+  const deferredQuery = useDeferredValue(query);
+  const isStale = query !== deferredQuery;
+
+  return (
+    &lt;div style={{ opacity: isStale ? 0.6 : 1 }}&gt;
+      &lt;SlowList query={deferredQuery} /&gt;
+    &lt;/div&gt;
+  );
+}</pre></div>
+          </li>
+        </ul>
       </section>
       <section id="9-list-performance">
         <div class="heading-with-levels">
@@ -317,11 +390,20 @@ const AdminDashboard = lazy(() =&gt; import(&quot;./AdminDashboard&quot;));</pre
           <li>Stable <strong><code class="inline">key={item.id}</code></strong> (File 04). <strong><code class="inline">memo</code></strong> on row component when parent state changes often.</li>
         </ul>
         <h3 id="9-list-performance-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>9.2. Virtualization</h3>
+        <h3>9.2. DOM Virtualization (Windowing Mechanics)</h3>
         <ul>
-          <li>Long lists (1000+ rows) — render only <strong>visible</strong> rows:</li>
-          <li><strong><code class="inline">@tanstack/react-virtual</code></strong></li><li><strong><code class="inline">react-window</code></strong></li>
-          <li>Mapping 10k <code class="inline">&lt;li&gt;</code> elements slows DOM and reconciliation.</li>
+          <li><strong>Why 10,000 DOM Nodes Crash Performance:</strong>
+            <p>Mounting 10,000 DOM nodes creates megabytes of memory pressure, forces browser layout engines to recalculate geometry across thousands of elements, and causes severe scrolling stutter below 60fps.</p>
+          </li>
+          <li><strong>How Virtualization Solves This:</strong>
+            <ol>
+              <li>Calculates the visible viewport height (e.g. 600px) and item height (e.g. 40px).</li>
+              <li>Calculates that only ~15 items fit on screen + adds a buffer window (overscan of ~5 items above and below).</li>
+              <li>Creates a tall scrollable container with total height (<code class="inline">totalItems * itemHeight = 400,000px</code>).</li>
+              <li>Renders only the <strong>25 active DOM elements</strong>, positioning them with <code class="inline">transform: translateY(offsetPx)</code>. As the user scrolls, old nodes are unmounted or recycled into new positions.</li>
+            </ol>
+          </li>
+          <li><strong>Recommended Modern Libraries:</strong> <code class="inline">@tanstack/react-virtual</code> (headless, works with any DOM layout) and <code class="inline">react-window</code>.</li>
         </ul>
       </section>
       <section id="10-uselayouteffect-brief">

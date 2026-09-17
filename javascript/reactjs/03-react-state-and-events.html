@@ -175,17 +175,56 @@ setCount(count + 1);
 
 // Safer
 setCount((prev) =&gt; prev + 1);</pre></div>
-        <h3>2.6. Batching (brief)</h3>
+        <h3>2.6. React 18 Automatic Batching &amp; flushSync</h3>
         <ul>
-          <li>React <strong>batches</strong> multiple setters in the same event handler into <strong>one re-render</strong>:</li>
+          <li><strong>What is Batching?</strong> When multiple state updates occur, React groups them into a single re-render pass instead of re-rendering the component after every single setter call.</li>
+          <li><strong>Legacy Behavior (React 17 and earlier):</strong>
+            <ul>
+              <li>Updates inside React event handlers were batched.</li>
+              <li>Updates inside <code class="inline">setTimeout</code>, promises, or native event listeners were <strong>NOT</strong> batched (e.g. 2 updates caused 2 distinct renders).</li>
+            </ul>
+          </li>
+          <li><strong>Modern Automatic Batching (React 18+):</strong>
+            <p>React 18 batches <em>all</em> state updates by default, regardless of where they originate:</p>
+            <div class="code"><pre>// In React 18: Only ONE re-render happens across async boundaries
+fetch('/api/user').then(() =&gt; {
+  setCount(c =&gt; c + 1);
+  setUser(newUserData);
+  setIsLoading(false);
+  // React 18 queues all 3 updates and performs 1 single render pass!
+});</pre></div>
+          </li>
+          <li><strong>Opting Out with flushSync:</strong>
+            <p>If you need the DOM to update synchronously immediately (for instance, to measure a DOM node right after updating state), use <code class="inline">flushSync</code> from <code class="inline">react-dom</code>:</p>
+            <div class="code"><pre>import { flushSync } from 'react-dom';
+
+function handleScrollToBottom() {
+  flushSync(() =&gt; {
+    setMessages(prev =&gt; [...prev, newMessage]);
+  });
+  // DOM is updated synchronously here:
+  chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+}</pre></div>
+          </li>
         </ul>
-        <div class="code"><pre>function handleClick() {
-  setCount((c) =&gt; c + 1);
-  setFlag((f) =&gt; !f);
-  // one re-render, not two
+
+        <h3>2.7. State as a Snapshot &amp; Stale Closure Mechanics</h3>
+        <ul>
+          <li><strong>Render Frame Snapshot:</strong> State in React is not a mutable variable you read in real-time. Within a single render execution, state is a <strong>fixed constant snapshot</strong>:</li>
+        </ul>
+        <div class="code"><pre>function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+    console.log(count); // Still logs 0! Not 1.
+    setCount(count + 1);
+    // React queues: nextCount = 0 + 1. The result after re-render is 1, not 2!
+  }
 }</pre></div>
         <ul>
-          <li>React 18+ batches more cases (including promises/timeouts in many setups). File 05 for async interaction.</li>
+          <li><strong>Why this occurs:</strong> The <code class="inline">count</code> variable inside <code class="inline">handleClick</code> was closed over when the component rendered with <code class="inline">count = 0</code>. Calling <code class="inline">setCount</code> schedules a future render with the new value; it does NOT mutate the local constant <code class="inline">count</code> in the currently executing stack frame.</li>
+          <li><strong>Solution: Functional Updates:</strong> Passing an updater function (<code class="inline">setCount(prev =&gt; prev + 1)</code>) queues an operation on the pending state queue rather than evaluating a stale local variable.</li>
         </ul>
       </section>
       <section id="3-events-in-react">
@@ -196,14 +235,27 @@ setCount((prev) =&gt; prev + 1);</pre></div>
           </div>
         </div>
         <h3 id="3-events-in-react-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Synthetic events</h3>
+        <h3>3.1. Synthetic Events &amp; Root Container Delegation</h3>
         <ul>
-          <li>React wraps native DOM events in <strong>SyntheticEvent</strong> — same interface across browsers, pooled for performance (details rarely matter in app code):</li>
+          <li><strong>SyntheticEvent:</strong> React wraps native browser DOM events in a cross-browser <code class="inline">SyntheticEvent</code> wrapper that normalizes event attributes across different browser engines.</li>
+          <li><strong>No More Event Pooling (React 17+):</strong> In legacy React (&le;16), synthetic events were reused across clicks and pooled for performance; event fields were nullified synchronously, requiring <code class="inline">e.persist()</code>. In React 17, 18, and 19, <strong>event pooling is completely removed</strong>. You can freely read <code class="inline">e.target.value</code> inside asynchronous functions, <code class="inline">setTimeout</code>, or promises without errors.</li>
+          <li><strong>Root Container Delegation:</strong>
+            <ul>
+              <li>In legacy React (&le;16), React attached all listeners to the <code class="inline">document</code> object.</li>
+              <li>In modern React (17+), React attaches event listeners directly to the root DOM container element where <code class="inline">createRoot(container)</code> was mounted (e.g. <code class="inline">#root</code>).</li>
+              <li>This prevents event conflicts in micro-frontend architectures where multiple React apps, or React and non-React widgets, coexist on the same page.</li>
+            </ul>
+          </li>
         </ul>
         <div class="code"><pre>function Button() {
   function handleClick(event) {
-    console.log(event.type);   // &quot;click&quot;
+    console.log(event.type);   // "click"
     console.log(event.target); // DOM element
+
+    // Safe in React 17+ (No event pooling / nullification):
+    setTimeout(() =&gt; {
+      console.log("Async target:", event.target.tagName);
+    }, 100);
   }
 
   return &lt;button onClick={handleClick}&gt;Click&lt;/button&gt;;
@@ -276,6 +328,18 @@ setCount((prev) =&gt; prev + 1);</pre></div>
         <div class="code"><pre>function handleInnerClick(e) {
   e.stopPropagation();  // don&#x27;t bubble to parent handlers
 }</pre></div>
+
+        <h3>3.5. Native DOM vs Synthetic Event Bubbling</h3>
+        <ul>
+          <li><strong>Propagation Order:</strong>
+            <ol>
+              <li>When a user clicks an element, the browser triggers native capture down the DOM to the target element.</li>
+              <li>Native bubbling travels back up through ancestors. If any ancestor has a native listener (<code class="inline">addEventListener('click', ...)</code>), it triggers during this native phase.</li>
+              <li>When the event bubbles to the root container (<code class="inline">#root</code>), React's SyntheticEvent listener intercepts it and simulates synthetic bubbling up the virtual component tree.</li>
+            </ol>
+          </li>
+          <li><strong>Crucial Caveat with stopPropagation:</strong> React's <code class="inline">e.stopPropagation()</code> stops propagation through the React virtual tree. It does <strong>not</strong> stop native listeners attached directly to the element or its parent DOM nodes that fired prior to reaching the React root container.</li>
+        </ul>
       </section>
       <section id="4-one-way-data-flow">
         <div class="heading-with-levels">

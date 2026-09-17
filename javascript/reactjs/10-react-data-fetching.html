@@ -311,6 +311,38 @@ function CreatePostForm() {
         <ul>
           <li><strong><code class="inline">invalidateQueries</code></strong> — refetch lists after create/update.</li>
         </ul>
+
+        <h3>5.5. React 19 use() Hook for Reading Promises</h3>
+        <ul>
+          <li><strong>Reading Promises in Render:</strong> In React 19, the new <code class="inline">use()</code> API lets components read the value of a Promise directly during render without <code class="inline">useEffect</code> or local loading state:</li>
+        </ul>
+        <div class="code"><pre>import { use, Suspense } from "react";
+
+// Fetch function returns a Promise
+function fetchUserData(userId) {
+  return fetch(`/api/users/${userId}`).then(res => res.json());
+}
+
+function UserCard({ userPromise }) {
+  // Unwraps the promise directly during render!
+  // Suspends execution until promise resolves:
+  const user = use(userPromise);
+  return &lt;div&gt;&lt;h3&gt;{user.name}&lt;/h3&gt;&lt;p&gt;{user.email}&lt;/p&gt;&lt;/div&gt;;
+}
+
+// Parent component provides Suspense boundary fallback:
+function UserPage({ userId }) {
+  const userPromise = fetchUserData(userId);
+
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading user profile...&lt;/p&gt;}&gt;
+      &lt;UserCard userPromise={userPromise} /&gt;
+    &lt;/Suspense&gt;
+  );
+}</pre></div>
+        <ul>
+          <li><strong>Key Difference from Standard Hooks:</strong> Unlike other hooks, <code class="inline">use()</code> can be called conditionally inside <code class="inline">if</code> statements and loops!</li>
+        </ul>
       </section>
       <section id="6-query-keys-and-cache-rules">
         <div class="heading-with-levels">
@@ -341,6 +373,23 @@ function CreatePostForm() {
         <h3>6.3. staleTime and gcTime</h3>
         <ul><li><strong><code class="inline">staleTime</code></strong> — how long data is &quot;fresh&quot; before background refetch</li><li><strong><code class="inline">gcTime</code></strong> (formerly cacheTime) — how long unused cache stays in memory</li>
           <li>Tune per resource — static config vs live dashboard differ.</li>
+        </ul>
+
+        <h3>6.4. Stale-While-Revalidate (SWR) Cache Lifecycle &amp; Invalidation</h3>
+        <ul>
+          <li><strong>The 3-Step SWR Lifecycle:</strong>
+            <ol>
+              <li><strong>Serve Stale Cache:</strong> If cached data exists for the query key, TanStack Query returns it synchronously from memory. The component renders instantly with zero loading spinner (<code class="inline">isPending: false, isFetching: true</code>).</li>
+              <li><strong>Background Revalidation:</strong> An asynchronous fetch is dispatched in the background to verify the data against the server.</li>
+              <li><strong>Silent Reconciliation:</strong> When the response arrives, if the data has changed, the cache is updated and the component quietly re-renders with the fresh data.</li>
+            </ol>
+          </li>
+          <li><strong>Invalidation Strategies:</strong>
+            <ul>
+              <li><strong>Active query invalidation:</strong> <code class="inline">queryClient.invalidateQueries({ queryKey: ['todos'] })</code> marks queries as stale and immediately refetches any queries currently rendered on the screen.</li>
+              <li><strong>Exact key matching:</strong> Pass <code class="inline">{ exact: true }</code> to prevent broad prefix matching (e.g. invalidating only <code class="inline">['todos']</code> without invalidating <code class="inline">['todos', 'detail', id]</code>).</li>
+            </ul>
+          </li>
         </ul>
       </section>
       <section id="7-react-router-loaders-query">

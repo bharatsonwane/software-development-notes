@@ -120,6 +120,32 @@ function Good({ show }) {
         <ul>
           <li><strong><code class="inline">eslint-plugin-react-hooks</code></strong> with rules <strong><code class="inline">rules-of-hooks</code></strong> and <strong><code class="inline">exhaustive-deps</code></strong> catches most mistakes. Enable them in every React project.</li>
         </ul>
+
+        <h3>2.4. Hook Internals &amp; The Fiber memoizedState Linked List</h3>
+        <ul>
+          <li><strong>How React Tracks Hooks Without Names:</strong>
+            <p>React hooks do not accept key names. Instead, React attaches a <strong>singly linked list of hook objects</strong> to the currently rendering component's Fiber node at <code class="inline">fiber.memoizedState</code>:</p>
+            <div class="code"><pre>fiberNode.memoizedState = {
+  memoizedState: 0,            // First hook: useState(0)
+  queue: { pending: null },
+  next: {
+    memoizedState: "dark",     // Second hook: useState("dark")
+    queue: { pending: null },
+    next: {
+      memoizedState: { ... },  // Third hook: useEffect(...)
+      next: null
+    }
+  }
+};</pre></div>
+          </li>
+          <li><strong>Why Calling Hooks Conditionally Destroys State:</strong>
+            <ol>
+              <li>On mount: Hook 1 = <code class="inline">useState(0)</code>, Hook 2 = <code class="inline">useState("dark")</code>, Hook 3 = <code class="inline">useEffect</code>.</li>
+              <li>On update: If Hook 1 is skipped inside an <code class="inline">if (condition)</code>, Hook 2 executes first. React looks at the first node in the linked list and gives Hook 2 the value <code class="inline">0</code> instead of <code class="inline">"dark"</code>!</li>
+              <li>Every subsequent hook is shifted by one position, corrupting variables and crashing the application.</li>
+            </ol>
+          </li>
+        </ul>
       </section>
       <section id="3-custom-hooks">
         <div class="heading-with-levels">
@@ -264,6 +290,41 @@ function useMediaQuery(query) { ... }</pre></div>
         <ul>
           <li>Use when you need setup/teardown per DOM node. Less common than object ref.</li>
         </ul>
+
+        <h3>4.7. useImperativeHandle &amp; React 19 Ref as a Prop</h3>
+        <ul>
+          <li><strong>Custom Imperative Handle:</strong> Instead of exposing the entire raw DOM element to a parent, <code class="inline">useImperativeHandle</code> restricts and customizes the exposed methods:</li>
+        </ul>
+        <div class="code"><pre>import { useImperativeHandle, useRef } from "react";
+
+// In React 19: ref is a standard prop (no forwardRef needed!)
+// In React 18: wrap component in forwardRef((props, ref) => ...)
+function CustomInput({ ref, placeholder }) {
+  const realInputRef = useRef(null);
+
+  useImperativeHandle(ref, () =&gt; ({
+    focusInput() {
+      realInputRef.current?.focus();
+    },
+    resetInput() {
+      if (realInputRef.current) realInputRef.current.value = "";
+    }
+  }), []);
+
+  return &lt;input ref={realInputRef} placeholder={placeholder} /&gt;;
+}
+
+// Parent usage:
+function Parent() {
+  const inputRef = useRef(null);
+  return (
+    &lt;&gt;
+      &lt;CustomInput ref={inputRef} placeholder="Search..." /&gt;
+      &lt;button onClick={() =&gt; inputRef.current.focusInput()}&gt;Focus&lt;/button&gt;
+      &lt;button onClick={() =&gt; inputRef.current.resetInput()}&gt;Clear&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</pre></div>
       </section>
       <section id="5-useid">
         <div class="heading-with-levels">
@@ -295,9 +356,14 @@ function useMediaQuery(query) { ... }</pre></div>
   );
 }</pre></div>
         <h3 id="5-useid-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.2. SSR and hydration</h3>
+        <h3>5.2. SSR, Hydration, and the useId Tree Path Algorithm</h3>
         <ul>
-          <li><strong><code class="inline">useId</code></strong> generates ids that are <strong>consistent</strong> between server and client render — avoid <code class="inline">Math.random()</code> or increment counters for ids in SSR apps.</li>
+          <li><strong>Why Global Incremental Counters Fail in SSR:</strong>
+            <p>If you use a simple module variable <code class="inline">let id = 0; id++</code>, multiple incoming server requests interleave counter increments. When the client hydrates the page, components receive mismatched IDs, throwing severe hydration errors and breaking input accessibility associations.</p>
+          </li>
+          <li><strong>The useId Tree Path Algorithm:</strong>
+            <p>Instead of a global integer counter, React generates a base-32 string representation of the component's exact position in the component tree hierarchy (e.g. <code class="inline">:r0:</code>, <code class="inline">:r1:</code>, <code class="inline">:r2:</code>). Because both the server HTML generator and the client hydrator traverse the Fiber tree in the exact same depth-first order, the generated IDs are guaranteed to match identically with zero network coordination.</p>
+          </li>
         </ul>
         <h3>5.3. Do not use useId for list keys</h3>
         <ul>

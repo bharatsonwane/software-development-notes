@@ -149,6 +149,68 @@ export default Welcome;</pre></div>
         <ul>
           <li>Rules:</li>
           <li>Component names <strong>PascalCase</strong> (<code class="inline">Welcome</code>, not <code class="inline">welcome</code>).</li><li>Return <strong>one root element</strong> (or use a <strong>Fragment</strong> — File 04).</li></ul>
+
+        <h3>2.4. React 18+ Root API (createRoot) vs Legacy ReactDOM.render</h3>
+        <ul>
+          <li><strong>Legacy API (React 17 and earlier):</strong></li>
+        </ul>
+        <div class="code"><pre>// React <=17 (Legacy synchronous rendering)
+import ReactDOM from "react-dom";
+import App from "./App";
+
+ReactDOM.render(&lt;App /&gt;, document.getElementById("root"));
+// Unmount:
+// ReactDOM.unmountComponentAtNode(document.getElementById("root"));</pre></div>
+        <ul>
+          <li><strong>Modern API (React 18 &amp; 19):</strong></li>
+        </ul>
+        <div class="code"><pre>// React 18+ (Concurrent-enabled root)
+import { createRoot } from "react-dom/client";
+import App from "./App";
+
+const container = document.getElementById("root");
+const root = createRoot(container);
+root.render(&lt;App /&gt;);
+
+// Clean unmount:
+// root.unmount();</pre></div>
+        <ul>
+          <li><strong>Why the root API changed:</strong>
+            <ol>
+              <li><strong>Concurrent Features:</strong> <code class="inline">createRoot</code> enables Concurrent React capabilities such as transitions (<code class="inline">useTransition</code>), Suspense streaming, and selective hydration. Legacy <code class="inline">ReactDOM.render</code> ran strictly synchronously.</li>
+              <li><strong>Automatic Batching:</strong> State updates inside promises, timeouts, and native event handlers are batched automatically under <code class="inline">createRoot</code> (see File 03).</li>
+              <li><strong>Clean lifecycle:</strong> Encapsulates container binding inside the <code class="inline">root</code> object instead of mutating the container DOM node repeatedly.</li>
+            </ol>
+          </li>
+        </ul>
+
+        <h3>2.5. Virtual DOM &amp; Fiber Tree Architecture Overview</h3>
+        <ul>
+          <li><strong>Virtual DOM (VDOM):</strong> A lightweight, in-memory JavaScript representation of the actual DOM tree. Each JSX element creates a plain JS object descriptor (e.g. <code class="inline">{ type: "div", props: { className: "card", children: ... } }</code>).</li>
+          <li><strong>Reconciliation vs Rendering:</strong>
+            <ul>
+              <li><strong>Reconciliation (Diffing):</strong> React compares the new Virtual DOM tree with the previous one to calculate the minimal set of mutations.</li>
+              <li><strong>Renderer:</strong> The platform-specific module that applies changes to the target environment (<code class="inline">react-dom</code> for web browsers, <code class="inline">react-native</code> for mobile).</li>
+            </ul>
+          </li>
+          <li><strong>The Fiber Reconciler:</strong>
+            <ul>
+              <li>In React 16+, React rebuilt its core reconciler from the ground up using <strong>Fibers</strong>.</li>
+              <li>A <strong>Fiber</strong> is a JavaScript object representing an incremental unit of work.</li>
+              <li>Instead of traversing a recursive call stack synchronously (which could freeze the browser tab during heavy renders), the Fiber tree is a singly linked list using three primary pointers:
+                <div class="code"><pre>fiberNode = {
+  type: ComponentOrTag,
+  key: keyIdentifier,
+  child: firstChildFiber,       // Pointer to first child
+  sibling: nextSiblingFiber,    // Pointer to next sibling
+  return: parentFiber,          // Pointer back to parent
+  memoizedState: hookLinkedList // Component state & hooks
+};</pre></div>
+              </li>
+              <li>This pointer structure enables React to <strong>pause</strong>, <strong>resume</strong>, <strong>prioritize</strong>, or <strong>abort</strong> rendering tasks without locking the browser main thread — providing the engine foundation for React 18 Concurrency.</li>
+            </ul>
+          </li>
+        </ul>
       </section>
       <section id="3-jsx">
         <div class="heading-with-levels">
@@ -219,6 +281,35 @@ return (
           <li><strong>Style</strong> — object, camelCase properties:</li>
         </ul>
         <div class="code"><pre>&lt;div style={{ color: &quot;navy&quot;, fontSize: &quot;1.2rem&quot; }}&gt;Styled&lt;/div&gt;</pre></div>
+
+        <h3>3.4. Modern JSX Runtime (react/jsx-runtime vs React.createElement)</h3>
+        <ul>
+          <li><strong>Legacy JSX Transform (React &le;16):</strong>
+            <p>Every JSX tag was transformed by Babel into a call to <code class="inline">React.createElement(...)</code>:</p>
+            <div class="code"><pre>// Source JSX:
+const heading = &lt;h1 className="title"&gt;Hello World&lt;/h1&gt;;
+
+// Legacy compiled output:
+import React from 'react'; // MANDATORY even if not referenced directly!
+const heading = React.createElement("h1", { className: "title" }, "Hello World");</pre></div>
+          </li>
+          <li><strong>Modern JSX Transform (React 17, 18, 19):</strong>
+            <p>Modern compilers (Vite, Next.js, Babel) automatically import specialized functions from <code class="inline">react/jsx-runtime</code>:</p>
+            <div class="code"><pre>// Source JSX:
+const heading = &lt;h1 className="title"&gt;Hello World&lt;/h1&gt;;
+
+// Modern compiled output (injected automatically by compiler):
+import { jsx as _jsx } from 'react/jsx-runtime';
+const heading = _jsx("h1", { className: "title", children: "Hello World" });</pre></div>
+          </li>
+          <li><strong>Key Technical Advantages:</strong>
+            <ol>
+              <li><strong>No scope import required:</strong> You no longer need to write <code class="inline">import React from 'react'</code> just to use JSX syntax in your files.</li>
+              <li><strong>Flat props representation:</strong> Children are passed as a regular property on the <code class="inline">props</code> object instead of variable rest arguments, reducing heap allocation overhead during object creation.</li>
+              <li><strong>Tree-shaking:</strong> Unused functions on the global <code class="inline">React</code> namespace are not bundled if you only consume JSX and specific hooks.</li>
+            </ol>
+          </li>
+        </ul>
       </section>
       <section id="4-components">
         <div class="heading-with-levels">

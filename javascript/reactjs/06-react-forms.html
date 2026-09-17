@@ -328,6 +328,107 @@ function toggle(id) {
 &lt;button type=&quot;submit&quot; disabled={!canSubmit}&gt;
   {loading ? &quot;Saving...&quot; : &quot;Save&quot;}
 &lt;/button&gt;</pre></div>
+        <h3>5.4. React 19 Form Actions (&lt;form action={action}&gt;)</h3>
+        <ul>
+          <li><strong>Native Action Functions:</strong> In React 19, the HTML <code class="inline">&lt;form action&gt;</code> prop accepts a JavaScript function directly (either synchronous or asynchronous):</li>
+        </ul>
+        <div class="code"><pre>async function updateProfile(formData) {
+  'use server'; // If using Next.js / React Server Actions
+  const name = formData.get(&quot;name&quot;);
+  const email = formData.get(&quot;email&quot;);
+  await saveUserToDatabase({ name, email });
+}
+
+function ProfileForm() {
+  return (
+    &lt;form action={updateProfile}&gt;
+      &lt;input name=&quot;name&quot; defaultValue=&quot;Bharat&quot; /&gt;
+      &lt;input name=&quot;email&quot; defaultValue=&quot;bharat@example.com&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Update&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
+        <ul>
+          <li><strong>Key Advantages:</strong>
+            <ol>
+              <li>No manual <code class="inline">e.preventDefault()</code> needed.</li>
+              <li>Receives native browser <code class="inline">FormData</code> directly.</li>
+              <li>Automatically resets uncontrolled inputs upon successful submission.</li>
+            </ol>
+          </li>
+        </ul>
+        <h3>5.5. React 19 Form Hooks: useActionState &amp; useFormStatus</h3>
+        <ul>
+          <li><strong>useActionState:</strong> Manages state based on the result of a form action (replaces manual <code class="inline">isLoading</code>, <code class="inline">error</code> state management):</li>
+        </ul>
+        <div class="code"><pre>import { useActionState } from &quot;react&quot;;
+
+async function loginAction(previousState, formData) {
+  const username = formData.get(&quot;username&quot;);
+  const res = await apiLogin(username);
+  if (!res.ok) return { error: &quot;Invalid credentials&quot; };
+  return { error: null, user: res.user };
+}
+
+function LoginForm() {
+  const [state, formAction, isPending] = useActionState(loginAction, { error: null });
+
+  return (
+    &lt;form action={formAction}&gt;
+      &lt;input name=&quot;username&quot; /&gt;
+      &lt;SubmitButton /&gt;
+      {isPending &amp;&amp; &lt;p&gt;Logging in...&lt;/p&gt;}
+      {state?.error &amp;&amp; &lt;p className=&quot;error&quot;&gt;{state.error}&lt;/p&gt;}
+    &lt;/form&gt;
+  );
+}</pre></div>
+        <ul>
+          <li><strong>useFormStatus:</strong> Reads parent form status from within child components without prop drilling:</li>
+        </ul>
+        <div class="code"><pre>import { useFormStatus } from &quot;react-dom&quot;;
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    &lt;button type=&quot;submit&quot; disabled={pending}&gt;
+      {pending ? &quot;Submitting...&quot; : &quot;Submit&quot;}
+    &lt;/button&gt;
+  );
+}</pre></div>
+        <h3>5.6. Optimistic UI Updates with useOptimistic</h3>
+        <ul>
+          <li><strong>Instant Feedback:</strong> Shows the expected result immediately before the server response finishes:</li>
+        </ul>
+        <div class="code"><pre>import { useOptimistic, useState } from &quot;react&quot;;
+
+function TodoList({ initialTodos }) {
+  const [todos, setTodos] = useState(initialTodos);
+  const [optimisticTodos, setOptimisticTodos] = useOptimistic(
+    todos,
+    (state, newTodo) =&gt; [...state, { text: newTodo, sending: true }]
+  );
+
+  async function handleAdd(formData) {
+    const text = formData.get(&quot;todo&quot;);
+    setOptimisticTodos(text); // UI updates instantly!
+    const saved = await apiAddTodo(text);
+    setTodos(prev =&gt; [...prev, saved]); // Server state updates
+  }
+
+  return (
+    &lt;form action={handleAdd}&gt;
+      &lt;ul&gt;
+        {optimisticTodos.map((t, i) =&gt; (
+          &lt;li key={i} style={{ opacity: t.sending ? 0.5 : 1 }}&gt;
+            {t.text} {t.sending &amp;&amp; &quot;(Sending...)&quot;}
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+      &lt;input name=&quot;todo&quot; /&gt;
+      &lt;button type=&quot;submit&quot;&gt;Add&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre></div>
       </section>
       <section id="6-validation-basics">
         <div class="heading-with-levels">

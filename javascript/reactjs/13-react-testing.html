@@ -200,10 +200,10 @@ await screen.findByText(/loaded/i); // waits for async UI</pre></div>
           </div>
         </div>
         <h3 id="5-user-events-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. userEvent.setup()</h3>
+        <h3>5.1. userEvent vs fireEvent (Deep Comparison)</h3>
         <div class="code"><pre>import userEvent from &quot;@testing-library/user-event&quot;;
 
-it(&quot;updates input&quot;, async () =&gt; {
+it(&quot;updates input with realistic browser events&quot;, async () =&gt; {
   const user = userEvent.setup();
   render(&lt;SearchBox /&gt;);
 
@@ -212,7 +212,20 @@ it(&quot;updates input&quot;, async () =&gt; {
   expect(input).toHaveValue(&quot;react&quot;);
 });</pre></div>
         <ul>
-          <li><strong><code class="inline">userEvent</code></strong> simulates realistic keyboard/mouse sequences — preferred over <strong><code class="inline">fireEvent.click</code></strong> for interactions.</li>
+          <li><strong>fireEvent (Synthetic Dispatch):</strong>
+            <ul>
+              <li>Dispatches a raw, isolated DOM event directly on the target element (<code class="inline">fireEvent.change(input, { target: { value: 'react' } })</code>).</li>
+              <li>Does NOT fire preceding or subsequent browser events (such as <code class="inline">focus</code>, <code class="inline">pointerover</code>, <code class="inline">keydown</code>, <code class="inline">keyup</code>).</li>
+              <li>Can give false positives: for example, <code class="inline">fireEvent.click</code> succeeds on a disabled button or an element covered by a modal overlay!</li>
+            </ul>
+          </li>
+          <li><strong>userEvent (Realistic Interaction Chain):</strong>
+            <ul>
+              <li>Simulates the full event chain that an actual browser fires during user interaction (e.g. typing invokes <code class="inline">focus</code> &rarr; <code class="inline">keydown</code> &rarr; <code class="inline">keypress</code> &rarr; <code class="inline">input</code> &rarr; <code class="inline">keyup</code>).</li>
+              <li>Respects DOM constraints: clicking a disabled button will not fire, typing in a read-only input will not type, and pointer events are respected.</li>
+              <li><strong>Default rule:</strong> Always prefer <code class="inline">userEvent.setup()</code> and <code class="inline">await user.*()</code>.</li>
+            </ul>
+          </li>
         </ul>
         <h3>5.2. Form submit</h3>
         <div class="code"><pre>await user.type(screen.getByLabelText(/email/i), &quot;a@b.com&quot;);
@@ -283,6 +296,32 @@ afterEach(() =&gt; {
 }</pre></div>
         <ul>
           <li>Disable retries in tests for faster failures.</li>
+        </ul>
+
+        <h3>6.4. The act(...) Warning Demystified</h3>
+        <ul>
+          <li><strong>What the Warning Means:</strong>
+            <p><code class="inline">Warning: An update to Component inside a test was not wrapped in act(...)</code></p>
+            <p>This warning indicates that a component state update or effect occurred <strong>after</strong> the test function finished evaluating or outside of React Testing Library's managed event boundary. React flushed work, but your test was not waiting for it.</p>
+          </li>
+          <li><strong>The Common Cause:</strong>
+            <p>An unresolved asynchronous operation (such as a pending network <code class="inline">fetch</code>, an un-awaited Promise, or a lingering <code class="inline">setTimeout</code>) resolved after your assertion ran.</p>
+          </li>
+          <li><strong>How to Properly Fix It (Without Wrapping act() Everywhere):</strong>
+            <ol>
+              <li>Do <strong>NOT</strong> manually wrap assertions in <code class="inline">act(() => { ... })</code>. React Testing Library's <code class="inline">render</code> and <code class="inline">userEvent</code> already wrap calls in <code class="inline">act()</code> automatically.</li>
+              <li>Wait for the resulting UI change using <code class="inline">await screen.findByRole(...)</code> or <code class="inline">await waitFor(...)</code>:
+                <div class="code"><pre>// ❌ Anti-pattern: Manually forcing act around assertion
+await act(async () => {
+  expect(screen.getByText("Data")).toBeInTheDocument();
+});
+
+// ✅ Solution: Await the DOM transition using findBy*
+expect(await screen.findByText("Data")).toBeInTheDocument();</pre></div>
+              </li>
+              <li>Ensure all mocked promises resolve and cleanup timers before the test finishes.</li>
+            </ol>
+          </li>
         </ul>
       </section>
       <section id="7-providers-and-routing">

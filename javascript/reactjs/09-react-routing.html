@@ -111,9 +111,34 @@
         <ul>
           <li>Users can bookmark, share links, and use back/forward. React Router syncs URL ↔ rendered components <strong>without</strong> full page reload.</li>
         </ul>
-        <h3>2.2. React Router role</h3>
         <ul><li><strong>Match</strong> path to a route definition</li><li><strong>Render</strong> the matching component(s)</li><li>Provide <strong>navigation</strong> (<code class="inline">Link</code>, <code class="inline">useNavigate</code>)</li><li>Expose <strong>URL params</strong> and <strong>query strings</strong></li>
           <li>Install: <code class="inline">npm install react-router-dom</code></li>
+        </ul>
+
+        <h3>2.3. Browser Navigation Mechanics (HTML5 History API)</h3>
+        <ul>
+          <li><strong>How Client-Side Routing Works Without Page Reloads:</strong>
+            <p>Traditional web browsers send an HTTP GET request to the server every time a user clicks an <code class="inline">&lt;a href&gt;</code>. React Router intercepts these clicks and leverages the <strong>HTML5 History API</strong>:</p>
+            <ol>
+              <li><strong><code class="inline">history.pushState(state, title, url)</code>:</strong> Pushes a new URL entry onto the browser session history stack and changes the address bar without issuing a network request.</li>
+              <li><strong><code class="inline">history.replaceState()</code>:</strong> Overwrites the current entry in the history stack (used for redirects).</li>
+              <li><strong><code class="inline">window.addEventListener("popstate", handler)</code>:</strong> Fires whenever the user clicks the browser Back or Forward buttons. React Router listens to <code class="inline">popstate</code>, reads <code class="inline">window.location.pathname</code>, and updates internal route state to re-render the matching page.</li>
+            </ol>
+          </li>
+        </ul>
+
+        <h3>2.4. SPA Web Server Fallback (The 404 Rewrite Rule)</h3>
+        <ul>
+          <li><strong>The Production Refresh Problem:</strong>
+            <p>In local development, the Vite dev server handles routing seamlessly. In production, if a user navigates directly to <code class="inline">https://myapp.com/products/42</code> or presses Refresh, the hosting web server searches its disk for a physical file at <code class="inline">/products/42/index.html</code>. If not found, the server responds with a <strong>404 Not Found</strong> error!</p>
+          </li>
+          <li><strong>The Universal SPA Fix:</strong>
+            <p>Configure the web server to rewrite all non-file requests back to <code class="inline">/index.html</code> so the React bundle loads and React Router parses the path:</p>
+            <div class="code"><pre># Nginx SPA configuration:
+location / {
+  try_files $uri $uri/ /index.html;
+}</pre></div>
+          </li>
         </ul>
       </section>
       <section id="3-basic-setup">
@@ -342,6 +367,32 @@ function ProductDetail() {
 }</pre></div>
         <ul>
           <li>Loader throws → <strong><code class="inline">errorElement</code></strong> renders (File 14 — error boundaries).</li>
+        </ul>
+
+        <h3>7.4. Data Router Parallelism (Eliminating Fetch Waterfalls)</h3>
+        <ul>
+          <li><strong>The Traditional Render-Then-Fetch Waterfall:</strong>
+            <p>In legacy setups with <code class="inline">useEffect</code> data fetching, nested components wait for their parent to finish rendering and fetching before child requests even begin:</p>
+            <div class="code"><pre>[Load /dashboard] &rarr; (Renders &amp; fetches) &rarr; [Mounts /settings] &rarr; (Renders &amp; fetches) &rarr; [Mounts /billing] (Waterfall!)</pre></div>
+          </li>
+          <li><strong>How Data Routers Parallelize Fetching:</strong>
+            <p>Because <code class="inline">createBrowserRouter</code> knows the entire route hierarchy upfront, React Router matches all nested route branches and executes their respective <code class="inline">loader</code> functions in <strong>parallel</strong> before rendering begins:</p>
+            <div class="code"><pre>const router = createBrowserRouter([
+  {
+    path: "/dashboard",
+    element: &lt;DashboardLayout /&gt;,
+    loader: dashboardLoader, // Runs concurrently in parallel!
+    children: [
+      {
+        path: "analytics",
+        element: &lt;AnalyticsView /&gt;,
+        loader: analyticsLoader // Runs concurrently in parallel!
+      }
+    ]
+  }
+]);</pre></div>
+            <p>This cuts total page readiness latency down to the single slowest request instead of the cumulative sum of all nested requests.</p>
+          </li>
         </ul>
       </section>
       <section id="8-protected-routes">

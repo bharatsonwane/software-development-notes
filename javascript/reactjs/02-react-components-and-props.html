@@ -149,6 +149,33 @@ function UserPage() {
     &lt;/PageLayout&gt;
   );
 }</pre></div>
+
+        <h3>2.5. Component Purity &amp; Idempotency (Strict Mode Double Invocation)</h3>
+        <ul>
+          <li><strong>Pure Functions:</strong> In React, a component's render body must behave as a <strong>pure function</strong>:
+            <ol>
+              <li><strong>Same inputs &rarr; same output:</strong> Given the same props, state, and context, it must always return the exact same JSX.</li>
+              <li><strong>Zero side effects during render:</strong> It must not mutate pre-existing variables, trigger HTTP requests, or write to the DOM during execution of the function body.</li>
+            </ol>
+          </li>
+          <li><strong>Impure vs Pure Example:</strong></li>
+        </ul>
+        <div class="code"><pre>// ❌ Impure: Mutating a shared variable outside component scope
+let guestCount = 0;
+function BadCup() {
+  guestCount = guestCount + 1; // SIDE EFFECT during render!
+  return &lt;h2&gt;Tea cup for guest #{guestCount}&lt;/h2&gt;;
+}
+
+// ✅ Pure: Receiving value via props without mutating external state
+function GoodCup({ guestNumber }) {
+  return &lt;h2&gt;Tea cup for guest #{guestNumber}&lt;/h2&gt;;
+}</pre></div>
+        <ul>
+          <li><strong>Why Strict Mode double-invokes components:</strong>
+            <p>In development mode under <code class="inline">&lt;StrictMode&gt;</code>, React deliberately calls component functions <strong>twice</strong> per render. If a component is pure, rendering it twice produces no visual or state bugs. If it is impure (like <code class="inline">BadCup</code> incrementing <code class="inline">guestCount</code>), the double invocation immediately exposes the defect (e.g. displaying guests 2, 4, 6 instead of 1, 2, 3).</p>
+          </li>
+        </ul>
       </section>
       <section id="3-props-patterns">
         <div class="heading-with-levels">
@@ -297,6 +324,13 @@ function Parent() {
 function Bad({ user }) {
   user.name = &quot;Changed&quot;;  // mutates parent&#x27;s object
 }</pre></div>
+
+        <h3>3.7. Props Immutability &amp; Shallow Freezing</h3>
+        <ul>
+          <li><strong>Read-Only Guarantee:</strong> Props represent pure external data passed down the component hierarchy. Modifying a prop violates one-way data flow.</li>
+          <li><strong>Shallow Freeze in Development:</strong> In development mode, React calls <code class="inline">Object.freeze(props)</code>. Attempting to assign <code class="inline">props.title = "New"</code> throws a TypeError in strict mode.</li>
+          <li><strong>Object Mutation Trap:</strong> If a prop is an object or array (e.g. <code class="inline">props.user</code>), <code class="inline">Object.freeze</code> is only shallow. While <code class="inline">props.user = ...</code> is blocked, mutating nested properties like <code class="inline">props.user.name = "Bob"</code> silently mutates parent state without triggering a re-render, leading to state desynchronization bugs. Always treat props as deeply read-only.</li>
+        </ul>
       </section>
       <section id="4-the-children-prop">
         <div class="heading-with-levels">
@@ -550,6 +584,38 @@ function Sidebar({ user }) {
 }</pre></div>
         <ul>
           <li>Works for shallow trees. Deep drilling → <strong>Context</strong> (File 08) or state library (File 11).</li>
+        </ul>
+
+        <h3>6.5. React.cloneElement vs Modern Composition Patterns</h3>
+        <ul>
+          <li><strong>What cloneElement does (Legacy Pattern):</strong>
+            <p><code class="inline">React.cloneElement(child, { newProps })</code> creates a shallow copy of an existing React element while injecting new or overriding existing props. Historically used in UI libraries for tabs, accordions, and form fields:</p>
+            <div class="code"><pre>// Legacy pattern: Injecting active state into children via cloneElement
+function TabGroup({ activeIndex, children }) {
+  return (
+    &lt;div className="tab-group"&gt;
+      {React.Children.map(children, (child, index) =&gt;
+        React.isValidElement(child)
+          ? React.cloneElement(child, { isActive: index === activeIndex })
+          : child
+      )}
+    &lt;/div&gt;
+  );
+}</pre></div>
+          </li>
+          <li><strong>Why cloneElement is considered problematic in Modern React:</strong>
+            <ol>
+              <li><strong>Brittle DOM hierarchy:</strong> If a consumer wraps a child in a helper <code class="inline">&lt;div&gt;</code>, the cloned props are injected into the <code class="inline">&lt;div&gt;</code> instead of the intended child component.</li>
+              <li><strong>Hidden contract &amp; TypeScript friction:</strong> Props are injected implicitly from the outside without visible declaration at the call site, hindering static type inference and prop documentation.</li>
+              <li><strong>Prop collisions:</strong> The parent can unintentionally overwrite custom props provided by the consumer on the child element.</li>
+            </ol>
+          </li>
+          <li><strong>Modern Alternatives:</strong>
+            <ul>
+              <li><strong>Compound Components with Context:</strong> Share state seamlessly down through an internal Context Provider (File 08, 14).</li>
+              <li><strong>Render Props:</strong> Pass state explicitly via function children (<code class="inline">{({ isActive }) =&gt; &lt;Tab isActive={isActive} /&gt;}</code>).</li>
+            </ul>
+          </li>
         </ul>
       </section>
       <section id="c-common-questions">

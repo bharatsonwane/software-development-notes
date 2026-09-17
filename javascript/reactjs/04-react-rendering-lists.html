@@ -134,28 +134,41 @@
         <ul>
           <li>Avoid deep nested ternaries — use early return or extract a component.</li>
         </ul>
-        <h3>2.3. Logical AND (<code class="inline">&amp;&amp;</code>)</h3>
+        <h3>2.3. Logical AND (&amp;&amp;) &amp; The 0 &amp;&amp; &lt;Component /&gt; Falsy Render Trap</h3>
         <ul>
-          <li>Render when condition is <strong>true</strong>; render nothing when <strong>false</strong>:</li>
-        </ul>
-        <div class="code"><pre>function Cart({ itemCount }) {
+          <li><strong>How Logical AND Works in JavaScript:</strong>
+            <p>In JavaScript, <code class="inline">condition &amp;&amp; expression</code> evaluates to the left-hand operand if it is falsy; otherwise it evaluates to the right-hand operand. It does <em>not</em> return a boolean unless the operand is already boolean.</p>
+          </li>
+          <li><strong>React's Rendering of Falsy Values:</strong>
+            <ul>
+              <li>React <strong>ignores</strong> and renders nothing for: <code class="inline">false</code>, <code class="inline">null</code>, <code class="inline">undefined</code>.</li>
+              <li>React <strong>renders numbers as text</strong> in the DOM: <code class="inline">0</code> and <code class="inline">NaN</code>.</li>
+            </ul>
+          </li>
+          <li><strong>The Classic Trap:</strong>
+            <div class="code"><pre>// ❌ BUG: When messages.length is 0, JavaScript evaluates: 0 &amp;&amp; &lt;Badge /&gt; -&gt; 0
+// React renders "0" directly onto the webpage DOM!
+function Inbox({ messages }) {
   return (
     &lt;div&gt;
-      &lt;h1&gt;Shop&lt;/h1&gt;
-      {itemCount &gt; 0 &amp;&amp; (
-        &lt;p&gt;You have {itemCount} items.&lt;/p&gt;
-      )}
+      &lt;h1&gt;Inbox&lt;/h1&gt;
+      {messages.length &amp;&amp; &lt;Badge count={messages.length} /&gt;}
     &lt;/div&gt;
   );
 }</pre></div>
-        <ul>
-          <li><strong>Caution</strong> — left side must be boolean. <code class="inline">count &amp;&amp; &lt;p&gt;...&lt;/p&gt;</code> fails when <code class="inline">count</code> is <code class="inline">0</code> (renders <code class="inline">0</code>):</li>
-        </ul>
-        <div class="code"><pre>// Bug — shows &quot;0&quot; on screen when count is 0
-{count &amp;&amp; &lt;p&gt;{count} items&lt;/p&gt;}
+          </li>
+          <li><strong>Safe Idioms for Conditional Rendering:</strong>
+            <div class="code"><pre>// ✅ Idiom 1: Explicit comparison (returns strict boolean)
+{messages.length &gt; 0 &amp;&amp; &lt;Badge count={messages.length} /&gt;}
 
-// Fix
-{count &gt; 0 &amp;&amp; &lt;p&gt;{count} items&lt;/p&gt;}</pre></div>
+// ✅ Idiom 2: Boolean conversion
+{Boolean(messages.length) &amp;&amp; &lt;Badge count={messages.length} /&gt;}
+{!!messages.length &amp;&amp; &lt;Badge count={messages.length} /&gt;}
+
+// ✅ Idiom 3: Explicit ternary operator
+{messages.length &gt; 0 ? &lt;Badge count={messages.length} /&gt; : null}</pre></div>
+          </li>
+        </ul>
         <h3>2.4. Storing JSX in variables</h3>
         <ul>
           <li>Complex branches — assign to a variable first:</li>
@@ -350,16 +363,36 @@ key={index}</pre></div>
         <div class="code"><pre>// Bad — new key every render, full remount
 key={Math.random()}</pre></div>
         <h3 id="4-keys-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.4. Index as key — when it breaks</h3>
-        <div class="code"><pre>// Initial
-[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;]  // keys 0, 1, 2
-
-// After unshift &quot;Z&quot;
-[&quot;Z&quot;, &quot;A&quot;, &quot;B&quot;, &quot;C&quot;]  // keys 0,1,2,3 — React thinks index 0 is still &quot;A&quot;</pre></div>
+        <h3>4.4. Index as Key — Reconciliation Diffing Heuristics &amp; State Corruption</h3>
         <ul>
-          <li>Symptoms:</li>
-          <li>Wrong checkbox state after reorder/delete.</li><li>Input values &quot;stick&quot; to wrong row.</li>
-          <li>Use <strong>index</strong> only if the list is <strong>static</strong>, never reordered, no item state in rows.</li>
+          <li><strong>How React's Diffing Heuristic Works:</strong>
+            <p>React compares child nodes between renders using the tuple <code class="inline">(element.type, element.key)</code>:</p>
+            <ol>
+              <li><strong>Matching Key:</strong> React preserves the existing Fiber instance and DOM node, passing the new props down to update the UI.</li>
+              <li><strong>Different Key:</strong> React completely unmounts and destroys the old Fiber and DOM node, creating a brand-new instance from scratch.</li>
+            </ol>
+          </li>
+          <li><strong>Why Using Array Index Corrupts State:</strong>
+            <div class="code"><pre>// Initial render:
+// items = ["Clean room", "Buy milk"]
+// Item 0: key=0, text="Clean room", input state = "done"
+// Item 1: key=1, text="Buy milk",   input state = "pending"
+
+// User prepends "Workout" to the beginning of the list:
+// items = ["Workout", "Clean room", "Buy milk"]
+// React reconciles:
+// - key=0: Existing node reused! Props updated to "Workout", BUT internal state stays "done"!
+// - key=1: Existing node reused! Props updated to "Clean room", internal state stays "pending"!
+// - key=2: New node mounted for "Buy milk"!</pre></div>
+          </li>
+          <li><strong>Real-World Bugs Caused by Index Keys:</strong>
+            <ul>
+              <li><strong>Uncontrolled Inputs:</strong> Text typed into input fields or checkboxes stays stuck to the old row position instead of moving with the item data.</li>
+              <li><strong>Component State:</strong> Local <code class="inline">useState</code> variables are bound to the Fiber node, not the data item, causing data cross-contamination.</li>
+              <li><strong>CSS Transitions / Animations:</strong> Animations trigger on the wrong elements during reordering or deletion.</li>
+            </ul>
+          </li>
+          <li><strong>Only Use Index When:</strong> The list is strictly static, never filtered, never reordered, and list item components have zero internal state.</li>
         </ul>
         <h3>4.5. Keys in nested lists</h3>
         <ul>

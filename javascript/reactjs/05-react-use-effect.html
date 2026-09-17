@@ -140,9 +140,43 @@ function Page({ userId }) {
           <li><strong>Order on mount/update:</strong></li>
         </ul>
         <ol><li>Component function runs (render).</li><li>React updates the DOM.</li><li>Browser paints.</li><li><strong><code class="inline">useEffect</code></strong> callbacks run.</li></ol>
+
+        <h3>2.3. Execution Timing: useEffect vs useLayoutEffect</h3>
         <ul>
-          <li>Effects do <strong>not</strong> block painting — good for responsiveness. For urgent DOM work before paint, React offers <strong><code class="inline">useLayoutEffect</code></strong> (File 12 — rare, mostly measurements).</li>
+          <li><strong>Detailed Browser Paint Timeline:</strong></li>
         </ul>
+        <div class="code"><pre>[React Render] &rarr; [DOM Mutations] &rarr; [useLayoutEffect (Sync)] &rarr; [Browser Paint] &rarr; [useEffect (Async)]</pre></div>
+        <ul>
+          <li><strong>useEffect (Asynchronous &amp; Non-Blocking):</strong>
+            <ul>
+              <li>Fires <strong>after</strong> the browser has computed layout and painted changes to the screen.</li>
+              <li>Default choice for 99% of side effects (data fetching, subscriptions, timers, analytics) so UI rendering is never blocked.</li>
+            </ul>
+          </li>
+          <li><strong>useLayoutEffect (Synchronous &amp; Pre-Paint):</strong>
+            <ul>
+              <li>Fires <strong>synchronously</strong> immediately after DOM mutations, but <strong>before</strong> the browser paints pixels to the screen.</li>
+              <li><strong>Use case:</strong> Measuring DOM elements (e.g. <code class="inline">getBoundingClientRect()</code>) or positioning tooltips/popovers where calculating dynamic dimensions in <code class="inline">useEffect</code> would cause an ugly visual "flicker" or jump before repositioning.</li>
+            </ul>
+          </li>
+        </ul>
+        <div class="code"><pre>import { useLayoutEffect, useRef, useState } from "react";
+
+function Tooltip({ targetRect }) {
+  const ref = useRef(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+
+  useLayoutEffect(() =&gt; {
+    // Synchronously measure before browser paints — prevents visual glitch
+    const { height } = ref.current.getBoundingClientRect();
+    setCoords({
+      top: targetRect.top - height - 8,
+      left: targetRect.left
+    });
+  }, [targetRect]);
+
+  return &lt;div ref={ref} style={{ top: coords.top, left: coords.left }} className="tooltip"&gt;Hint&lt;/div&gt;;
+}</pre></div>
       </section>
       <section id="3-basic-useeffect-syntax">
         <div class="heading-with-levels">
@@ -488,17 +522,37 @@ useEffect(() =&gt; {
         </div>
         <h3 id="8-strict-mode-and-development-behavior-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <ul>
-          <li>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts → unmounts → remounts</strong> components to surface missing cleanup:</li>
+          <li>In <strong>React Strict Mode</strong> (dev only), React <strong>mounts &rarr; unmounts &rarr; remounts</strong> components immediately upon first load:</li>
         </ul>
         <div class="code"><pre>useEffect(() =&gt; {
-  console.log(&quot;effect&quot;);
-  return () =&gt; console.log(&quot;cleanup&quot;);
+  console.log("effect setup");
+  return () =&gt; console.log("cleanup teardown");
 }, []);
-// Dev logs: effect, cleanup, effect
-// Prod logs: effect</pre></div>
+
+// In Development (Strict Mode):
+// 1. "effect setup"     (Initial mount)
+// 2. "cleanup teardown" (Immediate simulated unmount)
+// 3. "effect setup"     (Remount with preserved state)
+
+// In Production:
+// 1. "effect setup"     (Runs exactly once)</pre></div>
         <ul>
-          <li><strong>Implications:</strong></li>
-          <li>Effects must be <strong>idempotent</strong> — safe to run twice in dev.</li><li>Cleanup must fully undo the effect — subscriptions must not leak.</li><li>Do not rely on &quot;run once ever&quot; in dev without understanding Strict Mode.</li></ul>
+          <li><strong>Why React does this:</strong>
+            <p>React is preparing codebases for concurrent features where React unmounts and remounts views to preserve state (such as tab switching with Offscreen component caching, or instant back/forward navigation). If an effect breaks when unmounted and remounted, it is guaranteed to leak memory or cause duplicate data bugs in production.</p>
+          </li>
+          <li><strong>❌ The Ref Anti-Pattern (Don't Do This):</strong>
+            <div class="code"><pre>// Anti-pattern: trying to force the effect to run only once in dev
+const didRun = useRef(false);
+useEffect(() =&gt; {
+  if (didRun.current) return;
+  didRun.current = true;
+  connectSocket(); // Leaks! Cleanup will never disconnect the second instance!
+}, []);</pre></div>
+          </li>
+          <li><strong>✅ The Correct Solution (Symmetrical Cleanup):</strong>
+            <p>Every effect setup must have a corresponding teardown. If your setup creates a connection, cleanup must close it. If your setup adds a listener, cleanup must remove it.</p>
+          </li>
+        </ul>
       </section>
       <section id="9-multiple-effects">
         <div class="heading-with-levels">

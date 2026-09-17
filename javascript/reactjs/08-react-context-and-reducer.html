@@ -187,19 +187,30 @@ export function useTheme() {
           </div>
         </div>
         <h3 id="4-context-performance-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.1. Re-renders when value changes</h3>
+        <h3>4.1. The Context Re-Render Propagation Bottleneck &amp; React.memo Bypass</h3>
         <ul>
-          <li>When <strong><code class="inline">Provider value={...}</code></strong> changes, <strong>all consumers</strong> of that context re-render (unless optimized — File 12).</li>
-          <li>Avoid recreating the value object every render without need:</li>
-        </ul>
-        <div class="code"><pre>// New object every render — all consumers re-render
+          <li><strong>How React Checks Context Updates:</strong>
+            <p>Whenever a Context Provider re-renders, React performs an <code class="inline">Object.is(prevValue, nextValue)</code> check on the <code class="inline">value</code> prop. If the check returns <code class="inline">false</code>, React traverses down the tree and <strong>marks every single component that calls <code class="inline">useContext(ThatContext)</code> as dirty</strong>, forcing it to re-render.</p>
+          </li>
+          <li><strong>The React.memo Bypass Trap:</strong>
+            <p>Wrapping a consumer component in <code class="inline">React.memo()</code> only skips re-renders caused by <em>parent props</em> changes. It <strong>does NOT prevent re-renders caused by Context updates</strong>! The moment a context value changes, <code class="inline">React.memo</code> is completely bypassed for any component reading that context.</p>
+            <div class="code"><pre>// ❌ React.memo will NOT prevent this component from re-rendering
+// when any property in AppContext changes!
+const UserHeader = React.memo(function UserHeader() {
+  const { user } = useContext(AppContext);
+  console.log("UserHeader re-rendered!");
+  return &lt;h2&gt;{user.name}&lt;/h2&gt;;
+});</pre></div>
+          </li>
+          <li><strong>Value Object Instability Bug:</strong>
+            <p>If you pass an inline object literal to <code class="inline">&lt;Provider value={{ theme, setTheme }}&gt;</code>, a new object reference is created on every render frame (<code class="inline">{} !== {}</code>), causing <strong>all consumers to re-render constantly</strong>, even if <code class="inline">theme</code> never changed!</p>
+            <div class="code"><pre>// ❌ Anti-pattern: New object reference created every single render
 &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
 
-// Better — memoize value when dependencies stable
-const value = useMemo(() =&gt; ({ theme, setTheme }), [theme]);
-&lt;ThemeContext.Provider value={value}&gt;</pre></div>
-        <ul>
-          <li><code class="inline">setTheme</code> from <code class="inline">useState</code> is stable — only <code class="inline">theme</code> needs to be in deps.</li>
+// ✅ Solution: Memoize the context value object
+const contextValue = useMemo(() =&gt; ({ theme, setTheme }), [theme]);
+&lt;ThemeContext.Provider value={contextValue}&gt;</pre></div>
+          </li>
         </ul>
         <h3>4.2. Split contexts</h3>
         <ul>

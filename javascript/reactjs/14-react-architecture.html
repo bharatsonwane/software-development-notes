@@ -288,9 +288,23 @@ Tabs.List = TabList;
         <h3 id="5-error-boundaries-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>5.1. What they catch</h3>
         <ul>
-          <li><strong>Error boundaries</strong> catch <strong>render errors</strong> in child tree — JavaScript exceptions during render, lifecycle, or constructors of child components.</li>
-          <li>They do <strong>not</strong> catch:</li>
-          <li>Event handler errors (use try/catch)</li><li>Async errors inside <code class="inline">useEffect</code> (handle in promise)</li><li>Server-side rendering errors (framework-specific)</li></ul>
+          <li><strong>What Error Boundaries Catch:</strong>
+            <ul>
+              <li>JavaScript runtime exceptions thrown during component <strong>render</strong> phase.</li>
+              <li>Exceptions thrown in <strong>lifecycle methods</strong> (<code class="inline">componentDidMount</code>, <code class="inline">useLayoutEffect</code>, etc.).</li>
+              <li>Exceptions thrown in constructors of the component tree below them.</li>
+            </ul>
+          </li>
+          <li><strong>What Error Boundaries CANNOT Catch:</strong>
+            <ol>
+              <li><strong>Event Handlers:</strong> Clicking a button with an error (<code class="inline">onClick={() => { throw new Error(); }}</code>) does NOT trigger an Error Boundary because event handlers run outside the React render pass. (Use standard <code class="inline">try / catch</code> blocks inside event handlers).</li>
+              <li><strong>Asynchronous Code:</strong> Unhandled promise rejections inside <code class="inline">setTimeout</code>, <code class="inline">requestAnimationFrame</code>, or raw fetch calls.</li>
+              <li><strong>Server-Side Rendering (SSR):</strong> Errors during server rendering are handled at the server response level.</li>
+              <li><strong>Errors Inside the Boundary Itself:</strong> A boundary catches errors in its children, not within its own render method.</li>
+            </ol>
+          </li>
+          <li><strong>Why Error Boundaries Require Class Components:</strong> React has not released a hook alternative for <code class="inline">componentDidCatch</code> or <code class="inline">static getDerivedStateFromError</code>. You must use a class component or the production battle-tested npm package <code class="inline">react-error-boundary</code>.</li>
+        </ul>
         <h3>5.2. Granular placement</h3>
         <div class="code"><pre>&lt;AppProviders&gt;
   &lt;ErrorBoundary fallback={&lt;AppCrashScreen /&gt;}&gt;
@@ -361,6 +375,28 @@ Tabs.List = TabList;
 export const API_BASE = import.meta.env.VITE_API_URL;</pre></div>
         <ul>
           <li>Never hardcode secrets in client bundle — env vars prefixed for exposure (Vite <code class="inline">VITE_</code>).</li>
+        </ul>
+
+        <h3>6.4. React Server Components (RSC) vs Client Components (&quot;use client&quot;)</h3>
+        <ul>
+          <li><strong>The Modern Architectural Boundary:</strong>
+            <p>In modern React architectures (Next.js App Router, React Router 7, Waku), components are divided into two execution environments:</p>
+            <table>
+              <thead>
+                <tr><th>Feature</th><th>Server Component (Default)</th><th>Client Component (<code class="inline">&quot;use client&quot;</code>)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Execution</strong></td><td>Executes strictly on server (at build or request time)</td><td>Prerendered on server + hydrates in browser</td></tr>
+                <tr><td><strong>Client Bundle Impact</strong></td><td><strong>0 KB</strong> (zero JavaScript sent to client)</td><td>Included in the downloaded browser bundle</td></tr>
+                <tr><td><strong>Direct Backend Access</strong></td><td>Yes (can run database queries, access filesystem)</td><td>No (must fetch through HTTP API or Server Actions)</td></tr>
+                <tr><td><strong>State &amp; Hooks</strong></td><td>No (<code class="inline">useState</code>, <code class="inline">useEffect</code> disallowed)</td><td>Yes (full React hooks and interactivity allowed)</td></tr>
+                <tr><td><strong>Browser APIs &amp; Events</strong></td><td>No (<code class="inline">window</code>, <code class="inline">onClick</code> disallowed)</td><td>Yes (<code class="inline">onClick</code>, <code class="inline">localStorage</code> allowed)</td></tr>
+              </tbody>
+            </table>
+          </li>
+          <li><strong>The &quot;use client&quot; Boundary Rule:</strong>
+            <p><code class="inline">&quot;use client&quot;</code> does NOT make a component run exclusively on the client; it defines the <strong>entry boundary</strong> where client hydration begins. Best architectural practice is to push <code class="inline">&quot;use client&quot;</code> as far down the component tree (to the leaves) as possible, keeping layouts and data containers as 0-bundle Server Components.</p>
+          </li>
         </ul>
       </section>
       <section id="7-scaling-patterns">

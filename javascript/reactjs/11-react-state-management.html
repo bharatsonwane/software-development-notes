@@ -178,14 +178,29 @@ const useStore = create(
   }))
 );</pre></div>
         <h3 id="4-zustand-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>4.4. Selectors prevent extra re-renders</h3>
+        <h3>4.4. Selectors, Equality Checks &amp; useSyncExternalStore</h3>
         <ul>
-          <li>Subscribe to <strong>slices</strong> of state:</li>
-        </ul>
-        <div class="code"><pre>const items = useCartStore((s) =&gt; s.items);        // re-render when items change
-const addItem = useCartStore((s) =&gt; s.addItem);    // stable function reference</pre></div>
-        <ul>
-          <li>Only re-renders when <strong>selected value</strong> changes (shallow compare by default).</li>
+          <li><strong>How Zustand Avoids Context Re-render Storms:</strong>
+            <p>Unlike React Context (which unconditionally re-renders every consumer when the provider value changes), Zustand stores data in an external closure outside of React's component tree. In React 18 and 19, Zustand subscribes components using the official <strong><code class="inline">useSyncExternalStore</code></strong> hook:</p>
+            <div class="code"><pre>const items = useCartStore((s) =&gt; s.items);     // Subscribes only to items array
+const addItem = useCartStore((s) =&gt; s.addItem); // Stable function pointer — never re-renders!</pre></div>
+          </li>
+          <li><strong>The Selector Bailout Mechanism:</strong>
+            <ol>
+              <li>When any state change occurs in the store, Zustand invokes the selector <code class="inline">s => s.items</code>.</li>
+              <li>It performs a strict equality check (<code class="inline">Object.is(prevSelected, nextSelected)</code>).</li>
+              <li>If the selected slice has not changed, <strong>React completely bails out of re-rendering that component</strong>.</li>
+            </ol>
+          </li>
+          <li><strong>Returning Derived Objects / Arrays (shallow):</strong>
+            <p>If your selector creates a new object literal on the fly, use Zustand's <code class="inline">useShallow</code> to avoid infinite render loops:</p>
+            <div class="code"><pre>import { useShallow } from 'zustand/react/shallow';
+
+// Without useShallow, { items, count } creates a new object every time -> unnecessary re-renders!
+const { items, count } = useCartStore(
+  useShallow((state) =&gt; ({ items: state.items, count: state.items.length }))
+);</pre></div>
+          </li>
         </ul>
       </section>
       <section id="5-redux-toolkit">
@@ -233,6 +248,17 @@ export const { addItem, removeItem } = cartSlice.actions;
 const store = configureStore({
   reducer: { cart: cartSlice.reducer },
 });</pre></div>
+        <ul>
+          <li><strong>How Immer Works Inside createSlice (Structural Sharing):</strong>
+            <ul>
+              <li>In vanilla Redux, reducers required verbose, error-prone nested object spreading (<code class="inline">{ ...state, user: { ...state.user, address: { ... } } }</code>).</li>
+              <li>RTK wraps every reducer in Immer's <code class="inline">produce()</code> function. The <code class="inline">state</code> passed into your reducer is actually an ES6 <code class="inline">Proxy</code> known as the <em>draft</em>.</li>
+              <li>When you write "mutating" syntax like <code class="inline">state.items.push(...)</code>, the Proxy records your modifications into a changeset.</li>
+              <li>When the reducer exits, Immer finalizes a new immutable state tree using <strong>structural sharing</strong>: unmodified branches of the state tree retain their exact previous object references, while only modified objects are cloned.</li>
+              <li><strong>Golden Rule:</strong> Either mutate the draft (<code class="inline">state.value = 5</code>) OR return a new value (<code class="inline">return newState</code>). Never do both in the same reducer!</li>
+            </ul>
+          </li>
+        </ul>
         <h3>5.3. React bindings</h3>
         <div class="code"><pre>import { Provider, useSelector, useDispatch } from &quot;react-redux&quot;;
 
