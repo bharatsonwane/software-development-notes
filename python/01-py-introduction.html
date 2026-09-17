@@ -19,11 +19,13 @@
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
         <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-what-where">2. What is Python and where it is used</a>
-        <a href="#3-features">3. Features of Python (detailed)</a>
-        <a href="#4-limitations">4. Limitations of Python</a>
-        <a href="#5-versions">5. Python release journey (2.x → 3.x)</a>
-        <a href="#6-install-repl">6. Install, REPL, and first program</a>
+        <a href="#2-what-where">2. What is Python &amp; multi-paradigm architecture</a>
+        <a href="#3-features">3. Core technical features</a>
+        <a href="#4-flavors">4. Python flavors &amp; runtime engines</a>
+        <a href="#5-pvm-architecture">5. Python execution architecture &amp; PVM</a>
+        <a href="#6-limitations">6. Limitations &amp; GIL mechanics</a>
+        <a href="#7-versions">7. Python release journey (2.x → 3.x)</a>
+        <a href="#8-install-repl">8. Install, REPL, and execution modes</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -42,16 +44,17 @@
       </nav>
       <header class="hero" id="intro">
         <h1>01. Introduction to Python</h1>
-        <p class="subtitle">File 01 — what Python is, features, limitations, versions, install and first program.</p>
+        <p class="subtitle">File 01 — architecture, multi-paradigm design, technical flavors, PVM bytecode lifecycle, limitations, versions, and execution modes.</p>
         <div class="chip-row">
-          <span class="chip">Features</span>
-          <span class="chip">Limitations</span>
-          <span class="chip">3.x</span>
-          <span class="chip">REPL</span>
+          <span class="chip">Multi-Paradigm</span>
+          <span class="chip">Flavors (CPython / PyPy)</span>
+          <span class="chip">PVM &amp; Bytecode</span>
+          <span class="chip">GIL Architecture</span>
+          <span class="chip">Python 3.x</span>
         </div>
       </header>
 
-            <section id="1-introduction">
+      <section id="1-introduction">
         <div class="heading-with-levels">
           <h2>1. Introduction</h2>
           <div class="h2-levels">
@@ -61,21 +64,24 @@
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>1.1. Overview</h3>
         <ul>
-          <li><strong>Python</strong> is a high-level, general-purpose language created by <strong>Guido van Rossum</strong> (first release 1991). It emphasizes readable syntax and a large standard library.</li>
+          <li><strong>Python</strong> is an interpreted, high-level, dynamically typed, garbage-collected, multi-paradigm programming language.</li>
+          <li>It provides a high level of abstraction from underlying hardware architectures, automating manual memory allocation and deallocation while exposing a uniform, portable interface across operating systems.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> learn and write <strong>Python 3</strong> only. Use a <strong>venv</strong> per project. Prefer clarity over clever one-liners.</div>
+        <h3>1.2. Technical Study Rules</h3>
+        <div class="callout"><strong>Engineering Standard:</strong> Target <strong>Python 3.10+</strong> exclusively. Always develop inside an isolated virtual environment (<code class="inline">.venv</code>). Emphasize explicit typing and structural clarity over obscure one-liners.</div>
         <ul>
-          <li>After reading sections 2–6, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">01-practice.py</code> before File 02. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–8, complete <a href="#p-practice">P. Practical Assignment</a> before File 02. Review <a href="#c-common-questions">C. Common questions</a> for technical interviews.</li>
         </ul>
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>What is Python and where it is used</strong></li>
-          <li><strong>Features of Python (detailed)</strong></li>
-          <li><strong>Limitations of Python</strong></li>
-          <li><strong>Python release journey (2.x → 3.x)</strong></li>
-          <li><strong>Install, REPL, and first program</strong></li>
+          <li><strong>What is Python &amp; multi-paradigm architecture</strong> (Functional, OOP, Scripting, Modular)</li>
+          <li><strong>Core technical features</strong> (Typing semantics, GC, C-extensibility)</li>
+          <li><strong>Python flavors &amp; runtime engines</strong> (CPython, Jython, IronPython, PyPy, Cython, MicroPython)</li>
+          <li><strong>Python execution architecture &amp; PVM</strong> (Bytecode, <code class="inline">.pyc</code>, <code class="inline">dis</code> opcode analysis)</li>
+          <li><strong>Limitations &amp; GIL mechanics</strong> (CPU bound concurrency trade-offs)</li>
+          <li><strong>Python release journey (2.x → 3.x)</strong> (Design changes &amp; modernization)</li>
+          <li><strong>Install, REPL, and execution modes</strong> (Direct script, module, venv)</li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
@@ -85,179 +91,436 @@
 
       <section id="2-what-where">
         <div class="heading-with-levels">
-          <h2>2. What is Python and where it is used</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-          </div>
-        </div>
-        <h3 id="2-what-where-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li>Python is <strong>interpreted</strong> (source runs via an interpreter / VM), <strong>dynamically typed</strong>, and supports multiple styles (procedural, OOP, functional).</li>
-          <li><strong>Where it is used:</strong></li>
-        </ul>
-        <table>
-          <thead>
-            <tr><th>Area</th><th>Examples</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Web backends</td><td>Django, Flask, FastAPI</td></tr>
-            <tr><td>Data / ML</td><td>NumPy, pandas, scikit-learn, PyTorch</td></tr>
-            <tr><td>Automation / scripting</td><td>File ops, DevOps glue, testing</td></tr>
-            <tr><td>Desktop / tooling</td><td>CLI apps, scientific tools</td></tr>
-            <tr><td>Education</td><td>First language in many courses</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section id="3-features">
-        <div class="heading-with-levels">
-          <h2>3. Features of Python (detailed)</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-          </div>
-        </div>
-        <h3 id="3-features-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <table>
-          <thead>
-            <tr><th>Feature</th><th>Meaning</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Simple / readable syntax</td><td>English-like; indentation defines blocks</td></tr>
-            <tr><td>Free and open source</td><td>PSF license; community-driven</td></tr>
-            <tr><td>High-level</td><td>Memory managed for you (GC)</td></tr>
-            <tr><td>Interpreted</td><td>Run line-by-line / via bytecode + VM</td></tr>
-            <tr><td>Dynamically typed</td><td>Types on values, not fixed on variables</td></tr>
-            <tr><td>Platform independent</td><td>“Write once, run anywhere” (with interpreter)</td></tr>
-            <tr><td>Large standard library</td><td>“Batteries included”</td></tr>
-            <tr><td>Extensible / embeddable</td><td>C extensions; embed in other apps</td></tr>
-            <tr><td>OOP support</td><td>Everything is an object</td></tr>
-            <tr><td>Rich ecosystem (PyPI)</td><td>pip packages for almost every domain</td></tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section id="4-limitations">
-        <div class="heading-with-levels">
-          <h2>4. Limitations of Python</h2>
-          <div class="h2-levels">
-            <span class="tier l1">L1</span>
-          </div>
-        </div>
-        <h3 id="4-limitations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li><strong>Slower</strong> than C/C++/Rust for CPU-heavy loops (often mitigated with NumPy / C extensions).</li>
-          <li><strong>GIL</strong> (CPython) limits true parallel CPU threads in one process — File 25.</li>
-          <li><strong>Mobile / browser</strong> not primary targets (unlike JS on the web).</li>
-          <li><strong>Runtime errors</strong> for type mistakes unless you add type checkers (mypy) — File 32.</li>
-          <li>Design choices (indentation, dynamic typing) can frustrate some teams — not “bugs,” but trade-offs.</li>
-        </ul>
-      </section>
-
-      <section id="5-versions">
-        <div class="heading-with-levels">
-          <h2>5. Python release journey (2.x → 3.x)</h2>
+          <h2>2. What is Python &amp; multi-paradigm architecture</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="5-versions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li><strong>Python 2</strong> reached end-of-life <strong>1 Jan 2020</strong>. Do not start new projects on 2.x.</li>
-          <li><strong>Python 3</strong> cleaned up design: <code class="inline">print</code> is a function, text is Unicode <code class="inline">str</code>, integer division with <code class="inline">/</code> returns float, etc.</li>
-        </ul>
-        <div class="code"><pre># Python 3
-print("Hello")
-print(5 / 2)   # 2.5
-print(5 // 2)  # 2</pre></div>
-        <h3 id="5-versions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.1. Notable 3.x milestones (high level)</h3>
-        <ul>
-          <li><strong>3.5+</strong> — <code class="inline">async</code>/<code class="inline">await</code></li>
-          <li><strong>3.6+</strong> — f-strings</li>
-          <li><strong>3.7+</strong> — dataclasses (stdlib)</li>
-          <li><strong>3.8+</strong> — walrus operator <code class="inline">:=</code></li>
-          <li><strong>3.10+</strong> — <code class="inline">match</code> / <code class="inline">case</code></li>
-          <li><strong>3.11+</strong> — faster CPython, better errors</li>
-        </ul>
-        <ul>
-          <li>Check your version:</li>
-        </ul>
-        <div class="code"><pre>python3 --version
-# or
-import sys
-print(sys.version)</pre></div>
+        <h3 id="2-what-where-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Python is classified as a <strong>general-purpose</strong> language because its runtime, standard library, and ecosystem are domain-agnostic, powering applications from embedded firmware to planetary-scale web distributed backends.</p>
+
+        <table>
+          <thead>
+            <tr><th>Technical Domain</th><th>Primary Libraries &amp; Frameworks</th><th>Engineering Role</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Backend Systems &amp; APIs</td><td>FastAPI, Django, Flask, gRPC, Celery</td><td>High-throughput asynchronous or synchronous REST/gRPC microservices.</td></tr>
+            <tr><td>Machine Learning &amp; AI</td><td>PyTorch, TensorFlow, JAX, Hugging Face, scikit-learn</td><td>Deep learning tensor computation, neural network training, model deployment.</td></tr>
+            <tr><td>Scientific Computing &amp; Data</td><td>NumPy, pandas, Polars, SciPy, Dask</td><td>Vectorized numerical computing, out-of-core data analytics.</td></tr>
+            <tr><td>Systems Automation &amp; DevOps</td><td>Fabric, Ansible, Invoke, boto3, Click</td><td>Cloud infrastructure management, deployment orchestration, CLI utilities.</td></tr>
+            <tr><td>Embedded Systems &amp; IoT</td><td>MicroPython, CircuitPython</td><td>Direct hardware control on microcontrollers with constrained memory footprints.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="2-what-where-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>2.2. Multi-Paradigm Technical Architecture</h4>
+        <p>Rather than enforcing a single ideological paradigm (such as pure object-orientation in early Java or pure functional purity in Haskell), Python integrates four foundational programming architectures:</p>
+
+        <table>
+          <thead>
+            <tr><th>Paradigm</th><th>Language Roots</th><th>Core Python Features &amp; Mechanisms</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Functional Programming</strong></td>
+              <td>C / Lisp</td>
+              <td>First-class functions, higher-order functions (<code class="inline">map</code>, <code class="inline">filter</code>, <code class="inline">reduce</code>), closures, anonymous lambda expressions, list/dict/set comprehensions, and immutable data structures (<code class="inline">tuple</code>, <code class="inline">frozenset</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Object-Oriented Programming (OOP)</strong></td>
+              <td>C++</td>
+              <td>Classes, encapsulation, single &amp; multiple inheritance, Method Resolution Order (C3 Linearization MRO), polymorphism via magic/dunder methods, and abstract base classes (<code class="inline">abc.ABC</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Procedural &amp; Scripting</strong></td>
+              <td>C / Perl / Shell</td>
+              <td>Top-level execution flow without mandatory boilerplate wrapper classes, automated control flow (<code class="inline">if-elif-else</code>, <code class="inline">while</code>, <code class="inline">for</code>), regular expressions (<code class="inline">re</code>), and standard I/O streams.</td>
+            </tr>
+            <tr>
+              <td><strong>Modular Architecture</strong></td>
+              <td>Modula-3</td>
+              <td>Hierarchical packages (<code class="inline">__init__.py</code>), module-level encapsulation, explicit namespace boundaries (<code class="inline">import</code>, <code class="inline">from ... import</code>), and lazy symbol exports.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Demonstrating multi-paradigm coexistence in a single Python script:
+
+# 1. Procedural: linear script execution
+data = [1, 2, 3, 4, 5, 6]
+
+# 2. Functional: pure higher-order transformation with lambda and filter
+evens_squared = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, data)))
+
+# 3. Object-Oriented: encapsulated state and behaviors
+class MathProcessor:
+    def __init__(self, values):
+        self.values = values
+
+    def compute_sum(self):
+        return sum(self.values)
+
+processor = MathProcessor(evens_squared)
+print("Computed sum:", processor.compute_sum())  # Output: 56</pre></div>
       </section>
 
-      <section id="6-install-repl">
+      <section id="3-features">
         <div class="heading-with-levels">
-          <h2>6. Install, REPL, and first program</h2>
+          <h2>3. Core technical features</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="3-features-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Technical Definition &amp; Mechanism</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Dynamically Typed</strong></td><td>Types are bound to <em>runtime heap objects</em>, not to variable names. Type validation occurs during runtime evaluation rather than compile time.</td></tr>
+            <tr><td><strong>Strongly Typed</strong></td><td>Python strictly enforces type boundaries. It never performs implicit type coercions across incompatible types (e.g. <code class="inline">"5" + 5</code> raises <code class="inline">TypeError</code> instead of coercing to string or integer).</td></tr>
+            <tr><td><strong>Interpreted &amp; Bytecode-Driven</strong></td><td>Source code (<code class="inline">.py</code>) is parsed into an Abstract Syntax Tree (AST), compiled into portable bytecode (<code class="inline">.pyc</code>), and executed by a stack-based virtual machine.</td></tr>
+            <tr><td><strong>Automated Memory Management</strong></td><td>Deterministic reference counting handles immediate object deallocation when references hit zero; a generational cyclic garbage collector identifies circular references.</td></tr>
+            <tr><td><strong>Platform Independent</strong></td><td>Compiled bytecode is architecture-neutral; any target OS with a compatible PVM (CPython, PyPy) executes identical bytecode.</td></tr>
+            <tr><td><strong>Extensible &amp; Embeddable</strong></td><td>Exposes a comprehensive C-API (<code class="inline">Python.h</code>) allowing developers to write performance-critical modules in C/C++ or embed the Python interpreter inside host applications.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="3-features-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>3.1. Dynamic vs Static &amp; Strong vs Weak Typing Matrix</h4>
+        <p>A classic technical interview distinction: <em>Dynamic Typing</em> is frequently confused with <em>Weak Typing</em>. Python is <strong>Dynamically Typed AND Strongly Typed</strong>.</p>
+
+        <table>
+          <thead>
+            <tr><th>Typing Dimension</th><th>Strong Typing (Python, Ruby, Rust)</th><th>Weak Typing (JavaScript, C, PHP)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Static Typing</strong> (Compile-time)</td>
+              <td><strong>Rust / Java / C++:</strong> Variables have declared types; types cannot change; no implicit coercion between incompatible types.</td>
+              <td><strong>C / C++:</strong> Unchecked pointer casts (<code class="inline">void*</code>) and implicit conversions can bypass type safety.</td>
+            </tr>
+            <tr>
+              <td><strong>Dynamic Typing</strong> (Runtime)</td>
+              <td><strong>Python:</strong> Variables are untyped references to typed objects. Incompatible operations (<code class="inline">10 + "20"</code>) fail immediately with <code class="inline">TypeError</code>.</td>
+              <td><strong>JavaScript:</strong> <code class="inline">"10" + 20</code> evaluates silently to <code class="inline">"1020"</code> (implicit coercion); <code class="inline">"10" - 5</code> evaluates to <code class="inline">5</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Python's Strong Typing Proof:
+x = 10       # x points to an int object in heap memory
+y = "20"     # y points to a str object in heap memory
+
+# In JavaScript: x + y results in "1020"
+# In Python:
+try:
+    result = x + y
+except TypeError as e:
+    print("TypeError raised:", e)  # unsupported operand type(s) for +: 'int' and 'str'
+
+# Dynamic Rebinding: variable name can reference an object of a different type:
+x = "Now I am a string"  # Valid: variable x simply points to a new str object</pre></div>
+      </section>
+
+      <section id="4-flavors">
+        <div class="heading-with-levels">
+          <h2>4. Python flavors &amp; runtime engines</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="4-flavors-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Python is a formal language specification (defined by PEPs and language reference documents). Different runtime implementations—known as <strong>flavors</strong>—execute Python code targeting distinct virtual machines and platforms.</p>
+
+        <table>
+          <thead>
+            <tr><th>Implementation</th><th>Written In</th><th>Target Runtime</th><th>Key Technical Characteristics</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CPython</strong> (Standard)</td>
+              <td>C</td>
+              <td>Native OS / CPU</td>
+              <td>The standard reference implementation. Direct C-API support for NumPy/C-extensions; utilizes a Global Interpreter Lock (GIL) and reference-counted garbage collection.</td>
+            </tr>
+            <tr>
+              <td><strong>PyPy</strong></td>
+              <td>RPython</td>
+              <td>Native OS with JIT</td>
+              <td>High-performance engine equipped with a Tracing <strong>Just-In-Time (JIT)</strong> compiler. Typically achieves 4×–7× speedups on CPU-heavy numerical loops.</td>
+            </tr>
+            <tr>
+              <td><strong>Jython</strong> (JPython)</td>
+              <td>Java</td>
+              <td>Java Virtual Machine (JVM)</td>
+              <td>Compiles Python source into Java bytecode (<code class="inline">.class</code>). Provides seamless two-way interoperability with Java libraries; no CPython GIL.</td>
+            </tr>
+            <tr>
+              <td><strong>IronPython</strong></td>
+              <td>C#</td>
+              <td>.NET CLR / DLR</td>
+              <td>Integrates Python with the Microsoft .NET ecosystem; allows direct access to WPF, WCF, and native .NET assemblies.</td>
+            </tr>
+            <tr>
+              <td><strong>Cython</strong></td>
+              <td>C / Python</td>
+              <td>C/C++ Compiler</td>
+              <td>A superset of Python supporting optional static type declarations. Compiles code directly into optimized C/C++ translation units for maximum performance.</td>
+            </tr>
+            <tr>
+              <td><strong>MicroPython</strong></td>
+              <td>C</td>
+              <td>Bare-metal MCU</td>
+              <td>A lean, stripped-down runtime optimized to execute directly on microcontrollers (ESP32, STM32, Raspberry Pi Pico) with as little as 16 KB of RAM.</td>
+            </tr>
+            <tr>
+              <td><strong>Anaconda Python</strong></td>
+              <td>C (CPython fork)</td>
+              <td>Native OS</td>
+              <td>CPython bundled with Intel Math Kernel Library (MKL) binaries, OpenBLAS optimizations, and the Conda package management ecosystem.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="4-flavors-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>4.1. Runtime Inspection in Code</h4>
+        <div class="code"><pre>import platform
+import sys
+
+# Inspect the active runtime engine:
+print("Python Implementation:", platform.python_implementation())  # e.g., 'CPython' or 'PyPy'
+print("Python Compiler:", platform.python_compiler())              # e.g., 'Clang 15.0.0' or 'GCC'
+print("Python Build:", platform.python_build())
+print("Implementation details:", sys.implementation.name)          # 'cpython'</pre></div>
+      </section>
+
+      <section id="5-pvm-architecture">
+        <div class="heading-with-levels">
+          <h2>5. Python execution architecture &amp; PVM</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="5-pvm-architecture-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Python code does not execute directly on CPU hardware. CPython uses a two-stage compilation and execution architecture:</p>
+
+        <div class="callout">
+          <strong>Execution Pipeline:</strong><br />
+          <code class="inline">Source Code (.py)</code> $\longrightarrow$ <strong>Compiler (Lexer / Parser / AST)</strong> $\longrightarrow$ <code class="inline">Bytecode (.pyc)</code> $\longrightarrow$ <strong>Python Virtual Machine (PVM)</strong> $\longrightarrow$ <code class="inline">Machine Code</code> $\longrightarrow$ <strong>CPU Hardware</strong>
+        </div>
+
+        <ul>
+          <li><strong>Step 1 (Bytecode Compilation):</strong> CPython first parses Python source code into an Abstract Syntax Tree (AST), then compiles it into an intermediate, platform-independent instruction set called <strong>Bytecode</strong>.</li>
+          <li><strong>Step 2 (Bytecode Caching in <code class="inline">__pycache__</code>):</strong> When an imported module is compiled, CPython serializes the bytecode to disk inside a <code class="inline">__pycache__</code> directory as a <code class="inline">.pyc</code> file (e.g., <code class="inline">module.cpython-312.pyc</code>). The <code class="inline">.pyc</code> header contains a magic number and source file timestamp/hash. If the source file has not changed, compilation is skipped, drastically speeding up application startup time.</li>
+          <li><strong>Step 3 (PVM Execution):</strong> The <strong>Python Virtual Machine (PVM)</strong> is the runtime engine of CPython. It is an internal stack-based evaluation loop (implemented in C within <code class="inline">ceval.c</code>) that reads bytecode instructions sequentially, executes them, and dispatches corresponding C function calls to the operating system and CPU.</li>
+        </ul>
+
+        <h3 id="5-pvm-architecture-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>5.1. Inspecting Bytecode Instructions with the <code class="inline">dis</code> Module</h4>
+        <p>You can disassemble any Python function or code block into raw PVM opcodes using Python’s built-in <code class="inline">dis</code> (disassembler) module:</p>
+
+        <div class="code"><pre>import dis
+
+def calculate_total(price, tax_rate):
+    total = price + (price * tax_rate)
+    return total
+
+# Disassemble the function into PVM bytecode opcodes:
+dis.dis(calculate_total)</pre></div>
+
+        <p><strong>Bytecode Disassembly Output Breakdown:</strong></p>
+        <div class="code"><pre># Output from dis.dis(calculate_total):
+# Line  Byte Offset  Opcode Name       Operand (Argument Value)
+# ---------------------------------------------------------------
+#   2           0    LOAD_FAST         0 (price)
+#               2    LOAD_FAST         0 (price)
+#               4    LOAD_FAST         1 (tax_rate)
+#               6    BINARY_OP         5 (*)
+#               8    BINARY_OP         0 (+)
+#              10    STORE_FAST        2 (total)
+#
+#   3          12    LOAD_FAST         2 (total)
+#              14    RETURN_VALUE</pre></div>
+
+        <ul>
+          <li><code class="inline">LOAD_FAST</code>: Pushes a local variable onto the PVM evaluation stack.</li>
+          <li><code class="inline">BINARY_OP (*)</code>: Pops the top two stack items, computes their product, and pushes the result back onto the stack.</li>
+          <li><code class="inline">BINARY_OP (+)</code>: Pops the top two items, computes their sum, and pushes the result.</li>
+          <li><code class="inline">STORE_FAST</code>: Pops the top value from the stack and stores it in the local variable slot for <code class="inline">total</code>.</li>
+          <li><code class="inline">RETURN_VALUE</code>: Pops the top value and returns it to the caller.</li>
+        </ul>
+      </section>
+
+      <section id="6-limitations">
+        <div class="heading-with-levels">
+          <h2>6. Limitations &amp; GIL mechanics</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="6-limitations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Understanding the architectural trade-offs of Python is essential for systems design and technical interviews:</p>
+
+        <table>
+          <thead>
+            <tr><th>Limitation</th><th>Root Architectural Cause</th><th>Industry Mitigation Strategy</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Execution Speed</strong></td>
+              <td>Dynamic typing and bytecode interpretation overhead; instructions are evaluated dynamically rather than executing as raw CPU instructions.</td>
+              <td>Offload compute-heavy inner loops to vectorized C/C++ libraries (NumPy, SciPy), write Cython extensions, or run via PyPy JIT.</td>
+            </tr>
+            <tr>
+              <td><strong>Global Interpreter Lock (GIL)</strong></td>
+              <td>CPython's internal memory management is not thread-safe; a mutual-exclusion lock prevents multiple native threads from executing Python bytecode simultaneously.</td>
+              <td>Use process-based parallelism (<code class="inline">multiprocessing</code>, <code class="inline">ProcessPoolExecutor</code>), asynchronous I/O (<code class="inline">asyncio</code>), or free-threaded builds (PEP 703 in Python 3.13+).</td>
+            </tr>
+            <tr>
+              <td><strong>Memory Footprint</strong></td>
+              <td>Every Python object has metadata overhead (reference count, type pointer, dictionary descriptors). Even a simple integer in Python 64-bit occupies 28 bytes of heap memory.</td>
+              <td>Use <code class="inline">__slots__</code> in classes, primitive arrays (<code class="inline">array</code> module), or contiguous memory arrays (NumPy buffers).</td>
+            </tr>
+            <tr>
+              <td><strong>Mobile &amp; Browser Native</strong></td>
+              <td>CPython is built around native OS kernels and posix/win32 APIs; it lacks first-class built-in UI toolkits for mobile touch interfaces or native web browsers.</td>
+              <td>WebAssembly runtimes (Pyodide, PyScript), cross-platform UI frameworks (Kivy, BeeWare).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="6-limitations-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>6.1. The GIL (Global Interpreter Lock) in Detail</h4>
+        <div class="callout">
+          <strong>The GIL Rule:</strong> In CPython, even if a machine has 64 CPU cores, <em>only one thread can execute Python bytecode at any given millisecond</em> within a single CPython process.
+        </div>
+        <ul>
+          <li><strong>Why does the GIL exist?</strong> CPython relies heavily on reference counting for garbage collection. Without the GIL, every increment/decrement of an object's reference counter across multiple threads would require atomic synchronization or granular locks, resulting in severe performance penalties for single-threaded programs.</li>
+          <li><strong>I/O-bound vs CPU-bound:</strong>
+            <ul>
+              <li>For <strong>I/O-bound tasks</strong> (network calls, disk reads, database queries), the GIL is <strong>released</strong> during the wait, allowing multithreading to deliver excellent concurrent throughput.</li>
+              <li>For <strong>CPU-bound tasks</strong> (image processing, data crunching, heavy math), multiple Python threads contend for the single GIL lock, running slower than a single thread due to context-switch thrashing!</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section id="7-versions">
+        <div class="heading-with-levels">
+          <h2>7. Python release journey (2.x → 3.x)</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="7-versions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <p>Python 3.0 (released December 2008) intentionally broke backward compatibility to eliminate historical architectural flaws in Python 2.x.</p>
+
+        <table>
+          <thead>
+            <tr><th>Area</th><th>Python 2.x (Legacy / EOL)</th><th>Python 3.x (Modern Standard)</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Text &amp; Strings</strong></td>
+              <td>Default <code class="inline">str</code> was ASCII byte sequences; Unicode required explicit <code class="inline">u"..."</code> literals, causing constant <code class="inline">UnicodeDecodeError</code> crashes.</td>
+              <td>Default <code class="inline">str</code> is always pure Unicode text; raw binary data uses dedicated <code class="inline">bytes</code> and <code class="inline">bytearray</code> types.</td>
+            </tr>
+            <tr>
+              <td><strong>Division Operator</strong></td>
+              <td><code class="inline">5 / 2</code> performed floor division, returning integer <code class="inline">2</code> (truncating remainders silently).</td>
+              <td><code class="inline">5 / 2</code> performs true division, always returning float <code class="inline">2.5</code>. Floor division requires explicit <code class="inline">5 // 2</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Print Statement</strong></td>
+              <td><code class="inline">print "Hello"</code> was a language statement without parentheses; difficult to redirect or customize.</td>
+              <td><code class="inline">print("Hello")</code> is a built-in function accepting keyword arguments (<code class="inline">sep</code>, <code class="inline">end</code>, <code class="inline">file</code>, <code class="inline">flush</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Integer Types</strong></td>
+              <td>Two distinct integer types: 32-bit fixed <code class="inline">int</code> and arbitrary-precision <code class="inline">long</code> (with trailing <code class="inline">L</code>, e.g. <code class="inline">100L</code>).</td>
+              <td>Unified single <code class="inline">int</code> type with automatic arbitrary precision; integers never overflow.</td>
+            </tr>
+            <tr>
+              <td><strong>Iteration Models</strong></td>
+              <td>Methods like <code class="inline">range()</code>, <code class="inline">dict.keys()</code>, <code class="inline">map()</code> allocated complete lists eagerly in memory.</td>
+              <td>Return lazy, memory-efficient iterable view objects (<code class="inline">range</code>, <code class="inline">dict_keys</code>, generators).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="7-versions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>7.1. Notable Python 3 Minor Milestones</h4>
+        <ul>
+          <li><strong>Python 3.5:</strong> Native coroutines via <code class="inline">async</code> and <code class="inline">await</code> syntax (PEP 492); type hints framework (PEP 484).</li>
+          <li><strong>Python 3.6:</strong> Formatted string literals (f-strings: <code class="inline">f"{var}"</code>); preservation of insertion order in dictionaries.</li>
+          <li><strong>Python 3.7:</strong> Data Classes (<code class="inline">@dataclass</code>); context variables (<code class="inline">contextvars</code>).</li>
+          <li><strong>Python 3.8:</strong> Assignment Expressions (the Walrus Operator: <code class="inline">:=</code>); positional-only parameters (<code class="inline">/</code>).</li>
+          <li><strong>Python 3.9:</strong> Dictionary merge and update operators (<code class="inline">|</code>, <code class="inline">|=</code>); native generic type hints (<code class="inline">list[int]</code>).</li>
+          <li><strong>Python 3.10:</strong> Structural Pattern Matching (<code class="inline">match ... case</code>); explicit union syntax (<code class="inline">int | str</code>).</li>
+          <li><strong>Python 3.11:</strong> <em>Faster CPython</em> optimizations (specializing adaptive interpreter, 10%–60% speedup); exception groups and <code class="inline">except*</code>.</li>
+          <li><strong>Python 3.12:</strong> Per-interpreter GIL in C-API; inline type parameter syntax (<code class="inline">type Point[T] = ...</code>); isolated comprehensions.</li>
+        </ul>
+      </section>
+
+      <section id="8-install-repl">
+        <div class="heading-with-levels">
+          <h2>8. Install, REPL, and execution modes</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
           </div>
         </div>
-        <h3 id="6-install-repl-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Install</h3>
-        <ul>
-          <li>Download from <strong>python.org</strong>, or use OS package managers / pyenv. On macOS/Linux use <code class="inline">python3</code>; Windows often installs <code class="inline">py</code> launcher.</li>
-        </ul>
-        <h3>6.2. REPL (interactive shell)</h3>
+        <h3 id="8-install-repl-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3>8.1. Interactive Shell (REPL)</h3>
+        <p>The <strong>REPL</strong> (Read-Eval-Print Loop) is Python’s interactive interpreter. It continuously reads expressions, evaluates them in the active process state, prints the result, and loops.</p>
         <div class="code"><pre>$ python3
-&gt;&gt;&gt; 2 + 3
-5
-&gt;&gt;&gt; print("hi")
-hi
-&gt;&gt;&gt; exit()</pre></div>
-        <ul>
-          <li>REPL is great for experiments. Exit with <code class="inline">exit()</code> or Ctrl-D (Unix) / Ctrl-Z Enter (Windows).</li>
-        </ul>
-        <h3>6.3. Creating and running a Python file</h3>
-        <p>A Python script is a plain text file saved with the <code class="inline">.py</code> extension. You can run it in several ways:</p>
+>>> data = [10, 20, 30]
+>>> sum(data)
+60
+>>> exit()</pre></div>
+
+        <h3>8.2. Script Execution Modes</h3>
         <div class="code"><pre># hello.py
-print("Hello, Python")</pre></div>
-        <ul>
-          <li><strong>1. Standard terminal execution:</strong> Open your terminal, navigate to the folder where the file is saved, and run:</li>
-        </ul>
-        <div class="code"><pre># macOS / Linux
-python3 hello.py
+print("Execution Mode Demo")</pre></div>
 
-# Windows (using py launcher or python)
-py hello.py
-# or: python hello.py
+        <ul>
+          <li><strong>1. File Path Execution:</strong> Directly invokes the script path:</li>
+        </ul>
+        <div class="code"><pre>python3 hello.py
+python3 path/to/script.py</pre></div>
 
-# Output:
-# Hello, Python</pre></div>
         <ul>
-          <li><strong>2. Running with relative or absolute paths:</strong> If your terminal is in the project root, provide the relative path to the script:</li>
+          <li><strong>2. Module Execution Mode (<code class="inline">-m</code> flag):</strong> Searches <code class="inline">sys.path</code> for the module and executes its top-level namespace:</li>
         </ul>
-        <div class="code"><pre>python3 python/01-practice.py</pre></div>
+        <div class="code"><pre>python3 -m hello
+python3 -m http.server 8000   # Launches built-in web server module</pre></div>
+
         <ul>
-          <li><strong>3. Inside an active virtual environment:</strong> Once your <code class="inline">.venv</code> is activated (prompt displays <code class="inline">(.venv)</code>), the alias <code class="inline">python</code> points directly to the environment runtime:</li>
+          <li><strong>3. Inline Command String (<code class="inline">-c</code> flag):</strong> Runs short commands directly from the shell without saving a file:</li>
         </ul>
-        <div class="code"><pre>python hello.py</pre></div>
-        <ul>
-          <li><strong>4. Running as a module (<code class="inline">-m</code> flag):</strong> Executes the file as a module within Python's import path (leave off the <code class="inline">.py</code>):</li>
-        </ul>
-        <div class="code"><pre>python3 -m hello</pre></div>
-        <ul>
-          <li><strong>5. From your code editor / IDE:</strong> In VS Code or Antigravity IDE, click the <strong>▷ (Run Python File)</strong> play button in the top-right corner of the editor, or right-click in the file and select <em>"Run Python File in Terminal"</em>.</li>
-        </ul>
-        <h3>6.4. Virtual environments (preview)</h3>
-        <ul>
-          <li>A virtual environment (venv) provides an isolated Python runtime so project dependencies do not conflict with system packages (full details in File 17):</li>
-        </ul>
-        <div class="code"><pre># 1. Create a virtual environment named .venv
+        <div class="code"><pre>python3 -c "import sys; print(sys.version)"</pre></div>
+
+        <h3>8.3. Virtual Environment Isolation (<code class="inline">venv</code>)</h3>
+        <p>To prevent dependency pollution across different system applications, every Python project should operate inside a dedicated virtual environment.</p>
+
+        <div class="code"><pre># 1. Create a virtual environment directory named .venv:
 python3 -m venv .venv
 
-# 2. Activate it (prompt will change to show (.venv))
+# 2. Activate the virtual environment:
 source .venv/bin/activate          # macOS / Linux
 # .venv\Scripts\activate          # Windows PowerShell / CMD
 
-# 3. Confirm which Python interpreter is active (points inside .venv)
+# 3. Verify active interpreter binary location:
 which python                       # macOS / Linux (Windows: where python)
-# Output: /path/to/project/.venv/bin/python
+# Output will point to: /path/to/project/.venv/bin/python
 
-# 4. Deactivate when finished
+# 4. Deactivate when work is complete:
 deactivate</pre></div>
       </section>
 
@@ -270,46 +533,91 @@ deactivate</pre></div>
           </div>
         </div>
         <h3 id="c-common-questions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. Is Python compiled or interpreted?</span>
+            <span class="qa-question-title">C.1. Is Python a compiled language or an interpreted language?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Python source code (<code class="inline">.py</code>) is compiled into platform-independent <strong>bytecode</strong> (<code class="inline">.pyc</code> files inside <code class="inline">__pycache__</code>), which is then executed by the <strong>Python Virtual Machine (PVM)</strong> (the CPython runtime). Because compilation happens automatically on the fly without producing a standalone machine binary, Python is classified as an <strong>interpreted, bytecode-executed</strong> language.</p>
+            <p><strong>Python is both compiled and interpreted.</strong></p>
+            <ul>
+              <li><strong>Compilation stage:</strong> When a Python program runs, CPython first compiles the source code (<code class="inline">.py</code>) into platform-independent intermediate <strong>bytecode</strong> (<code class="inline">.pyc</code> files). This compilation step verifies syntax and transforms code into stack instructions.</li>
+              <li><strong>Interpretation stage:</strong> The compiled bytecode is then executed line-by-line by the <strong>Python Virtual Machine (PVM)</strong>, which translates bytecode opcodes into machine instructions on the fly.</li>
+            </ul>
+            <p>Because the compilation stage occurs automatically behind the scenes without producing a standalone machine binary (unlike C/C++), Python is classified in industry as an interpreted, bytecode-driven language.</p>
           </div>
         </details>
+
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. Why prefer Python 3?</span>
+            <span class="qa-question-title">C.2. What is the difference between dynamic typing and weak typing? Is Python weakly typed?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
+            <p><strong>No. Python is dynamically typed, but STRONGLY typed.</strong></p>
             <ul>
-              <li><strong>Python 2 is EOL:</strong> Python 2 reached official End-of-Life on Jan 1, 2020 and receives no security updates.</li>
-              <li><strong>Native Unicode:</strong> Python 3 uses UTF-8 strings by default (<code class="inline">str</code> is Unicode text, <code class="inline">bytes</code> is raw binary).</li>
-              <li><strong>Cleaner syntax:</strong> True float division (<code class="inline">5 / 2 = 2.5</code>), <code class="inline">print()</code> as a function, f-strings, keyword-only args, and type hints.</li>
-              <li><strong>Modern libraries:</strong> All modern frameworks (FastAPI, Django, NumPy, PyTorch) exclusively support Python 3.</li>
+              <li><strong>Dynamic Typing:</strong> Types are associated with runtime values in memory, not variable identifiers. Variables can be freely reassigned to objects of different types during execution.</li>
+              <li><strong>Strong Typing:</strong> Python strictly prevents operations between incompatible types. For example, in a weakly typed language like JavaScript, <code class="inline">"5" + 5</code> silently coerces the integer into a string yielding <code class="inline">"55"</code>. In Python, <code class="inline">"5" + 5</code> immediately raises a fatal <code class="inline">TypeError</code> because implicit type coercion across string and integer is disallowed.</li>
             </ul>
           </div>
         </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What are <code class="inline">.pyc</code> files and the <code class="inline">__pycache__</code> directory?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">.pyc</code> files are compiled bytecode caches generated by CPython. When a module is imported for the first time, CPython compiles its source to bytecode and saves it inside <code class="inline">__pycache__</code> with a file header embedding a magic version number and timestamp/hash of the original <code class="inline">.py</code> file.</p>
+            <p>On subsequent runs, if the source file has not been modified, CPython loads the <code class="inline">.pyc</code> file directly, skipping the parsing and compilation phases to reduce application startup latency.</p>
+          </div>
+        </details>
+
         <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What is CPython?</span>
+            <span class="qa-question-title">C.4. What is the Python Virtual Machine (PVM), and how does it compare to the Java Virtual Machine (JVM)?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>CPython is the default reference implementation of Python written in C. It compiles Python code to bytecode and executes it on the CPython VM. Alternatives include:</p>
             <ul>
-              <li><strong>PyPy:</strong> Uses a Just-In-Time (JIT) compiler for significantly faster execution in CPU-bound programs.</li>
-              <li><strong>Jython:</strong> Runs on the JVM with seamless Java interoperability.</li>
-              <li><strong>IronPython:</strong> Targets the .NET framework / CLR.</li>
-              <li><strong>MicroPython:</strong> Optimized to run directly on microcontrollers and embedded devices.</li>
+              <li>The <strong>PVM</strong> is the runtime engine of CPython. It is a software-based stack machine implemented in C that steps through bytecode instructions and executes the corresponding C routines.</li>
+              <li><strong>PVM vs JVM:</strong>
+                <ul>
+                  <li><strong>JVM:</strong> Employs sophisticated HotSpot JIT compilers to translate Java bytecode into highly optimized native machine code at runtime, achieving near-C execution speeds.</li>
+                  <li><strong>Standard PVM (CPython):</strong> Interprets bytecode sequentially without an integrated native JIT compiler (though PyPy provides a JIT implementation). PVM is simpler, starts up faster, and interfaces directly with C libraries.</li>
+                </ul>
+              </li>
             </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the Global Interpreter Lock (GIL), and why does CPython use it?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The <strong>GIL</strong> is a mutex (mutual exclusion lock) used by CPython to synchronize thread execution so that only one native OS thread executes Python bytecode at any instant within a process.</p>
+            <p><strong>Reason for existence:</strong> CPython's memory management heavily relies on reference counting. Without the GIL, every single reference count modification across threads would require atomic locking, degrading single-threaded execution performance and complicating C-extension integration.</p>
+            <p><strong>Solution for multi-core CPU scaling:</strong> Use the <code class="inline">multiprocessing</code> module to create separate processes with independent memory spaces and separate GIL instances, or use C-extensions that release the GIL during heavy computation.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How does PyPy achieve significant speedups over standard CPython?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>PyPy includes a <strong>Tracing Just-In-Time (JIT) compiler</strong>. While CPython interprets bytecode repeatedly inside every loop iteration, PyPy monitors running code, identifies frequently executed ("hot") loops, traces the exact types being processed, and compiles those bytecode paths directly into optimized native machine code.</p>
+            <p>On long-running, CPU-bound mathematical loops, PyPy can run 4× to 7× faster than CPython.</p>
           </div>
         </details>
       </section>
+
       <section id="p-practice">
         <div class="heading-with-levels">
           <h2>P. Practical Assignment</h2>
@@ -318,180 +626,121 @@ deactivate</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Create <code class="inline">01-practice.py</code> and run with <code class="inline">python3 01-practice.py</code>. Prefer a venv.</div>
+        <div class="callout">Execute these technical inspection tasks in your terminal or Python REPL.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Print your name and a greeting in the REPL or a script using a basic <code class="inline">print()</code> statement.</span>
+                <span class="qa-question-title">Inspect active Python runtime implementation and compiler information programmatically.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <p>Run directly in the REPL or in <code class="inline">01-practice.py</code>:</p>
-                <div class="code"><pre>print("Hello, my name is Bharat!")</pre></div>
-                <p>Run from terminal: <code class="inline">python3 01-practice.py</code></p>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">Check versions: run <code class="inline">python3 --version</code> and note it in a comment.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <p>Check in your terminal:</p>
-                <div class="code"><pre>$ python3 --version
-Python 3.12.2</pre></div>
-                <p>Record in <code class="inline">01-practice.py</code>:</p>
-                <div class="code"><pre># Python version checked: Python 3.12.2 (macOS)
+                <div class="code"><pre>import platform
 import sys
-print("Runtime info:", sys.version)</pre></div>
+
+print("Implementation:", platform.python_implementation())
+print("Version:", sys.version)
+print("Compiler:", platform.python_compiler())</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Create and activate a venv; install nothing yet — just confirm <code class="inline">which python</code> points inside <code class="inline">.venv</code>.</span>
+                <span class="qa-question-title">Create and activate an isolated virtual environment (<code class="inline">.venv</code>), confirming the active binary path.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># 1. Create the virtual environment
+                <div class="code"><pre># Create virtual environment:
 python3 -m venv .venv
 
-# 2. Activate it
+# Activate:
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
 
-# 3. Confirm python path points inside .venv
+# Confirm interpreter location:
 which python                    # Windows: where python
-# Expected output: /path/to/project/.venv/bin/python
 
-# 4. Deactivate when finished
+# Deactivate:
 deactivate</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>hello.py</strong> — Ask nothing; print three facts about Python (feature, use case, limitation) as separate lines.</span>
+                <span class="qa-question-title"><strong>Bytecode Disassembly</strong> — Use the <code class="inline">dis</code> module to disassemble a simple addition function and identify the PVM opcodes.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># hello.py
-print("Feature: Python features clean, readable syntax and automatic memory management.")
-print("Use Case: Leading language for Artificial Intelligence, Machine Learning, and Data Science.")
-print("Limitation: Slower CPU-bound execution speed compared to compiled languages like C++.")</pre></div>
-                <p>Run with: <code class="inline">python3 hello.py</code></p>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>venv checklist</strong> — Write comments listing create / activate / deactivate commands for your OS.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># --- venv checklist (macOS / Linux) ---
-# 1. Create:     python3 -m venv .venv
-# 2. Activate:   source .venv/bin/activate
-# 3. Check:      which python
-# 4. Deactivate: deactivate
+                <div class="code"><pre>import dis
 
-# --- venv checklist (Windows PowerShell) ---
-# 1. Create:     py -m venv .venv
-# 2. Activate:   .venv\Scripts\Activate.ps1
-# 3. Check:      where python
-# 4. Deactivate: deactivate</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>REPL vs file</strong> — Run one expression in REPL and the same in a file; note the difference in a comment.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># In interactive REPL:
-# >>> 10 + 20
-# 30
-# (The REPL automatically evaluates and prints the expression result)
+def add_numbers(a, b):
+    return a + b
 
-# In a file (01-practice.py):
-10 + 20          # Evaluates expression, but produces NO console output!
-print(10 + 20)   # Must explicitly call print() to display output from a script.</pre></div>
+# Print disassembled bytecode instructions:
+dis.dis(add_numbers)
+
+# Observe output opcodes: LOAD_FAST, BINARY_OP / BINARY_ADD, RETURN_VALUE</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Why Python 3</strong> — Five bullet comments explaining why not to use Python 2.</span>
+                <span class="qa-question-title"><strong>Type Safety Verification</strong> — Demonstrate Python's strong typing by catching the exact exception raised when attempting to add an integer to a string.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Why Python 2 should not be used in modern projects:
-# 1. EOL: Python 2 reached End-of-Life on Jan 1, 2020 and receives zero security updates.
-# 2. Unicode: Python 2 strings are ASCII by default, causing frequent UnicodeDecodeErrors.
-# 3. Division: In Python 2, 5/2 evaluates to integer 2; Python 3 gives true float 2.5.
-# 4. Ecosystem: Modern packages (NumPy, Django, FastAPI, PyTorch) have dropped Python 2.
-# 5. Modern Features: Python 2 lacks f-strings, pattern matching, type hints, and async/await.</pre></div>
+                <div class="code"><pre>def verify_strong_typing():
+    val_int = 100
+    val_str = "200"
+    try:
+        result = val_int + val_str
+    except TypeError as err:
+        print("Caught expected TypeError demonstrating Strong Typing:")
+        print(err)
+
+verify_strong_typing()</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Research one alternative implementation (PyPy or Jython) and write a 5-line comment comparing it to CPython.</span>
+                <span class="qa-question-title">Inspect memory footprint of basic data types using <code class="inline">sys.getsizeof()</code> to observe object overhead in CPython.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Comparison: PyPy vs CPython
-# 1. CPython is the standard reference implementation written in C; it interprets bytecode with a PVM.
-# 2. PyPy is an alternative implementation written in RPython with a built-in JIT (Just-In-Time) compiler.
-# 3. PyPy often executes pure CPU-bound Python code significantly faster (often 4x-7x) than CPython.
-# 4. PyPy has higher memory overhead and may have compatibility issues with some C-extensions.
-# 5. CPython remains the default because of universal C-extension library compatibility (NumPy, SciPy).</pre></div>
-              </div>
-            </details>
-          </li>
-          <li>
-            <details class="qa-block practice-block">
-              <summary class="qa-question-summary">
-                <span class="qa-question-title">List three domains where Python is common and one where another language is often preferred — with reasons.</span>
-                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
-              </summary>
-              <div class="qa-answer-body">
-                <div class="code"><pre># --- 3 Domains where Python is common ---
-# 1. AI & Machine Learning: Unmatched ecosystem (PyTorch, TensorFlow, Scikit-learn, HuggingFace).
-# 2. Web Development & APIs: Rapid turnaround with modern frameworks (FastAPI, Django, Flask).
-# 3. Data Analysis & Automation: Intuitive data wrangling (Pandas, Polars, BeautifulSoup).
+                <div class="code"><pre>import sys
 
-# --- 1 Domain where another language is preferred ---
-# Game Engines / Low-Latency Trading / OS Kernels:
-# C, C++, or Rust are preferred because they compile directly to machine code, offer direct memory
-# control, deterministic execution latency, and zero garbage-collection pauses.</pre></div>
+# Even an empty integer or string carries CPython object header overhead:
+print("Size of int 0:", sys.getsizeof(0), "bytes")            # ~24 or 28 bytes
+print("Size of int 1:", sys.getsizeof(1), "bytes")            # ~28 bytes
+print("Size of empty str '':", sys.getsizeof(""), "bytes")    # ~49-51 bytes
+print("Size of empty list []:", sys.getsizeof([]), "bytes")   # ~56 bytes</pre></div>
               </div>
             </details>
           </li>
         </ol>
+
         <h3>P.4. Self-check</h3>
         <ul>
-          <li>I can create a venv and run a script.</li>
-          <li>I know Python 3 is the default target.</li>
-          <li>I can name features and limitations of Python.</li>
+          <li>I can explain Python's multi-paradigm architecture (Functional, OOP, Scripting, Modular).</li>
+          <li>I understand the distinction between Dynamic Typing and Strong Typing.</li>
+          <li>I can describe the 7 major Python flavors (CPython, Jython, IronPython, PyPy, Cython, MicroPython, Anaconda).</li>
+          <li>I can trace the execution pipeline from source code to bytecode (<code class="inline">.pyc</code>) to PVM execution.</li>
+          <li>I understand why CPython utilizes the Global Interpreter Lock (GIL) and its impact on CPU concurrency.</li>
         </ul>
       </section>
 

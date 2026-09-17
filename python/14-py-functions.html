@@ -296,6 +296,23 @@ def broken_func():
     x = 20    # Because 'x' is assigned here, the compiler treats 'x' as local throughout!
 
 # broken_func()</pre></div>
+
+        <h3>4.4. Accessing Shadowed Global Variables via <code class="inline">globals()</code></h3>
+        <p>When a local variable inside a function shares the <strong>exact same name</strong> as a global variable, the local variable completely shadows the global variable. If you need to access or modify the global variable while simultaneously maintaining the local variable with that same name, use the built-in <strong><code class="inline">globals()</code> dictionary</strong>:</p>
+
+        <div class="code"><pre># Classic Interview Question: Same name for global and local variable
+score = 100  # Global variable
+
+def update_scores():
+    score = 20  # Local variable shadows global 'score'
+    print("Local score: ", score)               # 20
+    print("Global score:", globals()['score'])  # 100 (Accessing global via globals() dict)
+
+    # Modifying the global variable directly through the dictionary:
+    globals()['score'] = 999
+
+update_scores()
+print("Global score after function execution:", score)  # 999</pre></div>
       </section>
 
       <!-- SECTION 5: RECURSIVE FUNCTIONS -->
@@ -469,6 +486,16 @@ print("Fibonacci(50):", fibonacci(50))  # 12586269025 (Instantaneous with cache!
               <li>If you rebind the parameter name (<code class="inline">lst = [1, 2]</code>), it points to a new object, leaving the caller's reference unaffected.</li>
               <li>If you pass an <strong>immutable object</strong> (int, string, tuple), it cannot be modified in-place, behaving effectively like call-by-value.</li>
             </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.9. If a local variable and a global variable have the same name, how can you access both inside a function?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Inside the function, the identifier binds to the local variable by default. Declaring <code class="inline">global var</code> would prevent having a distinct local variable with the same name. To access and modify the shadowed global variable without sacrificing the local variable, access Python's global namespace dictionary using <code class="inline">globals()['var']</code>.</p>
           </div>
         </details>
       </section>

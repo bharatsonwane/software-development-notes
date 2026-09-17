@@ -347,19 +347,71 @@ print(obj_a is obj_b)            # Always False!</pre></div>
           </div>
         </div>
         <h3 id="4-range-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li><code class="inline">range</code> is an immutable sequence of integers — lazy (does not build a full list).</li>
-        </ul>
-        <div class="code"><pre>range(5)          # 0..4
-range(1, 5)       # 1..4
-range(1, 10, 2)   # 1, 3, 5, 7, 9
-list(range(3))    # [0, 1, 2]</pre></div>
+        <p><code class="inline">range</code> represents an immutable, lazy sequence of numbers. Unlike in Python 2 (where <code class="inline">range</code> built a full list eagerly), Python 3's <code class="inline">range</code> creates a sequence object that calculates integers on demand.</p>
+
+        <table>
+          <thead>
+            <tr><th>Constructor Form</th><th>Syntax</th><th>Default Values</th><th>Values Generated</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1-Argument Form</strong></td>
+              <td><code class="inline">range(stop)</code></td>
+              <td><code class="inline">start = 0</code>, <code class="inline">step = 1</code></td>
+              <td><code class="inline">0, 1, 2, ..., stop - 1</code></td>
+            </tr>
+            <tr>
+              <td><strong>2-Argument Form</strong></td>
+              <td><code class="inline">range(start, stop)</code></td>
+              <td><code class="inline">step = 1</code></td>
+              <td><code class="inline">start, start + 1, ..., stop - 1</code></td>
+            </tr>
+            <tr>
+              <td><strong>3-Argument Form</strong></td>
+              <td><code class="inline">range(start, stop, step)</code></td>
+              <td>None</td>
+              <td><code class="inline">start, start + step, ...</code> until boundary reached</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Basic range forms:
+r1 = range(5)             # 0, 1, 2, 3, 4
+r2 = range(10, 15)        # 10, 11, 12, 13, 14
+r3 = range(0, 20, 5)      # 0, 5, 10, 15
+
+# Converting to collection to visualize elements:
+print(list(r1))           # [0, 1, 2, 3, 4]
+print(list(r3))           # [0, 5, 10, 15]</pre></div>
+
         <h3 id="4-range-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>4.1. Rules, Negative Steps &amp; $O(1)$ Performance Characteristics</h4>
         <ul>
-          <li>Forms: <code class="inline">range(stop)</code>, <code class="inline">range(start, stop)</code>, <code class="inline">range(start, stop, step)</code>. <code class="inline">stop</code> is exclusive. Negative step allowed.</li>
+          <li><strong>Integral Type Enforcement:</strong> All three arguments must be strictly integers (<code class="inline">int</code>). Passing floats (e.g. <code class="inline">range(1.5, 10.5)</code>) immediately raises <code class="inline">TypeError: 'float' object cannot be interpreted as an integer</code>.</li>
+          <li><strong>Zero Step Prohibition:</strong> <code class="inline">step</code> can never be 0. Passing <code class="inline">step=0</code> raises <code class="inline">ValueError: range() arg 3 must not be zero</code>.</li>
+          <li><strong>Negative Step Direction:</strong> When <code class="inline">step &lt; 0</code>, progression moves downward, requiring <code class="inline">start &gt; stop</code> (e.g. <code class="inline">range(10, 0, -2)</code> yields <code class="inline">10, 8, 6, 4, 2</code>). If <code class="inline">start &lt;= stop</code> with a negative step, an empty range is produced without errors.</li>
+          <li><strong>$O(1)$ Constant Memory:</strong> A <code class="inline">range</code> object stores only three integers in memory: <code class="inline">start</code>, <code class="inline">stop</code>, and <code class="inline">step</code>. A range representing 1 billion numbers (<code class="inline">range(1_000_000_000)</code>) consumes the exact same 48 bytes of memory as <code class="inline">range(5)</code>!</li>
+          <li><strong>$O(1)$ Membership Testing:</strong> In Python 3, checking membership (<code class="inline">x in range(...)</code>) does <strong>not</strong> perform a linear scan. The interpreter uses an arithmetic boundary formula ($O(1)$ time complexity):
+            <br /><code class="inline">start &lt;= x &lt; stop and (x - start) % step == 0</code></li>
         </ul>
-        <div class="code"><pre>list(range(5, 0, -1))  # [5, 4, 3, 2, 1]
-len(range(1_000_000))  # cheap — no million-element list</pre></div>
+
+        <div class="code"><pre>import sys
+
+# Constant memory proof:
+small_range = range(10)
+huge_range = range(10_000_000_000)
+print("Memory of range(10):            ", sys.getsizeof(small_range), "bytes")  # 48 bytes
+print("Memory of range(10,000,000,000):", sys.getsizeof(huge_range), "bytes")   # 48 bytes
+
+# Negative step countdown:
+print(list(range(5, 0, -1)))  # [5, 4, 3, 2, 1]
+
+# Fast O(1) membership check:
+print(999_999_999 in huge_range)  # True (computed instantly in nanoseconds!)
+
+# Indexing and slicing on range objects:
+print("First element:", huge_range[0])     # 0
+print("Slice of range:", huge_range[2:6])  # range(2, 6)</pre></div>
       </section>
 
       <section id="5-bytes">
@@ -371,17 +423,70 @@ len(range(1_000_000))  # cheap — no million-element list</pre></div>
           </div>
         </div>
         <h3 id="5-bytes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li><code class="inline">bytes</code> — immutable sequence of bytes (0–255). <code class="inline">bytearray</code> — mutable version.</li>
-        </ul>
-        <div class="code"><pre>b = b"hi"
-ba = bytearray(b"hi")
-ba[0] = ord("H")
-print(ba)          # bytearray(b'Hi')</pre></div>
+        <p>Python provides two primary built-in data types for manipulating raw 8-bit binary data (such as network packets, images, audio streams, and encrypted payloads):</p>
+
+        <table>
+          <thead>
+            <tr><th>Binary Type</th><th>Mutability</th><th>Allowed Element Value Range</th><th>Modification In-Place?</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong><code class="inline">bytes</code></strong></td>
+              <td><span class="chip tier-l1">Immutable</span></td>
+              <td>Integers from <code class="inline">0</code> to <code class="inline">255</code> ($2^8 - 1$)</td>
+              <td><strong>No.</strong> Attempting item assignment raises <code class="inline">TypeError: 'bytes' object does not support item assignment</code>.</td>
+            </tr>
+            <tr>
+              <td><strong><code class="inline">bytearray</code></strong></td>
+              <td><span class="chip tier-l2">Mutable</span></td>
+              <td>Integers from <code class="inline">0</code> to <code class="inline">255</code> ($2^8 - 1$)</td>
+              <td><strong>Yes.</strong> Elements can be updated, appended, popped, or sliced in-place without reallocating the container.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># 1. bytes: immutable binary sequence
+b1 = b"Hello"
+print("b1:", b1, "type:", type(b1))  # b'Hello', <class 'bytes'>
+print("First byte integer value:", b1[0])  # 72 (ASCII for 'H')
+
+# 2. Creating bytes from integer iterable:
+b2 = bytes([65, 66, 67, 68])
+print("b2:", b2)  # b'ABCD'
+
+# 3. bytearray: mutable binary sequence
+ba = bytearray(b"Hello")
+ba[0] = 74  # 74 is ASCII for 'J'
+print("Modified bytearray:", ba)  # bytearray(b'Jello')</pre></div>
+
         <h3 id="5-bytes-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>5.1. Value Bounds &amp; String Encoding/Decoding</h4>
         <ul>
-          <li>Text uses <code class="inline">str</code>; binary files / protocols use bytes. Encode/decode: <code class="inline">"hi".encode("utf-8")</code>, <code class="inline">b"hi".decode("utf-8")</code>. More in Files 09 and 18.</li>
+          <li><strong>Out-of-Bounds Error:</strong> Every byte slot must fit in a single 8-bit byte. Providing an integer outside the range $0 \le x \le 255$ raises <code class="inline">ValueError: bytes must be in range(0, 256)</code> or <code class="inline">byte must be in range(0, 256)</code>.</li>
+          <li><strong>Encoding Text to Bytes:</strong> Calling <code class="inline">str.encode(encoding="utf-8")</code> converts Unicode characters into raw bytes.</li>
+          <li><strong>Decoding Bytes to Text:</strong> Calling <code class="inline">bytes.decode(encoding="utf-8")</code> parses raw binary data back into a Unicode <code class="inline">str</code>.</li>
+          <li><strong>Indexing vs Slicing Nuance:</strong>
+            <ul>
+              <li>Indexing a byte object (<code class="inline">b[0]</code>) returns an <strong><code class="inline">int</code></strong> (the byte's numeric value, e.g. <code class="inline">65</code>).</li>
+              <li>Slicing a byte object (<code class="inline">b[0:1]</code>) returns a <strong><code class="inline">bytes</code></strong> sequence (e.g. <code class="inline">b'A'</code>).</li>
+            </ul>
+          </li>
         </ul>
+
+        <div class="code"><pre># Out of bounds value demonstration:
+try:
+    bad_bytes = bytes([100, 200, 256])  # 256 exceeds 8-bit limit!
+except ValueError as err:
+    print("ValueError caught:", err)     # bytes must be in range(0, 256)
+
+# Encoding and Decoding:
+text = "Python 🐍"
+encoded = text.encode("utf-8")
+print("Encoded bytes:", encoded)         # b'Python \xf0\x9f\x90\x8d'
+print("Byte length:  ", len(encoded))    # 11 bytes (the emoji takes 4 bytes!)
+
+decoded = encoded.decode("utf-8")
+print("Decoded text: ", decoded)         # Python 🐍</pre></div>
       </section>
 
       <section id="c-common-questions">
@@ -397,21 +502,37 @@ print(ba)          # bytearray(b'Hi')</pre></div>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. How do I check a type?</span>
+            <span class="qa-question-title">C.1. How should you check an object's type in production code?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Prefer <code class="inline">isinstance(x, int)</code> over <code class="inline">type(x) == int</code> (handles subclasses). For exact type, <code class="inline">type(x) is int</code>.</p>
+            <p>Always prefer <code class="inline">isinstance(x, ExpectedType)</code> over <code class="inline">type(x) == ExpectedType</code>.</p>
+            <ul>
+              <li><code class="inline">isinstance</code> correctly recognizes subclasses (e.g., <code class="inline">isinstance(True, int)</code> is <code class="inline">True</code>, adhering to the Liskov Substitution Principle).</li>
+              <li>Use <code class="inline">type(x) is ExpectedType</code> only when you specifically want to reject subclasses and verify the exact concrete class identity.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. Why is <code class="inline">bool</code> a subclass of <code class="inline">int</code>?</span>
+            <span class="qa-question-title">C.2. Why does modifying an immutable variable (e.g., <code class="inline">x = x + 1</code>) work without raising an error?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Historical design — booleans participate in arithmetic. Prefer clear boolean logic over relying on that.</p>
+            <p>Because the existing integer object in memory is <strong>never modified</strong>. Instead, Python computes the result, allocates a brand-new integer object in heap memory, and <strong>rebinds</strong> the variable name <code class="inline">x</code> to point to the new memory address.</p>
+            <p>You can verify this by checking <code class="inline">id(x)</code> before and after the operation—the memory address changes!</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why is <code class="inline">bool</code> implemented as a subclass of <code class="inline">int</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>In early Python versions (pre-2.3), there was no dedicated <code class="inline">bool</code> type; integers <code class="inline">1</code> and <code class="inline">0</code> were used directly. When <code class="inline">bool</code> was formally introduced (PEP 285), it was created as a subclass of <code class="inline">int</code> for backward compatibility with existing code that expected numerical return values.</p>
+            <p>As a result, <code class="inline">True == 1</code>, <code class="inline">False == 0</code>, and mathematical expressions like <code class="inline">True + True</code> evaluate to <code class="inline">2</code>.</p>
           </div>
         </details>
 
@@ -419,11 +540,40 @@ print(ba)          # bytearray(b'Hi')</pre></div>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. Does <code class="inline">a = a + 1</code> mutate the int?</span>
+            <span class="qa-question-title">C.4. Why does <code class="inline">range(1_000_000)</code> consume negligible memory, and how does <code class="inline">x in range(...)</code> run in $O(1)$ time?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>No. Integers are immutable. A new int is created and the name is rebound.</p>
+            <p>In Python 3, a <code class="inline">range</code> object does not store integers in an array. It is a lightweight descriptor storing only three numbers: <code class="inline">start</code>, <code class="inline">stop</code>, and <code class="inline">step</code> (fixed 48 bytes).</p>
+            <p>When testing membership (<code class="inline">x in r</code>), Python performs an arithmetic calculation in constant time ($O(1)$):
+            <br />1. Checks if <code class="inline">start &lt;= x &lt; stop</code> (or reverse for negative step).
+            <br />2. Checks if <code class="inline">(x - start) % step == 0</code>.
+            <br />It never iterates through numbers linearly!</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. What is the fundamental difference between <code class="inline">bytes</code> and <code class="inline">bytearray</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">bytes</code> is an <strong>immutable</strong> sequence of bytes, whereas <code class="inline">bytearray</code> is a <strong>mutable</strong> sequence.</p>
+            <ul>
+              <li><code class="inline">bytes</code> is hashable and can be used as dictionary keys or set elements.</li>
+              <li><code class="inline">bytearray</code> can be mutated in-place (e.g. <code class="inline">ba[0] = 65</code> or <code class="inline">ba.append(255)</code>), making it ideal for high-performance network buffer processing without repeated memory reallocations.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Can an immutable container (like a <code class="inline">tuple</code>) have its contents changed if it contains a mutable object?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Yes.</strong> Immutability in Python means that the container's <em>bindings (memory references)</em> cannot be changed once created. In <code class="inline">t = (1, [10, 20])</code>, the tuple will always point to integer 1 and the list object at that specific memory address.</p>
+            <p>However, the <em>internals of the referenced list</em> can be mutated in-place: <code class="inline">t[1].append(30)</code> succeeds, resulting in <code class="inline">(1, [10, 20, 30])</code>. Because its content can change, such a tuple is <strong>unhashable</strong> and cannot be used as a dictionary key!</p>
           </div>
         </details>
       </section>

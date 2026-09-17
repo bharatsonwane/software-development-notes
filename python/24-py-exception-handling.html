@@ -293,6 +293,54 @@ process_file_with_cleanup("non_existent_file.txt")</pre></div>
         <div class="callout">
           <strong>Gotcha: <code>return</code> in <code>finally</code> Overrides Everything:</strong> If a <code>finally</code> block explicitly executes a <code>return</code> statement, that return value will override any previous <code>return</code> or unhandled exception raised in <code>try</code> or <code>except</code>, effectively silencing errors! Avoid <code>return</code> in <code>finally</code>.
         </div>
+
+        <h3>4.3. Comprehensive Control Flow Permutations</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Execution Sequence</th>
+              <th>Result / Exit State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1. No exception in <code class="inline">try</code></td>
+              <td><code class="inline">try</code> &rarr; <code class="inline">else</code> &rarr; <code class="inline">finally</code></td>
+              <td>Normal completion; statements following the structure execute.</td>
+            </tr>
+            <tr>
+              <td>2. Exception in <code class="inline">try</code> matched by <code class="inline">except</code></td>
+              <td><code class="inline">try</code> (up to failure) &rarr; <code class="inline">except</code> &rarr; <code class="inline">finally</code></td>
+              <td>Normal recovery; statements following the structure execute.</td>
+            </tr>
+            <tr>
+              <td>3. Exception in <code class="inline">try</code> NOT matched by any <code class="inline">except</code></td>
+              <td><code class="inline">try</code> (up to failure) &rarr; <code class="inline">finally</code></td>
+              <td>Abnormal termination; unhandled exception propagates to caller.</td>
+            </tr>
+            <tr>
+              <td>4. Exception raised inside an <code class="inline">except</code> block</td>
+              <td><code class="inline">try</code> &rarr; <code class="inline">except</code> (up to failure) &rarr; <code class="inline">finally</code></td>
+              <td>Abnormal termination; new exception propagates out.</td>
+            </tr>
+            <tr>
+              <td>5. Early <code class="inline">return</code> inside <code class="inline">try</code> or <code class="inline">else</code></td>
+              <td><code class="inline">try</code> &rarr; <code class="inline">finally</code></td>
+              <td>Caller receives return value after <code class="inline">finally</code> completes.</td>
+            </tr>
+            <tr>
+              <td>6. Early <code class="inline">return</code> inside <code class="inline">finally</code></td>
+              <td><code class="inline">try</code> (or <code class="inline">except</code>) &rarr; <code class="inline">finally</code></td>
+              <td>Caller receives <code class="inline">finally</code> return; any previous return or unhandled exception is discarded!</td>
+            </tr>
+            <tr>
+              <td>7. <code class="inline">os._exit(0)</code> invoked</td>
+              <td>Kernel terminates process immediately</td>
+              <td><code class="inline">finally</code> DOES NOT execute! (Contrast with <code class="inline">sys.exit()</code> which raises <code class="inline">SystemExit</code>, allowing cleanups).</td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <!-- SECTION 5 -->

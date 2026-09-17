@@ -92,17 +92,30 @@
         </div>
         <h3 id="2-int-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>2.1. Arbitrary Precision</h3>
+        <h3>2.1. Arbitrary Precision &amp; Python 3 Unification</h3>
         <ul>
-          <li>In Python 3, <code class="inline">int</code> values have <strong>arbitrary precision</strong> (unlimited size). Unlike C/Java, there is no 32-bit or 64-bit integer overflow limit; an integer can grow as large as available computer memory permits.</li>
+          <li><strong>Arbitrary Precision:</strong> In Python 3, <code class="inline">int</code> values have <strong>unlimited magnitude</strong> (arbitrary precision). Unlike C, C++, or Java (which cap integers at 32-bit or 64-bit limits like <code class="inline">2^63 - 1</code>), a Python 3 integer can grow to fill all available host RAM.</li>
+          <li><strong>Elimination of <code class="inline">long</code>:</strong> In Python 2, two separate integer types existed: fixed-width <code class="inline">int</code> (32/64 bit) and arbitrary-precision <code class="inline">long</code> (written with an <code class="inline">L</code> suffix, e.g. <code class="inline">100L</code>). In Python 3, <code class="inline">long</code> was completely eliminated; the standard <code class="inline">int</code> handles both small and arbitrarily large numbers transparently.</li>
+          <li><strong>PEP 515 Underscores in Numeric Literals:</strong> For visual readability in code, digits can be grouped using underscores (<code class="inline">_</code>). The PVM completely ignores these underscores during parsing:
+            <br /><code class="inline">salary = 1_000_000</code>, <code class="inline">bin_mask = 0b_1111_0000</code>, <code class="inline">hex_addr = 0x_CAFE_BABE</code>.
+          </li>
         </ul>
 
-        <div class="code"><pre>big_num = 10 ** 40
-print(big_num)  # 10000000000000000000000000000000000000000
-print(type(big_num))  # &lt;class 'int'&gt; (no overflow!)</pre></div>
+        <div class="code"><pre># Python 3: Unlimited integer magnitude
+big_num = 10 ** 50
+print("10 ** 50 =", big_num)
+print("Type:    ", type(big_num))  # &lt;class 'int'&gt; (no overflow!)
+
+# PEP 515: Underscores in numeric literals for readability
+million = 1_000_000
+mask = 0b_1111_0000
+addr = 0x_DEAD_BEEF
+print("million:", million)  # 1000000
+print("mask:   ", mask)     # 240
+print("addr:   ", addr)     # 3735928559</pre></div>
 
         <h3>2.2. Types of Representation for int Literal Values (Number Systems)</h3>
-        <p>In Python, programmers can represent integer values in <strong>4 different number systems</strong> (bases):</p>
+        <p>In Python, programmers can represent integer values in <strong>4 different number systems</strong> (bases). The prefix indicators and hexadecimal characters are completely <strong>case-insensitive</strong> (<code class="inline">0b</code> or <code class="inline">0B</code>, <code class="inline">0o</code> or <code class="inline">0O</code>, <code class="inline">0x</code> or <code class="inline">0X</code>):</p>
 
         <table>
           <thead>
@@ -122,7 +135,7 @@ print(type(big_num))  # &lt;class 'int'&gt; (no overflow!)</pre></div>
               <td><code class="inline">0 to 9</code></td>
               <td><em>None</em> (Default)</td>
               <td><code class="inline">a = 10</code>, <code class="inline">count = 789</code></td>
-              <td>Cannot start with leading zero (e.g. <code class="inline">0123</code> is invalid in Python 3)</td>
+              <td>Cannot start with leading zero (e.g. <code class="inline">0123</code> is invalid in Python 3; causes <code class="inline">SyntaxError: leading zeros in decimal integer literals are not permitted</code>)</td>
             </tr>
             <tr>
               <td><strong>2. Binary Form</strong></td>
@@ -159,6 +172,7 @@ print(type(big_num))  # &lt;class 'int'&gt; (no overflow!)</pre></div>
         <div class="code"><pre># --- 1. Decimal Form (Base-10, Default) ---
 a = 10
 print("Decimal:", a)  # 10
+# invalid = 0777      # SyntaxError: leading zeros in decimal integer literals are not permitted
 
 # --- 2. Binary Form (Base-2, Prefix 0b / 0B) ---
 a = 0b1111
@@ -272,7 +286,8 @@ print(int("0xface", 16))  # 64206</pre></div>
         <h3>3.1. Representation &amp; Exponential Notation</h3>
         <ul>
           <li>The <code class="inline">float</code> type in Python represents IEEE 754 double-precision floating-point numbers (64-bit float in C).</li>
-          <li>You can write floating-point numbers in <strong>fractional form</strong> or <strong>exponential (scientific) form</strong> using <code class="inline">e</code> or <code class="inline">E</code>.</li>
+          <li><strong>Decimal Only Rule:</strong> Unlike integers, floating-point literals can <strong>only be specified in decimal (base-10) form</strong>. Python does <em>not</em> allow binary, octal, or hexadecimal float literals (e.g. <code class="inline">0b10.101</code> causes <code class="inline">SyntaxError: invalid decimal literal</code>).</li>
+          <li>You can write floating-point numbers in <strong>fractional form</strong> or <strong>exponential (scientific) form</strong> using <code class="inline">e</code> or <code class="inline">E</code> (e.g., <code class="inline">1.2e3 = 1.2 * 10^3 = 1200.0</code>).</li>
         </ul>
 
         <div class="code"><pre>pi = 3.14159
@@ -281,17 +296,28 @@ rate = -0.0025
 # Exponential / Scientific notation:
 big_val = 1.2e3     # 1.2 * 10^3 = 1200.0
 tiny_val = 2.5E-4   # 2.5 * 10^-4 = 0.00025
-print(big_val, tiny_val)</pre></div>
+print(big_val, tiny_val)
+
+# Base restriction pitfall:
+# invalid_float = 0b101.11  # SyntaxError: invalid decimal literal</pre></div>
 
         <h3 id="3-float-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Floating-Point Precision Quirk &amp; Comparisons</h3>
+        <h3>3.2. Precision Quirks, IEEE Limits, &amp; Comparisons</h3>
         <ul>
+          <li><strong>Finite Float Magnitude (Unlike int):</strong> While Python 3 integers have arbitrary precision, <code class="inline">float</code> is bound by IEEE 754 64-bit limits. The maximum representable float is approximately <code class="inline">1.7976931348623157e+308</code> (<code class="inline">sys.float_info.max</code>). Values exceeding this overflow directly to <code class="inline">inf</code>.</li>
           <li>Computers store floats as binary fractions. Some decimal fractions (like <code class="inline">0.1</code>) cannot be represented exactly in binary, leading to tiny rounding discrepancies.</li>
           <li>Never compare floats using exact equality (<code class="inline">==</code>). Use <code class="inline">math.isclose()</code> instead.</li>
         </ul>
 
         <div class="code"><pre>import math
+import sys
 
+# Float boundary &amp; overflow:
+print("Max float:", sys.float_info.max)  # ~1.7976931348623157e+308
+overflow = 1.8e308
+print("Overflow:", overflow)              # inf (Infinity)
+
+# Float precision quirk:
 print(0.1 + 0.2)             # 0.30000000000000004
 print(0.1 + 0.2 == 0.3)      # False (classic float quirk!)
 
@@ -312,26 +338,52 @@ print(math.isnan(not_a_num)) # True</pre></div>
           <h2>4. complex (Complex Numbers)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="4-complex-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Syntax &amp; Properties</h3>
+        <h3>4.1. Syntax &amp; Literal Rules</h3>
         <ul>
           <li>Python has built-in support for complex numbers in the form <code class="inline">a + bj</code>, where <code class="inline">a</code> is the real part, <code class="inline">b</code> is the imaginary part, and <code class="inline">j</code> (or <code class="inline">J</code>) represents $\sqrt{-1}$.</li>
-          <li>Both the real and imaginary parts are internally stored as <code class="inline">float</code> numbers.</li>
-          <li>Attributes: <code class="inline">.real</code>, <code class="inline">.imag</code>, and method <code class="inline">.conjugate()</code>.</li>
+          <li><strong>Real vs Imaginary Base Rule:</strong>
+            <ul>
+              <li>The <strong>real part</strong> <code class="inline">a</code> can be specified in <strong>any number system</strong> (decimal, binary <code class="inline">0b</code>, octal <code class="inline">0o</code>, or hex <code class="inline">0x</code>).</li>
+              <li>The <strong>imaginary part</strong> <code class="inline">b</code> <strong>MUST be specified strictly in decimal form</strong>! Writing non-decimal bases for the imaginary part triggers a <code class="inline">SyntaxError</code>.</li>
+            </ul>
+          </li>
+          <li><strong>Internal Representation:</strong> Both the real and imaginary components are stored internally as 64-bit <code class="inline">float</code> values, accessible via <code class="inline">.real</code> and <code class="inline">.imag</code>.</li>
+        </ul>
+
+        <div class="code"><pre># Real part can be any base; Imaginary part MUST be decimal:
+c1 = 0x10 + 20.5j    # Valid! 0x10 (16) + 20.5j
+c2 = 0b1111 + 5j     # Valid! 0b1111 (15) + 5j
+print("c1:", c1)     # (16+20.5j)
+print("c2:", c2)     # (15+5j)
+
+# Pitfall: Imaginary part in non-decimal is INVALID:
+# c3 = 10 + 0x10j    # SyntaxError: invalid hexadecimal literal
+
+# Component attributes always return float:
+z = 3 + 4j
+print("Real part (float):     ", z.real, type(z.real))  # 3.0 &lt;class 'float'&gt;
+print("Imaginary part (float):", z.imag, type(z.imag))  # 4.0 &lt;class 'float'&gt;
+print("Conjugate:             ", z.conjugate())         # (3-4j)</pre></div>
+
+        <h3 id="4-complex-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.2. Complex Arithmetic</h3>
+        <ul>
+          <li>Complex numbers support addition, subtraction, multiplication, and true division.</li>
+          <li>Complex numbers do <strong>not</strong> support relational order comparisons like <code class="inline">&lt;</code>, <code class="inline">&lt;=</code>, <code class="inline">&gt;</code>, <code class="inline">&gt;=</code> (raises <code class="inline">TypeError: '&lt;' not supported between instances of 'complex' and 'complex'</code>) because mathematically the complex plane has no natural ordering.</li>
         </ul>
 
         <div class="code"><pre>z1 = 3 + 4j
 z2 = 1 - 2j
 
-print("Real part:     ", z1.real)       # 3.0 (float)
-print("Imaginary part:", z1.imag)       # 4.0 (float)
-print("Conjugate:     ", z1.conjugate())# (3-4j)
-
-# Arithmetic operations:
 print("Addition:      ", z1 + z2)       # (4+2j)
-print("Multiplication:", z1 * z2)       # (11-2j)</pre></div>
+print("Subtraction:   ", z1 - z2)       # (2+6j)
+print("Multiplication:", z1 * z2)       # (11-2j)
+print("Division:      ", z1 / z2)       # (-1+2j)
+# print(z1 > z2)  # TypeError: '>' not supported between instances of 'complex' and 'complex'</pre></div>
       </section>
 
       <section id="5-bool">
@@ -349,13 +401,25 @@ print("Multiplication:", z1 * z2)       # (11-2j)</pre></div>
           <li>In Python, <code class="inline">bool</code> is an explicit subclass of <code class="inline">int</code>:
             <br /><code class="inline">True == 1</code> and <code class="inline">False == 0</code>.
           </li>
-          <li>Booleans participate directly in integer arithmetic: <code class="inline">True + True == 2</code>, <code class="inline">True * 10 == 10</code>.</li>
+          <li><strong>Boolean Arithmetic:</strong> Because booleans inherit from integers, they participate directly in mathematical arithmetic:
+            <br /><code class="inline">True + True == 2</code>, <code class="inline">True - False == 1</code>, <code class="inline">True * 10 == 10</code>, <code class="inline">True / 2 == 0.5</code>.
+          </li>
+          <li><strong>Identity vs Equality:</strong> While <code class="inline">True == 1</code> is <code class="inline">True</code> (value equality), <code class="inline">True is 1</code> is <code class="inline">False</code> (they are separate objects at distinct memory addresses).</li>
         </ul>
 
-        <div class="code"><pre>print(True + True)            # 2
+        <div class="code"><pre># Boolean arithmetic:
+print(True + True)            # 2
 print(True - False)           # 1
+print(True * 5)               # 5
+print(True / 2)               # 0.5
+
+# Subclass relationship:
 print(isinstance(True, int))  # True
-print(issubclass(bool, int))  # True</pre></div>
+print(issubclass(bool, int))  # True
+
+# Equality vs Identity:
+print(True == 1)              # True (same numeric value)
+print(True is 1)              # False (different object identities!)</pre></div>
 
         <h3 id="5-bool-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>5.2. Truthy and Falsy Values in Python</h3>
@@ -511,6 +575,36 @@ print("Is None?     ", result is None)  # True</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>Computers represent floating-point numbers in base 2 (IEEE 754). Numbers like <code class="inline">0.1</code> and <code class="inline">0.2</code> are repeating infinite fractions in binary, causing tiny precision inaccuracies during addition (<code class="inline">0.30000000000000004</code>). Use <code class="inline">math.isclose()</code> for float equality comparisons.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Can floating-point literals be specified in binary, octal, or hexadecimal form?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No.</strong> Unlike integers, floating-point literals can only be specified in decimal (base-10) fractional form or exponential notation. Writing <code class="inline">0b11.01</code> or <code class="inline">0x12.3</code> raises a <code class="inline">SyntaxError: invalid decimal literal</code> or <code class="inline">SyntaxError: invalid syntax</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. In a complex number <code class="inline">a + bj</code>, can the imaginary part be written in hexadecimal or binary?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No.</strong> The real part <code class="inline">a</code> can be written in any number system (<code class="inline">0x10 + 5j</code> evaluates to <code class="inline">16 + 5j</code>), but the imaginary part <code class="inline">b</code> must strictly be base-10 decimal. Attempting <code class="inline">10 + 0x5j</code> or <code class="inline">10 + 0b10j</code> raises a <code class="inline">SyntaxError</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.8. Why does <code class="inline">True == 1</code> evaluate to True, but <code class="inline">True is 1</code> evaluates to False?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">==</code> checks <strong>value equality</strong>. Since <code class="inline">bool</code> inherits from <code class="inline">int</code> and <code class="inline">True</code> has numerical value 1, their values compare equal. However, <code class="inline">is</code> checks <strong>object identity</strong> (heap memory address). <code class="inline">True</code> is an instance of <code class="inline">bool</code>, whereas <code class="inline">1</code> is an instance of <code class="inline">int</code>; they reside at distinct memory locations.</p>
           </div>
         </details>
       </section>

@@ -23,7 +23,8 @@
         <a href="#3-iterative-statements-for-while-range">3. Iterative statements (for, while, range)</a>
         <a href="#4-transfer-statements-break-continue-pass">4. Transfer statements (break, continue, pass)</a>
         <a href="#5-pattern-programs">5. Pattern programs</a>
-        <a href="#6-number-to-word-mini-project-outline">6. Number-to-word mini project</a>
+        <a href="#6-numerical-algorithms">6. Classic numerical algorithms</a>
+        <a href="#7-number-to-word-mini-project">7. Number-to-word mini project</a>
         <a href="#c-common-questions">C. Common questions</a>
         <a href="#p-practice">P. Practical Assignment</a>
       </nav>
@@ -87,6 +88,7 @@
           <li><strong>Iterative statements (for, while, range)</strong> — sequence iteration, range mechanics, and infinite loops</li>
           <li><strong>Transfer statements (break, continue, pass)</strong> — jump statements and the unique loop <code class="inline">else</code> suite</li>
           <li><strong>Pattern programs</strong> — systematic matrix approach to star, number, and character pyramids</li>
+          <li><strong>Classic numerical algorithms</strong> — prime numbers, Armstrong numbers, Fibonacci, palindrome, and factorial</li>
           <li><strong>Number-to-word mini project</strong> — end-to-end working English number converter</li>
         </ol>
         <ul>
@@ -451,22 +453,106 @@ for i in range(1, 5):
 # A B C D </pre></div>
       </section>
 
-      <section id="6-number-to-word-mini-project-outline">
+      <section id="6-numerical-algorithms">
         <div class="heading-with-levels">
-          <h2>6. Number-to-word mini project</h2>
+          <h2>6. Classic numerical algorithms</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <h3 id="6-number-to-word-mini-project-outline-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="6-numerical-algorithms-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>6.1. Problem Statement &amp; Design</h3>
+        <h3>6.1. Prime Number Verification</h3>
+        <p>A prime number is a positive integer greater than 1 with no positive divisors other than 1 and itself. In optimized loop execution, divisors need only be checked up to $\lfloor\sqrt{n}\rfloor$.</p>
+
+        <div class="code"><pre>def is_prime(n: int) -&gt; bool:
+    if n &lt; 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+print("is_prime(29):", is_prime(29))  # True
+print("is_prime(49):", is_prime(49))  # False</pre></div>
+
+        <h3>6.2. Armstrong (Narcissistic) Number</h3>
+        <p>An Armstrong number of $k$ digits is an integer such that the sum of each digit raised to the power of $k$ equals the number itself (e.g. $153 = 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153$).</p>
+
+        <div class="code"><pre>def is_armstrong(n: int) -&gt; bool:
+    s = str(n)
+    power = len(s)
+    total = sum(int(digit) ** power for digit in s)
+    return total == n
+
+print("153 is Armstrong:", is_armstrong(153))    # True (1^3 + 5^3 + 3^3 = 153)
+print("370 is Armstrong:", is_armstrong(370))    # True
+print("1634 is Armstrong:", is_armstrong(1634))  # True (1^4 + 6^4 + 3^4 + 4^4 = 1634)
+print("120 is Armstrong:", is_armstrong(120))    # False</pre></div>
+
+        <h3 id="6-numerical-algorithms-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <h3>6.3. Fibonacci Series Generation</h3>
+        <p>Generates the sequence where each number is the sum of the two preceding numbers: $0, 1, 1, 2, 3, 5, 8, 13, \dots$</p>
+
+        <div class="code"><pre>def generate_fibonacci(terms: int) -&gt; list[int]:
+    if terms &lt;= 0:
+        return []
+    if terms == 1:
+        return [0]
+    fib = [0, 1]
+    while len(fib) &lt; terms:
+        fib.append(fib[-1] + fib[-2])
+    return fib
+
+print("First 10 Fibonacci numbers:", generate_fibonacci(10))
+# [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</pre></div>
+
+        <h3>6.4. Palindrome Number Check</h3>
+        <p>A palindrome number reads identically forward and backward (e.g. 12321). We can verify it arithmetically without string conversion:</p>
+
+        <div class="code"><pre>def is_palindrome_number(n: int) -&gt; bool:
+    if n &lt; 0:
+        return False  # Negative numbers like -121 are not palindromes
+    original, reversed_num = n, 0
+    while n &gt; 0:
+        reversed_num = (reversed_num * 10) + (n % 10)
+        n //= 10
+    return original == reversed_num
+
+print("12321 is palindrome:", is_palindrome_number(12321))  # True
+print("12345 is palindrome:", is_palindrome_number(12345))  # False</pre></div>
+
+        <h3>6.5. Factorial Calculation (Iterative)</h3>
+        <div class="code"><pre>def factorial(n: int) -&gt; int:
+    if n &lt; 0:
+        raise ValueError("Factorial not defined for negative numbers")
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+print("5! =", factorial(5))   # 120
+print("10! =", factorial(10)) # 3628800</pre></div>
+      </section>
+
+      <section id="7-number-to-word-mini-project">
+        <div class="heading-with-levels">
+          <h2>7. Number-to-word mini project</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="7-number-to-word-mini-project-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+
+        <h3>7.1. Problem Statement &amp; Design</h3>
         <p>A classic computer science challenge testing control flow, integer arithmetic, and string mapping: convert any integer from <code class="inline">0</code> up to <code class="inline">99,999</code> into its standard English spoken word representation.</p>
 
-        <h3 id="6-number-to-word-mini-project-outline-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="7-number-to-word-mini-project-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>6.2. Complete Python Implementation</h3>
+        <h3>7.2. Complete Python Implementation</h3>
         <div class="code"><pre>def number_to_words(num: int) -&gt; str:
     """Convert integer between 0 and 99,999 into English words."""
     if num == 0:

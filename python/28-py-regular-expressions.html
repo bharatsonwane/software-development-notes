@@ -303,6 +303,11 @@ print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
               <td><code>Match</code> object or <code>None</code>.</td>
             </tr>
             <tr>
+              <td><code>re.fullmatch(pattern, string)</code></td>
+              <td>Checks if the <strong>entire string</strong> strictly conforms to the pattern from start to end.</td>
+              <td><code>Match</code> object or <code>None</code>.</td>
+            </tr>
+            <tr>
               <td><code>re.search(pattern, string)</code></td>
               <td>Scans the entire string for the <strong>first occurrence</strong>.</td>
               <td><code>Match</code> object or <code>None</code>.</td>
@@ -323,6 +328,11 @@ print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
               <td>New string with replacements.</td>
             </tr>
             <tr>
+              <td><code>re.subn(pattern, repl, string)</code></td>
+              <td>Replaces matches and counts occurrences.</td>
+              <td>2-tuple: <code>(new_string, number_of_replacements)</code>.</td>
+            </tr>
+            <tr>
               <td><code>re.split(pattern, string)</code></td>
               <td>Splits string by regex delimiter.</td>
               <td>List of split strings.</td>
@@ -330,11 +340,15 @@ print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
           </tbody>
         </table>
 
-        <div class="code"><pre>sample_text = "Call 555-1234 or 555-5678 today"
+        <div class="code"><pre>import re
 
-# 1. re.match vs re.search
+sample_text = "Call 555-1234 or 555-5678 today"
+
+# 1. re.match vs re.fullmatch vs re.search
 print("re.match:", re.match(r"\d{3}-\d{4}", sample_text))  # None (doesn't start with digits)
-print("re.search:", re.search(r"\d{3}-\d{4}", sample_text).group())  # 555-1234
+print("re.fullmatch (exact):", bool(re.fullmatch(r"[A-Za-z0-9\s-]+", sample_text)))  # True
+print("re.fullmatch (partial):", re.fullmatch(r"\d{3}-\d{4}", sample_text))          # None
+print("re.search:", re.search(r"\d{3}-\d{4}", sample_text).group())                  # 555-1234
 
 # 2. re.findall:
 print("re.findall:", re.findall(r"\d{3}-\d{4}", sample_text))  # ['555-1234', '555-5678']
@@ -343,10 +357,13 @@ print("re.findall:", re.findall(r"\d{3}-\d{4}", sample_text))  # ['555-1234', '5
 for m in re.finditer(r"\d{3}-\d{4}", sample_text):
     print(f"Match found: {m.group()} at index span {m.span()}")
 
-# 4. re.sub (search & replace):
+# 4. re.sub vs re.subn (search & replace with counter):
 sanitized = re.sub(r"\d{3}-\d{4}", "[REDACTED]", sample_text)
-print("Sanitized text:", sanitized)
-# Call [REDACTED] or [REDACTED] today
+print("Sanitized text (sub):", sanitized)
+
+new_text, count = re.subn(r"\d{3}-\d{4}", "[REDACTED]", sample_text)
+print(f"Sanitized (subn): {new_text} | Total replacements made: {count}")
+# Output: Call [REDACTED] or [REDACTED] today | Total replacements made: 2
 
 # 5. re.split:
 data_row = "item1, item2; item3 | item4"

@@ -443,6 +443,11 @@ print()  # Newline flush
 import sys, time
 print("Critical Error Alert!", file=sys.stderr)
 
+# Redirecting print() to a physical disk file:
+with open("output.log", "w") as f:
+    print("Writing directly into output.log using print(..., file=f)", file=f)
+    print(f"Timestamped log entry: {time.ctime()}", file=f)
+
 # Real-time counter with flush=True:
 for count in range(3, 0, -1):
     print(count, end=" ", flush=True)
@@ -737,6 +742,32 @@ print(f"Item: {item}, Cost: ${cost:.2f}")</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>This follows the UNIX C standard where <code class="inline">argv[0]</code> always contains the invocation command or executable path. This allows programs to inspect how they were invoked, output proper usage messages (e.g. <code class="inline">f"Usage: python {sys.argv[0]} [options]"</code>), or act differently depending on binary symlinks.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. How do you redirect print() output directly to a file on disk?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Use the <code class="inline">file</code> parameter in <code class="inline">print()</code> with an opened file object in write or append mode:
+              <br /><code class="inline">with open("app.log", "a") as f: print("User logged in", file=f)</code>.
+              This avoids needing manual <code class="inline">f.write("...\n")</code> string conversions and appends a newline automatically.
+            </p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. How can we read multiple space-separated integers in a single line without manual loops?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Use <code class="inline">map(int, input().split())</code> or a list comprehension:
+              <br />• Fixed variables: <code class="inline">a, b, c = map(int, input().split())</code>
+              <br />• Into a list: <code class="inline">numbers = list(map(int, input().split()))</code> or <code class="inline">[int(x) for x in input().split()]</code>.
+            </p>
           </div>
         </details>
       </section>

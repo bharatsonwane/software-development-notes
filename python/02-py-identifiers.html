@@ -83,33 +83,142 @@
           <h2>2. Identifiers and naming rules</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="2-identifiers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <ul>
-          <li><strong>Allowed:</strong> letters (A–Z, a–z), digits (0–9), underscore <code class="inline">_</code>.</li>
-          <li><strong>Must</strong> start with a letter or <code class="inline">_</code> — not a digit.</li>
-          <li>Case-sensitive: <code class="inline">age</code>, <code class="inline">Age</code>, <code class="inline">AGE</code> are different.</li>
-          <li>No special characters like <code class="inline">@</code>, <code class="inline">$</code>, <code class="inline">-</code> in names.</li>
-        </ul>
-        <div class="code"><pre>name = "Bharat"     # OK
-_total = 10         # OK — often means "internal"
-user2 = 99          # OK
-# 2user = "x"       # SyntaxError — starts with digit
-# user-name = "x"   # SyntaxError — hyphen not allowed</pre></div>
-        <h3>2.1. Conventions (PEP 8)</h3>
+        <p>An <strong>identifier</strong> is a programmatic token used to name a variable, function, class, module, or package in Python source code.</p>
+
         <table>
           <thead>
-            <tr><th>Kind</th><th>Style</th><th>Example</th></tr>
+            <tr><th>Rule Dimension</th><th>Permitted Syntactic Pattern</th><th>Prohibited Pattern (Raises SyntaxError)</th></tr>
           </thead>
           <tbody>
-            <tr><td>Variable / function</td><td>snake_case</td><td><code class="inline">user_count</code></td></tr>
-            <tr><td>Class</td><td>PascalCase</td><td><code class="inline">BankAccount</code></td></tr>
-            <tr><td>Constant (by convention)</td><td>UPPER_SNAKE</td><td><code class="inline">MAX_SIZE</code></td></tr>
-            <tr><td>“Private” by convention</td><td>leading _</td><td><code class="inline">_helper</code></td></tr>
-            <tr><td>Name mangling (File 21)</td><td>leading __</td><td><code class="inline">__secret</code></td></tr>
+            <tr>
+              <td><strong>Allowed Characters</strong></td>
+              <td>Alphabet letters (<code class="inline">a-z</code>, <code class="inline">A-Z</code>), decimal digits (<code class="inline">0-9</code>), underscore (<code class="inline">_</code>).</td>
+              <td>Punctuation and symbols: <code class="inline">@</code>, <code class="inline">$</code>, <code class="inline">-</code>, <code class="inline">%</code>, <code class="inline">#</code>, <code class="inline">!</code>, <code class="inline">&amp;</code>, space.</td>
+            </tr>
+            <tr>
+              <td><strong>Leading Character</strong></td>
+              <td>Must start with an alphabet letter or an underscore (<code class="inline">_</code>).</td>
+              <td>Cannot start with a digit: e.g. <code class="inline">123total</code> is invalid.</td>
+            </tr>
+            <tr>
+              <td><strong>Case Sensitivity</strong></td>
+              <td>Python is strictly case-sensitive: <code class="inline">total</code>, <code class="inline">Total</code>, <code class="inline">TOTAL</code> are 3 distinct identifiers.</td>
+              <td>Do not assume case-folding.</td>
+            </tr>
+            <tr>
+              <td><strong>Reserved Collision</strong></td>
+              <td>Identifiers must not match any of the 35 reserved hard keywords.</td>
+              <td>Cannot use words like <code class="inline">def</code>, <code class="inline">class</code>, <code class="inline">return</code> as variable names.</td>
+            </tr>
+            <tr>
+              <td><strong>Identifier Length</strong></td>
+              <td>Python imposes <strong>no arbitrary character limit</strong> on identifier length.</td>
+              <td>Bounded only by system memory (PEP 8 recommends keeping lines under 79–88 characters for readability).</td>
+            </tr>
           </tbody>
         </table>
+
+        <h3>2.1. PEP 8 Naming Conventions</h3>
+        <table>
+          <thead>
+            <tr><th>Construct Type</th><th>Naming Style</th><th>Example</th><th>Rationale</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Variables &amp; Functions</td><td><code class="inline">snake_case</code></td><td><code class="inline">user_account</code>, <code class="inline">calculate_tax()</code></td><td>Clear readability with lowercase words separated by underscores.</td></tr>
+            <tr><td>Classes</td><td><code class="inline">PascalCase</code> (CapWords)</td><td><code class="inline">HttpConnection</code>, <code class="inline">ThreadPool</code></td><td>Distinguishes type constructors from callable function instances.</td></tr>
+            <tr><td>Constants</td><td><code class="inline">UPPER_SNAKE_CASE</code></td><td><code class="inline">MAX_BUFFER_SIZE</code>, <code class="inline">API_TIMEOUT</code></td><td>Signals immutable configuration intent to other engineers.</td></tr>
+            <tr><td>Modules &amp; Packages</td><td>short lowercase (<code class="inline">snake_case</code>)</td><td><code class="inline">json</code>, <code class="inline">http_parser</code></td><td>Matches underlying filesystem naming without platform case ambiguity.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="2-identifiers-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h4>2.2. The 5 Underscore (<code class="inline">_</code>) Patterns in Python</h4>
+        <p>In Python, the underscore character conveys critical semantic instructions to the compiler, runtime, and fellow developers:</p>
+
+        <table>
+          <thead>
+            <tr><th>Pattern</th><th>Syntax</th><th>Compiler &amp; Runtime Behavior</th><th>Engineering Use Case</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Single Leading Underscore</strong></td>
+              <td><code class="inline">_internal_var</code></td>
+              <td><strong>Weak internal indicator:</strong> Python does not restrict access (<code class="inline">obj._internal_var</code> still succeeds), but it prevents export when using wildcard imports: <code class="inline">from module import *</code> ignores identifiers with a leading <code class="inline">_</code>.</td>
+              <td>Protected module/class internals by convention.</td>
+            </tr>
+            <tr>
+              <td><strong>Double Leading Underscore</strong></td>
+              <td><code class="inline">__private_var</code></td>
+              <td><strong>Name Mangling:</strong> The CPython compiler internally rewrites the attribute name to <code class="inline">_ClassName__private_var</code>. This prevents subclasses from accidentally overriding parent private state.</td>
+              <td>Encapsulation and avoiding subclass collision.</td>
+            </tr>
+            <tr>
+              <td><strong>Leading &amp; Trailing Double Underscore</strong></td>
+              <td><code class="inline">__init__</code>, <code class="inline">__str__</code></td>
+              <td><strong>Magic / Dunder Methods:</strong> Reserved by the core language for operator overloading and protocol hooks. Application code must <em>never</em> invent custom dunder names.</td>
+              <td>Python data model protocols.</td>
+            </tr>
+            <tr>
+              <td><strong>Single Trailing Underscore</strong></td>
+              <td><code class="inline">class_</code>, <code class="inline">def_</code>, <code class="inline">in_</code></td>
+              <td><strong>Keyword Disambiguation:</strong> A standard Python convention used when a domain model name collides with a Python reserved keyword.</td>
+              <td>Naming a variable or parameter without raising <code class="inline">SyntaxError</code> (e.g. <code class="inline">filter(class_="primary")</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Standalone Underscore</strong></td>
+              <td><code class="inline">_</code></td>
+              <td><strong>1. Dummy / Throwaway Variable:</strong> Used in loops and tuple unpacking to signal an unneeded value.<br /><strong>2. REPL Cache:</strong> In interactive REPL shells, <code class="inline">_</code> stores the evaluation result of the last executed statement.</td>
+              <td><code class="inline">for _ in range(5): do_work()</code><br /><code class="inline">host, _, port = text.partition(":")</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>2.3. Comprehensive Identifier Validity Matrix</h4>
+        <table>
+          <thead>
+            <tr><th>Test Identifier</th><th>Valid?</th><th>Technical Explanation</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">total_amount</code></td><td><strong>Yes</strong></td><td>Standard lowercase alphanumeric with underscore.</td></tr>
+            <tr><td><code class="inline">_count</code></td><td><strong>Yes</strong></td><td>Leading underscore is completely legal.</td></tr>
+            <tr><td><code class="inline">__</code> (two underscores)</td><td><strong>Yes</strong></td><td>A sequence of underscores without digits is a valid identifier.</td></tr>
+            <tr><td><code class="inline">123total</code></td><td><strong>No</strong></td><td>SyntaxError: identifiers cannot begin with a numeric digit.</td></tr>
+            <tr><td><code class="inline">total123</code></td><td><strong>Yes</strong></td><td>Numeric digits are allowed in any position except the first.</td></tr>
+            <tr><td><code class="inline">ca$h</code></td><td><strong>No</strong></td><td>SyntaxError: <code class="inline">$</code> is not an allowed character in Python identifiers.</td></tr>
+            <tr><td><code class="inline">def</code></td><td><strong>No</strong></td><td>SyntaxError: <code class="inline">def</code> is a reserved hard keyword.</td></tr>
+            <tr><td><code class="inline">Def</code></td><td><strong>Yes</strong></td><td>Case-sensitive: <code class="inline">Def</code> is capitalized and does not collide with keyword <code class="inline">def</code>.</td></tr>
+            <tr><td><code class="inline">pass</code></td><td><strong>No</strong></td><td>SyntaxError: <code class="inline">pass</code> is a reserved hard keyword.</td></tr>
+            <tr><td><code class="inline">Pass</code></td><td><strong>Yes</strong></td><td>Valid identifier due to uppercase 'P'.</td></tr>
+            <tr><td><code class="inline">user-name</code></td><td><strong>No</strong></td><td>SyntaxError: hyphen is parsed as the subtraction operator (<code class="inline">-</code>).</td></tr>
+            <tr><td><code class="inline">π</code> (pi symbol)</td><td><strong>Yes</strong></td><td>Valid in Python 3 under PEP 3131 (Unicode letters), though discouraged in standard codebases.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Demonstrating Name Mangling in Action:
+class Account:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.__balance = balance  # Double leading underscore triggers name mangling
+
+acc = Account("Alice", 5000)
+print(acc.owner)  # Alice
+
+# Attempting direct access to __balance raises AttributeError:
+try:
+    print(acc.__balance)
+except AttributeError as err:
+    print("AttributeError raised:", err)
+
+# Inspecting the object's __dict__ reveals the mangled identifier:
+print("Mangled name in object dict:", [k for k in acc.__dict__ if "balance" in k])
+# Output: ['_Account__balance']
+
+# The value can still be accessed via its mangled name (proves it is not cryptographically private):
+print("Mangled access:", acc._Account__balance)  # 5000</pre></div>
       </section>
 
       <section id="3-reserved">
@@ -345,14 +454,48 @@ if x &gt; 5:
     print("still in if")
 print("outside if")</pre></div>
         <h3 id="4-comments-indent-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.3. Statements and lines</h3>
-        <ul>
-          <li>One statement per line is normal. Use <code class="inline">\</code> or parentheses for line continuation. Semicolons can join statements but are uncommon.</li>
-        </ul>
-        <div class="code"><pre>total = (1 + 2 + 3
-         + 4 + 5)
+        <h3>4.3. Line Continuation Rules (Explicit vs Implicit)</h3>
+        <p>In Python, the newline character (<code class="inline">\n</code>) normally signals the termination of a logical statement. Long statements can be broken across multiple physical lines in two ways:</p>
 
-a = 1; b = 2   # legal, rarely preferred</pre></div>
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Mechanism &amp; Syntax</th><th>PEP 8 Recommendation</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Implicit Continuation</strong> (Recommended)</td>
+              <td>Expressions enclosed inside parentheses <code class="inline">()</code>, square brackets <code class="inline">[]</code>, or curly braces <code class="inline">{}</code> automatically continue across newlines without extra punctuation.</td>
+              <td><strong>Strongly preferred.</strong> Safe, visually clean, and immune to trailing whitespace bugs.</td>
+            </tr>
+            <tr>
+              <td><strong>Explicit Continuation</strong> (Backslash <code class="inline">\</code>)</td>
+              <td>Ending a line with a single backslash (<code class="inline">\</code>) escapes the newline character, telling the lexer that the statement continues on the next physical line.</td>
+              <td><strong>Discouraged</strong> except when parentheses are syntactically impossible (e.g. complex <code class="inline">with</code> statements in older Python). If any invisible whitespace follows <code class="inline">\</code>, Python raises a fatal <code class="inline">SyntaxError</code>!</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># 1. Implicit line continuation inside parentheses (Pythonic):
+total = (
+    100 + 200 + 300
+    + 400 + 500
+)
+
+# 2. Implicit continuation in collections:
+allowed_roles = [
+    "administrator",
+    "developer",
+    "auditor",
+]
+
+# 3. Explicit line continuation with backslash (\):
+flag = 10 > 5 and \
+       20 > 15 and \
+       30 > 25
+# Caution: An invisible space after \ causes 'SyntaxError: unexpected character after line continuation character'
+
+# 4. Multiple statements on a single line using semicolon (;):
+x = 10; y = 20; z = x + y  # Syntactically valid, but strongly discouraged by PEP 8</pre></div>
       </section>
 
       <section id="c-common-questions">
@@ -368,21 +511,43 @@ a = 1; b = 2   # legal, rarely preferred</pre></div>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. Can identifiers start with underscore?</span>
+            <span class="qa-question-title">C.1. Can an identifier start with an underscore, and what does it mean?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Yes. Leading <code class="inline">_</code> is a convention for “internal” use. Double leading <code class="inline">__</code> on class attributes triggers name mangling (File 21).</p>
+            <p><strong>Yes.</strong> Underscores are valid identifier characters. Their placement signals specific conventions and compiler behaviors:</p>
+            <ul>
+              <li><code class="inline">_var</code>: Indicates a private or internal API by convention. Excluded from wildcard imports (<code class="inline">from module import *</code>).</li>
+              <li><code class="inline">__var</code>: Triggers <strong>Name Mangling</strong> by CPython compiler (<code class="inline">_ClassName__var</code>) to prevent subclass attribute collisions.</li>
+              <li><code class="inline">__var__</code>: Reserved for language-defined dunder/magic methods.</li>
+              <li><code class="inline">var_</code>: Trailing underscore to avoid collision with reserved keywords (e.g. <code class="inline">class_</code>).</li>
+              <li><code class="inline">_</code>: Standalone throwaway dummy variable or REPL last evaluated expression cache.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. Why no braces for blocks?</span>
+            <span class="qa-question-title">C.2. Why does Python enforce indentation instead of curly braces <code class="inline">{}</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Design choice — indentation is mandatory and keeps structure consistent. Wrong indent raises <code class="inline">IndentationError</code>.</p>
+            <p>In languages with braces (C, Java, JavaScript), visual indentation and actual compiler block scoping can drift apart, leading to famous security bugs like Apple's *“goto fail”*. By making indentation the formal grammar for block scoping:</p>
+            <ul>
+              <li>Code visual structure is guaranteed to match compiler execution logic.</li>
+              <li>Eliminates visual clutter from redundant braces and semicolons.</li>
+              <li>Enforces uniform readability across teams and codebases.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Can an identifier in Python have an unlimited length?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Yes.</strong> Python places no arbitrary maximum character length limit on identifier names. The compiler will parse an identifier of any length bounded only by available system RAM. However, PEP 8 recommends keeping identifier names concise, descriptive, and adhering to the maximum line length limit (79 to 88 characters).</p>
           </div>
         </details>
 
@@ -390,11 +555,32 @@ a = 1; b = 2   # legal, rarely preferred</pre></div>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. Are Unicode letters allowed in identifiers?</span>
+            <span class="qa-question-title">C.4. What is Name Mangling, and how does CPython rewrite double-underscore identifiers?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Yes in Python 3 (PEP 3131), but prefer ASCII names in most codebases for tooling and collaboration.</p>
+            <p>Any identifier inside a class definition with at least two leading underscores and at most one trailing underscore (e.g. <code class="inline">__balance</code>) is textually replaced by the bytecode compiler with <code class="inline">_ClassName__attributeName</code>.</p>
+            <p><strong>Purpose:</strong> It is designed to prevent accidental attribute overrides in subclasses. If a subclass defines <code class="inline">__balance</code>, it will be mangled to <code class="inline">_SubClass__balance</code>, leaving the parent class's <code class="inline">_BaseClass__balance</code> completely intact in the object's instance dictionary.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why is implicit line continuation inside parentheses preferred over backslash (<code class="inline">\</code>)?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Explicit line continuation using a trailing backslash (<code class="inline">\</code>) is notoriously fragile. If an invisible space or tab character is accidentally inserted after the backslash, Python raises a fatal <code class="inline">SyntaxError: unexpected character after line continuation character</code>. In contrast, enclosing expressions in parentheses <code class="inline">()</code> allows arbitrary whitespace, comments, and linebreaks safely.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Are Unicode characters allowed in Python identifiers?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>Yes.</strong> Under PEP 3131, Python 3 allows non-ASCII Unicode letters and digits in identifiers (e.g. <code class="inline">π = 3.14159</code> or <code class="inline">prix_en_€ = 50</code>). However, PEP 8 mandates using standard ASCII characters exclusively in all production and open-source repositories to avoid editor rendering, typing, and international collaboration issues.</p>
           </div>
         </details>
       </section>

@@ -97,43 +97,194 @@ int("5") + 1    # 6</pre></div>
 
       <section id="3-constructors">
         <div class="heading-with-levels">
-          <h2>3. int / float / complex / bool / str</h2>
+          <h2>3. Fundamental Type Casting &amp; Constructors</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
           </div>
         </div>
         <h3 id="3-constructors-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. int()</h3>
-        <div class="code"><pre>int(3.9)        # 3 — truncates toward zero
-int("42")       # 42
-int(True)       # 1
-# int("3.14")   # ValueError — use float first
-int(float("3.14"))  # 3</pre></div>
-        <h3>3.2. float()</h3>
-        <div class="code"><pre>float(10)       # 10.0
-float("3.14")   # 3.14
-float("1e2")    # 100.0</pre></div>
-        <h3>3.3. complex()</h3>
-        <div class="code"><pre>complex(2, 3)   # (2+3j)
-complex("1+2j") # (1+2j)</pre></div>
-        <h3>3.4. bool()</h3>
+        <p>Python provides 5 built-in constructor functions to perform explicit type casting between scalar types: <code class="inline">int()</code>, <code class="inline">float()</code>, <code class="inline">complex()</code>, <code class="inline">bool()</code>, and <code class="inline">str()</code>.</p>
+
+        <h3>3.1. int() Casting Rules</h3>
         <ul>
-          <li>Falsy: <code class="inline">False</code>, <code class="inline">0</code>, <code class="inline">0.0</code>, <code class="inline">0j</code>, <code class="inline">None</code>, <code class="inline">""</code>, <code class="inline">[]</code>, <code class="inline">{}</code>, <code class="inline">set()</code>, empty ranges, etc. Everything else is truthy.</li>
+          <li><strong>From float:</strong> Truncates the fractional digits toward zero (<code class="inline">int(10.99) -&gt; 10</code>, <code class="inline">int(-10.99) -&gt; -10</code>). It does <em>not</em> perform mathematical rounding.</li>
+          <li><strong>From complex:</strong> <strong>CANNOT</strong> be converted to <code class="inline">int</code>. Raises <code class="inline">TypeError: can't convert complex to int</code>. (To extract the real integer, use <code class="inline">int(z.real)</code>).</li>
+          <li><strong>From bool:</strong> <code class="inline">int(True) -&gt; 1</code>, <code class="inline">int(False) -&gt; 0</code>.</li>
+          <li><strong>From str:</strong> The string <em>must strictly represent an integer literal in base-10</em>:
+            <ul>
+              <li>Valid: <code class="inline">int("10") -&gt; 10</code>, <code class="inline">int("-5") -&gt; -5</code>, <code class="inline">int("  42  ") -&gt; 42</code> (leading/trailing spaces are stripped).</li>
+              <li>Invalid (raises <code class="inline">ValueError</code>): Strings with decimal points (<code class="inline">int("10.5")</code>), alphabetic words (<code class="inline">int("ten")</code>), or binary/hex prefixes (<code class="inline">int("0b1111")</code> without explicit base parameter).</li>
+            </ul>
+          </li>
         </ul>
-        <div class="code"><pre>bool(0)         # False
-bool(1)         # True
-bool([])        # False
-bool([0])       # True — non-empty list</pre></div>
-        <h3>3.5. str()</h3>
-        <div class="code"><pre>str(42)         # "42"
-str(3.14)       # "3.14"
-str(True)       # "True"
-str(None)       # "None"</pre></div>
-        <h3>3.6. Collection constructors (preview)</h3>
-        <div class="code"><pre>list("abc")     # ["a", "b", "c"]
-tuple([1, 2])   # (1, 2)
-set([1, 1, 2])  # {1, 2}
-dict([("a", 1)])  # {"a": 1}</pre></div>
+
+        <div class="code"><pre># --- int() Conversion Examples ---
+print(int(15.89))      # 15 (truncated)
+print(int(-15.89))     # -15 (truncated toward zero)
+print(int(True))       # 1
+print(int(False))      # 0
+print(int("100"))      # 100
+
+# Errors:
+# int(10 + 5j)         # TypeError: can't convert complex to int
+# int("10.5")          # ValueError: invalid literal for int() with base 10: '10.5'
+# Fix for float string:
+print(int(float("10.5")))  # 10</pre></div>
+
+        <h3>3.2. float() Casting Rules</h3>
+        <ul>
+          <li><strong>From int:</strong> Converts integer to float with <code class="inline">.0</code> (<code class="inline">float(10) -&gt; 10.0</code>).</li>
+          <li><strong>From complex:</strong> <strong>CANNOT</strong> be converted to <code class="inline">float</code>. Raises <code class="inline">TypeError: can't convert complex to float</code>.</li>
+          <li><strong>From bool:</strong> <code class="inline">float(True) -&gt; 1.0</code>, <code class="inline">float(False) -&gt; 0.0</code>.</li>
+          <li><strong>From str:</strong> Can convert strings containing integers, decimal fractions, scientific exponential notation, or infinity/NaN:
+            <br /><code class="inline">float("10") -&gt; 10.0</code>, <code class="inline">float("10.5") -&gt; 10.5</code>, <code class="inline">float("1.2e3") -&gt; 1200.0</code>, <code class="inline">float("inf") -&gt; inf</code>.
+          </li>
+        </ul>
+
+        <div class="code"><pre># --- float() Conversion Examples ---
+print(float(50))         # 50.0
+print(float(True))       # 1.0
+print(float(False))      # 0.0
+print(float("3.14159"))  # 3.14159
+print(float("2.5e-3"))   # 0.0025
+print(float("inf"))      # inf
+
+# Errors:
+# float(10 + 2j)         # TypeError: can't convert complex to float
+# float("abc")           # ValueError: could not convert string to float: 'abc'</pre></div>
+
+        <h3 id="3-constructors-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.3. complex() Casting Rules &amp; Whitespace Pitfall</h3>
+        <p>The <code class="inline">complex()</code> constructor has two primary call forms:</p>
+        <ol>
+          <li><strong>Form 1 — <code class="inline">complex(real)</code>:</strong> Returns <code class="inline">real + 0j</code>. Can take int, float, or bool (<code class="inline">complex(10) -&gt; (10+0j)</code>, <code class="inline">complex(True) -&gt; (1+0j)</code>).</li>
+          <li><strong>Form 2 — <code class="inline">complex(real, imag)</code>:</strong> Returns <code class="inline">real + imag*j</code> (<code class="inline">complex(10, -2) -&gt; (10-2j)</code>, <code class="inline">complex(True, False) -&gt; (1+0j)</code>).</li>
+        </ol>
+
+        <div class="callout">
+          <strong>Classroom Trap — The Complex String Whitespace Syntax Bug:</strong>
+          When converting a string representation to complex using <code class="inline">complex("10+5j")</code>, there <strong>MUST NOT be any whitespace surrounding the <code class="inline">+</code> or <code class="inline">-</code> operator</strong> inside the string!
+          <br />• <code class="inline">complex("10+5j")</code> &rarr; <code class="inline">(10+5j)</code> (Valid)
+          <br />• <code class="inline">complex("10 + 5j")</code> &rarr; <code class="inline">ValueError: complex() arg is a malformed string</code>
+        </div>
+
+        <div class="code"><pre># --- complex() Examples ---
+print(complex(10))        # (10+0j)
+print(complex(10.5))      # (10.5+0j)
+print(complex(True))      # (1+0j)
+print(complex(10, 20))    # (10+20j)
+print(complex(1.5, -2.5)) # (1.5-2.5j)
+
+# String conversions:
+print(complex("10+20j"))  # (10+20j) - No spaces around '+'
+print(complex("5.5-3.2j"))# (5.5-3.2j)
+
+# Whitespace Syntax Pitfall:
+# complex("10 + 20j")     # ValueError: complex() arg is a malformed string
+
+# Second argument cannot be string:
+# complex(10, "20")       # TypeError: complex() second arg can't be string
+# complex("10", "20")     # TypeError: complex() can't take second arg if first is a string</pre></div>
+
+        <h3>3.4. bool() Truthiness Rules</h3>
+        <p>Any object in Python can be evaluated by <code class="inline">bool(x)</code>. The rules are absolute:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Data Type</th>
+              <th>Falsy Values (<code class="inline">bool(x) == False</code>)</th>
+              <th>Truthy Values (<code class="inline">bool(x) == True</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Numbers</strong> (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>)</td>
+              <td>Zero: <code class="inline">0</code>, <code class="inline">0.0</code>, <code class="inline">0j</code>, <code class="inline">0.0 + 0.0j</code></td>
+              <td>Any non-zero value: <code class="inline">1</code>, <code class="inline">-10</code>, <code class="inline">0.0001</code>, <code class="inline">0.1j</code></td>
+            </tr>
+            <tr>
+              <td><strong>Strings</strong> (<code class="inline">str</code>)</td>
+              <td>Empty string: <code class="inline">""</code>, <code class="inline">''</code></td>
+              <td>Any string with length &ge; 1: <code class="inline">"hello"</code>, <code class="inline">" "</code> (space), <code class="inline">"0"</code>, <code class="inline">"False"</code></td>
+            </tr>
+            <tr>
+              <td><strong>Collections</strong> (<code class="inline">list</code>, <code class="inline">tuple</code>, <code class="inline">set</code>, <code class="inline">dict</code>)</td>
+              <td>Empty collections: <code class="inline">[]</code>, <code class="inline">()</code>, <code class="inline">set()</code>, <code class="inline">{}</code>, <code class="inline">range(0)</code></td>
+              <td>Any non-empty collection: <code class="inline">[0]</code>, <code class="inline">(False,)</code>, <code class="inline">{"a": 0}</code></td>
+            </tr>
+            <tr>
+              <td><strong>Special</strong></td>
+              <td><code class="inline">None</code>, <code class="inline">False</code></td>
+              <td><code class="inline">True</code>, valid functions, objects, modules</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>3.5. str() Casting</h3>
+        <ul>
+          <li>The <code class="inline">str()</code> constructor converts <strong>any Python object</strong> into its human-readable string representation by invoking the object's <code class="inline">__str__()</code> dunder method.</li>
+        </ul>
+
+        <div class="code"><pre>print(str(100))        # "100"
+print(str(10.5))       # "10.5"
+print(str(True))       # "True"
+print(str(10 + 5j))    # "(10+5j)"
+print(str([1, 2, 3]))  # "[1, 2, 3]"
+print(str(None))       # "None"</pre></div>
+
+        <h3>3.6. Collection Type Casting</h3>
+        <p>Python provides constructors to convert between sequence and collection types seamlessly:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Constructor</th>
+              <th>Source Type Examples</th>
+              <th>Output Type &amp; Characteristics</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="inline">list(iterable)</code></td>
+              <td><code class="inline">list("abc")</code>, <code class="inline">list((1, 2, 3))</code>, <code class="inline">list({1, 2})</code></td>
+              <td>Mutable ordered list (<code class="inline">['a', 'b', 'c']</code>).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">tuple(iterable)</code></td>
+              <td><code class="inline">tuple([1, 2, 3])</code>, <code class="inline">tuple("xy")</code></td>
+              <td>Immutable ordered tuple (<code class="inline">(1, 2, 3)</code>).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">set(iterable)</code></td>
+              <td><code class="inline">set([1, 2, 2, 3, 1])</code></td>
+              <td>Mutable unordered set; automatically removes duplicates (<code class="inline">{1, 2, 3}</code>).</td>
+            </tr>
+            <tr>
+              <td><code class="inline">frozenset(iterable)</code></td>
+              <td><code class="inline">frozenset([1, 2, 3])</code></td>
+              <td>Immutable set; hashable and can be used as dict keys.</td>
+            </tr>
+            <tr>
+              <td><code class="inline">dict(pairs)</code></td>
+              <td><code class="inline">dict([("a", 1), ("b", 2)])</code></td>
+              <td>Key-value mapping. Argument must be an iterable of 2-item key-value pairs.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Converting string to list of characters:
+chars = list("Python")
+print("list('Python'):", chars)  # ['P', 'y', 't', 'h', 'o', 'n']
+
+# Removing duplicates using set():
+duplicates = [10, 20, 20, 30, 10, 40]
+unique_list = list(set(duplicates))
+print("Deduplicated:   ", unique_list)
+
+# Constructing dict from key-value tuples:
+pairs = [("roll", 101), ("name", "Alice"), ("active", True)]
+student = dict(pairs)
+print("dict(pairs):    ", student)  # {'roll': 101, 'name': 'Alice', 'active': True}</pre></div>
       </section>
 
       <section id="4-bases-pitfalls">
@@ -208,6 +359,36 @@ format(10, "b")  # '1010' without prefix</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>Only empty string is falsy among strings. <code class="inline">"0"</code> is non-empty. Use <code class="inline">int("0")</code> then compare, or compare the string explicitly.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.4. Can we convert a complex number to an int or float using int() or float()?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No.</strong> Attempting <code class="inline">int(10+5j)</code> or <code class="inline">float(10+5j)</code> raises <code class="inline">TypeError: can't convert complex to int</code> or <code class="inline">TypeError: can't convert complex to float</code>. Complex numbers contain two distinct components; to convert, explicitly access the attribute first: <code class="inline">int(z.real)</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.5. Why does complex("10 + 20j") raise a ValueError while complex("10+20j") works?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Python's internal parser for complex string conversions strictly prohibits spaces surrounding the <code class="inline">+</code> or <code class="inline">-</code> sign. <code class="inline">complex("10+20j")</code> parses correctly, but <code class="inline">complex("10 + 20j")</code> fails with <code class="inline">ValueError: complex() arg is a malformed string</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Why does int("10.5") raise a ValueError while int(10.5) succeeds?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">int(10.5)</code> takes an existing float object and truncates its fractional part to produce <code class="inline">10</code>. However, <code class="inline">int("10.5")</code> treats the input as a string literal representing a base-10 integer; because <code class="inline">'.'</code> is not a valid integer digit, it raises <code class="inline">ValueError</code>. To convert safely, nest conversions: <code class="inline">int(float("10.5"))</code>.</p>
           </div>
         </details>
       </section>

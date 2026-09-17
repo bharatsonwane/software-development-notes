@@ -278,6 +278,29 @@ print("MRO for Class D:")
 for cls in D.__mro__:
     print(" ", cls.__name__)
 # Order: D -> B -> C -> A -> object</pre></div>
+
+        <h3>5.3. C3 Merge Formula &amp; Step-by-Step Calculation</h3>
+        <p>Formally, the linearization <code class="inline">L[C]</code> of a class <code class="inline">C</code> with parents <code class="inline">B1, B2, ..., Bn</code> is defined as:</p>
+        <div class="code"><pre>L[C(B1, ..., Bn)] = [C] + merge(L[B1], ..., L[Bn], [B1, ..., Bn])</pre></div>
+        <p><strong>The Merge Rule:</strong> Inspect the head (first element) of the first candidate list. If that head does <strong>not appear in the tail</strong> (any position after index 0) of any other list in the merge, extract it, append it to the result, and remove it from all candidate lists. If it is trapped in a tail, skip to the next list. If no candidate head can be safely chosen, Python raises <code class="inline">TypeError: Cannot create a consistent method resolution order (MRO)</code>.</p>
+
+        <div class="code"><pre># Step-by-Step Trace for D(B, C) where B(A), C(A), A(object):
+# L[object] = [object]
+# L[A]      = [A, object]
+# L[B]      = [B, A, object]
+# L[C]      = [C, A, object]
+#
+# L[D] = [D] + merge(L[B], L[C], [B, C])
+#      = [D] + merge([B, A, object], [C, A, object], [B, C])
+# Step 1: Head 'B' is not in tails of [C, A, object] or [B, C]. Select 'B'.
+#      = [D, B] + merge([A, object], [C, A, object], [C])
+# Step 2: Head 'A' IS in tail of [C, A, object]! Cannot pick 'A'.
+#         Check next list head: 'C' is not in tail of any list. Select 'C'.
+#      = [D, B, C] + merge([A, object], [A, object])
+# Step 3: Head 'A' is not in tail of [A, object]. Select 'A'.
+#      = [D, B, C, A] + merge([object], [object])
+# Step 4: Select 'object'.
+# Final MRO: D -> B -> C -> A -> object</pre></div>
       </section>
 
       <!-- SECTION 6: SUPER() FUNCTION -->

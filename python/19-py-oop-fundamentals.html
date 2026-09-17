@@ -431,6 +431,35 @@ class Resource:
 # Reference count drop triggers destructor:
 r1 = Resource("DatabaseSocket")
 del r1  # Prints: Destructor invoked: Releasing DatabaseSocket</pre></div>
+
+        <h3>10.3. Controlling Cyclic GC and Tracking References</h3>
+        <p>CPython provides the <code class="inline">gc</code> and <code class="inline">sys</code> modules to programmatically inspect and control garbage collection:</p>
+        <div class="code"><pre>import gc
+import sys
+
+# 1. Inspect and control cyclic GC status
+print("GC enabled?", gc.isenabled())  # True
+gc.disable()                           # Temporarily turn off cyclic GC sweeps
+print("GC enabled after disable?", gc.isenabled())  # False
+gc.enable()                            # Re-enable cyclic sweeps
+
+# 2. Force manual collection sweep across generations
+collected = gc.collect()
+print(f"Unreachable objects cleared: {collected}")
+
+# 3. Inspect Reference Counts with sys.getrefcount()
+class Sample:
+    pass
+
+s1 = Sample()
+# Note: sys.getrefcount() temporarily increments reference count by 1 during execution
+print(sys.getrefcount(s1))  # Output: 2 (s1 variable + getrefcount parameter)
+
+s2 = s1
+print(sys.getrefcount(s1))  # Output: 3
+
+del s2
+print(sys.getrefcount(s1))  # Output: 2</pre></div>
       </section>
 
       <!-- SECTION C: COMMON QUESTIONS -->

@@ -222,6 +222,20 @@ worker2.join()
 
 print("Worker 1 processed:", worker1.processed_count)
 print("Worker 2 processed:", worker2.processed_count)</pre></div>
+
+        <h3>3.3. Approach 3: Creating a Thread without Extending Thread Class</h3>
+        <p>You can define an independent class with business methods, and pass an instance method as the <code class="inline">target</code> without coupling your class to <code class="inline">threading.Thread</code>:</p>
+        <div class="code"><pre>import threading
+
+class TaskRunner:
+    def process_data(self, batch_id):
+        print(f"[{threading.current_thread().name}] Processing batch {batch_id}...")
+
+runner = TaskRunner()
+# Pass the bound method runner.process_data as the target:
+t = threading.Thread(target=runner.process_data, args=(101,), name="RunnerThread")
+t.start()
+t.join()</pre></div>
       </section>
 
       <!-- SECTION 4 -->
