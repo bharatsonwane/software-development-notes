@@ -87,7 +87,7 @@
           <li><strong>Assignment operators</strong> (simple <code class="inline">=</code> and compound <code class="inline">+=</code>, <code class="inline">-=</code>, …)</li>
           <li><strong>Identity operators</strong> (<code class="inline">is</code>, <code class="inline">is not</code>)</li>
           <li><strong>Membership operators</strong> (<code class="inline">in</code>, <code class="inline">not in</code>)</li>
-          <li><strong>Ternary operator</strong> (conditional expression <code class="inline">x if cond else y</code>)</li>
+          <li><strong>Ternary operator</strong> (conditional expression <code class="inline">x if cond else y</code>, nested ternary chaining, right-to-left associativity, and older emulation tricks)</li>
           <li><strong>Operator precedence and associativity</strong></li>
         </ol>
         <ul>
@@ -574,31 +574,139 @@ if 101 in allowed_ids:
           </div>
         </div>
         <h3 id="9-ternary-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <p>Python provides a concise ternary operator known as a <strong>conditional expression</strong>. Unlike C/Java's <code class="inline">condition ? x : y</code>, Python uses an expressive English syntax.</p>
+        <p>Python provides a concise ternary operator known as a <strong>conditional expression</strong> (introduced in Python 2.5 via PEP 308). Unlike C/C++/Java's punctuation-heavy syntax (<code class="inline">condition ? val1 : val2</code>), Python employs an expressive, readable English syntax.</p>
 
         <div class="callout">
-          <strong>Syntax:</strong> <code class="inline">value_if_true if condition else value_if_false</code>
+          <strong>Standard Syntax:</strong> <code class="inline">value_if_true if condition else value_if_false</code>
         </div>
 
-        <div class="code"><pre>age = 20
+        <ul>
+          <li><strong>Evaluation Semantics:</strong> Python tests the <code class="inline">condition</code> first.</li>
+          <li>If the condition is <strong>truthy</strong>, <code class="inline">value_if_true</code> is evaluated and returned.</li>
+          <li>If the condition is <strong>falsy</strong>, <code class="inline">value_if_false</code> is evaluated and returned.</li>
+          <li><strong>Short-Circuit Execution:</strong> Only the matching branch expression is evaluated. The non-selected branch is completely bypassed (preventing errors and unnecessary function calls).</li>
+        </ul>
+
+        <div class="code"><pre># Basic conditional assignment:
+age = 20
 status = "Adult" if age &gt;= 18 else "Minor"
 print("Status:", status)  # Status: Adult
 
-# Finding maximum of two numbers:
+# Finding minimum and maximum of two numbers:
 a, b = 45, 80
+min_val = a if a &lt; b else b
 max_val = a if a &gt; b else b
-print("Max:", max_val)    # Max: 80</pre></div>
+print(f"Min: {min_val}, Max: {max_val}")  # Min: 45, Max: 80
+
+# Dynamic user input:
+num = 17
+result = "Even" if num % 2 == 0 else "Odd"
+print(f"{num} is {result}")  # 17 is Odd</pre></div>
+
+        <h4>Nesting of Ternary Operators (Multi-Condition Chaining):</h4>
+        <p>In Python, you can nest (or chain) multiple ternary expressions to evaluate sequential conditions in a single statement, acting as a concise one-line alternative to an <code class="inline">if-elif-else</code> ladder.</p>
+
+        <div class="callout">
+          <strong>Nested Syntax:</strong><br />
+          <code class="inline">val1 if cond1 else val2 if cond2 else val3 if cond3 else default_val</code>
+        </div>
+
+        <div class="code"><pre># 1. Minimum of three numbers using nested ternary:
+a = int(input("Enter First Number: "))   # e.g., 30
+b = int(input("Enter Second Number: "))  # e.g., 10
+c = int(input("Enter Third Number: "))   # e.g., 20
+
+min_val = a if a &lt; b and a &lt; c else b if b &lt; c else c
+print("Minimum Value:", min_val)  # Minimum Value: 10
+
+# 2. Maximum of three numbers:
+max_val = a if a &gt; b and a &gt; c else b if b &gt; c else c
+print("Maximum Value:", max_val)  # Maximum Value: 30
+
+# 3. Three-way comparison (equality vs greater vs smaller):
+n1, n2 = 25, 25
+msg = "Both numbers are equal" if n1 == n2 else "First is greater" if n1 &gt; n2 else "Second is greater"
+print(msg)  # Both numbers are equal
+
+# 4. Number sign classification (Positive, Negative, or Zero):
+val = -15
+sign = "Positive" if val &gt; 0 else "Negative" if val &lt; 0 else "Zero"
+print(f"{val} is {sign}")  # -15 is Negative</pre></div>
 
         <h3 id="9-ternary-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h4>Chained / Nested Ternary Expressions:</h4>
-        <div class="code"><pre># Nested ternary expression:
-score = 85
-grade = "A" if score &gt;= 90 else ("B" if score &gt;= 80 else ("C" if score &gt;= 70 else "F"))
-print("Grade:", grade)  # Grade: B
+        <h4>Right-to-Left Associativity &amp; Evaluation Flow:</h4>
+        <ul>
+          <li><strong>Associativity (Right-to-Left):</strong> Python evaluates chained conditional expressions with <strong>right-to-left associativity</strong>. An unparenthesized expression <code class="inline">a if c1 else b if c2 else c</code> is parsed by the compiler as <code class="inline">a if c1 else (b if c2 else c)</code>.</li>
+          <li><strong>Parentheses for Clarity:</strong> While parentheses are completely optional, adding them can make complex chains much easier to read and maintain.</li>
+          <li><strong>Sequential Short-Circuiting:</strong> Conditions are evaluated strictly from left to right. The first condition that evaluates to <code class="inline">True</code> immediately produces its corresponding branch value and terminates further evaluation.</li>
+        </ul>
 
-# Inline conditional in print or data structures:
-users = ["Alice", "Bob"]
-print(f"User list has {len(users)} {'user' if len(users) == 1 else 'users'}.")</pre></div>
+        <h4>Complex Chaining Examples:</h4>
+
+        <div class="code"><pre># Maximum of four numbers:
+w, x, y, z = 12, 45, 28, 9
+max_4 = w if (w &gt; x and w &gt; y and w &gt; z) else x if (x &gt; y and x &gt; z) else y if (y &gt; z) else z
+print("Max of 4:", max_4)  # Max of 4: 45
+
+# Academic grading scale:
+score = 85
+grade = "A" if score &gt;= 90 else "B" if score &gt;= 80 else "C" if score &gt;= 70 else "D" if score &gt;= 60 else "F"
+print("Grade:", grade)  # Grade: B</pre></div>
+
+        <h4>Alternative Ways to Emulate Ternary in Python (Classroom &amp; Interview Gotchas):</h4>
+        <p>Before PEP 308 introduced native <code class="inline">x if cond else y</code> in Python 2.5, programmers used several idiom tricks to simulate ternary logic. Understanding their critical differences and pitfalls is a popular interview topic:</p>
+
+        <table>
+          <thead>
+            <tr><th>Technique</th><th>Syntax Pattern</th><th>Short-Circuits?</th><th>Major Pitfalls / Gotchas</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Native Ternary</strong> (Recommended)</td>
+              <td><code class="inline">true_val if cond else false_val</code></td>
+              <td><strong>Yes</strong></td>
+              <td>None. Clear, Pythonic, and safely short-circuits.</td>
+            </tr>
+            <tr>
+              <td><strong>Tuple Indexing</strong></td>
+              <td><code class="inline">(false_val, true_val)[bool(cond)]</code></td>
+              <td><strong>No</strong></td>
+              <td><strong>Eager evaluation:</strong> Both expressions are computed upfront! E.g. <code class="inline">(1/0, 10)[True]</code> crashes with <code class="inline">ZeroDivisionError</code>!</td>
+            </tr>
+            <tr>
+              <td><strong>Dictionary Lookup</strong></td>
+              <td><code class="inline">{False: false_val, True: true_val}[cond]</code></td>
+              <td><strong>No</strong></td>
+              <td>Eagerly evaluates both values before selection; incurs hash lookup overhead.</td>
+            </tr>
+            <tr>
+              <td><strong>Logical <code class="inline">and-or</code> Trick</strong></td>
+              <td><code class="inline">cond and true_val or false_val</code></td>
+              <td>Partial</td>
+              <td><strong>Critical Bug with Falsy Values:</strong> If <code class="inline">true_val</code> is falsy (<code class="inline">0</code>, <code class="inline">""</code>, <code class="inline">[]</code>, <code class="inline">None</code>), it falls through to <code class="inline">false_val</code>! E.g. <code class="inline">True and 0 or 100</code> yields <code class="inline">100</code>!</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Pitfalls of older ternary emulation tricks:
+
+# 1. Tuple indexing evaluates BOTH branches (unsafe for side effects or exceptions):
+def greet():
+    print("Function called!")
+    return "Hello"
+
+# Even though condition is False, greet() is STILL invoked:
+ans = (greet(), "Guest")[False]  # Prints "Function called!", returns "Guest"
+
+# 2. Logical and-or bug when true_val is falsy (0, empty string, None):
+is_logged_in = True
+unread_count = 0  # 0 is falsy!
+display_badge = is_logged_in and unread_count or 99
+print("Display badge (and-or):", display_badge)  # 99 (BUG! Should be 0!)
+
+# Native ternary handles falsy values cleanly:
+display_badge_correct = unread_count if is_logged_in else 99
+print("Display badge (native):", display_badge_correct)  # 0 (Correct!)</pre></div>
       </section>
 
       <section id="10-precedence">
@@ -894,6 +1002,20 @@ if (n := len(text)) &gt; 10:
             Custom classes can define or override these methods to provide native mathematical, comparison, or container syntax.</p>
           </div>
         </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.19. How does Python evaluate nested ternary expressions, what is its associativity, and why is the older <code class="inline">a and b or c</code> trick dangerous?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <ul>
+              <li><strong>Associativity:</strong> The ternary operator has <strong>right-to-left associativity</strong>. An expression such as <code class="inline">a if c1 else b if c2 else c</code> is parsed as <code class="inline">a if c1 else (b if c2 else c)</code>.</li>
+              <li><strong>Short-Circuit Evaluation:</strong> Python evaluates conditions from left to right. As soon as a condition evaluates to truthy, its corresponding expression is evaluated and returned; all subsequent conditions and branches are skipped.</li>
+              <li><strong>The <code class="inline">and-or</code> Trick Danger:</strong> In older Python code, programmers simulated ternary logic with <code class="inline">condition and val_true or val_false</code>. However, if <code class="inline">val_true</code> evaluates to any falsy value (<code class="inline">0</code>, <code class="inline">""</code>, <code class="inline">[]</code>, <code class="inline">None</code>), the <code class="inline">and</code> expression produces that falsy value and Python mistakenly falls through to evaluate and return <code class="inline">val_false</code>! Native <code class="inline">val_true if condition else val_false</code> avoids this bug completely.</li>
+            </ul>
+          </div>
+        </details>
       </section>
       <section id="p-practice">
         <div class="heading-with-levels">
@@ -1016,9 +1138,9 @@ user_perm = READ_PERMISSION | WRITE_PERMISSION  # 0b011
 can_read = bool(user_perm &amp; READ_PERMISSION)
 can_execute = bool(user_perm &amp; EXECUTE_PERMISSION)
 
-print(&quot;User permissions bin:&quot;, bin(user_perm))
-print(&quot;Can read:&quot;, can_read)        # True
-print(&quot;Can execute:&quot;, can_execute)  # False</pre></div>
+print("User permissions bin:", bin(user_perm))
+print("Can read:", can_read)        # True
+print("Can execute:", can_execute)  # False</pre></div>
               </div>
             </details>
           </li>
@@ -1032,11 +1154,35 @@ print(&quot;Can execute:&quot;, can_execute)  # False</pre></div>
                 <div class="code"><pre># Operator Precedence Demonstration:
 # Multiplication has higher precedence than addition:
 calc1 = 2 + 3 * 4
-print(&quot;2 + 3 * 4:&quot;, calc1)      # 14 (3 * 4 = 12; 2 + 12 = 14)
+print("2 + 3 * 4:", calc1)      # 14 (3 * 4 = 12; 2 + 12 = 14)
 
 # Parentheses override default precedence:
 calc2 = (2 + 3) * 4
-print(&quot;(2 + 3) * 4:&quot;, calc2)    # 20 (5 * 4 = 20)</pre></div>
+print("(2 + 3) * 4:", calc2)    # 20 (5 * 4 = 20)</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title"><strong>nested ternary min/max</strong> — Compute the minimum and maximum of 3 numbers using nested ternary expressions without <code class="inline">min()</code> or <code class="inline">max()</code>.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre># Finding min and max of 3 numbers using nested ternary expressions:
+a, b, c = 42, 17, 89
+
+min_val = a if a &lt; b and a &lt; c else b if b &lt; c else c
+max_val = a if a &gt; b and a &gt; c else b if b &gt; c else c
+
+print(f"Numbers: a={a}, b={b}, c={c}")
+print("Minimum Value:", min_val)  # 17
+print("Maximum Value:", max_val)  # 89
+
+# Three-way equality/relative size test:
+x, y = 50, 50
+status = "Equal" if x == y else "x is greater" if x &gt; y else "y is greater"
+print("Comparison status:", status)  # Equal</pre></div>
               </div>
             </details>
           </li>
@@ -1060,7 +1206,7 @@ b = 27
 
 # Pythonic tuple unpacking swap (idiomatic, readable, fast):
 a, b = b, a
-print(f&quot;Swapped: a={a}, b={b}&quot;)  # a=27, b=15</pre></div>
+print(f"Swapped: a={a}, b={b}")  # a=27, b=15</pre></div>
               </div>
             </details>
           </li>
@@ -1072,11 +1218,11 @@ print(f&quot;Swapped: a={a}, b={b}&quot;)  # a=27, b=15</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Truth table printer for boolean operators:
-print(f&quot;{&#x27;A&#x27;:&lt;6} {&#x27;B&#x27;:&lt;6} {&#x27;A and B&#x27;:&lt;10} {&#x27;A or B&#x27;:&lt;10} {&#x27;not A&#x27;:&lt;6}&quot;)
-print(&quot;-&quot; * 38)
+print(f"{'A':&lt;6} {'B':&lt;6} {'A and B':&lt;10} {'A or B':&lt;10} {'not A':&lt;6}")
+print("-" * 38)
 for a in (True, False):
     for b in (True, False):
-        print(f&quot;{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}&quot;)</pre></div>
+        print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")</pre></div>
               </div>
             </details>
           </li>
@@ -1088,6 +1234,7 @@ for a in (True, False):
           <li>I use <code class="inline">is</code> strictly for <code class="inline">None</code>/singleton identity checks, and <code class="inline">==</code> for value equality.</li>
           <li>I understand in-place list mutation with augmented assignment (<code class="inline">+=</code>) vs rebinding.</li>
           <li>I know how to write concise ternary conditional expressions (<code class="inline">x if cond else y</code>).</li>
+          <li>I understand nested ternary expressions (<code class="inline">val1 if c1 else val2 if c2 else val3</code>), right-to-left associativity, and short-circuiting.</li>
           <li>I understand operator precedence and when parentheses are needed.</li>
         </ul>
       </section>
