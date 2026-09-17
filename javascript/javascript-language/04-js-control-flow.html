@@ -224,9 +224,34 @@ switch (grade) {
 switch (httpStatus) {
   case 404: /* ... */ break;
   case 500: /* ... */ break;
+}</pre></div>
+        <div class="callout">
+          <strong>Lexical Scoping Trap in <code>switch</code>:</strong> A <code class="inline">switch</code> statement creates only <em>one single lexical block scope</em> across all of its <code class="inline">case</code> clauses. Declaring a <code class="inline">let</code> or <code class="inline">const</code> variable with the same name in different <code class="inline">case</code> branches triggers <code class="inline">SyntaxError: Identifier has already been declared</code>. To isolate case variables, wrap the case body in explicit block braces <code class="inline">{ ... }</code>:
+        </div>
+        <div class="code"><pre>// WRONG: SyntaxError — 'message' declared twice in the same switch block
+switch (action) {
+  case &quot;login&quot;:
+    let message = &quot;Welcome back!&quot;;
+    break;
+  case &quot;logout&quot;:
+    let message = &quot;Goodbye!&quot;; // SyntaxError!
+    break;
 }
 
-// if/else — good for ranges
+// RIGHT: Wrap each case branch in curly braces to create isolated block scopes:
+switch (action) {
+  case &quot;login&quot;: {
+    let message = &quot;Welcome back!&quot;;
+    console.log(message);
+    break;
+  }
+  case &quot;logout&quot;: {
+    let message = &quot;Goodbye!&quot;;
+    console.log(message);
+    break;
+  }
+}</pre></div>
+        <div class="code"><pre>// if/else — good for ranges
 if (score &gt;= 90) { /* A */ }
 else if (score &gt;= 80) { /* B */ }</pre></div>
       </section>

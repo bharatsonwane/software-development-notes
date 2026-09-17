@@ -68,7 +68,7 @@
         <h3>1.3. Section map</h3>
         <ol>
           <li><strong>Introduction</strong> — this section</li>
-          <li><strong>const, let, var</strong> — declaration keywords, TDZ, reassignment vs rebinding</li>
+          <li><strong>const, let, var</strong> — declaration keywords, TDZ, reassignment vs rebinding, global object attachment, loop closure mechanics, parameter TDZ</li>
         </ol>
         <ul>
           <li><strong>C.</strong> Common questions</li>
@@ -177,6 +177,63 @@ typeof local;             // "undefined" — declared but not assigned
 
 // typeof notYetDeclared; // ReferenceError — binding exists but is in TDZ
 let notYetDeclared = 1;</pre></div>
+
+        <h3>2.7. Global Object Attachment vs Declarative Environment</h3>
+        <ul>
+          <li>In browser global scope (non-module scripts), variables declared with <code class="inline">var</code> create configurable or non-configurable properties directly on the global object (<code class="inline">window</code> / <code class="inline">globalThis</code>):</li>
+          <li>Variables declared with <code class="inline">let</code> and <code class="inline">const</code> are stored in the script's <strong>Declarative Environment Record</strong>. They are top-level and globally accessible in the script, but they <strong>never pollute or attach to <code class="inline">window</code></strong>:</li>
+        </ul>
+        <div class="code"><pre>// In a browser script tag:
+var globalVar = "I attach to window";
+let globalLet = "I stay in Declarative Environment";
+const globalConst = "Me too";
+
+console.log(window.globalVar);   // "I attach to window"
+console.log(window.globalLet);   // undefined (Not on window!)
+console.log(window.globalConst); // undefined (Not on window!)
+console.log(globalLet);          // "I stay in Declarative Environment" (Directly accessible)</pre></div>
+
+        <h3>2.8. Loop Closure Binding Mechanics: <code class="inline">var</code> vs <code class="inline">let</code></h3>
+        <p>A classic JavaScript interview puzzle demonstrates how loop scoping interacts with asynchronous closures:</p>
+        <div class="code"><pre>// Problematic: var shares ONE single variable slot across all iterations
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => {
+    console.log("var i:", i);
+  }, 100);
+}
+// Prints: 3, 3, 3 (All 3 callbacks reference the same mutated variable!)
+
+// Fixed with let: creates a fresh lexical binding per iteration step
+for (let j = 0; j < 3; j++) {
+  setTimeout(() => {
+    console.log("let j:", j);
+  }, 100);
+}
+// Prints: 0, 1, 2 (Each callback captures its own immutable iteration binding!)
+
+// Historical ES5 solution using an IIFE (Immediately Invoked Function Expression):
+for (var k = 0; k < 3; k++) {
+  (function(capturedK) {
+    setTimeout(() => {
+      console.log("IIFE k:", capturedK);
+    }, 100);
+  })(k);
+}
+// Prints: 0, 1, 2</pre></div>
+
+        <h3>2.9. Default Parameter TDZ Traps</h3>
+        <p>Function parameters have their own intermediate parameter scope evaluated strictly from left to right. Accessing a right-hand parameter from a left-hand parameter triggers a TDZ <code class="inline">ReferenceError</code>:</p>
+        <div class="code"><pre>// ERROR: 'b' is in TDZ when default argument 'a = b' is evaluated!
+function invalid(a = b, b = 2) {
+  return a + b;
+}
+// invalid(); // Uncaught ReferenceError: Cannot access 'b' before initialization
+
+// VALID: 'a' has already finished initialization when 'b = a' is evaluated:
+function valid(a = 2, b = a) {
+  return a + b;
+}
+console.log(valid()); // 4</pre></div>
       </section>
 
       <section id="c-common-questions">
@@ -241,6 +298,27 @@ let notYetDeclared = 1;</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>In non-strict mode, assigning <code class="inline">x = 1</code> without a declaration keyword creates an <strong>accidental global property</strong> on <code class="inline">window</code> (browser) or <code class="inline">global</code> (Node.js). In strict mode (<code class="inline">"use strict";</code>) or inside ES modules, it throws a <code class="inline">ReferenceError</code>. Always declare with <code class="inline">const</code> or <code class="inline">let</code>.</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.6. Why does for (var i = 0; ...) print 3, 3, 3 in setTimeout, and how does let fix it?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>Because <code class="inline">var</code> is function-scoped, every loop iteration shares the exact same variable binding in memory. By the time the asynchronous timer callbacks run from the task queue, the loop has finished and mutated <code class="inline">i</code> to <code class="inline">3</code>.</p>
+            <p><code class="inline">let</code> is block-scoped: the ECMAScript engine explicitly creates a <strong>brand new lexical binding for each loop iteration</strong>, so each closure captures an immutable snapshot of that specific iteration's index (<code class="inline">0</code>, <code class="inline">1</code>, <code class="inline">2</code>).</p>
+          </div>
+        </details>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.7. Do let and const attach to the global window object in browsers?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><strong>No.</strong> Variables declared with <code class="inline">var</code> in global non-module script scope become properties on <code class="inline">window</code> / <code class="inline">globalThis</code>. In contrast, <code class="inline">let</code> and <code class="inline">const</code> are stored in the script's Declarative Environment Record; they are globally accessible to code in the page, but they never pollute the global object (<code class="inline">window.letVar === undefined</code>).</p>
           </div>
         </details>
       </section>

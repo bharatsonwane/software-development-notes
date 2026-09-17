@@ -90,7 +90,19 @@ Math.min(1, 5, 3);
 Math.pow(2, 3);     // 8 — or 2 ** 3
 Math.sqrt(16);      // 4
 Math.random();      // 0 &lt;= n &lt; 1
-Math.trunc(4.9);    // 4</pre></div>
+Math.trunc(4.9);    // 4
+Math.imul(2, 4);     // 8 (Fast 32-bit C-like integer multiplication)
+Math.clz32(1);       // 31 (Count leading zero bits in 32-bit representation)</pre></div>
+        <h3>2.1.1. Rounding Nuances on Negative Numbers</h3>
+        <ul>
+          <li><strong><code class="inline">Math.floor()</code></strong> rounds <em>downward toward negative infinity</em>: <code class="inline">Math.floor(-4.2) === -5</code>.</li>
+          <li><strong><code class="inline">Math.trunc()</code></strong> truncates fractional digits, rounding <em>toward zero</em>: <code class="inline">Math.trunc(-4.2) === -4</code>.</li>
+          <li><strong><code class="inline">Math.round()</code></strong> rounds half toward positive infinity: <code class="inline">Math.round(-4.5) === -4</code>, whereas <code class="inline">Math.round(-4.51) === -5</code>.</li>
+        </ul>
+        <div class="code"><pre>Math.floor(-4.1); // -5
+Math.trunc(-4.1); // -4
+Math.ceil(-4.9);  // -4
+Math.round(-4.5); // -4 (ties round towards +Infinity!)</pre></div>
         <h3>2.2. Random integer in range</h3>
         <div class="code"><pre>function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;

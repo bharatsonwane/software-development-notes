@@ -328,6 +328,22 @@ const moved = structuredClone(buf, { transfer: [buf] }); // buf is detached</pre
         <ul>
           <li>Binary data types (<code class="inline">ArrayBuffer</code>, TypedArray) are File 26.</li>
         </ul>
+
+        <h3>5.6. Stack vs Heap Memory Allocation &amp; V8 Smi Optimization</h3>
+        <p>JavaScript engines divide runtime memory into two primary regions:</p>
+        <ul>
+          <li><strong>Call Stack:</strong> Fast, contiguous, fixed-size memory managing execution frames, primitive values, and object memory addresses (pointers).</li>
+          <li><strong>Heap Memory:</strong> Large, dynamically allocated, garbage-collected memory pool holding reference types (objects, arrays, functions, DOM nodes).</li>
+        </ul>
+        <div class="callout">
+          <strong>V8 Smi (Small Integer) Optimization:</strong> To avoid expensive heap allocations for common integers, V8 uses pointer tagging. Integers fitting within 31 or 32 bits ($-2^{31}$ to $2^{31}-1$) are stored <em>directly inside the tagged pointer word</em> on the stack as a <strong>Smi</strong> without any heap allocation. When an integer exceeds this range or gains fractional digits, V8 boxes it into a <code class="inline">HeapNumber</code> object on the heap.
+        </div>
+        <div class="code"><pre>// Stack vs Heap Conceptual Model:
+let count = 42;            // Stack: Immediate V8 Smi (fast, unboxed)
+let ratio = 1.618;         // Stack pointer -> Heap: HeapNumber
+let config = { dark: true };// Stack pointer -> Heap: Object storage
+
+let alias = config;        // Stack: Copies 64-bit pointer pointing to same Heap location</pre></div>
       </section>
 
       <section id="6-type-checks">

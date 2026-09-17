@@ -150,13 +150,20 @@ function test() {
 test();
 console.log(value);      // "outer"</pre></div>
         <ul>
-          <li>Shadowing is legal with <code class="inline">const</code>/<code class="inline">let</code> across blocks, but you cannot shadow a <code class="inline">const</code>/<code class="inline">let</code> with <code class="inline">var</code> in the same block:</li>
+          <li><strong>Illegal Shadowing Mechanics:</strong> While an inner block's <code class="inline">let</code> or <code class="inline">const</code> can cleanly shadow an outer <code class="inline">let</code> or <code class="inline">var</code>, you <em>cannot</em> declare a <code class="inline">var</code> inside an inner block with the same name as an outer <code class="inline">let</code>:</li>
         </ul>
-        <div class="code"><pre>let x = 1;
+        <div class="code"><pre>let outerVal = 10;
 {
-  // var x = 2;  // SyntaxError — var cannot redeclare let in same block
-  let x = 2;     // OK — inner block, separate binding
-}</pre></div>
+  let outerVal = 20;  // OK — new block declarative scope, shadows cleanly
+}
+
+let y = 100;
+{
+  // var y = 200;     // SyntaxError: Identifier 'y' has already been declared!
+}
+// Why? 'var' ignores block boundaries and hoists directly to the parent
+// function/global scope, attempting to register 'y' in the same environment
+// where 'let y' already exists!</pre></div>
 
         <h3 id="2-scope-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>2.5. Scope chain</h3>
@@ -299,6 +306,19 @@ function fn() {
 }</pre></div>
         <ul>
           <li>After all lines run, <code class="inline">fn</code> is the string <code class="inline">"string"</code> because the assignment wins at runtime — but the initial hoisted binding was the function. This pattern is confusing; avoid mixing <code class="inline">var</code> and function declarations with the same name.</li>
+          <li><strong>Duplicate Function Declarations:</strong> If multiple function declarations share the same identifier in the same scope, the <em>last declaration in code order</em> wins during hoisting and overwrites previous ones.</li>
+        </ul>
+        <div class="code"><pre>sayHello(); // logs "Second hello!"
+
+function sayHello() {
+  console.log("First hello!");
+}
+
+function sayHello() {
+  console.log("Second hello!"); // Overwrites previous declaration during compilation!
+}</pre></div>
+        <ul>
+          <li><strong>ES Module <code class="inline">import</code> Hoisting:</strong> Static <code class="inline">import</code> statements are hoisted to the absolute top of the module before any code evaluates. Regardless of where <code class="inline">import</code> appears in the file, dependencies are loaded and linked during the module initialization phase before synchronous code runs.</li>
         </ul>
       </section>
 

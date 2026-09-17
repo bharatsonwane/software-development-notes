@@ -113,8 +113,20 @@ clearTimeout(id);  // cancel before it runs</pre></div>
         <h3 id="2-timeout-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>2.3. Delay 0 is not immediate</h3>
         <ul>
-          <li><code class="inline">setTimeout(fn, 0)</code> still runs <strong>after</strong> the current call stack. File 21 (event loop) explains why.</li>
+          <li><code class="inline">setTimeout(fn, 0)</code> still runs <strong>after</strong> the current call stack and microtask queue drain. File 21 (event loop) explains why.</li>
         </ul>
+        <h3 id="2-timeout-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>2.4. HTML5 Timer Clamping (4ms) &amp; Background Tab Throttling</h3>
+        <ul>
+          <li><strong>4ms Minimum Clamping:</strong> Under the WHATWG / HTML5 specification, once timer nesting levels reach 5 or greater, browsers enforce a minimum delay floor of <strong>4ms</strong>, even if <code class="inline">0ms</code> was passed.</li>
+          <li><strong>Background Tab Throttling:</strong> To preserve laptop battery and mobile CPU cycles, browsers throttle background/unfocused tabs to a minimum timer interval of <strong>1,000ms (1 second)</strong> or coarser. Never rely on <code class="inline">setInterval</code> for game loops or audio timing—use <code class="inline">requestAnimationFrame</code> or Web Workers for precision.</li>
+          <li><strong>Browser vs Node.js Return Types:</strong> In browsers, <code class="inline">setTimeout</code> returns a numeric integer ID (<code class="inline">number</code>). In Node.js, it returns a <code class="inline">Timeout</code> object with <code class="inline">timer.unref()</code> (which lets the Node.js event loop exit cleanly even if the timer is pending) and <code class="inline">timer.ref()</code>.</li>
+        </ul>
+        <div class="code"><pre>// Node.js only: keep timer without blocking graceful process exit
+const timer = setTimeout(() =&gt; {
+  console.log(&quot;Heartbeat check&quot;);
+}, 60000);
+timer.unref(); // Node process will exit if this is the only remaining scheduled task!</pre></div>
       </section>
       <section id="3-interval">
         <div class="heading-with-levels">

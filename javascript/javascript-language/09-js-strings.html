@@ -130,13 +130,27 @@ String.raw`line1\nline2`;          // backslash-n stays two chars, not a newline
 const path = String.raw`\d+`;      // useful when building RegExp strings</pre></div>
 
         <h3 id="2-strings-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.4. Unicode</h3>
-        <div class="code"><pre>&quot;😀&quot;.length;                    // 2 — surrogate pair
-[...&quot;😀&quot;].length;                // 1 — code points
-&quot;😀&quot;.codePointAt(0);            // 128512
-String.fromCodePoint(128512);   // &quot;😀&quot;</pre></div>
+        <h3>2.4. Unicode, UTF-16 Surrogates &amp; Grapheme Clusters</h3>
         <ul>
-          <li>Use <strong><code class="inline">for...of</code></strong> on strings for code points, not index loops for emoji.</li>
+          <li>JavaScript strings are internally sequences of <strong>16-bit code units (UTF-16)</strong>. Characters in the Basic Multilingual Plane (BMP, code points &le; <code class="inline">0xFFFF</code>) occupy 1 code unit. Supplementary characters (emojis, rare ideographs &gt; <code class="inline">0xFFFF</code>) require a <strong>surrogate pair</strong> (two 16-bit code units: high surrogate + low surrogate).</li>
+        </ul>
+        <div class="code"><pre>"😀".length;                    // 2 — two 16-bit code units!
+[..."😀"].length;                // 1 — spread operator iterates full code points
+"😀".codePointAt(0);            // 128512 (full Unicode scalar value)
+"😀".charCodeAt(0);             // 55357 (0xD83D, only the high surrogate!)
+String.fromCodePoint(128512);   // "😀"
+
+// Compound Emojis &amp; Grapheme Clusters (e.g., family or flag with ZWJ):
+const family = "👨‍👩‍👧‍👦";
+console.log(family.length);      // 11 (UTF-16 code units)
+console.log([...family].length); // 7 (Unicode code points joined by Zero-Width Joiners)
+
+// For true user-perceived character length, use Intl.Segmenter (ES2022):
+const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+const graphemes = [...segmenter.segment(family)];
+console.log(graphemes.length);   // 1 (1 visible grapheme cluster!)</pre></div>
+        <ul>
+          <li>Always use <strong><code class="inline">for...of</code></strong> or <code class="inline">[...str]</code> for code points, and <strong><code class="inline">Intl.Segmenter</code></strong> when splitting user-visible international text.</li>
         </ul>
         <h3>2.5. String immutability</h3>
         <ul>

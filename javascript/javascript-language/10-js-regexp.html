@@ -111,7 +111,8 @@ lit.test("Hello");  // true</pre></div>
         <tr><td><code class="inline">s</code></td><td>Dotall — <code class="inline">.</code> matches newline</td></tr>
         <tr><td><code class="inline">u</code></td><td>Unicode (code points, <code class="inline">\p{...}</code>)</td></tr>
         <tr><td><code class="inline">y</code></td><td>Sticky — match only at <code class="inline">lastIndex</code></td></tr>
-        <tr><td><code class="inline">v</code></td><td>Unicode sets (newer class syntax)</td></tr>
+        <tr><td><code class="inline">d</code></td><td>Generate match indices — adds <code class="inline">indices</code> array with start/end slice offsets (ES2022)</td></tr>
+        <tr><td><code class="inline">v</code></td><td>Unicode sets — set operations like intersection in character classes (ES2024)</td></tr>
         </tbody>
         </table>
         <h3>2.4. RegExp methods</h3>
@@ -136,15 +137,34 @@ s.replace(/\d+/, "N");   // first only
 s.replaceAll(/\d+/g, "N"); // all — replacement regex must be global
 s.split(/\s+/);          // ["Price:", "$12", "and", "$3"]</pre></div>
         <h3 id="2-regexp-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.6. Groups</h3>
+        <h3>2.6. Groups, Lookarounds &amp; Match Indices</h3>
         <div class="code"><pre>const re = /(?&lt;year&gt;\d{4})-(?&lt;month&gt;\d{2})/;
 const m = re.exec("2026-08");
 m[1];              // "2026"
 m.groups.year;     // "2026"
 
-"a1b2".replace(/(\d)/g, "[$1]");  // "a[1]b[2]"</pre></div>
+"a1b2".replace(/(\d)/g, "[$1]");  // "a[1]b[2]"
+
+// Lookaround Assertions (zero-width matches — do not consume text):
+// Positive Lookahead (?=...): matches digits only if followed by "px"
+"24px 10em 16px".match(/\d+(?=px)/g); // ["24", "16"]
+
+// Negative Lookahead (?!...): matches digits NOT followed by "px"
+"24px 10em 16px".match(/\d+(?!px)/g); // ["10"]
+
+// Positive Lookbehind (?&lt;=...): matches digits preceded by "$"
+"$49 €89".match(/(?&lt;=\$)\d+/);         // ["49"]
+
+// Negative Lookbehind (?&lt;!...): matches digits NOT preceded by "$"
+"$49 €89".match(/(?&lt;!\$)\b\d+/);       // ["89"]
+
+// ES2022 'd' Flag (Match Indices):
+const indexRe = /hello\s+(world)/d;
+const res = indexRe.exec("Say hello world!");
+console.log(res.indices[0]);           // [4, 15] (start &amp; end of full match)
+console.log(res.indices[1]);           // [10, 15] (start &amp; end of group 1)</pre></div>
         <ul>
-          <li><code class="inline">(?:...)</code> groups without capturing. Lookahead <code class="inline">(?=...)</code> / lookbehind <code class="inline">(?&lt;=...)</code> assert without consuming.</li>
+          <li><code class="inline">(?:...)</code> groups without capturing. Lookarounds assert without consuming characters.</li>
         </ul>
         <h3>2.7. lastIndex pitfall</h3>
         <div class="code"><pre>const re = /a/g;

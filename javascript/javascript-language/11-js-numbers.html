@@ -77,12 +77,22 @@
         </div>
 
         <h3 id="2-numbers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. BigInt</h3>
+        <h3>2.1. BigInt &amp; Serialization Pitfalls</h3>
         <div class="code"><pre>const big = 9007199254740991n;
-big + 1n;  // 9007199254740992n
-// big + 1;  // TypeError — cannot mix BigInt and Number</pre></div>
+big + 1n;      // 9007199254740992n
+// big + 1;   // TypeError: Cannot mix BigInt and other types, use explicit conversions
+
+// Trap 1: Precision loss when passing large Number to BigInt()
+BigInt(9007199254740993);   // 9007199254740992n! (Floated before BigInt saw it)
+BigInt("9007199254740993"); // 9007199254740993n (Always pass string or use 'n' suffix)
+
+// Trap 2: JSON.stringify throws on BigInt
+// JSON.stringify({ id: 100n }); // TypeError: Do not know how to serialize a BigInt
+// Workaround: custom replacer or define BigInt.prototype.toJSON
+BigInt.prototype.toJSON = function () { return this.toString(); };
+JSON.stringify({ id: 100n }); // '{"id":"100"}'</pre></div>
         <ul>
-          <li>File 02 — primitive intro.</li>
+          <li>File 02 — primitive intro. BigInt represents arbitrarily large integers without 53-bit float limits.</li>
         </ul>
 
         <h3 id="2-numbers-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
@@ -107,16 +117,30 @@ Number.parseFloat(&quot;3.14&quot;);
 Number(&quot;abc&quot;);   // NaN
 1 / 0;           // Infinity
 -1 / 0;          // -Infinity</pre></div>
-        <h3>2.4. Floating point precision</h3>
+        <h3>2.4. Floating Point (IEEE 754) &amp; Signed Zeroes</h3>
         <ul>
-          <li>All JS numbers are <strong>IEEE 754 doubles</strong>:</li>
+          <li>All standard JavaScript numbers are 64-bit double-precision binary floating-point values conforming to <strong>IEEE 754</strong>:
+            <ul>
+              <li><strong>1 sign bit:</strong> determines positive (<code class="inline">0</code>) or negative (<code class="inline">1</code>).</li>
+              <li><strong>11 exponent bits:</strong> biased exponent from &minus;1022 to +1023.</li>
+              <li><strong>52 mantissa (fraction) bits:</strong> provides 53 bits of effective precision due to normalized implicit leading 1 bit ($2^{53} - 1 = 9,007,199,254,740,991$).</li>
+            </ul>
+          </li>
         </ul>
         <div class="code"><pre>0.1 + 0.2;                    // 0.30000000000000004
 0.1 + 0.2 === 0.3;            // false
-(0.1 + 0.2).toFixed(1);       // &quot;0.3&quot;
-Number((0.1 + 0.2).toFixed(2)); // 0.3</pre></div>
+(0.1 + 0.2).toFixed(1);       // "0.3"
+Number((0.1 + 0.2).toFixed(2)); // 0.3
+
+// Signed Zeroes (+0 and -0):
++0 === -0;                    // true (abstract equality considers them identical)
+Object.is(+0, -0);            // false! (SameValue algorithm detects sign bit)
+
+// Division by zero preserves sign:
+1 / +0;                       // Infinity
+1 / -0;                       // -Infinity</pre></div>
         <ul>
-          <li>For money, store <strong>cents as integers</strong> or use a decimal library.</li>
+          <li>For money or accounting calculations, store <strong>cents as integers</strong> or use an arbitrary-precision decimal library.</li>
         </ul>
         <h3>2.5. Safe integers, EPSILON, parseInt radix</h3>
         <div class="code"><pre>Number.MAX_SAFE_INTEGER;     // 9007199254740991  (2**53 - 1)

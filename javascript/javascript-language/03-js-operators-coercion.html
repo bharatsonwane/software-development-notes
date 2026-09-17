@@ -147,8 +147,8 @@ b &amp;&amp;= 0;    // assign if truthy → b is 0</pre></div>
         </table>
         <div class="code"><pre>&quot;10&quot; &gt; 9;     // true — &quot;10&quot; coerced to 10
 &quot;a&quot; &gt; &quot;b&quot;;    // false — lexicographic string compare
-null &gt;= 0;    // true — null coerces to 0
-null == 0;    // true
+null &gt;= 0;    // true — null coerces to 0 (0 &gt;= 0 is true)
+null == 0;    // false — null only loosely equals undefined!
 null === 0;   // false</pre></div>
         <h3 id="2-operators-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.4. Logical operators</h3>
@@ -280,10 +280,28 @@ for (let i = 0, j = 10; i &lt; j; i++, j--) { /* ... */ }</pre></div>
 &quot;&quot; == false;   // true
 null == undefined;  // true (special case)
 null === undefined; // false</pre></div>
-        <ul>
-          <li>Loose equality algorithm (simplified):</li>
-        </ul>
-        <ol><li>Same type → compare with <code class="inline">===</code> rules.</li><li><code class="inline">null == undefined</code> → <code class="inline">true</code> (only each other).</li><li>Number vs string → string to number.</li><li>Boolean vs anything → boolean to number (<code class="inline">0</code> or <code class="inline">1</code>).</li><li>Object vs primitive → object to primitive (<code class="inline">valueOf</code> / <code class="inline">toString</code>).</li></ol>
+        <h3>3.1.1. The 10-Step Abstract Equality (==) Algorithm (ECMA-262 §7.2.14)</h3>
+        <p>When the JavaScript runtime evaluates <code class="inline">x == y</code>, it applies the following exact sequence of rules:</p>
+        <ol>
+          <li><strong>Same Type:</strong> If <code class="inline">Type(x) === Type(y)</code>, return <code class="inline">x === y</code>.</li>
+          <li><strong>Nullish Pairing:</strong> If <code class="inline">x</code> is <code class="inline">null</code> and <code class="inline">y</code> is <code class="inline">undefined</code>, return <code class="inline">true</code>.</li>
+          <li><strong>Nullish Pairing (reversed):</strong> If <code class="inline">x</code> is <code class="inline">undefined</code> and <code class="inline">y</code> is <code class="inline">null</code>, return <code class="inline">true</code>.</li>
+          <li><strong>Number vs String:</strong> If <code class="inline">Type(x)</code> is Number and <code class="inline">Type(y)</code> is String, return <code class="inline">x == ToNumber(y)</code>.</li>
+          <li><strong>String vs Number:</strong> If <code class="inline">Type(x)</code> is String and <code class="inline">Type(y)</code> is Number, return <code class="inline">ToNumber(x) == y</code>.</li>
+          <li><strong>Boolean Left:</strong> If <code class="inline">Type(x)</code> is Boolean, return <code class="inline">ToNumber(x) == y</code> (converts boolean to <code class="inline">0</code> or <code class="inline">1</code>).</li>
+          <li><strong>Boolean Right:</strong> If <code class="inline">Type(y)</code> is Boolean, return <code class="inline">x == ToNumber(y)</code>.</li>
+          <li><strong>Object vs Primitive:</strong> If <code class="inline">Type(x)</code> is Object and <code class="inline">Type(y)</code> is String, Number, or Symbol, return <code class="inline">ToPrimitive(x) == y</code>.</li>
+          <li><strong>Primitive vs Object:</strong> If <code class="inline">Type(x)</code> is String, Number, or Symbol and <code class="inline">Type(y)</code> is Object, return <code class="inline">x == ToPrimitive(y)</code>.</li>
+          <li><strong>Default:</strong> Otherwise, return <code class="inline">false</code>.</li>
+        </ol>
+
+        <div class="code"><pre>// Tracing [] == ![]:
+// 1. ![] evaluates first: [] is truthy, so ![] becomes false. Expression is now: [] == false
+// 2. Rule 7 (Boolean Right): false converts to ToNumber(false) -> 0. Expression: [] == 0
+// 3. Rule 8 (Object vs Primitive): [].toString() is "". Expression: "" == 0
+// 4. Rule 5 (String vs Number): ToNumber("") is 0. Expression: 0 == 0
+// 5. Rule 1 (Same Type): 0 === 0 -> TRUE!
+console.log([] == ![]); // true</pre></div>
         <h3 id="3-equality-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>3.2. <code class="inline">Object.is</code></h3>
         <ul>
@@ -487,8 +505,10 @@ Number(box);        // 10</pre></div>
 &quot;5&quot; - 1;             // 4 — - forces numbers
 true + true;         // 2 — booleans → 1 + 1
 [] + [];             // &quot;&quot; — arrays become &quot;&quot; then concatenate
-[] + {};             // &quot;[object Object]&quot;
-{} + [];             // 0 in some engines — avoid ambiguous mixes
+[] + {};             // &quot;[object Object]&quot; ([] -&gt; &quot;&quot;, {} -&gt; &quot;[object Object]&quot;)
+{} + [];             // 0 in console/script mode ({} parsed as empty code block; +[] coerces to 0)
+({} + []);           // &quot;[object Object]&quot; (parentheses force {} to parse as an object literal expression)
++!+[];               // 1 (Breakdown: +[] is 0 -&gt; !0 is true -&gt; +true coerces to 1!)
 
 // Comparison traps with ==
 0 == false;          // true

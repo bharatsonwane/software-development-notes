@@ -91,7 +91,16 @@
 }</pre></div>
         <ul>
           <li><strong><code class="inline">finally</code></strong> runs whether try succeeded or catch ran — useful for closing resources.</li>
+          <li><strong>The Return/Throw Override Trap:</strong> If the <code class="inline">finally</code> block executes an explicit <code class="inline">return</code> or <code class="inline">throw</code>, it <em>discards and replaces</em> any pending <code class="inline">return</code> value or thrown exception from the preceding <code class="inline">try</code> or <code class="inline">catch</code> block. Never return inside a finally block unless suppressing errors is deliberate!</li>
         </ul>
+        <div class="code"><pre>function testOverride() {
+  try {
+    throw new Error("Critical DB error!");
+  } finally {
+    return "All good!"; // DISCARDS the thrown error!
+  }
+}
+console.log(testOverride()); // "All good!" (Exception silently swallowed!)</pre></div>
         <h3>2.2. throw</h3>
         <div class="code"><pre>function divide(a, b) {
   if (b === 0) throw new Error(&quot;Division by zero&quot;);
@@ -238,7 +247,7 @@ Error.isError({ message: &quot;x&quot; });     // false</pre></div>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p><strong>Yes</strong> — <code class="inline">finally</code> runs before the return completes.</p>
+            <p><strong>Yes</strong> — <code class="inline">finally</code> always runs before the calling function receives the returned value. Crucially, if <code class="inline">finally</code> itself issues a <code class="inline">return value</code> or <code class="inline">throw err</code>, it completely supersedes and cancels any pending return value or error from <code class="inline">try</code> or <code class="inline">catch</code>.</p>
           </div>
         </details>
 
