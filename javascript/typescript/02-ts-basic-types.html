@@ -100,19 +100,48 @@
         <div class="code"><pre>let name: string = &quot;Bharat&quot;;
 let count: number = 0;
 let ok: boolean = false;</pre></div>
-        <h3>2.2. <code class="inline">void</code> and <code class="inline">never</code></h3>
+        <h3>2.2. <code class="inline">void</code> and <code class="inline">never</code> (and the <code class="inline">void</code> vs <code class="inline">undefined</code> Nuance)</h3>
         <ul>
-          <li><strong><code class="inline">void</code></strong> — function returns nothing meaningful:</li>
+          <li><strong><code class="inline">void</code></strong> — indicates a function returns no meaningful value:</li>
         </ul>
         <div class="code"><pre>function log(msg: string): void {
   console.log(msg);
 }</pre></div>
         <ul>
-          <li><strong><code class="inline">never</code></strong> — function never returns (throws or infinite loop):</li>
+          <li><strong>The <code class="inline">void</code> vs <code class="inline">undefined</code> Return Nuance (Callback Substitutability):</strong> While <code class="inline">() =&gt; undefined</code> strictly forbids returning anything other than <code class="inline">undefined</code>, a callback type annotated with <code class="inline">() =&gt; void</code> allows the implementation to return <em>any</em> value, which is simply ignored by the caller!</li>
+        </ul>
+        <div class="code"><pre>const numbers = [1, 2, 3];
+const result: number[] = [];
+
+// Array.prototype.push returns a number (new array length),
+// but forEach expects a callback returning void: (val: number) =&gt; void
+numbers.forEach(n =&gt; result.push(n)); // OK! push return value is safely ignored!
+
+function strictUndef(): undefined {
+  // return 123; // Error: Type 'number' is not assignable to type 'undefined'
+  return undefined;
+}</pre></div>
+        <ul>
+          <li><strong><code class="inline">never</code></strong> — represents the <strong>Bottom Type</strong> (empty set): values that can never occur (e.g., throwing an error or an infinite loop):</li>
         </ul>
         <div class="code"><pre>function fail(msg: string): never {
   throw new Error(msg);
+}
+
+function infiniteLoop(): never {
+  while (true) {}
 }</pre></div>
+        <h3>2.2.1. The Type System Lattice (Top Types vs Bottom Type)</h3>
+        <table>
+        <thead>
+        <tr><th>Type</th><th>Lattice Position</th><th>Assign to it?</th><th>Assign from it?</th><th>Safety</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">unknown</code></td><td><strong>Top Type</strong></td><td>Anything</td><td>Nothing (except <code class="inline">any</code> &amp; <code class="inline">unknown</code>)</td><td>100% Safe (requires narrowing)</td></tr>
+        <tr><td><code class="inline">any</code></td><td><strong>Top &amp; Bottom</strong></td><td>Anything</td><td>Anything</td><td>Unsafe (turns off type checker)</td></tr>
+        <tr><td><code class="inline">never</code></td><td><strong>Bottom Type</strong></td><td>Nothing (empty set)</td><td>Everything (subtype of all types)</td><td>100% Safe (proves unreachable code)</td></tr>
+        </tbody>
+        </table>
         <h3 id="2-primitives-and-any-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>2.3. <code class="inline">any</code> — escape hatch (avoid when possible)</h3>
         <ul>
@@ -153,17 +182,25 @@ const tags: Array&lt;string&gt; = [&quot;ts&quot;, &quot;js&quot;];</pre></div>
         <div class="code"><pre>const frozen: readonly number[] = [1, 2, 3];
 // frozen.push(4); // Error</pre></div>
         <h3 id="3-arrays-and-tuples-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.2. Tuples — fixed-length, typed arrays</h3>
+        <h3>3.2. Tuples — Fixed-Length, Typed Arrays &amp; Labeled Elements</h3>
         <div class="code"><pre>type Point = [number, number];
 const origin: Point = [0, 0];
 
-type UserEntry = [string, number]; // [name, age]
-const row: UserEntry = [&quot;Bharat&quot;, 30];</pre></div>
+// Labeled Tuple Elements (Provides editor autocompletion and hover documentation):
+type GeoCoord = [latitude: number, longitude: number, altitude?: number];
+const location: GeoCoord = [18.5204, 73.8567];
+
+type UserEntry = [name: string, age: number, isActive?: boolean];
+const row: UserEntry = ["Bharat", 30];
+
+// Readonly Tuples (prevents .push(), .pop(), or element mutations):
+const pair: readonly [string, number] = ["id", 101];
+// pair[0] = "newId"; // Error: Index signature in type 'readonly [...]' only permits reading</pre></div>
         <ul>
-          <li>Optional and rest elements:</li>
+          <li>Optional (<code class="inline">?</code>) and rest (<code class="inline">...T[]</code>) elements:</li>
         </ul>
-        <div class="code"><pre>type StringsAndOptionalNumber = [string, string, number?];
-type StringNumberBooleans = [string, number, ...boolean[]];</pre></div>
+        <div class="code"><pre>type StringsAndOptionalNumber = [first: string, second: string, count?: number];
+type StringWithBooleans = [tag: string, ...flags: boolean[]];</pre></div>
         <h3 id="3-arrays-and-tuples-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>3.3. Tuple vs array</h3>
         <table>
@@ -218,6 +255,32 @@ const STATUS = {
 type StatusFromConst = typeof STATUS[keyof typeof STATUS];</pre></div>
         <ul>
           <li><strong>Rule of thumb:</strong> use string unions or <code class="inline">as const</code> objects unless you need enum-specific features or existing API compatibility.</li>
+        </ul>
+        <h3 id="4-enum-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.4. The Enum Reverse Mapping Trap &amp; Bundle Bloat</h3>
+        <ul>
+          <li><strong>Numeric Enums Emit Runtime Boilerplate:</strong> Unlike most TypeScript constructs which erase to nothing, numeric enums emit an IIFE that builds a bidirectional mapping table:</li>
+        </ul>
+        <div class="code"><pre>// TypeScript:
+enum LogLevel { Info = 0, Warn = 1 }
+
+// Generated JavaScript (Lookups work in both directions):
+var LogLevel;
+(function (LogLevel) {
+  LogLevel[LogLevel[&quot;Info&quot;] = 0] = &quot;Info&quot;;
+  LogLevel[LogLevel[&quot;Warn&quot;] = 1] = &quot;Warn&quot;;
+})(LogLevel || (LogLevel = {}));
+
+LogLevel[0];       // &quot;Info&quot; (Reverse lookup works!)
+LogLevel[&quot;Info&quot;];  // 0</pre></div>
+        <ul>
+          <li><strong>Why Modern TS Codebases Prefer <code class="inline">as const</code> Objects:</strong>
+            <ul>
+              <li><strong>Tree-Shaking:</strong> Enum IIFE objects cannot be easily tree-shaken by bundlers (Rollup, Vite, Webpack).</li>
+              <li><strong><code class="inline">const enum</code> Pitfall:</strong> While <code class="inline">const enum</code> inlines literals at compile time, it breaks completely under <code class="inline">"isolatedModules": true</code> (single-file transpilers like Babel/esbuild/SWC cannot resolve cross-file enums).</li>
+              <li><strong>Zero-Cost POJO Alternative:</strong> The <code class="inline">as const</code> object pattern provides 100% type safety, pure JavaScript object semantics, and optimal tree-shaking!</li>
+            </ul>
+          </li>
         </ul>
       </section>
       <section id="5-unknown-vs-any">

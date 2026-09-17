@@ -196,6 +196,28 @@ function move(pet: Fish | Bird) {
 ): result is { ok: true; data: T } {
   return result.ok === true;
 }</pre></div>
+        <h3 id="4-type-predicates-is-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.2. Assertion Functions (<code class="inline">asserts val is T</code>)</h3>
+        <ul>
+          <li><strong>Assertion Functions</strong> throw an error if a check fails, and instruct TypeScript to narrow the variable across the <em>remaining execution flow</em> without requiring an <code class="inline">if/else</code> block:</li>
+        </ul>
+        <div class="code"><pre>// 1. Asserting non-null / specific type:
+function assertIsDefined&lt;T&gt;(val: T): asserts val is NonNullable&lt;T&gt; {
+  if (val === null || val === undefined) {
+    throw new Error(`Expected defined value, got ${val}`);
+  }
+}
+
+// 2. Asserting a boolean condition:
+function assertCondition(condition: boolean, msg: string): asserts condition {
+  if (!condition) throw new Error(msg);
+}
+
+function processUser(id: string | null) {
+  assertIsDefined(id);
+  // id is automatically narrowed to 'string' for the rest of the scope!
+  console.log(id.toUpperCase());
+}</pre></div>
       </section>
       <section id="5-in-operator-narrowing">
         <div class="heading-with-levels">

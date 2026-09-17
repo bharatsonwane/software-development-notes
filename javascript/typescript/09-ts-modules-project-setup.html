@@ -126,12 +126,13 @@ export function add(a: number, b: number) {
 // default export
 export default class App {}
 
-// imports
-import App from &quot;./App&quot;;
-import { PI, add } from &quot;./math&quot;;
-import type { User } from &quot;./types&quot;; // type-only import — erased at compile</pre></div>
+// Modern imports (with inline type imports TS 4.5+):
+import App from "./App.js";
+import { PI, add, type MathOptions } from "./math.js";
+import type { User } from "./types.js"; // completely erased at emit time</pre></div>
         <ul>
-          <li><strong>Type-only imports</strong> (<code class="inline">import type</code>) ensure no runtime import is emitted — useful for types and circular dependency breaks.</li>
+          <li><strong>Inline Type Imports (TS 4.5+):</strong> Use <code class="inline">type</code> directly inside the import specifier list (<code class="inline">{ add, type MathOptions }</code>) without needing separate import statements.</li>
+          <li><strong>The Mandatory <code class="inline">.js</code> Extension in <code class="inline">NodeNext</code>:</strong> When targeting modern Node.js ESM (<code class="inline">"moduleResolution": "NodeNext"</code>), you <em>must</em> write relative import specifiers ending in <code class="inline">.js</code>, even though your source files end in <code class="inline">.ts</code>! TypeScript does not rewrite import paths during emit; writing <code class="inline">.js</code> ensures the emitted JavaScript runs natively without path translation errors.</li>
         </ul>
         <h3 id="2-esm-vs-commonjs-in-ts-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>2.3. <code class="inline">package.json</code> and <code class="inline">&quot;type&quot;: &quot;module&quot;</code></h3>
@@ -283,6 +284,29 @@ export default {
           <li>Benefits: faster incremental builds, clear dependency graph, shared types across packages.</li>
           <li>Tools like <strong>pnpm workspaces</strong>, <strong>Turborepo</strong>, and <strong>Nx</strong> layer on top of this pattern.</li>
         </ul>
+        <h3 id="5-monorepo-project-references-intro-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>5.3. Ambient Declarations &amp; <code class="inline">*.d.ts</code> Mechanics</h3>
+        <ul>
+          <li><strong>Declaration Files (<code class="inline">.d.ts</code>):</strong> Contain pure type metadata with no executable JavaScript. Used for shipping npm libraries and typing untyped JavaScript.</li>
+          <li><strong>Module Augmentation (<code class="inline">declare module</code>):</strong> Provide types for legacy packages or non-code assets:</li>
+        </ul>
+        <div class="code"><pre>// env.d.ts or globals.d.ts:
+declare module "untyped-package" {
+  export function processData(input: string): boolean;
+}
+
+// Typing CSS Modules or asset imports:
+declare module "*.module.css" {
+  const classes: { [key: string]: string };
+  export default classes;
+}
+
+// Global Window Augmentation:
+declare global {
+  interface Window {
+    __APP_CONFIG__: { apiUrl: string; debug: boolean };
+  }
+}</pre></div>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">

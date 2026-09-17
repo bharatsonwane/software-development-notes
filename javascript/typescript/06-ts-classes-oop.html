@@ -216,6 +216,33 @@ class Note implements Serializable, Timestamped {
         <ul>
           <li>Use <strong><code class="inline">override</code></strong> (with <code class="inline">noImplicitOverride</code>) when replacing a base method.</li>
         </ul>
+        <h3 id="4-implements-and-extends-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.3. Structural Class Compatibility &amp; Private Member Isolation</h3>
+        <ul>
+          <li><strong>Classes are Structurally Typed:</strong> If two different classes have identical public shapes, TypeScript treats their instances as mutually interchangeable:</li>
+        </ul>
+        <div class="code"><pre>class Customer {
+  constructor(public name: string) {}
+}
+class Supplier {
+  constructor(public name: string) {}
+}
+
+let c: Customer = new Supplier("Acme Corp"); // OK! Structurally identical!</pre></div>
+        <ul>
+          <li><strong>How Private / Protected Members Enforce Nominal Identity:</strong> When a class has a <code class="inline">private</code> or <code class="inline">protected</code> member, TypeScript requires that the private member originates from the <em>exact same declaration</em>. Two distinct classes with identical private fields are incompatible:</li>
+        </ul>
+        <div class="code"><pre>class SecureUser {
+  private token: string = "secret";
+  constructor(public name: string) {}
+}
+class Imposter {
+  private token: string = "secret";
+  constructor(public name: string) {}
+}
+
+let user: SecureUser;
+// user = new Imposter("Eve"); // Error: Types have separate declarations of a private property 'token'!</pre></div>
       </section>
       <section id="5-abstract-classes">
         <div class="heading-with-levels">
@@ -272,6 +299,22 @@ MathUtil.clamp(10, 0, 5); // 5</pre></div>
         <tr><td>Use when sharing base behavior</td><td>Use for pure contracts</td></tr>
         </tbody>
         </table>
+        <h3 id="5-abstract-classes-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>5.3. Constructor Type Signatures &amp; Factory Patterns</h3>
+        <ul>
+          <li><strong>Typing Class Constructors:</strong> When passing a class as an argument to a factory or dependency injection container, type its construct signature using <code class="inline">new</code>:</li>
+        </ul>
+        <div class="code"><pre>// Generic Constructor Type (instantiable via new):
+type Constructor&lt;T = {}&gt; = new (...args: any[]) =&gt; T;
+
+// Abstract Constructor Type (accepts both concrete and abstract classes):
+type AbstractConstructor&lt;T = {}&gt; = abstract new (...args: any[]) =&gt; T;
+
+function createInstance&lt;T&gt;(cls: Constructor&lt;T&gt;, ...args: any[]): T {
+  return new cls(...args);
+}
+
+const user = createInstance(User, 1, "Bharat");</pre></div>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">

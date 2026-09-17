@@ -122,6 +122,27 @@ interface Timestamped {
 interface UserConstructor {
   new (name: string): User;
 }</pre></div>
+        <h3 id="2-interface-syntax-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>2.3. Structural Subtyping &amp; Excess Property Checks (The Freshness Rule)</h3>
+        <ul>
+          <li>TypeScript operates on <strong>structural subtyping</strong> (shape compatibility), not nominal typing. However, it applies a special rule called <strong>Excess Property Checking</strong> on <em>fresh</em> object literals to catch typos:</li>
+        </ul>
+        <div class="code"><pre>interface Point {
+  x: number;
+  y: number;
+}
+
+// Case 1: Fresh Object Literal Assignment -> Excess Property Check triggers!
+// const p1: Point = { x: 10, y: 20, z: 30 };
+// Error: Type '{ x: number; y: number; z: number; }' is not assignable to type 'Point'.
+// Object literal may only specify known properties, and 'z' does not exist in type 'Point'.
+
+// Case 2: Intermediate Variable Assignment -> Pure Structural Subtyping!
+const rawCoordinates = { x: 10, y: 20, z: 30, label: "GPS" };
+const p2: Point = rawCoordinates; // Perfectly Valid! rawCoordinates satisfies the shape of Point.</pre></div>
+        <ul>
+          <li><strong>Why Freshness Matters:</strong> If excess property checks applied everywhere, passing broader API response payloads into narrower functions would fail. If it didn't exist at all, typos like <code class="inline">{ x: 10, y: 20, colr: "blue" }</code> would pass silently!</li>
+        </ul>
       </section>
       <section id="3-type-aliases">
         <div class="heading-with-levels">
@@ -268,6 +289,17 @@ interface Window {
 }</pre></div>
         <ul>
           <li>Types cannot be merged — duplicate <code class="inline">type Window</code> is an error.</li>
+        </ul>
+        <h3 id="5-interface-vs-type-when-to-use-which-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>5.4. Compiler Performance: Flat Cached Shapes vs Recursive Intersections</h3>
+        <ul>
+          <li><strong>How the Compiler Handles Types Internally:</strong>
+            <ul>
+              <li><strong><code class="inline">interface</code>:</strong> Defines a single, named, flat object shape that the TypeScript checker caches by symbol. When one interface extends another, conflicts are validated upfront at declaration time.</li>
+              <li><strong><code class="inline">type</code> with Intersection (<code class="inline">&amp;</code>):</strong> Forms a composite type graph. The type checker must recursively resolve and evaluate every member operand on each assignability check, which can noticeably impact compilation performance in large codebases with deep type trees.</li>
+            </ul>
+          </li>
+          <li><strong>Recommendation:</strong> Use <code class="inline">interface extends</code> for core domain entity contracts and models; use <code class="inline">type</code> for unions, primitives, tuples, and mapped utility computations.</li>
         </ul>
       </section>
       <section id="c-common-questions">

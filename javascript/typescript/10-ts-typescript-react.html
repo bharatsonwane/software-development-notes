@@ -145,6 +145,28 @@ function LabeledInput({ label, ...rest }: InputProps) {
         <ul>
           <li>Use <code class="inline">ComponentPropsWithoutRef&lt;&quot;button&quot;&gt;</code> or <code class="inline">ComponentProps&lt;typeof SomeComponent&gt;</code> to inherit props.</li>
         </ul>
+        <h3 id="2-typing-components-and-props-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>2.5. Polymorphic Components (The <code class="inline">as</code> Prop)</h3>
+        <ul>
+          <li>Build reusable UI elements that can render as a <code class="inline">&lt;button&gt;</code>, <code class="inline">&lt;a&gt;</code>, or custom component while retaining complete type safety for HTML attributes:</li>
+        </ul>
+        <div class="code"><pre>type PolymorphicButtonProps&lt;E extends React.ElementType = "button"&gt; = {
+  as?: E;
+  children: React.ReactNode;
+} &amp; React.ComponentPropsWithoutRef&lt;E&gt;;
+
+function PolymorphicButton&lt;E extends React.ElementType = "button"&gt;({
+  as,
+  children,
+  ...rest
+}: PolymorphicButtonProps&lt;E&gt;) {
+  const Component = as || "button";
+  return &lt;Component {...rest}&gt;{children}&lt;/Component&gt;;
+}
+
+// Usage:
+&lt;PolymorphicButton onClick={() =&gt; console.log("clicked")}&gt;Native Button&lt;/PolymorphicButton&gt;;
+&lt;PolymorphicButton as="a" href="https://example.com" target="_blank"&gt;Link Styled As Button&lt;/PolymorphicButton&gt;;</pre></div>
       </section>
       <section id="3-usestate-and-event-types">
         <div class="heading-with-levels">
@@ -290,6 +312,26 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
       {children}
     &lt;/ThemeContext.Provider&gt;
   );
+}</pre></div>
+        <h3 id="4-typing-hooks-and-context-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.4. Typing <code class="inline">useRef</code> (DOM Ref vs Mutable Variable Ref)</h3>
+        <ul>
+          <li><code class="inline">useRef</code> has two distinct TypeScript overloads based on its initial value:</li>
+        </ul>
+        <div class="code"><pre>// Overload 1: DOM Element Reference (initial value is null)
+// Returns: React.RefObject&lt;HTMLInputElement&gt; (current is read-only)
+const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+function focusInput() {
+  inputRef.current?.focus(); // inputRef.current is HTMLInputElement | null
+}
+
+// Overload 2: Mutable Instance Variable (e.g. interval ID, persistent cache)
+// Returns: React.MutableRefObject&lt;number&gt; (current is fully mutable)
+const timerId = useRef&lt;number&gt;(0);
+
+function startTimer() {
+  timerId.current = window.setInterval(() =&gt; console.log("tick"), 1000); // OK to mutate!
 }</pre></div>
       </section>
       <section id="5-third-party-types-types">

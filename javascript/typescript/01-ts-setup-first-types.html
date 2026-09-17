@@ -117,16 +117,23 @@ add(&quot;1&quot;, 2); // Error at compile time: Argument of type &#x27;string&#
         <h3>2.2. What TypeScript is <em>not</em></h3>
         <ul><li><strong>Not a new runtime</strong> — browsers and Node still execute JavaScript.</li><li><strong>Not a guarantee of zero bugs</strong> — logic errors still slip through.</li><li><strong>Not required everywhere</strong> — you can use <code class="inline">any</code> or plain <code class="inline">.js</code> when migrating.</li></ul>
         <h3 id="2-what-typescript-adds-to-javascript-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.3. TypeScript vs JavaScript relationship</h3>
-        <div class="code"><pre>TypeScript (.ts / .tsx)
+        <h3>2.3. TypeScript vs JavaScript relationship &amp; Compiler Pipeline</h3>
+        <div class="code"><pre>TypeScript Source Code (.ts / .tsx)
         │
-        ▼  tsc (or bundler: Vite, esbuild, SWC)
-JavaScript (.js / .jsx)
+        ▼  1. Scanner (Lexer creates token stream)
+        ▼  2. Parser (Builds Abstract Syntax Tree / AST)
+        ▼  3. Binder (Maps identifier symbols to declarative scopes)
+        ▼  4. Checker (Resolves types, enforces assignability, computes errors)
+        ▼  5. Emitter (Emits clean JavaScript, .d.ts declarations, &amp; source maps)
         │
         ▼
-Browser / Node.js</pre></div>
+Pure JavaScript (.js) — Types Completely Erased
+        │
+        ▼
+Browser / Node.js / V8 Engine</pre></div>
         <ul>
-          <li>Every valid JavaScript program is valid TypeScript (with <code class="inline">allowJs</code> or after renaming). TypeScript <strong>adds</strong> syntax; it does not replace JS fundamentals.</li>
+          <li><strong>Type Erasure (Zero Runtime Cost):</strong> All TypeScript types, interfaces, type aliases, and generic parameters are completely erased during emit. Types exist solely for development and build verification. At runtime, JavaScript has <em>zero</em> memory or execution overhead from TypeScript, but also means types cannot be inspected via runtime reflection.</li>
+          <li>Every valid JavaScript program is syntactically valid TypeScript (with <code class="inline">allowJs</code>). TypeScript <strong>adds</strong> type syntax; it does not alter JavaScript runtime semantics.</li>
         </ul>
       </section>
       <section id="3-installing-and-compiling-tsc">
@@ -178,6 +185,24 @@ npx tsc -w</pre></div>
         </table>
         <ul>
           <li>Modern apps often use <strong>Vite</strong>, <strong>Next.js</strong>, or <strong>esbuild</strong> to transpile TS; <code class="inline">tsc</code> is still used for <strong>type-checking</strong> (<code class="inline">tsc --noEmit</code>).</li>
+        </ul>
+        <h3 id="3-installing-and-compiling-tsc-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>3.5. Modern Execution Runners (tsx, ts-node &amp; Node 22+)</h3>
+        <ul>
+          <li><strong>Direct execution without manual compile:</strong> Tools like <code class="inline">tsx</code> (powered by esbuild) execute TypeScript files instantly in memory during development:</li>
+        </ul>
+        <div class="code"><pre># Run directly with zero build config:
+npx tsx src/index.ts
+
+# Watch mode development:
+npx tsx watch src/index.ts</pre></div>
+        <ul>
+          <li><strong>Native Node.js 22.6+ Type Stripping:</strong> Modern Node.js can execute TypeScript files directly without any third-party compiler via built-in type stripping:</li>
+        </ul>
+        <div class="code"><pre># Native Node 22.6+ / 23+ (No tsc or tsx required!):
+node --experimental-strip-types src/index.ts</pre></div>
+        <ul>
+          <li>Node strips all type syntax in memory and passes pure JavaScript directly to the V8 engine!</li>
         </ul>
       </section>
       <section id="4-tsconfig-json-basics">
@@ -238,6 +263,19 @@ npx tsc -w</pre></div>
           <li><code class="inline">strictNullChecks</code> — <code class="inline">null</code> / <code class="inline">undefined</code> must be handled explicitly</li><li><code class="inline">noImplicitAny</code> — variables need types or inferrable values</li><li><code class="inline">strictFunctionTypes</code> — safer function parameter checking</li>
           <li>Start with <strong>strict enabled</strong> on new projects.</li>
         </ul>
+        <h3 id="4-tsconfig-json-basics-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3>4.4. Essential Production Flags</h3>
+        <table>
+        <thead>
+        <tr><th>Flag</th><th>Why It Matters in Production</th></tr>
+        </thead>
+        <tbody>
+        <tr><td><code class="inline">&quot;isolatedModules&quot;: true</code></td><td>Ensures code can be safely transpiled by single-file tools (Babel, SWC, esbuild, Vite). Disallows ambient const enums and ambiguous type re-exports.</td></tr>
+        <tr><td><code class="inline">&quot;verbatimModuleSyntax&quot;: true</code></td><td>(TS 5.0+) Enforces clear separation: value imports are always emitted as JS imports, while <code class="inline">import type</code> is completely elided. Prevents circular bundling bugs.</td></tr>
+        <tr><td><code class="inline">&quot;noEmitOnError&quot;: true</code></td><td>Prevents <code class="inline">tsc</code> from emitting output JS files when compilation errors exist. Ensures broken builds never slip into production.</td></tr>
+        <tr><td><code class="inline">&quot;skipLibCheck&quot;: true</code></td><td>Skips type checking of all <code class="inline">.d.ts</code> files inside <code class="inline">node_modules</code>. Drastically speeds up compilation times without sacrificing your app&#x27;s type safety.</td></tr>
+        </tbody>
+        </table>
       </section>
       <section id="5-type-annotations-on-variables">
         <div class="heading-with-levels">

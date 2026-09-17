@@ -159,6 +159,28 @@ type User = ReturnType&lt;typeof createUser&gt;;
         </ul>
         <div class="code"><pre>type Params = Parameters&lt;typeof createUser&gt;; // tuple of arg types
 type Constructor = ConstructorParameters&lt;typeof Date&gt;;</pre></div>
+        <h3 id="3-record-and-returntype-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>3.3. Deconstructing Standard Utility Types (How They Work Internally)</h3>
+        <ul>
+          <li>Understanding how TypeScript defines utility types in its standard library (<code class="inline">lib.es5.d.ts</code>) demystifies the type system:</li>
+        </ul>
+        <div class="code"><pre>// Exclude: Drops types in U from union T
+type MyExclude&lt;T, U&gt; = T extends U ? never : T;
+type T1 = MyExclude&lt;"a" | "b" | "c", "a"&gt;; // "b" | "c"
+
+// Extract: Keeps only types assignable to U
+type MyExtract&lt;T, U&gt; = T extends U ? T : never;
+type T2 = MyExtract&lt;string | number | (() =&gt; void), Function&gt;; // () =&gt; void
+
+// NonNullable: Strips null and undefined
+type MyNonNullable&lt;T&gt; = T extends null | undefined ? never : T;
+type T3 = MyNonNullable&lt;string | null | undefined&gt;; // string
+
+// Omit: Built by combining Pick with Exclude!
+type MyOmit&lt;T, K extends keyof any&gt; = Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;;
+
+// Awaited: Recursively unwraps Promise return types
+type P = Awaited&lt;Promise&lt;Promise&lt;number&gt;&gt;&gt;; // number</pre></div>
       </section>
       <section id="4-mapped-types">
         <div class="heading-with-levels">
@@ -201,6 +223,28 @@ type UserGetters = Getters&lt;{ name: string; age: number }&gt;;
         <div class="code"><pre>type RemoveId&lt;T&gt; = {
   [K in keyof T as K extends &quot;id&quot; ? never : K]: T[K];
 };</pre></div>
+        <h3 id="4-mapped-types-l5"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.4. Mapped Type Modifiers (<code class="inline">-readonly</code> and <code class="inline">-?</code>)</h3>
+        <ul>
+          <li>You can add modifiers using <code class="inline">+</code> (default) or strip them using <code class="inline">-</code>:</li>
+        </ul>
+        <div class="code"><pre>// Strip readonly modifier (make all properties mutable):
+type Mutable&lt;T&gt; = {
+  -readonly [K in keyof T]: T[K];
+};
+
+// Strip optional modifier (make all properties strictly required):
+type Concrete&lt;T&gt; = {
+  [K in keyof T]-?: T[K];
+};
+
+interface LockedUser {
+  readonly id: number;
+  name?: string;
+}
+
+type EditableUser = Mutable&lt;LockedUser&gt;;  // id is now mutable
+type CompleteUser = Concrete&lt;LockedUser&gt;; // name is now required (not optional)</pre></div>
       </section>
       <section id="5-conditional-types-intro">
         <div class="heading-with-levels">

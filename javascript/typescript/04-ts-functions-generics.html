@@ -222,16 +222,40 @@ class Stack&lt;T&gt; {
 const user = { name: &quot;Bharat&quot;, age: 30 };
 getProperty(user, &quot;name&quot;); // string
 // getProperty(user, &quot;email&quot;); // Error — &quot;email&quot; not in user</pre></div>
-        <h3>5.6. <code class="inline">const</code> type parameters (TS 5.0+)</h3>
+        <h3>5.6. <code class="inline">const</code> Type Parameters (TS 5.0+)</h3>
         <ul>
-          <li>Preserve literal types through generic calls:</li>
+          <li>In TypeScript 5.0+, adding <code class="inline">const</code> before a generic parameter automatically infers literal and readonly tuple types without requiring the caller to append <code class="inline">as const</code> at the call site:</li>
         </ul>
-        <div class="code"><pre>function asConst&lt;T extends readonly unknown[]&gt;(items: T): T {
-  return items;
+        <div class="code"><pre>// TS 5.0+ const modifier on generic parameter T:
+function getRoutes&lt;const T extends readonly string[]&gt;(routes: T): T {
+  return routes;
 }
 
-const colors = asConst([&quot;red&quot;, &quot;green&quot;] as const);
-// type readonly [&quot;red&quot;, &quot;green&quot;]</pre></div>
+// Automatically infers readonly ["/home", "/dashboard"], not string[]!
+const routes = getRoutes(["/home", "/dashboard"]);</pre></div>
+        <h3 id="5-generic-functions-and-constraints-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>5.7. Function Subtyping &amp; Variance (Covariance vs Contravariance)</h3>
+        <ul>
+          <li><strong>Return Types are Covariant:</strong> A function returning a narrower (subtype) is assignable to one returning a broader type:</li>
+        </ul>
+        <div class="code"><pre>type Animal = { name: string };
+type Dog = Animal &amp; { bark(): void };
+
+let getAnimal: () =&gt; Animal;
+let getDog: () =&gt; Dog = () =&gt; ({ name: &quot;Rex&quot;, bark: () =&gt; console.log(&quot;woof&quot;) });
+
+getAnimal = getDog; // OK: A dog is a valid Animal</pre></div>
+        <ul>
+          <li><strong>Parameter Types are Contravariant (under <code class="inline">strictFunctionTypes</code>):</strong> You can pass a handler that accepts a <em>broader</em> input type where a narrower type is expected:</li>
+        </ul>
+        <div class="code"><pre>let handleDog: (d: Dog) =&gt; void;
+let handleAnimal: (a: Animal) =&gt; void = (a) =&gt; console.log(a.name);
+
+handleDog = handleAnimal; // OK: handleAnimal can safely accept any Dog!
+// handleAnimal = handleDog; // ERROR: handleDog might call .bark() on an Animal that is not a Dog!</pre></div>
+        <ul>
+          <li><strong>The Method vs Property Syntax Bivariance Trap:</strong> Method signatures in interfaces (<code class="inline">fn(x: T): void</code>) are <em>bivariant</em> for historical reasons. Always use arrow property syntax (<code class="inline">fn: (x: T) =&gt; void</code>) when declaring interface callbacks to enforce strict parameter contravariance!</li>
+        </ul>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">

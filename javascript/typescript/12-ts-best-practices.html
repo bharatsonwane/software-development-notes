@@ -106,7 +106,7 @@ function parse(data: unknown) {
         <tbody>
         <tr><td>Unknown API response</td><td><code class="inline">unknown</code> + narrowing / Zod</td></tr>
         <tr><td>Generic key-value bag</td><td><code class="inline">Record&lt;string, unknown&gt;</code></td></tr>
-        <tr><td>Mixed array</td><td>`(string \</td></tr>
+        <tr><td>Mixed array</td><td><code class="inline">(string | number)[]</code> or tuple</td></tr>
         <tr><td>Third-party untyped lib</td><td><code class="inline">@types/*</code> or local <code class="inline">.d.ts</code></td></tr>
         <tr><td>Temporary migration</td><td><code class="inline">// @ts-expect-error</code> with ticket + deadline</td></tr>
         </tbody>
@@ -284,6 +284,24 @@ export function greet(name) {
 declare module &quot;legacy-lib&quot;;</pre></div>
         <ul>
           <li>Or write accurate <code class="inline">.d.ts</code> for the subset you use.</li>
+        </ul>
+        <h3 id="5-migration-from-javascript-l5"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>5.6. Essential Production Flags Beyond Strict</h3>
+        <ul>
+          <li>Even with <code class="inline">"strict": true</code>, TypeScript allows certain unsafe runtime behaviors by default. Enable these two flags for maximum type safety:</li>
+        </ul>
+        <div class="code"><pre>{
+  "compilerOptions": {
+    // 1. Array out-of-bounds index safety:
+    "noUncheckedIndexedAccess": true,
+
+    // 2. Strict optional property assignment:
+    "exactOptionalPropertyTypes": true
+  }
+}</pre></div>
+        <ul>
+          <li><strong><code class="inline">noUncheckedIndexedAccess</code>:</strong> By default, <code class="inline">const first = items[0]</code> is typed as <code class="inline">string</code> even if <code class="inline">items</code> is empty, causing runtime crashes! With this flag enabled, <code class="inline">items[0]</code> is accurately typed as <code class="inline">string | undefined</code>, requiring an existence check.</li>
+          <li><strong><code class="inline">exactOptionalPropertyTypes</code>:</strong> Forbids passing <code class="inline">{ key: undefined }</code> to an optional property typed <code class="inline">{ key?: string }</code> unless <code class="inline">undefined</code> is an explicit union member, preventing subtle JSON serialization bugs.</li>
         </ul>
       </section>
       <section id="c-common-questions">

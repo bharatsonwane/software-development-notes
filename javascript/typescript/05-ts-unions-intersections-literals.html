@@ -195,6 +195,37 @@ function area(shape: Shape): number {
         <ul>
           <li>After checking <code class="inline">shape.kind</code>, TS knows which fields exist.</li>
         </ul>
+        <h3 id="4-literal-and-discriminated-unions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>4.4. The <code class="inline">satisfies</code> Operator (TS 4.9+) vs Type Annotations</h3>
+        <ul>
+          <li><strong>The Type Annotation Problem:</strong> When you annotate an object with a type (<code class="inline">const x: T = ...</code>), TypeScript widens property types to match <code class="inline">T</code>, throwing away specific literal knowledge and autocompletion:</li>
+        </ul>
+        <div class="code"><pre>type Colors = "red" | "green" | "blue";
+type RGB = [r: number, g: number, b: number];
+type Palette = Record&lt;Colors, string | RGB&gt;;
+
+// Standard Annotation (Widened):
+const palette1: Palette = {
+  red: [255, 0, 0],
+  green: "#00ff00",
+  blue: [0, 0, 255],
+};
+// palette1.green is widened to 'string | RGB'
+// palette1.green.toUpperCase(); // Error: Property 'toUpperCase' does not exist on type 'RGB'</pre></div>
+        <ul>
+          <li><strong>The <code class="inline">satisfies</code> Solution:</strong> Validates that an expression matches a type contract <em>without</em> mutating or widening its inferred specific type:</li>
+        </ul>
+        <div class="code"><pre>// TS 4.9+ satisfies operator:
+const palette2 = {
+  red: [255, 0, 0],
+  green: "#00ff00",
+  blue: [0, 0, 255],
+} satisfies Palette;
+
+// 1. Validates conformity (typos in color names or invalid values are caught)
+// 2. Preserves exact inferred types:
+palette2.green.toUpperCase();  // OK: green is known to be string!
+palette2.red.map(x =&gt; x * 2);  // OK: red is known to be [number, number, number]!</pre></div>
       </section>
       <section id="5-exhaustiveness-checking">
         <div class="heading-with-levels">

@@ -106,6 +106,31 @@ type Data = Awaited&lt;Promise&lt;{ id: number }&gt;&gt;; // { id: number }</pre
 type Tail&lt;T&gt; = T extends [unknown, ...infer Rest] ? Rest : never;
 
 type H = Head&lt;[string, number, boolean]&gt;; // string</pre></div>
+        <h3 id="2-infer-keyword-l5"><span class="chip tier-l3">L3 Advanced</span></h3>
+        <h3>2.4. Distributive Conditional Types &amp; The Tuple Exemption</h3>
+        <ul>
+          <li>When a conditional type acts on a <strong>naked type parameter</strong> (<code class="inline">T extends any</code>), it automatically distributes over union members:</li>
+        </ul>
+        <div class="code"><pre>// Distributive behavior (naked type parameter T):
+type ToArray&lt;T&gt; = T extends any ? T[] : never;
+type Distributed = ToArray&lt;string | number&gt;;
+// Expands to: ToArray&lt;string&gt; | ToArray&lt;number&gt;
+// Result: string[] | number[] (NOT (string | number)[])!
+
+// Disabling Distribution with Square Brackets [T]:
+type ToNonDistributedArray&lt;T&gt; = [T] extends [any] ? T[] : never;
+type NonDistributed = ToNonDistributedArray&lt;string | number&gt;;
+// Result: (string | number)[]</pre></div>
+        <h3>2.5. Recursive Deep Mapped Types</h3>
+        <div class="code"><pre>type DeepReadonly&lt;T&gt; = T extends Function | boolean | number | string | symbol | bigint | null | undefined
+  ? T
+  : T extends Array&lt;infer R&gt;
+  ? ReadonlyArray&lt;DeepReadonly&lt;R&gt;&gt;
+  : { readonly [K in keyof T]: DeepReadonly&lt;T[K]&gt; };
+
+type Nested = { user: { profile: { age: number } } };
+type Immutable = DeepReadonly&lt;Nested&gt;;
+// Immutable.user.profile.age = 31; // Error: Cannot assign to 'age' because it is a read-only property</pre></div>
       </section>
       <section id="3-template-literal-types">
         <div class="heading-with-levels">
