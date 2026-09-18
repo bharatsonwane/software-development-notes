@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Branching</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Practice in a <strong>throwaway repo</strong>. Never commit experimental code directly to <code class="inline">main</code>; always work in an isolated feature branch. (Merging branches is covered in File 04).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-what-a-branch-is">
@@ -122,15 +122,20 @@
           <h2>2. What a branch is</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-what-a-branch-is-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p>In Git, a <strong>branch</strong> is not an expensive copy of all project files. It is merely a lightweight, movable pointer to a specific commit.</p>
+        <div class="code"><pre>/*
+Git Branch Architecture:
+
+Commit A &lt;─── Commit B &lt;─── Commit C (main)
+                             ▲
+                             └── HEAD (points to current branch)
+*/</pre></div>
         <ul>
-          <li>Understand <strong>What a branch is</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">03-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Lightweight Storage:</strong> Each local branch is represented by a tiny 41-byte text file inside <code class="inline">.git/refs/heads/&lt;branch-name&gt;</code> containing a 40-character commit hash and a newline.</li>
+          <li><strong>HEAD Pointer:</strong> <code class="inline">HEAD</code> is a special symbolic reference (stored in <code class="inline">.git/HEAD</code>) pointing to the branch currently checked out. When you make a commit, the active branch pointer automatically moves forward to the new commit.</li>
         </ul>
       </section>
       <section id="3-create-list-rename-delete-branches">
@@ -138,47 +143,69 @@
           <h2>3. Create, list, rename, delete branches</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-create-list-rename-delete-branches-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>Create, list, rename, delete branches</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">03-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p>Branch management commands allow you to organize independent lines of development:</p>
+        <div class="code"><pre># List all local branches (* indicates currently checked out branch)
+git branch
+
+# List all local and remote tracking branches
+git branch -a
+
+# Create a new branch at the current commit (does not switch to it)
+git branch feature/user-profile
+
+# Rename current branch
+git branch -m feature/user-profile-v2
+
+# Delete a branch safely (prevents deletion if branch has unmerged work)
+git branch -d feature/user-profile-v2
+
+# Force delete a branch regardless of merge status
+git branch -D feature/abandoned-experiment</pre></div>
       </section>
       <section id="4-git-switch-checkout">
         <div class="heading-with-levels">
           <h2>4. git switch / checkout</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-git-switch-checkout-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>git switch / checkout</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">03-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p>To start working on another branch, you must switch your working tree and point <code class="inline">HEAD</code> to it.</p>
+        <div class="code"><pre># Modern dedicated command (Git 2.23+):
+# Switch to an existing branch
+git switch feature/login
+
+# Create and switch to a new branch in a single step
+git switch -c feature/payments
+
+# Legacy multi-purpose command:
+git checkout feature/login
+git checkout -b feature/payments</pre></div>
+        <div class="callout callout-info"><strong>Best Practice:</strong> Prefer <code class="inline">git switch</code> for branch navigation and <code class="inline">git restore</code> for discarding working tree modifications. <code class="inline">git checkout</code> remains supported for backwards compatibility.</div>
       </section>
       <section id="5-tracking-branches-and-upstream">
         <div class="heading-with-levels">
           <h2>5. Tracking branches and upstream</h2>
           <div class="h2-levels">
-            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
-        <h3 id="5-tracking-branches-and-upstream-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
+        <h3 id="5-tracking-branches-and-upstream-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <p>A <strong>tracking branch</strong> is a local branch that maintains a direct relationship with a remote reference.</p>
+        <div class="callout callout-info"><strong>Preview:</strong> Remote servers (<code class="inline">origin</code>) and remote collaboration workflows are fully explored in File 06 (Remote &amp; Collaboration).</div>
+        <div class="code"><pre># Inspect tracking relationships and commit divergence
+git branch -vv
+
+# Set upstream for current branch (requires configured remote)
+git branch -u origin/main
+
+# Push and set upstream simultaneously
+git push -u origin feature/auth</pre></div>
         <ul>
-          <li>Understand <strong>Tracking branches and upstream</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">03-practice.md</code> (or run the commands and jot results).</li>
+          <li>When an upstream is configured, running <code class="inline">git status</code> reports whether your local branch is ahead, behind, or diverged from the remote.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -194,41 +221,43 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about What a branch is?</span>
+            <span class="qa-question-title">C.1. What is a Git branch under the hood, and why is creating one instantaneous?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Unlike older version control systems that copy every file in the project into a new directory, a Git branch is simply a 41-byte text file inside <code class="inline">.git/refs/heads/</code> containing a 40-character hexadecimal commit hash. Creating a branch merely writes a commit SHA-1 into a tiny file, making branch creation an instantaneous $O(1)$ operation regardless of repository size.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Create, list, rename, delete branches?</span>
+            <span class="qa-question-title">C.2. Why was <code class="inline">git switch</code> introduced alongside <code class="inline">git checkout</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Historically, <code class="inline">git checkout</code> was overloaded with multiple unrelated responsibilities: switching branches, creating new branches, and discarding uncommitted file changes in the working directory. Git 2.23 introduced <code class="inline">git switch</code> (strictly for branch navigation) and <code class="inline">git restore</code> (strictly for discarding or un-staging file modifications), clarifying user intent and preventing accidental file overwrites.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What is the difference between <code class="inline">git branch -d</code> and <code class="inline">git branch -D</code>?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">git branch -d</code> (delete) is a safe guard: Git will refuse to delete the branch if it contains commits that have not been merged into your current branch or upstream. <code class="inline">git branch -D</code> is a shortcut for <code class="inline">--delete --force</code>: it deletes the branch pointer immediately regardless of whether its commits have been merged anywhere.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about git switch / checkout?</span>
+            <span class="qa-question-title">C.4. What information does <code class="inline">git branch -vv</code> provide?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Tracking branches and upstream?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">git branch -vv</code> displays verbose details for all local branches: the latest commit hash, commit subject line, configured upstream tracking branch (e.g. <code class="inline">[origin/main]</code>), and whether the local branch is <code class="inline">[ahead N]</code>, <code class="inline">[behind N]</code>, or <code class="inline">[gone]</code>.</p>
           </div>
         </details>
       </section>

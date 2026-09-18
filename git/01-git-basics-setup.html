@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Basics &amp; Setup</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Practice in a <strong>throwaway repo</strong>. Prefer small, focused commits. (Branching is covered in File 03; history rewriting is covered in File 08).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 02. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 02. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-what-git-is-and-why-version-control">
@@ -122,15 +122,14 @@
           <h2>2. What Git is and why version control</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-what-git-is-and-why-version-control-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p><strong>Git</strong> is a modern <strong>Distributed Version Control System (DVCS)</strong> created by Linus Torvalds in 2005 to manage the Linux kernel development. It tracks changes across files over time, enabling developers to recall specific versions, audit changes, and collaborate efficiently.</p>
         <ul>
-          <li>Understand <strong>What Git is and why version control</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">01-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Centralized VCS (e.g. SVN, CVS):</strong> A single central server holds all revision history. If the server is offline or corrupt, developers cannot commit, view logs, or branch.</li>
+          <li><strong>Distributed VCS (Git):</strong> Every clone is a complete mirror of the repository, including the entire commit history and object database. All everyday operations (commit, log, diff) happen locally and instantaneously without a network connection.</li>
+          <li><strong>Content-Addressed Storage:</strong> Every file and commit is identified by an immutable cryptographic hash (SHA-1 / SHA-256), ensuring complete data integrity.</li>
         </ul>
       </section>
       <section id="3-install-git-and-first-time-config">
@@ -138,15 +137,26 @@
           <h2>3. Install Git and first-time config</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-install-git-and-first-time-config-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
+        <p>After installing Git, verify the installation and configure your author identity. Git records this information into every commit you create.</p>
+        <div class="code"><pre># Verify installation
+git --version
+
+# Set global commit author identity
+git config --global user.name &quot;Your Name&quot;
+git config --global user.email &quot;your.email@example.com&quot;
+
+# Set default initial branch name
+git config --global init.defaultBranch main
+
+# Inspect configuration and source files
+git config --list --show-origin</pre></div>
         <ul>
-          <li>Understand <strong>Install Git and first-time config</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">01-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>System level (<code class="inline">--system</code>):</strong> Applied system-wide (<code class="inline">/etc/gitconfig</code>).</li>
+          <li><strong>Global level (<code class="inline">--global</code>):</strong> Applied to your operating system user (<code class="inline">~/.gitconfig</code>).</li>
+          <li><strong>Local level (<code class="inline">--local</code>):</strong> Specific to the active repository (<code class="inline">.git/config</code>); overrides global settings.</li>
         </ul>
       </section>
       <section id="4-git-init-vs-git-clone">
@@ -154,32 +164,48 @@
           <h2>4. git init vs git clone</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-git-init-vs-git-clone-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
+        <p>There are two ways to obtain a Git repository on your machine:</p>
+        <div class="code"><pre># Approach A: Initialize a fresh repository in the current directory
+mkdir my-project &amp;&amp; cd my-project
+git init
+
+# Approach B: Clone an existing repository from a remote URL
+git clone https://github.com/user/repo.git
+
+# Shallow clone: Download only the latest revision (saves bandwidth and disk)
+git clone --depth 1 https://github.com/user/repo.git</pre></div>
         <ul>
-          <li>Understand <strong>git init vs git clone</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">01-practice.md</code> (or run the commands and jot results).</li>
+          <li><code class="inline">git init</code> creates a hidden <code class="inline">.git/</code> directory holding the repository database, configuration, and default references.</li>
+          <li><code class="inline">git clone</code> initializes the directory, downloads the full object history, creates remote tracking branches, and checks out the default branch into your working tree.</li>
         </ul>
       </section>
       <section id="5-working-tree-staging-area-repository">
         <div class="heading-with-levels">
           <h2>5. Working tree, staging area, repository</h2>
           <div class="h2-levels">
-            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
-        <h3 id="5-working-tree-staging-area-repository-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>Working tree, staging area, repository</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">01-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <h3 id="5-working-tree-staging-area-repository-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <p>Git manages files across <strong>three distinct areas</strong> (the "Three Trees" architecture):</p>
+        <div class="code"><pre>/*
+Git Three-Tree Lifecycle:
+
+Working Tree             Staging Area (Index)          Repository (.git)
+[ Files on disk ]        [ .git/index cache ]          [ Object database ]
+       │                         │                             │
+       │────── git add ─────────&gt;│                             │
+       │                         │────── git commit ──────────&gt;│
+       │&lt;───── git checkout ───────────────────────────────────│
+*/</pre></div>
+        <ol>
+          <li><strong>Working Tree:</strong> The actual files on your filesystem that you view and edit.</li>
+          <li><strong>Staging Area (Index):</strong> A binary index file (<code class="inline">.git/index</code>) that acts as a preparation area. It records precisely which changes will be included in the next commit.</li>
+          <li><strong>Repository (History):</strong> The permanent object store inside <code class="inline">.git/objects</code> holding immutable commit snapshots.</li>
+        </ol>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">
@@ -194,41 +220,43 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about What Git is and why version control?</span>
+            <span class="qa-question-title">C.1. What is the core architectural difference between a Centralized VCS and a Distributed VCS like Git?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>In a Centralized VCS (e.g., SVN), there is only one central server that maintains the revision history. If that server is down or unreachable, developers cannot commit or review logs. In Git (DVCS), every clone contains the complete repository history and object store locally. Committing, branching, diffing, and inspecting history are 100% offline operations.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Install Git and first-time config?</span>
+            <span class="qa-question-title">C.2. What happens when you run <code class="inline">git init</code> in a directory?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">git init</code> creates a hidden <code class="inline">.git</code> subfolder containing the Git internal database: the object store (<code class="inline">objects/</code>), references (<code class="inline">refs/</code>), configuration (<code class="inline">config</code>), hooks (<code class="inline">hooks/</code>), and the current branch pointer (<code class="inline">HEAD</code>). Existing files in the directory remain untouched until staged with <code class="inline">git add</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why does Git have a Staging Area (Index) instead of committing directly from the working tree?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The staging area decouples what you are editing on disk from what you are recording as a historical snapshot. This allows developers to craft atomic, focused commits — staging only specific files or specific hunks (<code class="inline">git add -p</code>) while keeping other work-in-progress edits unstaged.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about git init vs git clone?</span>
+            <span class="qa-question-title">C.4. How does Git determine configuration precedence when the same setting exists in multiple places?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Working tree, staging area, repository?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Git searches configuration in three hierarchical scopes, where the most specific scope wins: <strong>Local</strong> (<code class="inline">.git/config</code>) overrides <strong>Global</strong> (<code class="inline">~/.gitconfig</code>), which in turn overrides <strong>System</strong> (<code class="inline">/etc/gitconfig</code>). You can inspect the source of all active configurations using <code class="inline">git config --list --show-origin</code>.</p>
           </div>
         </details>
       </section>
@@ -240,7 +268,7 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Use a throwaway folder. Run commands yourself; paste outputs into comments in <code class="inline">01-practice.md</code> or a notes file.</div>
+        <div class="callout">Use a throwaway folder. Run the commands in your terminal to verify each state transition directly.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>

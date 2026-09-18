@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Troubleshooting</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> When Git encounters an error, inspect your state first (<code class="inline">git status</code>, <code class="inline">git log -n 5</code>, <code class="inline">git reflog</code>) before running any destructive commands like <code class="inline">reset --hard</code>.</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 11. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>Review sections 2–5 for common recovery patterns, then complete <a href="#p-practice">P. Practical Assignment</a> before File 11. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-detached-head">
@@ -125,13 +125,22 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-detached-head-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p>A <strong>detached HEAD</strong> occurs when <code class="inline">HEAD</code> points directly to a specific commit SHA or tag rather than to a named branch reference.</p>
         <ul>
-          <li>Understand <strong>Detached HEAD</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">10-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>How it happens:</strong> Running <code class="inline">git checkout &lt;commit-hash&gt;</code> or checking out a tag/remote branch directly.</li>
+          <li><strong>The risk:</strong> New commits created in this state do not belong to any branch. If you switch branches without saving them, Git considers them unreachable, and they will eventually be pruned by garbage collection.</li>
+          <li><strong>How to resolve:</strong> Simply create a branch at your current commit to preserve your work.</li>
         </ul>
+        <div class="code"><pre># Inspect current state (Git will explicitly warn you of detached HEAD)
+git status
+# "HEAD detached at a1b2c3d"
+
+# Save commits made in detached HEAD to a new branch:
+git switch -c feature/saved-work
+
+# Or return back to your main branch discarding test experiments:
+git switch main</pre></div>
       </section>
       <section id="3-accidental-commits-on-the-wrong-branch">
         <div class="heading-with-levels">
@@ -141,13 +150,18 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-accidental-commits-on-the-wrong-branch-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>Accidental commits on the wrong branch</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">10-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p>A common mistake is committing changes directly to <code class="inline">main</code> instead of creating a feature branch first.</p>
+        <p><strong>Scenario A — Commits NOT pushed yet:</strong></p>
+        <div class="code"><pre># 1. Create a new feature branch pointing to current commit (keeps all new commits)
+git branch feature/new-work
+
+# 2. Reset main back to where it should be (e.g. back 2 commits)
+git reset --hard HEAD~2
+
+# 3. Switch to the feature branch to continue working
+git switch feature/new-work</pre></div>
+        <p><strong>Scenario B — Commits already pushed to remote:</strong> Never force-reset public branches. Instead, checkout your feature branch, cherry-pick the commits, and run <code class="inline">git revert</code> on the shared branch.</p>
       </section>
       <section id="4-recovering-with-reflog">
         <div class="heading-with-levels">
@@ -157,13 +171,20 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-recovering-with-reflog-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>Recovering with reflog</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">10-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p><code class="inline">git reflog</code> is Git's safety net. It records every time <code class="inline">HEAD</code> or branch pointers move locally (commits, checkouts, merges, resets, rebases).</p>
+        <div class="code"><pre># Display local history of HEAD movements with relative timestamps
+git reflog --date=relative
+# Example output:
+# 3c4d5e6 HEAD@{10 minutes ago}: reset: moving to HEAD~1
+# a1b2c3d HEAD@{25 minutes ago}: commit: complete payment gateway
+
+# Recover by checking out a new branch pointing directly to the lost commit:
+git branch recovered-feature a1b2c3d
+
+# Or restore current branch pointer immediately:
+git reset --hard HEAD@{1}</pre></div>
+        <div class="callout"><strong>Garbage Collection Note:</strong> Reflog entries expire after 30 days (for unreachable commits) or 90 days (for reachable commits) by default.</div>
       </section>
       <section id="5-common-error-messages-and-fixes">
         <div class="heading-with-levels">
@@ -173,12 +194,24 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="5-common-error-messages-and-fixes-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
+        <p>Quick reference for recurring errors encountered in day-to-day Git operations:</p>
         <ul>
-          <li>Understand <strong>Common error messages and fixes</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">10-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>"fatal: refusing to merge unrelated histories":</strong> Occurs when merging two repositories with no common root ancestor.
+            <div class="code"><pre>git pull origin main --allow-unrelated-histories</pre></div>
+          </li>
+          <li><strong>"error: failed to push some refs (non-fast-forward)":</strong> Remote contains commits your local branch lacks.
+            <div class="code"><pre>git pull --rebase origin &lt;branch&gt;
+git push origin &lt;branch&gt;</pre></div>
+          </li>
+          <li><strong>"Permission denied (publickey)":</strong> SSH key is missing, not added to ssh-agent, or not registered in GitHub.
+            <div class="code"><pre>ssh-add -l || ssh-add ~/.ssh/id_ed25519
+ssh -Tv git@github.com</pre></div>
+          </li>
+          <li><strong>"fatal: index file corrupt":</strong> Git's staging index binary was damaged.
+            <div class="code"><pre>rm .git/index
+git reset</pre></div>
+          </li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -194,41 +227,48 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Detached HEAD?</span>
+            <span class="qa-question-title">C.1. What is a "Detached HEAD" state and how do you safely keep work done in it?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>A detached HEAD occurs when <code class="inline">HEAD</code> points directly to an individual commit SHA instead of a named branch ref. Any commits created are not attached to a branch. To safely keep them, create a new branch at your current location using <code class="inline">git switch -c &lt;new-branch-name&gt;</code> before switching away.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Accidental commits on the wrong branch?</span>
+            <span class="qa-question-title">C.2. What causes "fatal: refusing to merge unrelated histories" and how is it resolved?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>This error occurs when attempting to pull or merge two repositories that were initialized independently (for example, a newly created remote repository with a README merged into an existing local repository) having no shared root commit. It is resolved by explicitly appending the <code class="inline">--allow-unrelated-histories</code> flag during <code class="inline">git pull</code> or <code class="inline">git merge</code>.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. You accidentally committed changes to local main instead of a feature branch. How do you fix it without losing work?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>If the commits have not been pushed to remote:</p>
+            <ol>
+              <li>Create a new feature branch at current commit: <code class="inline">git branch feature/my-work</code>.</li>
+              <li>Switch back to main and reset it back to before the accidental commits: <code class="inline">git reset --hard HEAD~N</code> (or <code class="inline">git reset --hard origin/main</code>).</li>
+              <li>Switch to your feature branch: <code class="inline">git switch feature/my-work</code>. All work is preserved on the feature branch while <code class="inline">main</code> is restored clean.</li>
+            </ol>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Recovering with reflog?</span>
+            <span class="qa-question-title">C.4. How do you recover a branch or commit accidentally deleted via git branch -D or git reset --hard?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Common error messages and fixes?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Commits in Git are not erased immediately upon deletion. Run <code class="inline">git reflog</code> to find the commit SHA where the deleted branch tip or previous state resided. Once identified (e.g. <code class="inline">c3d4e5f</code>), create a new branch from that commit: <code class="inline">git branch recovered-branch c3d4e5f</code>. Git will recreate the branch pointing to that commit snapshot with all history intact.</p>
           </div>
         </details>
       </section>

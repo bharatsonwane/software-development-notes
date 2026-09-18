@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Commits &amp; History</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Practice in a <strong>throwaway repo</strong>. Commit early and often with clear, descriptive messages. (History modification and reset workflows are detailed in File 08).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 03. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 03. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-git-status-add-and-the-staging-area">
@@ -122,15 +122,29 @@
           <h2>2. git status, add, and the staging area</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-git-status-add-and-the-staging-area-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p><code class="inline">git status</code> is your compass in Git. It reports the state of your working directory relative to the staging area and the latest commit.</p>
+        <div class="code"><pre># Inspect current status
+git status
+
+# Short status output (-s)
+git status -s
+# ?? = untracked,  M = modified unstaged, M  = modified staged
+
+# Stage a specific file
+git add filename.txt
+
+# Stage all tracked and untracked changes in current directory
+git add .
+
+# Interactive staging: review and stage individual code hunks
+git add -p</pre></div>
         <ul>
-          <li>Understand <strong>git status, add, and the staging area</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">02-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Untracked:</strong> New files created in your working directory that Git has never seen.</li>
+          <li><strong>Modified (Unstaged):</strong> Tracked files with local modifications not yet added to the staging index.</li>
+          <li><strong>Staged:</strong> Snapshots queued in the index ready to be sealed into the next commit.</li>
         </ul>
       </section>
       <section id="3-writing-good-commits">
@@ -138,15 +152,23 @@
           <h2>3. Writing good commits</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-writing-good-commits-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
+        <p>A Git commit is an immutable snapshot of your staged files accompanied by author metadata, a timestamp, a pointer to its parent commit(s), and a log message.</p>
+        <div class="code"><pre># Create a commit with an inline message
+git commit -m &quot;feat: add user authentication endpoint&quot;
+
+# Open configured default editor for multi-line commit messages
+git commit
+
+# Amend the most recent unpushed commit (fix typo or add missed staged file)
+git add missed-file.txt
+git commit --amend -m &quot;feat: add user authentication endpoint with validation&quot;</pre></div>
         <ul>
-          <li>Understand <strong>Writing good commits</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">02-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Conventional Commits:</strong> Follow <code class="inline">&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;</code> (e.g. <code class="inline">feat</code>, <code class="inline">fix</code>, <code class="inline">docs</code>, <code class="inline">chore</code>, <code class="inline">refactor</code>).</li>
+          <li><strong>Imperative Mood:</strong> Write "add feature" instead of "added feature" or "adds feature".</li>
+          <li><strong>Atomic Commits:</strong> Each commit should address exactly one logical task or fix.</li>
         </ul>
       </section>
       <section id="4-git-log-show-and-diff">
@@ -157,13 +179,23 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-git-log-show-and-diff-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>git log, show, and diff</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">02-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p>Inspecting commit history and code differences is essential for auditing project evolution.</p>
+        <div class="code"><pre># View commit history (one line per commit)
+git log --oneline -n 10
+
+# View visual branch and merge history graph
+git log --graph --oneline --all --decorate
+
+# Inspect changes in working directory vs staging index
+git diff
+
+# Inspect changes in staging index vs last commit (HEAD)
+git diff --staged
+
+# View metadata and full patch of a specific commit
+git show HEAD
+git show a1b2c3d</pre></div>
       </section>
       <section id="5-gitignore-and-untracked-files">
         <div class="heading-with-levels">
@@ -173,12 +205,23 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="5-gitignore-and-untracked-files-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
+        <p>The <code class="inline">.gitignore</code> file tells Git which files and folders to ignore so they are never accidentally staged or committed.</p>
+        <div class="code"><pre># Comments start with hash
+# Ignore environment secrets
+.env
+.env.local
+
+# Ignore dependencies and build artifacts
+node_modules/
+dist/
+build/
+*.log
+
+# Untrack a file that was accidentally committed earlier (keeps it on disk)
+git rm --cached sensitive-config.json</pre></div>
         <ul>
-          <li>Understand <strong>gitignore and untracked files</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">02-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Rule:</strong> <code class="inline">.gitignore</code> only applies to untracked files. If a file is already committed, it must be untracked using <code class="inline">git rm --cached</code> before Git will ignore it.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -194,41 +237,43 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about git status, add, and the staging area?</span>
+            <span class="qa-question-title">C.1. What is the difference between <code class="inline">git diff</code> and <code class="inline">git diff --staged</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">git diff</code> compares modified files in your working directory against the staging area (shows what you have changed but NOT yet staged). <code class="inline">git diff --staged</code> (or <code class="inline">--cached</code>) compares the staging area against the latest commit (<code class="inline">HEAD</code>), showing exactly what will be included if you run <code class="inline">git commit</code> right now.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Writing good commits?</span>
+            <span class="qa-question-title">C.2. When is it safe to use <code class="inline">git commit --amend</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">git commit --amend</code> creates a brand-new commit with a new SHA-1 hash to replace the previous commit. It is completely safe to use on <strong>local, unpushed commits</strong>. Never amend commits that have already been pushed to a shared remote, as doing so rewrites public history and causes conflicts for teammates.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Why is interactive staging (<code class="inline">git add -p</code>) recommended?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">git add -p</code> splits file modifications into discrete "hunks" and prompts you to stage or skip each one. This allows you to review your changes before committing, exclude accidental debugging logs or unrelated edits, and craft clean, atomic commits even when multiple changes exist in the same file.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about git log, show, and diff?</span>
+            <span class="qa-question-title">C.4. Why does adding a file to <code class="inline">.gitignore</code> have no effect if the file was already committed?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about gitignore and untracked files?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">.gitignore</code> only instructs Git not to track new, untracked files. Files that are already tracked in Git's index continue to be tracked regardless of <code class="inline">.gitignore</code> rules. To make Git ignore them, you must remove them from the staging index using <code class="inline">git rm --cached &lt;file&gt;</code> and commit the removal.</p>
           </div>
         </details>
       </section>
@@ -398,11 +443,12 @@ Refactoring Poor Commit Messages:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Recovering changes using Soft Reset:
+                <div class="code"><pre># Preview: Recovering changes using Soft Reset (Mastered in File 08: Stash, Cherry-pick &amp; Reset):
+# (Note: In this tier, git commit --amend is your primary tool for updating the most recent commit)
 # 1. Commit created prematurely
 git commit -m &quot;wip: incomplete work&quot;
 
-# 2. Undo commit while keeping all changes staged in the index
+# 2. Undo commit while keeping changes staged in the index (Preview of File 08)
 git reset --soft HEAD~1
 
 # 3. Adjust files and recommit cleanly

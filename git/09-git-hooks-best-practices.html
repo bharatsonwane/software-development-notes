@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Hooks &amp; Best Practices</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Client hooks run locally and can be bypassed; never treat them as a replacement for server-side CI/CD security gates. Keep local hooks fast (&lt; 2 seconds).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 10. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>Review sections 2–5 for hook mechanics and commit standards, then complete <a href="#p-practice">P. Practical Assignment</a>. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-client-side-hooks-overview">
@@ -125,13 +125,19 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-client-side-hooks-overview-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p><strong>Git hooks</strong> are executable scripts located in the <code class="inline">.git/hooks/</code> directory that Git automatically runs before or after specific operations like commit, rebase, or push.</p>
         <ul>
-          <li>Understand <strong>Client-side hooks overview</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">09-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Local-only:</strong> The <code class="inline">.git/hooks/</code> directory is not tracked by Git and is not cloned with the repository for security reasons.</li>
+          <li><strong>Executable bit:</strong> Scripts must have execute permissions (<code class="inline">chmod +x .git/hooks/&lt;hook&gt;</code>) to trigger.</li>
+          <li><strong>Sharing hooks across teams:</strong> Teams either configure <code class="inline">git config core.hooksPath .githooks</code> to point Git to a version-controlled folder or use hook management tools like <em>Husky</em> (Node.js) or <em>pre-commit</em> (Python).</li>
         </ul>
+        <div class="code"><pre># Inspect default hook sample templates
+ls -la .git/hooks/
+# Output includes: pre-commit.sample, commit-msg.sample, pre-push.sample
+
+# Point git to a version-controlled hooks directory:
+git config core.hooksPath .githooks</pre></div>
       </section>
       <section id="3-pre-commit-and-commit-msg">
         <div class="heading-with-levels">
@@ -141,13 +147,17 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-pre-commit-and-commit-msg-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
+        <p>The two most widely used client-side commit hooks are <code class="inline">pre-commit</code> and <code class="inline">commit-msg</code>:</p>
         <ul>
-          <li>Understand <strong>pre-commit and commit-msg</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">09-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong><code class="inline">pre-commit</code>:</strong> Runs first upon invoking <code class="inline">git commit</code>, before the commit editor is opened. If the script exits with non-zero, Git aborts the commit. Perfect for linting staged files, syntax checks, and secret scanners.</li>
+          <li><strong><code class="inline">commit-msg</code>:</strong> Runs after the developer inputs the commit message. Git passes the path of a temporary file containing the message as argument <code class="inline">$1</code>. If the script exits non-zero, the commit is aborted. Used to enforce message formats (e.g. Conventional Commits).</li>
         </ul>
+        <div class="code"><pre># Bypassing hooks in an emergency (skips pre-commit and commit-msg):
+git commit --no-verify -m "fix: emergency hotfix"
+
+# Testing pre-commit hooks manually on staged files:
+git diff --cached --name-only</pre></div>
       </section>
       <section id="4-commit-message-conventions">
         <div class="heading-with-levels">
@@ -157,12 +167,17 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-commit-message-conventions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
+        <p>Standardized commit messages make changelogs automated, git histories readable, and code reviews effortless. The industry standard is <strong>Conventional Commits</strong>:</p>
+        <div class="code"><pre>&lt;type&gt;[optional scope]: &lt;description&gt;
+
+[optional body]
+
+[optional footer(s)]</pre></div>
         <ul>
-          <li>Understand <strong>Commit message conventions</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">09-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Types:</strong> <code class="inline">feat</code> (new feature), <code class="inline">fix</code> (bug fix), <code class="inline">docs</code> (documentation), <code class="inline">refactor</code> (code change without feature or bug fix), <code class="inline">test</code> (adding or refactoring tests), <code class="inline">chore</code> (build tasks, dependency updates).</li>
+          <li><strong>Imperative tone:</strong> Use "add", "fix", "change" rather than "added" or "adds".</li>
+          <li><strong>Subject line:</strong> Keep under 50–72 characters, lowercase, no period at end.</li>
         </ul>
       </section>
       <section id="5-what-not-to-commit-secrets-build-artifacts">
@@ -173,13 +188,18 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="5-what-not-to-commit-secrets-build-artifacts-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
+        <p>Repositories must strictly exclude build outputs, package managers' installations, OS metadata, and confidential credentials.</p>
         <ul>
-          <li>Understand <strong>What not to commit (secrets, build artifacts)</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">09-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Never commit secrets:</strong> API keys, passwords, database URLs, SSH private keys, AWS credentials, <code class="inline">.env</code> files.</li>
+          <li><strong>Never commit generated files:</strong> <code class="inline">node_modules/</code>, <code class="inline">dist/</code>, <code class="inline">build/</code>, <code class="inline">__pycache__/</code>, <code class="inline">.DS_Store</code>.</li>
         </ul>
+        <div class="code"><pre># If a file is already tracked by Git, adding it to .gitignore does NOT untrack it!
+# You must remove it from the index (preserving it on disk):
+git rm --cached .env
+
+# Verify ignoring status:
+git check-ignore -v .env</pre></div>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">
@@ -194,41 +214,43 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Client-side hooks overview?</span>
+            <span class="qa-question-title">C.1. Why are client-side Git hooks not tracked in version control by default?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Git explicitly excludes <code class="inline">.git/hooks/</code> from cloning to prevent remote arbitrary code execution vulnerabilities. If hooks were tracked automatically, cloning a malicious repository could instantly execute harmful scripts on the developer's computer. Instead, teams use <code class="inline">core.hooksPath</code> or tools like Husky/pre-commit which require explicit user installation.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about pre-commit and commit-msg?</span>
+            <span class="qa-question-title">C.2. What are the key rules of the Conventional Commits specification?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Conventional Commits require a structured prefix: <code class="inline">&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;</code>. Common types are <code class="inline">feat</code>, <code class="inline">fix</code>, <code class="inline">docs</code>, <code class="inline">refactor</code>, and <code class="inline">chore</code>. The description must be in the imperative mood ("add feature" not "added feature"), under 50 characters, followed optionally by a blank line and detailed body paragraph, and footers for breaking changes (<code class="inline">BREAKING CHANGE:</code>).</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. How do pre-commit and commit-msg hooks differ in execution point and purpose?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p><code class="inline">pre-commit</code> executes immediately when <code class="inline">git commit</code> is run, before any message prompt. It inspects staged code for linting, unit test pass rates, formatting, or committed secrets. In contrast, <code class="inline">commit-msg</code> executes after the commit message has been authored; it receives the file path containing the drafted message as <code class="inline">$1</code> and validates adherence to ticketing or semantic formatting standards.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Commit message conventions?</span>
+            <span class="qa-question-title">C.4. If an API key or password is committed and pushed to a remote repository, why is adding it to .gitignore not enough?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about What not to commit (secrets, build artifacts)?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">.gitignore</code> only stops untracked files from being staged in the future; it does not touch tracked files or erase history. Even if the file is deleted in a new commit, the sensitive key remains visible in every commit snapshot in Git's historical tree. The key must be immediately revoked/rotated at the provider, and the commit history must be purged using tools like <code class="inline">git-filter-repo</code> or BFG Repo-Cleaner before force-pushing.</p>
           </div>
         </details>
       </section>

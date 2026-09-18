@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Stash, Cherry-pick &amp; Reset</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Practice recovery in a <strong>throwaway repo</strong>. Never run <code class="inline">git reset --hard</code> on shared branches without creating a backup branch first (<code class="inline">git branch backup-head</code>).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 09. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>Review sections 2–5 for practical recovery workflows, then complete <a href="#p-practice">P. Practical Assignment</a>. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-git-stash-push-pop-apply-list">
@@ -125,13 +125,28 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-git-stash-push-pop-apply-list-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>git stash (push, pop, apply, list)</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">08-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p><strong>Stashing</strong> takes uncommitted changes in your working tree and staging area and saves them onto an internal stack (<code class="inline">refs/stash</code>), giving you a clean working directory without creating an unnecessary commit.</p>
+        <div class="code"><pre># Stash working changes with a descriptive message (include untracked files with -u)
+git stash push -m "WIP: checkout logic before emergency fix" -u
+
+# View all stashed changesets
+git stash list
+# stash@{0}: WIP: checkout logic before emergency fix
+# stash@{1}: WIP on dev: 3a2c4e refactoring
+
+# Apply the latest stash and REMOVE it from the stash stack
+git stash pop
+
+# Apply a specific stash while KEEPING it in the stash stack
+git stash apply stash@{1}
+
+# Inspect what changes a stash contains
+git stash show -p stash@{0}
+
+# Delete a specific stash or clear all stashes
+git stash drop stash@{0}
+git stash clear</pre></div>
       </section>
       <section id="3-git-cherry-pick">
         <div class="heading-with-levels">
@@ -141,13 +156,24 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-git-cherry-pick-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>git cherry-pick</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">08-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p><strong>Cherry-picking</strong> applies the patch introduced by a specific commit from one branch directly onto your current branch, generating a brand-new commit SHA.</p>
+        <div class="code"><pre># Switch to target branch and cherry-pick a specific commit by SHA
+git switch main
+git cherry-pick 7b8c9d0
+
+# Cherry-pick without immediately committing (leaves changes staged for tweaking)
+git cherry-pick -n 7b8c9d0
+
+# Resolving conflicts during a cherry-pick:
+git status
+# Resolve files, then:
+git add &lt;resolved-files&gt;
+git cherry-pick --continue
+
+# Or abort and return to pre-cherry-pick state:
+git cherry-pick --abort</pre></div>
+        <div class="callout"><strong>Common Use Case:</strong> Backporting a hotfix from <code class="inline">main</code> to an older release branch, or extracting a single bugfix out of an unfinished feature branch.</div>
       </section>
       <section id="4-reset-vs-restore-vs-revert">
         <div class="heading-with-levels">
@@ -157,13 +183,24 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-reset-vs-restore-vs-revert-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
+        <p>Git offers three distinct commands to undo or modify changes. Understanding their scope prevents accidental data loss:</p>
         <ul>
-          <li>Understand <strong>reset vs restore vs revert</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">08-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong><code class="inline">git restore</code> (File-level undo):</strong> Introduced in Git 2.23 to replace ambiguous <code class="inline">git checkout -- file</code>. Unstages files or discards unstaged working tree edits without touching commit history.</li>
+          <li><strong><code class="inline">git revert</code> (Safe public undo):</strong> Creates a <em>new</em> inverse commit that negates previous changes. Ideal for shared or public branches because it preserves commit history.</li>
+          <li><strong><code class="inline">git reset</code> (History rewriting undo):</strong> Moves current branch HEAD backward. Rewrites commit history; dangerous on shared branches.</li>
         </ul>
+        <div class="code"><pre># 1. git restore: Safe working directory &amp; staging area cleanup
+git restore app.js             # Discard unstaged working tree changes
+git restore --staged app.js    # Unstage app.js back to working tree
+
+# 2. git revert: Safe inverse commit for shared branches
+git revert a1b2c3d             # Generates new commit undoing a1b2c3d
+
+# 3. git reset: Local history rewriting
+git reset --soft HEAD~1        # Moves HEAD back; keeps changes staged
+git reset --mixed HEAD~1       # Default: moves HEAD back; leaves changes unstaged in working tree
+git reset --hard HEAD~1        # DESTRUCTIVE: moves HEAD back; DISCARDS changes from staging &amp; working tree</pre></div>
       </section>
       <section id="5-reflog-for-recovery">
         <div class="heading-with-levels">
@@ -173,13 +210,20 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="5-reflog-for-recovery-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>reflog for recovery</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">08-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p><strong>Reflog</strong> (Reference Log) tracks every update made to branch tips and <code class="inline">HEAD</code> in your local repository. Even if you run an accidental <code class="inline">git reset --hard</code> or delete a local branch, the commits remain recorded in the reflog until garbage collected (typically 30–90 days).</p>
+        <div class="code"><pre># View HEAD movement history
+git reflog
+# Output example:
+# e4f5a6b HEAD@{0}: reset: moving to HEAD~1
+# 1a2b3c4 HEAD@{1}: commit: add payment processor
+# d9e8f7a HEAD@{2}: checkout: moving from dev to main
+
+# Recover a lost commit by creating a new branch at its reflog SHA:
+git branch recovery-branch 1a2b3c4
+
+# Or restore current branch to its pre-reset state:
+git reset --hard HEAD@{1}</pre></div>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">
@@ -194,41 +238,48 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about git stash (push, pop, apply, list)?</span>
+            <span class="qa-question-title">C.1. What is the difference between git stash pop and git stash apply?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">git stash apply</code> restores the stashed modifications into your working tree while keeping the entry in the stash list. <code class="inline">git stash pop</code> applies the modifications and immediately deletes (drops) the entry from the stash stack if the merge succeeds without conflict.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about git cherry-pick?</span>
+            <span class="qa-question-title">C.2. When should you use git revert instead of git reset?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Use <code class="inline">git revert</code> whenever the commit you want to undo has already been pushed to a remote shared branch. Revert records a brand-new commit that inverses the changes, preserving history without forcing team members to re-sync or force-pull. Use <code class="inline">git reset</code> only for private, local commits that have not been shared.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. Explain the differences between git reset --soft, --mixed, and --hard.</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>All three move the current branch ref and HEAD backward to the specified commit:</p>
+            <ul>
+              <li><strong><code class="inline">--soft</code>:</strong> Only moves HEAD. Staging area (Index) and working tree remain untouched. Changes from reset commits stay staged.</li>
+              <li><strong><code class="inline">--mixed</code> (default):</strong> Moves HEAD and resets the Index (staging area) to match. Working tree is preserved unstaged.</li>
+              <li><strong><code class="inline">--hard</code>:</strong> Moves HEAD, resets the Index, and overwrites the working tree. Any uncommitted local work is permanently discarded.</li>
+            </ul>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about reset vs restore vs revert?</span>
+            <span class="qa-question-title">C.4. How does git reflog help recover from an accidental git reset --hard?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about reflog for recovery?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Git does not immediately delete commits when HEAD is reset backward. Local commit references are recorded in <code class="inline">git reflog</code> under <code class="inline">HEAD@{n}</code>. By inspecting <code class="inline">git reflog</code>, finding the SHA right before the reset, and running <code class="inline">git branch &lt;recovery-branch&gt; &lt;SHA&gt;</code> or <code class="inline">git reset --hard HEAD@{1}</code>, you can restore all committed changes intact.</p>
           </div>
         </details>
       </section>

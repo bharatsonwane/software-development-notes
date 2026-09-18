@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Rebasing</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Practice in a <strong>throwaway repo</strong>. Never rebase commits that have already been shared on a public or collaborative branch. (Remote workflows and force-pushing are covered in File 06).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 06. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 06. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-rebase-vs-merge-when-to-use-which">
@@ -122,15 +122,27 @@
           <h2>2. Rebase vs merge (when to use which)</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-rebase-vs-merge-when-to-use-which-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p>Both <code class="inline">git merge</code> and <code class="inline">git rebase</code> integrate changes from one branch into another, but with different philosophical approaches to history:</p>
+        <div class="code"><pre>/*
+Before:
+          C3 ─── C4 (feature)
+         /
+C1 ─── C2 ─── C5 (main)
+
+Option A: git merge (Preserves exact branching history &amp; creates merge commit M)
+C1 ─── C2 ─── C5 ─────── M (main)
+         \             /
+          C3 ─── C4 ──┘
+
+Option B: git rebase (Replays C3 and C4 on top of main, creating linear history)
+C1 ─── C2 ─── C5 ─── C3&#x27; ─── C4&#x27; (feature)
+*/</pre></div>
         <ul>
-          <li>Understand <strong>Rebase vs merge (when to use which)</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">05-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Merge:</strong> Non-destructive. It preserves the exact chronological record and true historical context of when branches existed.</li>
+          <li><strong>Rebase:</strong> Rewrites project history to create a clean, linear progression of commits without noisy merge bubbles.</li>
         </ul>
       </section>
       <section id="3-git-rebase-onto-main">
@@ -138,48 +150,61 @@
           <h2>3. git rebase onto main</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-git-rebase-onto-main-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>git rebase onto main</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">05-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p>To update your feature branch with the latest changes from <code class="inline">main</code> using rebase:</p>
+        <div class="code"><pre># Step 1: Switch to your feature branch
+git switch feature/cart
+
+# Step 2: Rebase your commits on top of the latest main
+git rebase main
+
+# If conflicts occur during replay:
+# 1. Resolve conflict markers in affected files
+# 2. Stage the resolved files:
+git add .
+# 3. Continue the replay (do NOT run git commit):
+git rebase --continue
+
+# To abandon the rebase and return to original state:
+git rebase --abort</pre></div>
       </section>
       <section id="4-interactive-rebase-edit-squash-drop">
         <div class="heading-with-levels">
           <h2>4. Interactive rebase (edit, squash, drop)</h2>
           <div class="h2-levels">
-            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
-        <h3 id="4-interactive-rebase-edit-squash-drop-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
+        <h3 id="4-interactive-rebase-edit-squash-drop-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <p>Interactive rebase (<code class="inline">git rebase -i</code>) allows you to clean up, reorder, combine, or edit local commits before submitting them for review.</p>
+        <div class="code"><pre># Start interactive rebase for the last 3 commits
+git rebase -i HEAD~3
+
+# In the interactive editor todo list:
+pick 1a2b3c4 feat: add checkout button
+squash 5d6e7f8 fix typo in checkout button
+reword 9g0h1i2 docs: update payment docs</pre></div>
         <ul>
-          <li>Understand <strong>Interactive rebase (edit, squash, drop)</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">05-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>pick (<code class="inline">p</code>):</strong> Keep the commit as is.</li>
+          <li><strong>reword (<code class="inline">r</code>):</strong> Keep the commit changes, but edit the commit message.</li>
+          <li><strong>squash (<code class="inline">s</code>):</strong> Meld this commit into the previous one and concatenate commit messages.</li>
+          <li><strong>fixup (<code class="inline">f</code>):</strong> Meld into previous commit, discarding this commit's log message.</li>
+          <li><strong>drop (<code class="inline">d</code>):</strong> Remove the commit entirely.</li>
         </ul>
       </section>
       <section id="5-risks-rewriting-shared-history">
         <div class="heading-with-levels">
           <h2>5. Risks: rewriting shared history</h2>
           <div class="h2-levels">
-            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
-        <h3 id="5-risks-rewriting-shared-history-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>Risks: rewriting shared history</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">05-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <h3 id="5-risks-rewriting-shared-history-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <p><strong>The Golden Rule of Rebasing:</strong> Never rebase commits that exist outside your local repository and that others may have based work on.</p>
+        <div class="callout callout-warning"><strong>Why:</strong> Rebasing creates brand-new commit hashes (<code class="inline">C3'</code>, <code class="inline">C4'</code>) for every replayed commit. If teammates have pulled the old commits, their Git will see two divergent histories and will attempt to merge them back, creating duplicate commits and chaotic merge conflicts.</div>
+        <p>Remote synchronization and the safer <code class="inline">git push --force-with-lease</code> command are covered in File 06 (Remote &amp; Collaboration).</p>
       </section>
       <section id="c-common-questions">
         <div class="heading-with-levels">
@@ -194,41 +219,43 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Rebase vs merge (when to use which)?</span>
+            <span class="qa-question-title">C.1. What is the fundamental difference between <code class="inline">git merge</code> and <code class="inline">git rebase</code>?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p><code class="inline">git merge</code> brings branches together by creating a new merge commit (preserving historical branching structure and commit dates). <code class="inline">git rebase</code> rewrites history by moving the entire feature branch so that it begins from the tip of the target branch, creating a clean and perfectly linear commit log.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about git rebase onto main?</span>
+            <span class="qa-question-title">C.2. Why must you run <code class="inline">git rebase --continue</code> instead of <code class="inline">git commit</code> after fixing rebase conflicts?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>During a rebase, Git is replaying a sequence of existing commits one by one. Running <code class="inline">git commit</code> would create an unintended new commit outside the rebase sequence. Staging the resolution with <code class="inline">git add</code> and running <code class="inline">git rebase --continue</code> signals Git to apply the resolved changes to the currently replayed commit and proceed to the next commit in the todo list.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. What is the Golden Rule of Rebasing and why is it critical?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>The Golden Rule is: <em>never rebase public or shared branches</em>. Because rebasing gives replayed commits brand-new SHA-1 hashes while discarding the old ones, any teammate who pulled the original commits will have their repository out of sync. When they push or pull, Git will attempt to reconcile the conflicting histories, causing severe duplication and merge conflicts.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Interactive rebase (edit, squash, drop)?</span>
+            <span class="qa-question-title">C.4. What is the difference between <code class="inline">squash</code> and <code class="inline">fixup</code> during interactive rebase?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Risks: rewriting shared history?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Both commands combine the marked commit into the previous commit in the rebase list. <code class="inline">squash</code> prompts you to view and edit both commit messages together. <code class="inline">fixup</code> discards the marked commit's message completely, keeping only the parent commit's message (ideal for small fixups or typo fixes).</p>
           </div>
         </details>
       </section>

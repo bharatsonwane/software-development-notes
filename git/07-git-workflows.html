@@ -112,9 +112,9 @@
           <li>This chapter covers <strong>Workflows</strong>. Narrative notes are still expanding; the structure and practice match the rest of your notes site.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> practice in a <strong>throwaway repo</strong>. Prefer small commits. Never <code class="inline">reset --hard</code> on shared work without a backup branch.</div>
+        <div class="callout"><strong>Default rule today:</strong> Practice in a <strong>throwaway repo</strong>. Select a workflow matching your team's deployment cadence. (History surgery with stash and reset is covered in File 08).</div>
         <ul>
-          <li>After reading sections 2–5 (stubs), complete <a href="#p-practice">P. Practical Assignment</a> before File 08. Review <a href="#c-common-questions">C. Common questions</a>.</li>
+          <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 08. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
       </section>
       <section id="2-trunk-based-development">
@@ -122,15 +122,14 @@
           <h2>2. Trunk-based development</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="2-trunk-based-development-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="2-1-goals">2.1. Goals</h3>
+        <p><strong>Trunk-Based Development (TBD)</strong> is an engineering practice where all developers merge small, frequent updates into a single core branch (called <code class="inline">main</code> or the "trunk") multiple times per day.</p>
         <ul>
-          <li>Understand <strong>Trunk-based development</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">07-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Short-lived branches:</strong> Branches typically live for only a few hours up to a single day before being merged.</li>
+          <li><strong>Continuous Integration:</strong> Strong automated unit tests and CI pipelines validate every single commit pushed to the trunk.</li>
+          <li><strong>Feature Flags:</strong> Incomplete or experimental features are protected behind runtime toggle flags rather than isolated in long-running branches.</li>
         </ul>
       </section>
       <section id="3-git-flow-overview">
@@ -141,12 +140,24 @@
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="3-git-flow-overview-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="3-1-goals">3.1. Goals</h3>
+        <p><strong>Git Flow</strong> (published by Vincent Driessen in 2010) is a structured, strict branching model organized around distinct release milestones.</p>
+        <div class="code"><pre>/*
+Git Flow Branch Structure:
+
+main        ────── C1 ─────────────────────────── C2 (v1.0.0) ─────────── (Production)
+                    ▲                             ▲
+hotfix              │                             └─── H1 ──┘ (Emergency fix)
+                    │                                   │
+release             │                     └── R1 ───────┤ (Stabilization)
+                    │                          ▲        │
+develop     ─────── D1 ─────── D2 ──────────── D3 ──────┴─ D4 ─────────── (Next release)
+                     \       /                 \       /
+feature               F1 ── F2                  F3 ── F4
+*/</pre></div>
         <ul>
-          <li>Understand <strong>Git Flow overview</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">07-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Two Perpetual Branches:</strong> <code class="inline">main</code> (stores official production releases) and <code class="inline">develop</code> (serves as an integration branch for features).</li>
+          <li><strong>Supporting Branches:</strong> <code class="inline">feature/*</code> (branched from <code class="inline">develop</code>), <code class="inline">release/*</code> (prepares release metadata), and <code class="inline">hotfix/*</code> (branched directly from <code class="inline">main</code> to fix critical production defects).</li>
         </ul>
       </section>
       <section id="4-feature-branch-workflow">
@@ -154,31 +165,31 @@
           <h2>4. Feature branch workflow</h2>
           <div class="h2-levels">
             <span class="tier l1">L1</span>
-            <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
         <h3 id="4-feature-branch-workflow-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="4-1-goals">4.1. Goals</h3>
-        <ul>
-          <li>Understand <strong>Feature branch workflow</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">07-practice.md</code> (or run the commands and jot results).</li>
-        </ul>
+        <p>The <strong>Feature Branch Workflow</strong> (often called <strong>GitHub Flow</strong>) is a lightweight, modern approach well-suited for web applications and SaaS products practicing continuous deployment.</p>
+        <ol>
+          <li><code class="inline">main</code> is always deployable and protected against direct pushes.</li>
+          <li>Create descriptive branches off <code class="inline">main</code> (e.g. <code class="inline">feature/stripe-webhooks</code>, <code class="inline">fix/nav-overflow</code>).</li>
+          <li>Commit locally and push regularly to the remote server.</li>
+          <li>Open a Pull Request for discussion, peer review, and automated CI test runs.</li>
+          <li>Merge into <code class="inline">main</code> and deploy immediately to production.</li>
+        </ol>
       </section>
       <section id="5-choosing-a-workflow-for-a-team">
         <div class="heading-with-levels">
           <h2>5. Choosing a workflow for a team</h2>
           <div class="h2-levels">
-            <span class="tier l1">L1</span>
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Detailed notes for this section will be filled in later. Practice from the outline below.</div>
-        <h3 id="5-choosing-a-workflow-for-a-team-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3 id="5-1-goals">5.1. Goals</h3>
+        <h3 id="5-choosing-a-workflow-for-a-team-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <p>Select a branching workflow based on your team's release mechanism:</p>
         <ul>
-          <li>Understand <strong>Choosing a workflow for a team</strong> well enough to demo it in a throwaway repo.</li>
-          <li>Complete related tasks in <code class="inline">07-practice.md</code> (or run the commands and jot results).</li>
+          <li><strong>Choose GitHub Flow / Feature Branches:</strong> When building web services, SaaS products, or microservices with continuous delivery and frequent deployments.</li>
+          <li><strong>Choose Trunk-Based Development:</strong> For mature engineering teams with comprehensive automated test suites and high CI/CD discipline looking to eliminate merge friction.</li>
+          <li><strong>Choose Git Flow:</strong> For scheduled, versioned release software (e.g. mobile app stores, desktop installers, embedded firmware) that must maintain multiple legacy versions concurrently.</li>
         </ul>
       </section>
       <section id="c-common-questions">
@@ -194,41 +205,43 @@
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.1. What should I know about Trunk-based development?</span>
+            <span class="qa-question-title">C.1. What are the key architectural differences between Trunk-Based Development and Git Flow?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>Trunk-Based Development has a single persistent branch (<code class="inline">main</code>) where all developers merge short-lived branches (&lt; 24-48 hours) frequently using feature toggles and continuous integration. Git Flow utilizes two perpetual branches (<code class="inline">main</code> and <code class="inline">develop</code>) alongside dedicated release, feature, and hotfix branches, designed for structured, periodic milestone releases.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.2. What should I know about Git Flow overview?</span>
+            <span class="qa-question-title">C.2. In Git Flow, what is the role of a Hotfix branch?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>A hotfix branch is branched directly from <code class="inline">main</code> to address a critical bug discovered in production. Once resolved, it is merged immediately into <strong>both</strong> <code class="inline">main</code> (tagged with a patch version like v1.0.1) and <code class="inline">develop</code>, ensuring the fix is present in production and not lost in upcoming releases.</p>
+          </div>
+        </details>
+
+        <h3 id="c-common-questions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+
+        <details class="qa-block">
+          <summary class="qa-question-summary">
+            <span class="qa-question-title">C.3. How does Trunk-Based Development eliminate "merge hell"?</span>
+            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
+          </summary>
+          <div class="qa-answer-body">
+            <p>"Merge hell" happens when a feature branch lives for weeks or months, diverging substantially from <code class="inline">main</code> and requiring hundreds of painful conflict resolutions. By merging multiple times a day in small increments, conflicts are tiny, detected immediately by CI, and resolved within minutes while the code is fresh in memory.</p>
           </div>
         </details>
 
         <details class="qa-block">
           <summary class="qa-question-summary">
-            <span class="qa-question-title">C.3. What should I know about Feature branch workflow?</span>
+            <span class="qa-question-title">C.4. What is a Feature Flag (or Feature Toggle) and why is it necessary for Trunk-Based Development?</span>
             <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
           </summary>
           <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
-          </div>
-        </details>
-
-        <details class="qa-block">
-          <summary class="qa-question-summary">
-            <span class="qa-question-title">C.4. What should I know about Choosing a workflow for a team?</span>
-            <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Answer</span>
-          </summary>
-          <div class="qa-answer-body">
-            <p>Be able to explain it and run a short demo. Full notes will expand this answer.</p>
+            <p>A feature flag is a configuration check in code (e.g. <code class="inline">if (features.NEW_BILLING_ENABLED)</code>) that controls feature visibility at runtime. It decouples code deployment from feature release, allowing incomplete features to safely reside on <code class="inline">main</code> and deploy to production while remaining hidden from end users until fully finished and tested.</p>
           </div>
         </details>
       </section>
