@@ -131,6 +131,18 @@
           <li>Unlike lists, once a tuple is constructed, its element bindings cannot be modified, inserted, replaced, or deleted in place. This immutability gives tuples integrity, thread-safety, hashability, and memory optimization advantages.</li>
         </ul>
 
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>Type Annotations for Tuples (PEP 585 / Python 3.9+):</strong>
+            <ul>
+              <li><strong>Fixed Heterogeneous Tuples:</strong> List each element type positionally: <code class="inline">coord: tuple[int, int] = (10, 20)</code> or <code class="inline">record: tuple[str, int, bool] = ("Alice", 25, True)</code>.</li>
+              <li><strong>Arbitrary-Length Homogeneous Tuples:</strong> Use ellipsis (<code class="inline">...</code>): <code class="inline">scores: tuple[int, ...] = (90, 85, 95)</code>.</li>
+              <li><strong>Empty Tuple:</strong> Annotated as <code class="inline">empty: tuple[()] = ()</code>.</li>
+            </ul>
+          </div>
+        </div>
+
         <h3 id="1-2-cpython-internals-tuples-vs-lists">1.2. CPython Internals: Tuples vs Lists</h3>
         <div class="callout">
           <strong>Under the Hood (PyTupleObject):</strong>
@@ -156,33 +168,33 @@
         <h3 id="2-1-tuple-creation-syntax">2.1. Tuple Creation Syntax</h3>
         <p>Tuples are defined using parentheses <code class="inline">()</code> with comma-separated elements:</p>
         <div class="code"><pre># 1. Empty tuple:
-t1 = ()
-t2 = tuple()
+t1: tuple[()] = ()
+t2: tuple[()] = tuple()
 
 # 2. Multi-element tuple:
-point = (10, 20)
-user = ("Sonwane", 29, "Engineer", True)
+point: tuple[int, int] = (10, 20)
+user: tuple[str, int, str, bool] = ("Sonwane", 29, "Engineer", True)
 
 # 3. From any iterable via tuple():
-from_str = tuple("PYTHON")          # ('P', 'Y', 'T', 'H', 'O', 'N')
-from_list = tuple([1, 2, 3])        # (1, 2, 3)
-from_range = tuple(range(1, 6))     # (1, 2, 3, 4, 5)</pre></div>
+from_str: tuple[str, ...] = tuple("PYTHON")          # ('P', 'Y', 'T', 'H', 'O', 'N')
+from_list: tuple[int, ...] = tuple([1, 2, 3])        # (1, 2, 3)
+from_range: tuple[int, ...] = tuple(range(1, 6))     # (1, 2, 3, 4, 5)</pre></div>
 
         <h3 id="2-2-the-single-element-comma-trap">2.2. The Single-Element Comma Trap</h3>
         <div class="callout">
           <strong>Critical Syntactic Rule:</strong> In Python, parentheses alone do NOT define a tuple; <strong>the comma (,) defines a tuple</strong>. Writing <code class="inline">(10)</code> is treated as mathematical grouping parentheses containing the integer <code class="inline">10</code>. To create a single-element tuple, a trailing comma is mandatory: <code class="inline">(10,)</code>.
         </div>
 
-        <div class="code"><pre>not_a_tuple = (10)
+        <div class="code"><pre>not_a_tuple: int = (10)
 print(type(not_a_tuple))  # &lt;class 'int'&gt;
 
-is_a_tuple = (10,)
+is_a_tuple: tuple[int] = (10,)
 print(type(is_a_tuple))   # &lt;class 'tuple'&gt;
 
-str_test = ("hello")
+str_test: str = ("hello")
 print(type(str_test))     # &lt;class 'str'&gt;
 
-str_tuple = ("hello",)
+str_tuple: tuple[str] = ("hello",)
 print(type(str_tuple))    # &lt;class 'tuple'&gt;</pre></div>
 
         <h3 id="2-introduction-to-tuple-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -194,21 +206,23 @@ print(type(str_tuple))    # &lt;class 'tuple'&gt;</pre></div>
         </ul>
 
         <div class="code"><pre># Tuple packing (Parentheses are optional):
-coordinates = 18.5204, 73.8567
+coordinates: tuple[float, float] = 18.5204, 73.8567
 print(type(coordinates))  # &lt;class 'tuple'&gt;
 
 # Tuple unpacking:
+lat: float; lon: float
 lat, lon = coordinates
 print(f"Latitude: {lat}, Longitude: {lon}")  # Latitude: 18.5204, Longitude: 73.8567
 
 # Pythonic variable swap uses tuple packing and unpacking under the hood:
-a = 10
-b = 20
+a: int = 10
+b: int = 20
 a, b = b, a  # (b, a) packed then unpacked into a, b
 print(f"a = {a}, b = {b}")  # a = 20, b = 10
 
 # Extended / Starred Unpacking (PEP 3132):
-numbers = (1, 2, 3, 4, 5, 6)
+numbers: tuple[int, ...] = (1, 2, 3, 4, 5, 6)
+first: int; middle: list[int]; last: int
 first, *middle, last = numbers
 print("First: ", first)   # 1
 print("Middle:", middle)  # [2, 3, 4, 5] (Unpacked as list)
@@ -217,7 +231,7 @@ print("Last:  ", last)    # 6</pre></div>
         <h3 id="2-4-immutability-and-the-mutable-object-inside-tuple-nuance">2.4. Immutability &amp; The "Mutable Object Inside Tuple" Nuance</h3>
         <p>A tuple's element bindings cannot change. However, if a tuple contains a reference to a mutable object (like a list), that nested object can still be mutated in-place:</p>
 
-        <div class="code"><pre>t = (1, [10, 20], "hello")
+        <div class="code"><pre>t: tuple[int, list[int], str] = (1, [10, 20], "hello")
 
 # Cannot reassign tuple index:
 # t[0] = 99  # TypeError: 'tuple' object does not support item assignment
@@ -261,7 +275,7 @@ print(t)  # (1, [10, 20, 30], 'hello')</pre></div>
           </tbody>
         </table>
 
-        <div class="code"><pre>t = (10, 20, 30, 20, 40, 20, 50)
+        <div class="code"><pre>t: tuple[int, ...] = (10, 20, 30, 20, 40, 20, 50)
 
 # count():
 print("Count of 20:", t.count(20))  # 3
@@ -276,7 +290,7 @@ print("Second 20 index:  ", t.index(20, 2))  # 3 (Search starting from index 2)
 
         <h3 id="3-2-universal-built-in-sequence-functions-on-tuples">3.2. Universal Built-in Sequence Functions on Tuples</h3>
         <p>All read-only built-in functions operating on iterables work seamlessly with tuples:</p>
-        <div class="code"><pre>nums = (5, 2, 9, 1, 7)
+        <div class="code"><pre>nums: tuple[int, ...] = (5, 2, 9, 1, 7)
 
 print("len:", len(nums))      # 5
 print("min:", min(nums))      # 1
@@ -284,17 +298,17 @@ print("max:", max(nums))      # 9
 print("sum:", sum(nums))      # 24
 
 # sorted() returns a NEW sorted list (leaving tuple untouched):
-sorted_list = sorted(nums)
+sorted_list: list[int] = sorted(nums)
 print("sorted():", sorted_list)         # [1, 2, 5, 7, 9]
 
 # any() and all():
-bool_tuple = (True, False, True)
+bool_tuple: tuple[bool, ...] = (True, False, True)
 print("any():", any(bool_tuple))       # True
 print("all():", all(bool_tuple))       # False
 
 # Concatenation (+) and Repetition (*):
-t1 = (1, 2)
-t2 = (3, 4)
+t1: tuple[int, int] = (1, 2)
+t2: tuple[int, int] = (3, 4)
 print("Concat: ", t1 + t2)  # (1, 2, 3, 4) (Creates a brand new tuple)
 print("Repeat: ", t1 * 3)   # (1, 2, 1, 2, 1, 2)</pre></div>
       </section>
@@ -315,7 +329,9 @@ print("Repeat: ", t1 * 3)   # (1, 2, 1, 2, 1, 2)</pre></div>
           <strong>Language Rule:</strong> There is <strong>no such thing as a "tuple comprehension" syntax in Python</strong>. Writing <code class="inline">(x**2 for x in range(5))</code> does NOT create a tuple; it creates a <strong>Generator Object</strong> (lazy evaluation iterator).
         </div>
 
-        <div class="code"><pre>gen = (x**2 for x in range(5))
+        <div class="code"><pre>from collections.abc import Generator
+
+gen: Generator[int, None, None] = (x**2 for x in range(5))
 print(type(gen))  # &lt;class 'generator'&gt;
 print(gen)        # &lt;generator object &lt;genexpr&gt; at 0x...&gt;
 
@@ -329,14 +345,14 @@ print(next(gen))  # 1</pre></div>
         <p>To produce a tuple from a comprehension, wrap the generator expression or list comprehension in the <code class="inline">tuple()</code> constructor:</p>
 
         <div class="code"><pre># Pattern 1: Passing generator expression to tuple() constructor (Recommended):
-even_squares = tuple(x**2 for x in range(1, 11) if x % 2 == 0)
+even_squares: tuple[int, ...] = tuple(x**2 for x in range(1, 11) if x % 2 == 0)
 print("Tuple from genexpr:", even_squares)
 # (4, 16, 36, 64, 100)
 
 # Pattern 2: Passing a list comprehension to tuple():
 # Note: Creates temporary intermediate list in memory first
-words = ["python", "tuples", "immutability"]
-capitalized = tuple([w.upper() for w in words])
+words: list[str] = ["python", "tuples", "immutability"]
+capitalized: tuple[str, ...] = tuple([w.upper() for w in words])
 print("Capitalized tuple: ", capitalized)
 # ('PYTHON', 'TUPLES', 'IMMUTABILITY')</pre></div>
       </section>
@@ -403,21 +419,21 @@ print("Capitalized tuple: ", capitalized)
 import timeit
 
 # 1. Memory comparison:
-list_data = [1, 2, 3, 4, 5]
-tuple_data = (1, 2, 3, 4, 5)
+list_data: list[int] = [1, 2, 3, 4, 5]
+tuple_data: tuple[int, ...] = (1, 2, 3, 4, 5)
 print(f"List bytes:  {sys.getsizeof(list_data)}")   # Typically ~104 bytes
 print(f"Tuple bytes: {sys.getsizeof(tuple_data)}")  # Typically ~80 bytes
 
 # 2. Instantiation speed comparison:
-list_time = timeit.timeit(stmt="[1, 2, 3, 4, 5]", number=1_000_000)
-tuple_time = timeit.timeit(stmt="(1, 2, 3, 4, 5)", number=1_000_000)
+list_time: float = timeit.timeit(stmt="[1, 2, 3, 4, 5]", number=1_000_000)
+tuple_time: float = timeit.timeit(stmt="(1, 2, 3, 4, 5)", number=1_000_000)
 print(f"List creation 1M times:  {list_time:.4f} s")
 print(f"Tuple creation 1M times: {tuple_time:.4f} s (Significantly faster due to freelist)")</pre></div>
 
         <h3 id="5-3-tuples-as-dictionary-keys">5.3. Tuples as Dictionary Keys</h3>
         <p>Because tuples are immutable and hashable, they are frequently used as compound keys in dictionaries (e.g. grid coordinates, geographical points):</p>
         <div class="code"><pre># Geographical coordinate cache:
-city_coords = {
+city_coords: dict[tuple[float, float], str] = {
     (18.5204, 73.8567): "Pune, India",
     (19.0760, 72.8777): "Mumbai, India",
     (40.7128, -74.0060): "New York, USA"
@@ -434,7 +450,7 @@ print(city_coords[(18.5204, 73.8567)])  # Pune, India
 
 # Define a Point structure:
 Point = namedtuple("Point", ["x", "y", "z"])
-p = Point(x=10, y=20, z=30)
+p: Point = Point(x=10, y=20, z=30)
 
 print(p.x, p.y, p.z)       # Access by name: 10 20 30
 print(p[0], p[1], p[2])    # Access by index: 10 20 30
@@ -537,9 +553,14 @@ print(isinstance(p, tuple))# True (It is a real tuple!)</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>Introduced in PEP 3132, starred unpacking captures unassigned elements into a new list. You can place the starred target at the beginning, middle, or end:</p>
-            <div class="code"><pre>head, *tail = (1, 2, 3, 4)      # head=1, tail=[2, 3, 4]
-*start, end = (1, 2, 3, 4)      # start=[1, 2, 3], end=4
-first, *mid, last = (1, 2, 3, 4)# first=1, mid=[2, 3], last=4</pre></div>
+            <div class="code"><pre>head: int; tail: list[int]
+head, *tail = (1, 2, 3, 4)        # head=1, tail=[2, 3, 4]
+
+start: list[int]; end: int
+*start, end = (1, 2, 3, 4)        # start=[1, 2, 3], end=4
+
+first: int; mid: list[int]; last: int
+first, *mid, last = (1, 2, 3, 4)  # first=1, mid=[2, 3], last=4</pre></div>
             <p>Only one starred expression is permitted in an unpacking assignment.</p>
           </div>
         </details>
@@ -595,11 +616,12 @@ first, *mid, last = (1, 2, 3, 4)# first=1, mid=[2, 3], last=4</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>data = 10, 20, 30, 40, 50, 60  # Tuple packing
-first, *middle, last = data    # Starred unpacking
-print("First: ", first)        # 10
-print("Middle:", middle)       # [20, 30, 40, 50]
-print("Last:  ", last)         # 60</pre></div>
+                <div class="code"><pre>data: tuple[int, ...] = 10, 20, 30, 40, 50, 60  # Tuple packing
+first: int; middle: list[int]; last: int
+first, *middle, last = data                     # Starred unpacking
+print("First: ", first)                         # 10
+print("Middle:", middle)                        # [20, 30, 40, 50]
+print("Last:  ", last)                          # 60</pre></div>
               </div>
             </details>
           </li>
@@ -610,8 +632,8 @@ print("Last:  ", last)         # 60</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>text = "engineering excellence"
-vowels = tuple(ch.upper() for ch in text if ch.lower() in "aeiou")
+                <div class="code"><pre>text: str = "engineering excellence"
+vowels: tuple[str, ...] = tuple(ch.upper() for ch in text if ch.lower() in "aeiou")
 print("Vowels tuple:", vowels)
 # ('E', 'I', 'E', 'E', 'I', 'E', 'E', 'E', 'E')</pre></div>
               </div>
@@ -628,12 +650,12 @@ print("Vowels tuple:", vowels)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>sample = (10, 20, 30, 20, 40, 20, 50)
-target = 20
+                <div class="code"><pre>sample: tuple[int, ...] = (10, 20, 30, 20, 40, 20, 50)
+target: int = 20
 
 # Finding total count and all index positions of target in tuple:
-positions = [idx for idx, val in enumerate(sample) if val == target]
-count = len(positions)
+positions: list[int] = [idx for idx, val in enumerate(sample) if val == target]
+count: int = len(positions)
 
 print(f"Target {target} occurred {count} times at indices: {positions}")
 # Target 20 occurred 3 times at indices: [1, 3, 5]</pre></div>
@@ -647,7 +669,7 @@ print(f"Target {target} occurred {count} times at indices: {positions}")
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>students = [
+                <div class="code"><pre>students: list[tuple[str, int, int]] = [
     ("Alice", 85, 21),
     ("Bob", 92, 23),
     ("Charlie", 85, 19),
@@ -678,8 +700,8 @@ for s in students:
 # Creating a lightweight namedtuple record:
 Employee = namedtuple("Employee", ["id", "name", "monthly_salary", "department"])
 
-emp = Employee(101, "Bharat Sonwane", 8500, "Engineering")
-annual_salary = emp.monthly_salary * 12
+emp: Employee = Employee(101, "Bharat Sonwane", 8500, "Engineering")
+annual_salary: int = emp.monthly_salary * 12
 
 print(f"{emp.name} ({emp.department}) earns ${annual_salary:,} annually.")
 # Output: Bharat Sonwane (Engineering) earns $102,000 annually.
@@ -696,20 +718,20 @@ print(f"{emp.name} ({emp.department}) earns ${annual_salary:,} annually.")
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>nested_tuple = (1, 2, (3, 4), (5, (6, 7)))
+                <div class="code"><pre>nested_tuple: tuple[object, ...] = (1, 2, (3, 4), (5, (6, 7)))
 
 # Flattening tuples using a loop and temporary list:
-flat_items = []
-stack = [nested_tuple]
+flat_items: list[int] = []
+stack: list[object] = [nested_tuple]
 while stack:
-    current = stack.pop(0)
-    for item in current:
-        if isinstance(item, tuple):
+    current: object = stack.pop(0)
+    if isinstance(current, tuple):
+        for item in current:
             stack.append(item)
-        else:
-            flat_items.append(item)
+    elif isinstance(current, int):
+        flat_items.append(current)
 
-flat_result = tuple(flat_items)
+flat_result: tuple[int, ...] = tuple(flat_items)
 print("Flattened tuple:", flat_result)
 # (1, 2, 3, 4, 5, 6, 7)</pre></div>
               </div>
@@ -728,14 +750,14 @@ print("Flattened tuple:", flat_result)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>point_a = (1.0, 2.0, 3.0)
-point_b = (4.0, 6.0, 8.0)
+                <div class="code"><pre>point_a: tuple[float, float, float] = (1.0, 2.0, 3.0)
+point_b: tuple[float, float, float] = (4.0, 6.0, 8.0)
 
 # Euclidean Distance using tuple unpacking and arithmetic:
-dx = point_a[0] - point_b[0]
-dy = point_a[1] - point_b[1]
-dz = point_a[2] - point_b[2]
-distance = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
+dx: float = point_a[0] - point_b[0]
+dy: float = point_a[1] - point_b[1]
+dz: float = point_a[2] - point_b[2]
+distance: float = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
 
 print(f"Distance between {point_a} and {point_b}: {distance:.4f}")
 # Distance between (1.0, 2.0, 3.0) and (4.0, 6.0, 8.0): 7.0711</pre></div>
@@ -749,7 +771,7 @@ print(f"Distance between {point_a} and {point_b}: {distance:.4f}")
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>t = (1, [10, 20])
+                <div class="code"><pre>t: tuple[int, list[int]] = (1, [10, 20])
 
 # Augmented assignment on a mutable item inside an immutable tuple:
 # Writing t[1] += [30, 40] performs t[1].extend([30, 40]) AND then reassigns t[1] = ...
@@ -760,7 +782,7 @@ print(f"Distance between {point_a} and {point_b}: {distance:.4f}")
 t[1].extend([30, 40])
 print("Final tuple state:", t)
 # Final tuple state: (1, [10, 20, 30, 40])
-# Note: In Module 24 (Exception Handling), we will catch and inspect the TypeError!</pre></div>
+# Note: In Module 22 (Exception Handling), we will catch and inspect the TypeError!</pre></div>
               </div>
             </details>
           </li>

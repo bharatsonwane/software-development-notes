@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-oop-type-annotations-pep-526">1.2. OOP Type Annotations (PEP 526 &amp; Self)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -168,6 +169,29 @@
           <li><strong>Object-Oriented Programming (OOP)</strong> is a design paradigm based on modeling software around real-world entities ("objects") containing <strong>state (attributes/data)</strong> and <strong>behavior (methods/functions)</strong>.</li>
           <li>In Python, <em>everything is an object</em>: integers, strings, functions, modules, and user-defined classes are all first-class instances inheriting from the root <code class="inline">object</code> base class.</li>
         </ul>
+
+        <h3 id="1-2-oop-type-annotations-pep-526">1.2. OOP Type Annotations (PEP 526 &amp; Self)</h3>
+        <div class="callout tip">
+          <div class="callout-title">PEP 526 &amp; PEP 673: Typing Classes and Methods</div>
+          <p>In modern Python 3.10+, class attributes, constructors, and methods should be explicitly annotated. In particular, <code class="inline">__init__</code> must return <code class="inline">None</code>, and methods returning the instance can use <code class="inline">Self</code> (PEP 673 / <code class="inline">from typing import Self</code>):</p>
+        </div>
+        <div class="code"><pre>from typing import Self
+
+class BankAccount:
+    bank_name: str = "Global National Bank"  # Class attribute annotation (PEP 526)
+    total_accounts: int = 0
+
+    def __init__(self, owner: str, balance: float = 0.0) -> None:
+        self.owner: str = owner               # Instance attribute annotation
+        self.balance: float = balance
+        BankAccount.total_accounts += 1
+
+    def deposit(self, amount: float) -> Self:
+        self.balance += amount
+        return self                          # Enables fluent method chaining
+
+    def get_balance(self) -> float:
+        return self.balance</pre></div>
       </section>
 
       <!-- SECTION 2: CLASS, OBJECT, AND REFERENCE VARIABLE -->
@@ -193,8 +217,8 @@
     pass
 
 # Creating two distinct object instances on heap:
-s1 = Student()  # s1 is a reference variable
-s2 = Student()
+s1: Student = Student()  # s1 is a reference variable
+s2: Student = Student()
 
 print("s1 id:", id(s1))
 print("s2 id:", id(s2))
@@ -218,17 +242,17 @@ print("Are they the same object?", s1 is s2)  # False</pre></div>
         </div>
 
         <div class="code"><pre>class Account:
-    def deposit(self, amount):
+    def deposit(self, amount: float) -> None:
         print("Self pointer address:", id(self))
 
-acc = Account()
+acc: Account = Account()
 print("acc object address:  ", id(acc))
 
 # Invoking via instance (Python automatically passes acc as self):
-acc.deposit(100)
+acc.deposit(100.0)
 
 # Equivalent invocation via Class:
-Account.deposit(acc, 100)</pre></div>
+Account.deposit(acc, 100.0)</pre></div>
       </section>
 
       <!-- SECTION 4: CONSTRUCTORS (__INIT__) -->
@@ -250,13 +274,13 @@ Account.deposit(acc, 100)</pre></div>
         </ul>
 
         <div class="code"><pre>class Employee:
-    def __init__(self, emp_id: int, name: str, salary: float):
-        self.emp_id = emp_id
-        self.name = name
-        self.salary = salary
+    def __init__(self, emp_id: int, name: str, salary: float) -> None:
+        self.emp_id: int = emp_id
+        self.name: str = name
+        self.salary: float = salary
         print(f"Initialized Employee: {self.name}")
 
-e = Employee(101, "Bharat Sonwane", 95000.0)</pre></div>
+e: Employee = Employee(101, "Bharat Sonwane", 95000.0)</pre></div>
       </section>
 
       <!-- SECTION 5: INSTANCE VARIABLES AND METHODS -->
@@ -278,15 +302,17 @@ e = Employee(101, "Bharat Sonwane", 95000.0)</pre></div>
         </ul>
 
         <div class="code"><pre>class Laptop:
-    def __init__(self, brand):
-        self.brand = brand          # Created in constructor
+    def __init__(self, brand: str) -> None:
+        self.brand: str = brand          # Created in constructor
+        self.ram: int = 0
+        self.color: str = ""
 
-    def set_ram(self, ram_gb):
-        self.ram = ram_gb           # Created in instance method
+    def set_ram(self, ram_gb: int) -> None:
+        self.ram = ram_gb                # Created in instance method
 
-l = Laptop("Apple")
+l: Laptop = Laptop("Apple")
 l.set_ram(16)
-l.color = "Space Grey"              # Created outside class via reference
+l.color = "Space Grey"                   # Created outside class via reference
 
 print("Instance namespace dictionary:")
 print(l.__dict__)
@@ -296,11 +322,11 @@ print(l.__dict__)
         <p>In Python, prefixing an instance attribute with two leading underscores (e.g. <code class="inline">self.__balance</code>) triggers <strong>Name Mangling</strong> by the CPython compiler. The attribute is textually rewritten to <code class="inline">_ClassName__attributeName</code> in the instance dictionary to prevent accidental attribute overrides in subclasses:</p>
 
         <div class="code"><pre>class Account:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.__balance = balance  # Double leading underscore triggers name mangling
+    def __init__(self, owner: str, balance: float) -> None:
+        self.owner: str = owner
+        self.__balance: float = balance  # Double leading underscore triggers name mangling
 
-acc = Account("Alice", 5000)
+acc: Account = Account("Alice", 5000.0)
 print("Public owner:", acc.owner)  # Alice
 
 # Attempting direct access to __balance raises AttributeError:
@@ -311,7 +337,7 @@ print("Mangled name in object __dict__:", [k for k in acc.__dict__ if "balance" 
 # Output: ['_Account__balance']
 
 # The value can still be accessed via its mangled name (proves it is not cryptographically private):
-print("Access via mangled name:", acc._Account__balance)  # 5000</pre></div>
+print("Access via mangled name:", acc._Account__balance)  # 5000.0</pre></div>
       </section>
 
       <!-- SECTION 6: STATIC / CLASS VARIABLES -->
@@ -332,14 +358,14 @@ print("Access via mangled name:", acc._Account__balance)  # 5000</pre></div>
         </ul>
 
         <div class="code"><pre>class BankAccount:
-    bank_name = "Global National Bank"  # Class / static variable
+    bank_name: str = "Global National Bank"  # Class / static variable
 
-    def __init__(self, account_holder, balance):
-        self.holder = account_holder    # Instance variable
-        self.balance = balance
+    def __init__(self, account_holder: str, balance: float) -> None:
+        self.holder: str = account_holder    # Instance variable
+        self.balance: float = balance
 
-b1 = BankAccount("Alice", 5000)
-b2 = BankAccount("Bob", 8000)
+b1: BankAccount = BankAccount("Alice", 5000.0)
+b2: BankAccount = BankAccount("Bob", 8000.0)
 
 print(b1.bank_name)  # Global National Bank
 print(b2.bank_name)  # Global National Bank
@@ -399,19 +425,21 @@ print(BankAccount.bank_name) # Apex Universal Bank (Class level unchanged)</pre>
 
         <h3 id="7-instance-vs-class-vs-static-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <div class="code"><pre>class Date:
-    def __init__(self, year, month, day):
-        self.year = year
-        self.month = month
-        self.day = day
+        <div class="code"><pre>from typing import Self
+
+class Date:
+    def __init__(self, year: int, month: int, day: int) -> None:
+        self.year: int = year
+        self.month: int = month
+        self.day: int = day
 
     # Instance method:
-    def format_iso(self):
+    def format_iso(self) -> str:
         return f"{self.year:04d}-{self.month:02d}-{self.day:02d}"
 
     # Class method as alternative constructor (Factory):
     @classmethod
-    def from_string(cls, date_str: str):
+    def from_string(cls, date_str: str) -> Self:
         # Parses "YYYY-MM-DD"
         y, m, d = map(int, date_str.split("-"))
         return cls(y, m, d)
@@ -422,11 +450,11 @@ print(BankAccount.bank_name) # Apex Universal Bank (Class level unchanged)</pre>
         return 1 <= month <= 12
 
 # Using standard constructor:
-d1 = Date(2026, 9, 14)
+d1: Date = Date(2026, 9, 14)
 print(d1.format_iso())  # 2026-09-14
 
 # Using class method factory:
-d2 = Date.from_string("2026-12-31")
+d2: Date = Date.from_string("2026-12-31")
 print(d2.format_iso())  # 2026-12-31
 
 # Using static method:
@@ -448,20 +476,20 @@ print("Is month 13 valid:", Date.is_valid_month(13))  # False</pre></div>
         <p>One class can interact with another by receiving an instance reference as a parameter:</p>
 
         <div class="code"><pre>class Engine:
-    def start(self):
+    def start(self) -> None:
         print("V8 engine roaring to life...")
 
 class Car:
-    def __init__(self, model, engine: Engine):
-        self.model = model
-        self.engine = engine
+    def __init__(self, model: str, engine: Engine) -> None:
+        self.model: str = model
+        self.engine: Engine = engine
 
-    def drive(self):
+    def drive(self) -> None:
         print(f"Driving {self.model}:")
         self.engine.start()
 
-eng = Engine()
-car = Car("Ford Mustang", eng)
+eng: Engine = Engine()
+car: Car = Car("Ford Mustang", eng)
 car.drive()</pre></div>
       </section>
 
@@ -480,18 +508,18 @@ car.drive()</pre></div>
         <p>When an object cannot exist independently of another object (e.g. a <code class="inline">Head</code> without a <code class="inline">Human</code>, an <code class="inline">Address</code> without an <code class="inline">Employee</code>), define it as an <strong>Inner Class</strong>:</p>
 
         <div class="code"><pre>class University:
-    def __init__(self, name):
-        self.name = name
-        self.cs_department = self.Department("Computer Science")
+    def __init__(self, name: str) -> None:
+        self.name: str = name
+        self.cs_department: University.Department = self.Department("Computer Science")
 
     class Department:
-        def __init__(self, dept_name):
-            self.dept_name = dept_name
+        def __init__(self, dept_name: str) -> None:
+            self.dept_name: str = dept_name
 
-        def display(self):
+        def display(self) -> None:
             print(f"Department: {self.dept_name}")
 
-uni = University("Stanford")
+uni: University = University("Stanford")
 uni.cs_department.display()  # Department: Computer Science</pre></div>
       </section>
 
@@ -518,15 +546,15 @@ uni.cs_department.display()  # Department: Computer Science</pre></div>
         <div class="code"><pre>import gc
 
 class Resource:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name: str) -> None:
+        self.name: str = name
         print(f"Acquired: {self.name}")
 
-    def __del__(self):
+    def __del__(self) -> None:
         print(f"Destructor invoked: Releasing {self.name}")
 
 # Reference count drop triggers destructor:
-r1 = Resource("DatabaseSocket")
+r1: Resource | None = Resource("DatabaseSocket")
 del r1  # Prints: Destructor invoked: Releasing DatabaseSocket</pre></div>
 
         <h3 id="10-3-controlling-cyclic-gc-and-tracking-references">10.3. Controlling Cyclic GC and Tracking References</h3>
@@ -541,18 +569,18 @@ print("GC enabled after disable?", gc.isenabled())  # False
 gc.enable()                            # Re-enable cyclic sweeps
 
 # 2. Force manual collection sweep across generations
-collected = gc.collect()
+collected: int = gc.collect()
 print(f"Unreachable objects cleared: {collected}")
 
 # 3. Inspect Reference Counts with sys.getrefcount()
 class Sample:
     pass
 
-s1 = Sample()
+s1: Sample = Sample()
 # Note: sys.getrefcount() temporarily increments reference count by 1 during execution
 print(sys.getrefcount(s1))  # Output: 2 (s1 variable + getrefcount parameter)
 
-s2 = s1
+s2: Sample = s1
 print(sys.getrefcount(s1))  # Output: 3
 
 del s2
@@ -706,16 +734,16 @@ print(sys.getrefcount(s1))  # Output: 2</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class BankAccount:
-    def __init__(self, owner, balance=0.0):
-        self.owner = owner
-        self.balance = balance
+    def __init__(self, owner: str, balance: float = 0.0) -> None:
+        self.owner: str = owner
+        self.balance: float = balance
 
-    def deposit(self, amount):
+    def deposit(self, amount: float) -> float:
         if amount > 0:
             self.balance += amount
         return self.balance
 
-acc = BankAccount("Bharat", 1000.0)
+acc: BankAccount = BankAccount("Bharat", 1000.0)
 print(f"Owner: {acc.owner}, New Balance: ${acc.deposit(500.0)}")</pre></div>
               </div>
             </details>
@@ -748,18 +776,19 @@ print("Is 42 even:", MathUtil.is_even(42))  # True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>from datetime import date
+from typing import Self
 
 class Person:
-    def __init__(self, name: str, age: int):
-        self.name = name
-        self.age = age
+    def __init__(self, name: str, age: int) -> None:
+        self.name: str = name
+        self.age: int = age
 
     @classmethod
-    def from_birth_year(cls, name: str, birth_year: int):
-        current_year = date.today().year
+    def from_birth_year(cls, name: str, birth_year: int) -> Self:
+        current_year: int = date.today().year
         return cls(name, current_year - birth_year)
 
-p = Person.from_birth_year("Bharat", 1996)
+p: Person = Person.from_birth_year("Bharat", 1996)
 print(f"{p.name} is {p.age} years old.")</pre></div>
               </div>
             </details>
@@ -772,17 +801,17 @@ print(f"{p.name} is {p.age} years old.")</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Session:
-    active_sessions = 0
+    active_sessions: int = 0
 
-    def __init__(self, user_id):
-        self.user_id = user_id
+    def __init__(self, user_id: str) -> None:
+        self.user_id: str = user_id
         Session.active_sessions += 1
 
-    def __del__(self):
+    def __del__(self) -> None:
         Session.active_sessions -= 1
 
-s1 = Session("user_1")
-s2 = Session("user_2")
+s1: Session | None = Session("user_1")
+s2: Session | None = Session("user_2")
 print("Active sessions:", Session.active_sessions)  # 2
 del s1
 print("Active sessions after logout:", Session.active_sessions)  # 1</pre></div>
@@ -797,21 +826,21 @@ print("Active sessions after logout:", Session.active_sessions)  # 1</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Car:
-    def __init__(self, model, horsepower):
-        self.model = model
-        self.engine = self.Engine(horsepower)
+    def __init__(self, model: str, horsepower: int) -> None:
+        self.model: str = model
+        self.engine: Car.Engine = self.Engine(horsepower)
 
     class Engine:
-        def __init__(self, hp):
-            self.hp = hp
+        def __init__(self, hp: int) -> None:
+            self.hp: int = hp
 
-        def specs(self):
+        def specs(self) -> str:
             return f"{self.hp} HP Turbocharged"
 
-    def display(self):
+    def display(self) -> None:
         print(f"Car: {self.model} with {self.engine.specs()}")
 
-c = Car("BMW M3", 503)
+c: Car = Car("BMW M3", 503)
 c.display()</pre></div>
               </div>
             </details>
@@ -824,10 +853,10 @@ c.display()</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Config:
-    timeout = 30
+    timeout: int = 30
 
-c1 = Config()
-c2 = Config()
+c1: Config = Config()
+c2: Config = Config()
 
 # Shadowing bug:
 c1.timeout = 60  # Only changes on c1
@@ -853,17 +882,20 @@ print("c2 after Class update:", c2.timeout)  # 45</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>class DatabasePool:
-    _instance = None
+                <div class="code"><pre>from typing import Any, Self
 
-    def __new__(cls, *args, **kwargs):
+class DatabasePool:
+    _instance: Self | None = None
+    connection_string: str
+
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.connection_string = "postgresql://localhost:5432/prod"
         return cls._instance
 
-p1 = DatabasePool()
-p2 = DatabasePool()
+p1: DatabasePool = DatabasePool()
+p2: DatabasePool = DatabasePool()
 print("Are p1 and p2 identical singletons?", p1 is p2)  # True</pre></div>
               </div>
             </details>
@@ -878,18 +910,18 @@ print("Are p1 and p2 identical singletons?", p1 is p2)  # True</pre></div>
                 <div class="code"><pre>import sys
 
 class StandardPoint:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, x: float, y: float) -> None:
+        self.x: float = x
+        self.y: float = y
 
 class SlottedPoint:
-    __slots__ = ["x", "y"]
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    __slots__: list[str] = ["x", "y"]
+    def __init__(self, x: float, y: float) -> None:
+        self.x: float = x
+        self.y: float = y
 
-p_std = StandardPoint(10, 20)
-p_slot = SlottedPoint(10, 20)
+p_std: StandardPoint = StandardPoint(10.0, 20.0)
+p_slot: SlottedPoint = SlottedPoint(10.0, 20.0)
 
 # Standard has __dict__, slotted does not:
 print("Standard size (bytes):", sys.getsizeof(p_std) + sys.getsizeof(p_std.__dict__))
@@ -905,17 +937,18 @@ print("Slotted size (bytes): ", sys.getsizeof(p_slot))</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import time
+from typing import Any
 
 class TTLDict:
     """In-Memory key-value store where keys expire after a specified TTL (seconds)."""
-    def __init__(self):
-        self._store = {}
+    def __init__(self) -> None:
+        self._store: dict[str, tuple[Any, float]] = {}
 
-    def set(self, key, value, ttl_seconds: float):
-        expires_at = time.time() + ttl_seconds
+    def set(self, key: str, value: Any, ttl_seconds: float) -> None:
+        expires_at: float = time.time() + ttl_seconds
         self._store[key] = (value, expires_at)
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Any = None) -> Any:
         if key not in self._store:
             return default
         value, expires_at = self._store[key]
@@ -924,7 +957,7 @@ class TTLDict:
             return default
         return value
 
-cache = TTLDict()
+cache: TTLDict = TTLDict()
 cache.set("session_123", "user_active", ttl_seconds=0.1)
 print("Immediate get: ", cache.get("session_123"))  # 'user_active'
 time.sleep(0.15)

@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-concurrency-vs-parallelism">1.1. Concurrency vs Parallelism</a>
             <a href="#1-2-the-global-interpreter-lock-gil">1.2. The Global Interpreter Lock (GIL)</a>
+            <a href="#1-3-concurrency-and-multithreading-typing">1.3. Concurrency &amp; Multithreading Typing</a>
           </div>
         </div>
         <div class="nav-section">
@@ -158,6 +159,34 @@
           <li><strong>CPU-Bound Tasks (Math, Image Processing, Compression):</strong> Threads spend their time executing Python bytecode. Due to the GIL, multithreading does NOT achieve true multi-core speedup for CPU-bound tasks in CPython (and can even run slower due to lock contention). Use the <code>multiprocessing</code> module instead!</li>
           <li><strong>I/O-Bound Tasks (Network Requests, File I/O, Database Queries):</strong> When a thread waits for disk I/O or network responses, Python releases the GIL. Another thread can immediately execute. Multithreading provides massive throughput and responsiveness gains for I/O-bound tasks.</li>
         </ul>
+
+        <h3 id="1-3-concurrency-and-multithreading-typing">1.3. Concurrency &amp; Multithreading Typing (PEP 484 &amp; concurrent.futures)</h3>
+        <p>In modern Python 3.10+, annotate threads, workers, synchronization objects, and futures to prevent subtle concurrency bugs:</p>
+        <div class="code"><pre>import threading
+import queue
+from concurrent.futures import Future, ThreadPoolExecutor
+from collections.abc import Callable
+
+# 1. Thread and target typing
+worker_func: Callable[[str, int], None]
+t: threading.Thread = threading.Thread(target=lambda s, n: None, args=("task", 1))
+
+# 2. Synchronization primitives
+lock: threading.Lock = threading.Lock()
+rlock: threading.RLock = threading.RLock()
+sem: threading.Semaphore = threading.Semaphore(3)
+evt: threading.Event = threading.Event()
+
+# 3. Thread-safe Queue typing (generic in Python 3.9+)
+task_q: queue.Queue[str] = queue.Queue(maxsize=10)
+
+# 4. Executor &amp; Future typing
+def compute_sum(a: int, b: int) -> int:
+    return a + b
+
+with ThreadPoolExecutor(max_workers=2) as executor:
+    future: Future[int] = executor.submit(compute_sum, 10, 20)
+    result: int = future.result()</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -210,7 +239,7 @@
         <div class="code"><pre>import threading
 
 # Inspecting the main thread:
-current = threading.current_thread()
+current: threading.Thread = threading.current_thread()
 print("Current thread name:", current.name)       # MainThread
 print("Thread identifier:  ", current.ident)      # Integer thread ID
 print("Is thread alive?    ", current.is_alive())  # True</pre></div>
@@ -233,14 +262,14 @@ print("Is thread alive?    ", current.is_alive())  # True</pre></div>
         <div class="code"><pre>import threading
 import time
 
-def worker_task(task_name, duration):
+def worker_task(task_name: str, duration: int | float) -> None:
     print(f"[{threading.current_thread().name}] Starting {task_name}...")
     time.sleep(duration)  # Simulating I/O wait
     print(f"[{threading.current_thread().name}] Finished {task_name}!")
 
 # 1. Instantiate threads
-t1 = threading.Thread(target=worker_task, args=("Download File A", 1), name="Worker-A")
-t2 = threading.Thread(target=worker_task, args=("Download File B", 2), name="Worker-B")
+t1: threading.Thread = threading.Thread(target=worker_task, args=("Download File A", 1), name="Worker-A")
+t2: threading.Thread = threading.Thread(target=worker_task, args=("Download File B", 2), name="Worker-B")
 
 # 2. Start threads (spawns OS-level native thread)
 t1.start()
@@ -264,13 +293,13 @@ print("Both worker threads have completed. Main continues.")</pre></div>
 import time
 
 class CustomWorkerThread(threading.Thread):
-    def __init__(self, worker_id, items):
+    def __init__(self, worker_id: int, items: list[str]) -> None:
         super().__init__(name=f"CustomWorker-{worker_id}")
-        self.worker_id = worker_id
-        self.items = items
-        self.processed_count = 0
+        self.worker_id: int = worker_id
+        self.items: list[str] = items
+        self.processed_count: int = 0
 
-    def run(self):
+    def run(self) -> None:
         print(f"[{self.name}] Beginning batch processing...")
         for item in self.items:
             # Process each item
@@ -279,8 +308,8 @@ class CustomWorkerThread(threading.Thread):
         print(f"[{self.name}] Completed batch of {self.processed_count} items.")
 
 # Spawning custom worker threads:
-worker1 = CustomWorkerThread(1, ["apple", "banana", "cherry"])
-worker2 = CustomWorkerThread(2, ["dog", "elephant"])
+worker1: CustomWorkerThread = CustomWorkerThread(1, ["apple", "banana", "cherry"])
+worker2: CustomWorkerThread = CustomWorkerThread(2, ["dog", "elephant"])
 
 worker1.start()
 worker2.start()
@@ -296,12 +325,12 @@ print("Worker 2 processed:", worker2.processed_count)</pre></div>
         <div class="code"><pre>import threading
 
 class TaskRunner:
-    def process_data(self, batch_id):
+    def process_data(self, batch_id: int) -> None:
         print(f"[{threading.current_thread().name}] Processing batch {batch_id}...")
 
-runner = TaskRunner()
+runner: TaskRunner = TaskRunner()
 # Pass the bound method runner.process_data as the target:
-t = threading.Thread(target=runner.process_data, args=(101,), name="RunnerThread")
+t: threading.Thread = threading.Thread(target=runner.process_data, args=(101,), name="RunnerThread")
 t.start()
 t.join()</pre></div>
       </section>
@@ -329,10 +358,10 @@ t.join()</pre></div>
         <div class="code"><pre>import threading
 import time
 
-def background_pulse():
+def background_pulse() -> None:
     time.sleep(0.5)
 
-threads = [threading.Thread(target=background_pulse, name=f"Pulse-{i}") for i in range(3)]
+threads: list[threading.Thread] = [threading.Thread(target=background_pulse, name=f"Pulse-{i}") for i in range(3)]
 for t in threads:
     t.start()
 
@@ -363,13 +392,13 @@ for t in threads:
         <div class="code"><pre>import threading
 import time
 
-def daemon_heartbeat():
+def daemon_heartbeat() -> None:
     while True:
         print("[HEARTBEAT] Ping sent from daemon thread...")
         time.sleep(0.5)
 
 # Marking a thread as daemon:
-daemon_t = threading.Thread(target=daemon_heartbeat, daemon=True, name="HeartbeatDaemon")
+daemon_t: threading.Thread = threading.Thread(target=daemon_heartbeat, daemon=True, name="HeartbeatDaemon")
 daemon_t.start()
 
 print("Main thread running important 2-second job...")
@@ -398,17 +427,17 @@ print("Main thread exiting now.")
 
         <div class="code"><pre>import threading
 
-counter = 0
-lock = threading.Lock()
+counter: int = 0
+lock: threading.Lock = threading.Lock()
 
-def safe_increment(n):
+def safe_increment(n: int) -> None:
     global counter
     for _ in range(n):
         # Mutual exclusion using with lock context manager:
         with lock:
             counter += 1
 
-threads = [threading.Thread(target=safe_increment, args=(100_000,)) for _ in range(5)]
+threads: list[threading.Thread] = [threading.Thread(target=safe_increment, args=(100_000,)) for _ in range(5)]
 for t in threads:
     t.start()
 for t in threads:
@@ -423,22 +452,22 @@ print("Expected: 500,000 | Actual counter:", counter)  # 500,000 (Guaranteed!)</
         <div class="code"><pre>import threading
 
 class Account:
-    def __init__(self, balance):
-        self.balance = balance
-        self.rlock = threading.RLock()
+    def __init__(self, balance: float | int) -> None:
+        self.balance: float | int = balance
+        self.rlock: threading.RLock = threading.RLock()
 
-    def deposit(self, amount):
+    def deposit(self, amount: float | int) -> None:
         with self.rlock:
             self.balance += amount
 
-    def transfer(self, target_account, amount):
+    def transfer(self, target_account: "Account", amount: float | int) -> None:
         with self.rlock:  # First acquire
             self.balance -= amount
             # deposit also acquires self.rlock - with standard Lock, this deadlocks!
             target_account.deposit(amount)
 
-acc1 = Account(1000)
-acc2 = Account(500)
+acc1: Account = Account(1000)
+acc2: Account = Account(500)
 acc1.transfer(acc2, 200)
 print("Acc 1 balance:", acc1.balance)  # 800
 print("Acc 2 balance:", acc2.balance)  # 700</pre></div>
@@ -450,16 +479,16 @@ print("Acc 2 balance:", acc2.balance)  # 700</pre></div>
 import time
 
 # Permit at most 2 simultaneous connections
-connection_pool = threading.Semaphore(2)
+connection_pool: threading.Semaphore = threading.Semaphore(2)
 
-def access_database(thread_id):
+def access_database(thread_id: int) -> None:
     print(f"Thread {thread_id} waiting for connection slot...")
     with connection_pool:
         print(f"--> Thread {thread_id} ACQUIRED database slot! Working...")
         time.sleep(0.5)
         print(f"<-- Thread {thread_id} RELEASING slot.")
 
-threads = [threading.Thread(target=access_database, args=(i,)) for i in range(5)]
+threads: list[threading.Thread] = [threading.Thread(target=access_database, args=(i,)) for i in range(5)]
 for t in threads:
     t.start()
 for t in threads:
@@ -488,21 +517,21 @@ for t in threads:
         <div class="code"><pre>import threading
 import time
 
-ready_event = threading.Event()
+ready_event: threading.Event = threading.Event()
 
-def server_initialization():
+def server_initialization() -> None:
     print("[INIT] Loading configurations and database pools...")
     time.sleep(1.0)
     print("[INIT] Server ready to receive traffic!")
     ready_event.set()  # Broadcast signal to waiting workers
 
-def client_worker(client_id):
+def client_worker(client_id: int) -> None:
     print(f"Client {client_id} waiting for server to become ready...")
     ready_event.wait()  # Blocks until ready_event.set() is called
     print(f"Client {client_id} connected and processing requests!")
 
-t_server = threading.Thread(target=server_initialization)
-t_clients = [threading.Thread(target=client_worker, args=(i,)) for i in range(3)]
+t_server: threading.Thread = threading.Thread(target=server_initialization)
+t_clients: list[threading.Thread] = [threading.Thread(target=client_worker, args=(i,)) for i in range(3)]
 
 for c in t_clients: c.start()
 t_server.start()
@@ -518,28 +547,28 @@ for c in t_clients: c.join()</pre></div>
 import queue
 import time
 
-task_queue = queue.Queue(maxsize=5)
+task_queue: queue.Queue[str] = queue.Queue(maxsize=5)
 
-def producer(items_count):
+def producer(items_count: int) -> None:
     for i in range(items_count):
-        item = f"TASK-{i}"
+        item: str = f"TASK-{i}"
         task_queue.put(item)  # Blocks if queue is full
         print(f"[PRODUCED] {item}")
         time.sleep(0.1)
 
-def consumer(consumer_id):
+def consumer(consumer_id: int) -> None:
     while True:
         try:
-            item = task_queue.get(timeout=0.5)  # Blocks until item available
+            item: str = task_queue.get(timeout=0.5)  # Blocks until item available
             print(f"  [CONSUMER {consumer_id}] Processed {item}")
             task_queue.task_done()  # Signals task completion
         except queue.Empty:
             print(f"  [CONSUMER {consumer_id}] Queue empty, worker shutting down.")
             break
 
-prod = threading.Thread(target=producer, args=(6,))
-cons1 = threading.Thread(target=consumer, args=(1,))
-cons2 = threading.Thread(target=consumer, args=(2,))
+prod: threading.Thread = threading.Thread(target=producer, args=(6,))
+cons1: threading.Thread = threading.Thread(target=consumer, args=(1,))
+cons2: threading.Thread = threading.Thread(target=consumer, args=(2,))
 
 prod.start()
 cons1.start()
@@ -717,11 +746,11 @@ print("All tasks processed safely!")</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import threading
 
-def say_hello(name):
+def say_hello(name: str) -> None:
     print(f"Hello from thread {threading.current_thread().name}, {name}!")
 
-t1 = threading.Thread(target=say_hello, args=("Alice",), name="T1")
-t2 = threading.Thread(target=say_hello, args=("Bob",), name="T2")
+t1: threading.Thread = threading.Thread(target=say_hello, args=("Alice",), name="T1")
+t2: threading.Thread = threading.Thread(target=say_hello, args=("Bob",), name="T2")
 
 t1.start()
 t2.start()
@@ -760,23 +789,23 @@ and inter-thread communication with Event and thread-safe Queues.
 import threading
 
 # Functional approach:
-def task(x):
+def task(x: int) -> None:
     print(f"Function thread result: {x * 2}")
 
-t_func = threading.Thread(target=task, args=(10,))
+t_func: threading.Thread = threading.Thread(target=task, args=(10,))
 t_func.start()
 t_func.join()
 
 # Subclassing approach:
 class CalculationThread(threading.Thread):
-    def __init__(self, val):
+    def __init__(self, val: int) -> None:
         super().__init__()
-        self.val = val
+        self.val: int = val
 
-    def run(self):
+    def run(self) -> None:
         print(f"Subclass thread result: {self.val * 3}")
 
-t_class = CalculationThread(10)
+t_class: CalculationThread = CalculationThread(10)
 t_class.start()
 t_class.join()</pre></div>
               </div>
@@ -792,16 +821,16 @@ t_class.join()</pre></div>
                 <div class="code"><pre># Task 2: Thread synchronization with Lock
 import threading
 
-shared_counter = 0
-counter_lock = threading.Lock()
+shared_counter: int = 0
+counter_lock: threading.Lock = threading.Lock()
 
-def increment():
+def increment() -> None:
     global shared_counter
     for _ in range(50_000):
         with counter_lock:
             shared_counter += 1
 
-workers = [threading.Thread(target=increment) for _ in range(4)]
+workers: list[threading.Thread] = [threading.Thread(target=increment) for _ in range(4)]
 for w in workers: w.start()
 for w in workers: w.join()
 
@@ -820,15 +849,15 @@ print("Synchronized Counter (Expected 200,000):", shared_counter)</pre></div>
 import threading
 import time
 
-pool = threading.Semaphore(2)
+pool: threading.Semaphore = threading.Semaphore(2)
 
-def access_resource(worker_id):
+def access_resource(worker_id: int) -> None:
     with pool:
         print(f"Worker {worker_id} acquired slot")
         time.sleep(0.1)
         print(f"Worker {worker_id} released slot")
 
-threads = [threading.Thread(target=access_resource, args=(i,)) for i in range(4)]
+threads: list[threading.Thread] = [threading.Thread(target=access_resource, args=(i,)) for i in range(4)]
 for t in threads: t.start()
 for t in threads: t.join()</pre></div>
               </div>
@@ -851,27 +880,27 @@ import threading
 import queue
 import time
 
-task_queue = queue.Queue(maxsize=10)
-stop_event = threading.Event()
+task_queue: queue.Queue[str] = queue.Queue(maxsize=10)
+stop_event: threading.Event = threading.Event()
 
-def producer(count):
+def producer(count: int) -> None:
     for i in range(count):
         task_queue.put(f"Job-{i}")
         print(f"[Producer] Queued Job-{i}")
         time.sleep(0.05)
 
-def worker(worker_id):
+def worker(worker_id: int) -> None:
     while not stop_event.is_set() or not task_queue.empty():
         try:
-            job = task_queue.get(timeout=0.1)
+            job: str = task_queue.get(timeout=0.1)
             print(f"  [Worker {worker_id}] Processing {job}")
             time.sleep(0.08)
             task_queue.task_done()
         except queue.Empty:
             continue
 
-p = threading.Thread(target=producer, args=(6,))
-workers = [threading.Thread(target=worker, args=(i,)) for i in range(2)]
+p: threading.Thread = threading.Thread(target=producer, args=(6,))
+workers: list[threading.Thread] = [threading.Thread(target=worker, args=(i,)) for i in range(2)]
 
 p.start()
 for w in workers: w.start()
@@ -894,7 +923,7 @@ print("All tasks processed and workers gracefully stopped.")</pre></div>
                 <div class="code"><pre># RLock vs Lock recursive re-entry
 import threading
 
-rlock = threading.RLock()
+rlock: threading.RLock = threading.RLock()
 with rlock:
     print("Acquired RLock 1st time")
     with rlock:

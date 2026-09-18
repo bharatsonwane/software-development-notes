@@ -130,6 +130,18 @@
           <li>The primary superpowers of sets in Python are <strong>instantaneous $O(1)$ average-time membership testing</strong> (<code class="inline">x in s</code>), automatic duplicate elimination, and highly optimized mathematical set algebra (unions, intersections, differences).</li>
         </ul>
 
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>Type Annotations for Sets (PEP 585 / Python 3.9+):</strong>
+            <ul>
+              <li><strong>Mutable Set:</strong> <code class="inline">primes: set[int] = {2, 3, 5}</code> or <code class="inline">tags: set[str] = {"python", "cloud"}</code>.</li>
+              <li><strong>Empty Set:</strong> Annotated as <code class="inline">empty: set[int] = set()</code> (never use <code class="inline">{}</code>).</li>
+              <li><strong>Immutable frozenset:</strong> <code class="inline">perms: frozenset[str] = frozenset(["read", "write"])</code>.</li>
+            </ul>
+          </div>
+        </div>
+
         <h3 id="1-2-internal-implementation-in-cpython">1.2. Internal Implementation in CPython</h3>
         <div class="callout">
           <strong>Under the Hood (PySetObject):</strong>
@@ -193,25 +205,25 @@
         </div>
 
         <div class="code"><pre># The Empty Set Trap:
-empty_dict = {}
+empty_dict: dict[object, object] = {}
 print(type(empty_dict))  # &lt;class 'dict'&gt;
 
-empty_set = set()
+empty_set: set[int] = set()
 print(type(empty_set))   # &lt;class 'set'&gt;
 
 # Set literals with non-empty elements:
-primes = {2, 3, 5, 7, 11}
+primes: set[int] = {2, 3, 5, 7, 11}
 print(primes)
 
 # Automatic deduplication:
-numbers = {10, 20, 10, 30, 20, 40}
+numbers: set[int] = {10, 20, 10, 30, 20, 40}
 print("Deduplicated:", numbers)  # {40, 10, 20, 30} (Duplicates removed)
 
 # Creating set from any iterable:
-char_set = set("MISSISSIPPI")
+char_set: set[str] = set("MISSISSIPPI")
 print("Unique chars:", char_set)  # {'M', 'I', 'S', 'P'}
 
-list_dedup = set([1, 2, 2, 3, 4, 4, 5])
+list_dedup: set[int] = set([1, 2, 2, 3, 4, 4, 5])
 print("List deduplication:", list_dedup)  # {1, 2, 3, 4, 5}</pre></div>
 
         <h3 id="2-set-properties-and-creation-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -220,7 +232,7 @@ print("List deduplication:", list_dedup)  # {1, 2, 3, 4, 5}</pre></div>
         <p>A set can only contain objects that possess a lifetime-constant hash value. Attempting to insert a mutable container raises a <code class="inline">TypeError</code>:</p>
 
         <div class="code"><pre># Valid elements (Immutable / Hashable):
-valid_set = {10, "Sonwane", (1, 2, 3), 3.14}
+valid_set: set[object] = {10, "Sonwane", (1, 2, 3), 3.14}
 print("Valid set:", valid_set)
 
 # Invalid elements (Mutable / Unhashable):
@@ -234,18 +246,18 @@ print("Valid set:", valid_set)
           <li>Because it is immutable, a <code class="inline">frozenset</code> is <strong>hashable</strong>: it can be used as a <strong>dictionary key</strong> or stored as an element inside another set.</li>
         </ul>
 
-        <div class="code"><pre>fs = frozenset([1, 2, 3, 4, 4])
+        <div class="code"><pre>fs: frozenset[int] = frozenset([1, 2, 3, 4, 4])
 print(fs)           # frozenset({1, 2, 3, 4})
 # fs.add(5)         # AttributeError: 'frozenset' object has no attribute 'add'
 
 # Using frozenset as a dictionary key:
-role_permissions = {
+role_permissions: dict[frozenset[str], str] = {
     frozenset(["read", "write"]): "Editor",
     frozenset(["read"]): "Viewer",
     frozenset(["read", "write", "delete", "admin"]): "Admin"
 }
 
-user_perms = frozenset(["write", "read"])
+user_perms: frozenset[str] = frozenset(["write", "read"])
 print("Role:", role_permissions[user_perms])  # Editor (Order-independent lookup!)</pre></div>
       </section>
 
@@ -279,7 +291,7 @@ print("Role:", role_permissions[user_perms])  # Editor (Order-independent lookup
           </tbody>
         </table>
 
-        <div class="code"><pre>s = {10, 20}
+        <div class="code"><pre>s: set[int | str] = {10, 20}
 
 # add():
 s.add(30)
@@ -298,7 +310,7 @@ print("After update:", s)  # {10, 20, 30, 40, 50, 60, 70, 'A', 'B'}</pre></div>
           </ul>
         </div>
 
-        <div class="code"><pre>fruits = {"apple", "banana", "cherry"}
+        <div class="code"><pre>fruits: set[str] = {"apple", "banana", "cherry"}
 
 # discard() is safe:
 fruits.discard("banana")
@@ -318,9 +330,9 @@ print("After remove:", fruits)   # {'cherry'}
           <li><strong><code class="inline">s.clear()</code>:</strong> Removes all elements, leaving an empty set (<code class="inline">set()</code>).</li>
         </ul>
 
-        <div class="code"><pre>tags = {"python", "cloud", "backend", "api"}
+        <div class="code"><pre>tags: set[str] = {"python", "cloud", "backend", "api"}
 
-removed_tag = tags.pop()
+removed_tag: str = tags.pop()
 print(f"Popped tag: '{removed_tag}', Remaining tags: {tags}")
 
 tags.clear()
@@ -375,8 +387,8 @@ print("After clear:", tags)  # set()</pre></div>
           <strong>Operator vs Method Nuance:</strong> The operators (<code class="inline">|</code>, <code class="inline">&amp;</code>, <code class="inline">-</code>, <code class="inline">^</code>) strictly require <strong>both operands to be sets</strong>. The corresponding methods (<code class="inline">union()</code>, <code class="inline">intersection()</code>, etc.) accept <strong>any iterable</strong> (list, tuple, string, dictionary) as arguments!
         </div>
 
-        <div class="code"><pre>a = {1, 2, 3, 4, 5}
-b = {4, 5, 6, 7, 8}
+        <div class="code"><pre>a: set[int] = {1, 2, 3, 4, 5}
+b: set[int] = {4, 5, 6, 7, 8}
 
 print("Union (|):                ", a | b)                 # {1, 2, 3, 4, 5, 6, 7, 8}
 print("Intersection (&):         ", a & b)                 # {4, 5}
@@ -400,9 +412,9 @@ print("Union with list:          ", a.union([99, 100]))     # {1, 2, 3, 4, 5, 99
         </ul>
 
         <h3 id="4-3-subset-superset-and-disjoint-relations">4.3. Subset, Superset &amp; Disjoint Relations</h3>
-        <div class="code"><pre>small = {1, 2}
-large = {1, 2, 3, 4}
-disjoint = {5, 6}
+        <div class="code"><pre>small: set[int] = {1, 2}
+large: set[int] = {1, 2, 3, 4}
+disjoint: set[int] = {5, 6}
 
 # Subset (<=) and Proper Subset (<):
 print("small issubset large:     ", small.issubset(large))    # True
@@ -434,21 +446,21 @@ print("small isdisjoint disjoint: ", small.isdisjoint(disjoint)) # True</pre></d
 # { <expression> for <item> in <iterable> if <condition> }
 
 # Extract unique lengths of words:
-words = ["apple", "banana", "cherry", "fig", "date", "banana", "kiwi"]
-lengths = {len(w) for w in words}
+words: list[str] = ["apple", "banana", "cherry", "fig", "date", "banana", "kiwi"]
+lengths: set[int] = {len(w) for w in words}
 print("Unique word lengths:", lengths)  # {4, 5, 6, 3}
 
 # Unique uppercase vowels in a paragraph:
-text = "The quick brown fox jumps over the lazy dog"
-vowels = {char.upper() for char in text if char.lower() in "aeiou"}
+text: str = "The quick brown fox jumps over the lazy dog"
+vowels: set[str] = {char.upper() for char in text if char.lower() in "aeiou"}
 print("Unique vowels:", vowels)  # {'E', 'U', 'I', 'O', 'A'}</pre></div>
 
         <h3 id="5-set-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="5-2-practical-sanitization-and-file-extensions">5.2. Practical Sanitization &amp; File Extensions</h3>
         <div class="code"><pre># Extract unique file extensions from a list of filenames:
-files = ["main.py", "test.py", "index.html", "style.css", "script.PY", "notes.txt", "app.js"]
-extensions = {f.rsplit(".", 1)[-1].lower() for f in files if "." in f}
+files: list[str] = ["main.py", "test.py", "index.html", "style.css", "script.PY", "notes.txt", "app.js"]
+extensions: set[str] = {f.rsplit(".", 1)[-1].lower() for f in files if "." in f}
 print("Unique extensions:", extensions)
 # {'py', 'html', 'css', 'txt', 'js'}</pre></div>
       </section>
@@ -605,8 +617,8 @@ print("Unique extensions:", extensions)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>raw_ids = [101, 102, 101, 103, 104, 102, 105]
-unique_ids = set(raw_ids)
+                <div class="code"><pre>raw_ids: list[int] = [101, 102, 101, 103, 104, 102, 105]
+unique_ids: set[int] = set(raw_ids)
 print("Unique IDs:", unique_ids)  # {101, 102, 103, 104, 105}
 print("Is 103 present:", 103 in unique_ids)  # O(1) constant time lookup</pre></div>
               </div>
@@ -619,7 +631,7 @@ print("Is 103 present:", 103 in unique_ids)  # O(1) constant time lookup</pre></
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>colors = {"red", "green", "blue"}
+                <div class="code"><pre>colors: set[str] = {"red", "green", "blue"}
 colors.discard("green")
 colors.discard("yellow")  # Does not raise KeyError!
 print("Colors after safe discard:", colors)  # {'red', 'blue'}</pre></div>
@@ -637,11 +649,11 @@ print("Colors after safe discard:", colors)  # {'red', 'blue'}</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>store_a = ["laptop", "mouse", "keyboard", "monitor"]
-store_b = ["mouse", "keyboard", "printer", "laptop"]
-store_c = ["keyboard", "laptop", "webcam", "headphones"]
+                <div class="code"><pre>store_a: list[str] = ["laptop", "mouse", "keyboard", "monitor"]
+store_b: list[str] = ["mouse", "keyboard", "printer", "laptop"]
+store_c: list[str] = ["keyboard", "laptop", "webcam", "headphones"]
 
-common_items = set(store_a).intersection(store_b, store_c)
+common_items: set[str] = set(store_a).intersection(store_b, store_c)
 print("Items available in all 3 stores:", common_items)
 # Items available in all 3 stores: {'laptop', 'keyboard'}</pre></div>
               </div>
@@ -654,14 +666,14 @@ print("Items available in all 3 stores:", common_items)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>doc1 = "python is fast elegant and simple"
-doc2 = "python is powerful versatile and elegant"
+                <div class="code"><pre>doc1: str = "python is fast elegant and simple"
+doc2: str = "python is powerful versatile and elegant"
 
-words1 = set(doc1.split())
-words2 = set(doc2.split())
+words1: set[str] = set(doc1.split())
+words2: set[str] = set(doc2.split())
 
-shared_words = words1 & words2
-exclusive_words = words1 ^ words2
+shared_words: set[str] = words1 & words2
+exclusive_words: set[str] = words1 ^ words2
 
 print("Shared vocabulary:   ", shared_words)     # {'python', 'is', 'elegant', 'and'}
 print("Exclusive vocabulary:", exclusive_words)  # {'fast', 'simple', 'powerful', 'versatile'}</pre></div>
@@ -677,14 +689,14 @@ print("Exclusive vocabulary:", exclusive_words)  # {'fast', 'simple', 'powerful'
               <div class="qa-answer-body">
                 <div class="code"><pre>import string
 
-alphabet_set = set(string.ascii_lowercase)
+alphabet_set: set[str] = set(string.ascii_lowercase)
 
-sentence1 = "The quick brown fox jumps over the lazy dog"
-is_pangram1 = alphabet_set &lt;= {ch.lower() for ch in sentence1 if ch.isalpha()}
+sentence1: str = "The quick brown fox jumps over the lazy dog"
+is_pangram1: bool = alphabet_set &lt;= {ch.lower() for ch in sentence1 if ch.isalpha()}
 print(f"Pangram 1 ({sentence1!r}):", is_pangram1)  # True
 
-sentence2 = "Hello world, python is awesome"
-is_pangram2 = alphabet_set &lt;= {ch.lower() for ch in sentence2 if ch.isalpha()}
+sentence2: str = "Hello world, python is awesome"
+is_pangram2: bool = alphabet_set &lt;= {ch.lower() for ch in sentence2 if ch.isalpha()}
 print(f"Pangram 2 ({sentence2!r}):", is_pangram2)  # False</pre></div>
               </div>
             </details>
@@ -696,8 +708,8 @@ print(f"Pangram 2 ({sentence2!r}):", is_pangram2)  # False</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>raw_tags = ["  Python ", "Django", "python", " API", "DJANGO  ", "cloud", "api "]
-clean_tags = {tag.strip().lower() for tag in raw_tags}
+                <div class="code"><pre>raw_tags: list[str] = ["  Python ", "Django", "python", " API", "DJANGO  ", "cloud", "api "]
+clean_tags: set[str] = {tag.strip().lower() for tag in raw_tags}
 print("Cleaned unique tags:", clean_tags)
 # {'python', 'django', 'api', 'cloud'}</pre></div>
               </div>
@@ -716,16 +728,16 @@ print("Cleaned unique tags:", clean_tags)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>s1 = "data science with python and machine learning algorithms"
-s2 = "machine learning and deep learning with python algorithms"
+                <div class="code"><pre>s1: str = "data science with python and machine learning algorithms"
+s2: str = "machine learning and deep learning with python algorithms"
 
-set1 = set(s1.lower().split())
-set2 = set(s2.lower().split())
+set1: set[str] = set(s1.lower().split())
+set2: set[str] = set(s2.lower().split())
 
 # Jaccard index: size of intersection divided by size of union
-common_words = set1 &amp; set2
-all_words = set1 | set2
-similarity = len(common_words) / len(all_words)
+common_words: set[str] = set1 &amp; set2
+all_words: set[str] = set1 | set2
+similarity: float = len(common_words) / len(all_words)
 
 print("Common vocabulary:", common_words)
 print(f"Jaccard Similarity: {similarity * 100:.2f}%")
@@ -741,15 +753,15 @@ print(f"Jaccard Similarity: {similarity * 100:.2f}%")
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># User has assigned permissions:
-user_permissions = {"read:posts", "write:posts", "read:profile"}
+user_permissions: set[str] = {"read:posts", "write:posts", "read:profile"}
 
 # Endpoint requirements:
-required_standard = {"read:posts", "write:posts"}
-required_admin = {"read:posts", "write:posts", "delete:posts"}
+required_standard: set[str] = {"read:posts", "write:posts"}
+required_admin: set[str] = {"read:posts", "write:posts", "delete:posts"}
 
 # All required permissions must be a subset of granted permissions:
-has_standard_access = required_standard &lt;= user_permissions
-has_admin_access = required_admin &lt;= user_permissions
+has_standard_access: bool = required_standard &lt;= user_permissions
+has_admin_access: bool = required_admin &lt;= user_permissions
 
 print("Has standard access:", has_standard_access)  # True
 print("Has admin access:   ", has_admin_access)     # False</pre></div>

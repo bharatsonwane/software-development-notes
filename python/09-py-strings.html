@@ -142,6 +142,10 @@
           <li>Because strings are sequences, they support common sequence operations: forward and backward indexing, slicing, concatenation (<code class="inline">+</code>), repetition (<code class="inline">*</code>), membership testing (<code class="inline">in</code>, <code class="inline">not in</code>), and iteration via loops.</li>
         </ul>
 
+        <div class="callout">
+          <strong>Type Annotation Standard:</strong> In typed Python, scalar strings are typed as <code class="inline">s: str = "..."</code>. Splitting or collecting strings produces generic collections: <code class="inline">tokens: list[str] = s.split()</code>, and single-character extractions remain <code class="inline">char: str = s[0]</code>.
+        </div>
+
         <h3 id="1-2-pep-393-flexible-string-representation">1.2. PEP 393 — Flexible String Representation</h3>
         <div class="callout">
           <strong>Under the Hood (Python 3.3+):</strong> Python optimizes string memory footprint dynamically using <strong>PEP 393</strong>. Instead of always allocating 4 bytes per character, the CPython interpreter chooses the smallest possible character size depending on the highest Unicode code point in the string:
@@ -173,22 +177,22 @@
           <tbody>
             <tr>
               <td>Single Quotes (<code class="inline">'...'</code>)</td>
-              <td><code class="inline">s = 'Python'</code></td>
+              <td><code class="inline">s: str = 'Python'</code></td>
               <td>Short identifiers, dictionary keys, single-word tokens.</td>
             </tr>
             <tr>
               <td>Double Quotes (<code class="inline">"..."</code>)</td>
-              <td><code class="inline">s = "User's guide"</code></td>
+              <td><code class="inline">s: str = "User's guide"</code></td>
               <td>Sentences or strings containing embedded single quotes/apostrophes without escaping.</td>
             </tr>
             <tr>
               <td>Triple Single Quotes (<code class="inline">'''...'''</code>)</td>
-              <td><code class="inline">s = '''Line 1\nLine 2'''</code></td>
+              <td><code class="inline">s: str = '''Line 1\nLine 2'''</code></td>
               <td>Multiline text, SQL queries, templates.</td>
             </tr>
             <tr>
               <td>Triple Double Quotes (<code class="inline">"""..."""</code>)</td>
-              <td><code class="inline">s = """Docstring text"""</code></td>
+              <td><code class="inline">s: str = """Docstring text"""</code></td>
               <td>Standard PEP 257 docstrings for modules, classes, and functions.</td>
             </tr>
           </tbody>
@@ -206,19 +210,19 @@
         </ul>
 
         <div class="code"><pre># Normal string: '\n' is interpreted as a newline character
-path_normal = "C:\new_project\tools"
+path_normal: str = "C:\new_project\tools"
 print(path_normal)
 # Output:
 # C:
 # ew_project  ools
 
 # Raw string: backslashes remain literal characters
-path_raw = r"C:\new_project\tools"
+path_raw: str = r"C:\new_project\tools"
 print(path_raw)  # C:\new_project\tools
 
 # Regex pattern using raw string:
 import re
-pattern = r"\d{3}-\d{2}-\d{4}"  # Matches US SSN format</pre></div>
+pattern: str = r"\d{3}-\d{2}-\d{4}"  # Matches US SSN format</pre></div>
 
         <h3 id="2-str-creation-and-indexing-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
@@ -228,7 +232,7 @@ pattern = r"\d{3}-\d{2}-\d{4}"  # Matches US SSN format</pre></div>
           <li>Attempting item assignment or item deletion directly raises a <code class="inline">TypeError</code>.</li>
         </ul>
 
-        <div class="code"><pre>s = "Python"
+        <div class="code"><pre>s: str = "Python"
 # Attempting in-place modification:
 # s[0] = "J"   # Raises: TypeError: 'str' object does not support item assignment
 # del s[0]     # Raises: TypeError: 'str' object doesn't support item deletion
@@ -263,7 +267,7 @@ print(s)  # 'Jython'</pre></div>
           </tbody>
         </table>
 
-        <div class="code"><pre>s = "PYTHON"
+        <div class="code"><pre>s: str = "PYTHON"
 
 # Positive access:
 print(s[0])   # 'P'
@@ -293,7 +297,7 @@ print(s[-6])  # 'P' (First character)
 
         <h3 id="3-1-syntax-and-step-mechanics">3.1. Syntax &amp; Step Mechanics</h3>
         <p>The slice operator allows extracting a contiguous or patterned substring from a string without mutating the original object:</p>
-        <div class="code"><pre>substring = s[begin : end : step]</pre></div>
+        <div class="code"><pre>substring: str = s[begin : end : step]</pre></div>
 
         <ul>
           <li><strong><code class="inline">begin</code>:</strong> Starting index (inclusive). Defaults to <code class="inline">0</code> if <code class="inline">step &gt; 0</code>, or <code class="inline">-1</code> if <code class="inline">step &lt; 0</code>.</li>
@@ -304,7 +308,7 @@ print(s[-6])  # 'P' (First character)
         <h3 id="3-2-slicing-with-positive-step-step-andgt-0">3.2. Slicing with Positive Step (<code class="inline">step &gt; 0</code>)</h3>
         <p>When the step is positive, extraction proceeds strictly from left to right. If <code class="inline">begin &gt;= end</code>, an empty string <code class="inline">""</code> is returned.</p>
 
-        <div class="code"><pre>s = "ABCDEFGHIJ"
+        <div class="code"><pre>s: str = "ABCDEFGHIJ"
 # Indices:  0123456789
 
 print(s[2:7])      # 'CDEFG' (From index 2 up to 6)
@@ -313,14 +317,14 @@ print(s[5:])       # 'FGHIJ' (From index 5 to end)
 print(s[:])        # 'ABCDEFGHIJ' (Full shallow copy)
 print(s[1:8:2])    # 'BDFH'  (Indices 1, 3, 5, 7)
 print(s[::3])      # 'ADGJ'  (Indices 0, 3, 6, 9)
-print(s[6:2])      # ''      (Empty string because begin > end with positive step)</pre></div>
+print(s[6:2])      # ''      (Empty string because begin &gt; end with positive step)</pre></div>
 
         <h3 id="3-slice-operator-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="3-3-slicing-with-negative-step-step-andlt-0">3.3. Slicing with Negative Step (<code class="inline">step &lt; 0</code>)</h3>
         <p>When the step is negative, extraction proceeds from right to left. The default <code class="inline">begin</code> is <code class="inline">-1</code> (end of string), and default <code class="inline">end</code> goes all the way back to the start.</p>
 
-        <div class="code"><pre>s = "ABCDEFGHIJ"
+        <div class="code"><pre>s: str = "ABCDEFGHIJ"
 
 # String reversal:
 print(s[::-1])     # 'JIHGFEDCBA'
@@ -331,7 +335,7 @@ print(s[7:2:-1])   # 'HGFED' (Indices 7, 6, 5, 4, 3)
 # Negative indices with negative step:
 print(s[-2:-7:-1]) # 'IHGFE' (From index -2 down to -6)
 
-# Negative step with begin < end produces empty string:
+# Negative step with begin &lt; end produces empty string:
 print(s[2:7:-1])   # '' (Cannot step backwards from index 2 towards index 7)</pre></div>
 
         <h3 id="3-4-boundary-clamping-no-indexerror-in-slicing">3.4. Boundary Clamping (No IndexError in Slicing)</h3>
@@ -339,7 +343,7 @@ print(s[2:7:-1])   # '' (Cannot step backwards from index 2 towards index 7)</pr
           <strong>Key Difference: Indexing vs Slicing:</strong> Direct character access <code class="inline">s[i]</code> raises <code class="inline">IndexError</code> if index is out of bounds. In contrast, <strong>slicing never raises an IndexError</strong>. Python automatically clamps out-of-bounds slice endpoints to the string boundaries.
         </div>
 
-        <div class="code"><pre>s = "Python"  # length 6
+        <div class="code"><pre>s: str = "Python"  # length 6
 
 # Out-of-bounds indexing:
 # print(s[100])    # Raises IndexError: string index out of range
@@ -353,14 +357,14 @@ print(s[10:20])    # ''     (Empty string, no error)</pre></div>
         <p>Python provides a first-class <code class="inline">slice</code> type. You can create named, reusable slice definitions instead of hardcoding colon syntax, which is particularly valuable when parsing fixed-width records, logs, and tabular data.</p>
 
         <div class="code"><pre># Fixed-width record format: ID (0-4), Name (5-15), Salary (16-24)
-ID_SLICE = slice(0, 4)
-NAME_SLICE = slice(5, 15)
-SALARY_SLICE = slice(16, 24)
+ID_SLICE: slice = slice(0, 4)
+NAME_SLICE: slice = slice(5, 15)
+SALARY_SLICE: slice = slice(16, 24)
 
-record = "1001 Rahul_Sharma  00095000"
-emp_id = record[ID_SLICE].strip()
-name = record[NAME_SLICE].strip()
-salary = int(record[SALARY_SLICE])
+record: str = "1001 Rahul_Sharma  00095000"
+emp_id: str = record[ID_SLICE].strip()
+name: str = record[NAME_SLICE].strip()
+salary: int = int(record[SALARY_SLICE])
 
 print(f"ID: {emp_id}, Name: {name}, Salary: ${salary:,}")
 # Output: ID: 1001, Name: Rahul_Sharma, Salary: $95,000</pre></div>
@@ -476,7 +480,7 @@ print("2nd_var".isidentifier())    # False (Cannot start with digit)</pre></div>
           </tbody>
         </table>
 
-        <div class="code"><pre>msg = "learning python with python documentation"
+        <div class="code"><pre>msg: str = "learning python with python documentation"
 
 # find vs index:
 print(msg.find("python"))    # 9
@@ -492,7 +496,7 @@ print(msg.rfind("python"))   # 21
 print(msg.count("python"))   # 2
 
 # Checking multiple prefixes or extensions with tuples:
-filename = "report.pdf"
+filename: str = "report.pdf"
 print(filename.endswith((".pdf", ".docx", ".xlsx")))  # True
 print(filename.startswith(("http://", "https://")))   # False</pre></div>
 
@@ -504,19 +508,19 @@ print(filename.startswith(("http://", "https://")))   # False</pre></div>
         </ul>
 
         <div class="code"><pre># Classic strip() traps (strips individual characters, NOT substring):
-url = "www.python.org"
+url: str = "www.python.org"
 print(url.strip("w.org"))  # 'python' (stripped 'w', '.', 'o', 'r', 'g' from edges!)
 
-test = "Arthur: three!"
+test: str = "Arthur: three!"
 print(test.lstrip("Arthur: ")) # 'three!'
-test2 = "Order: 123"
+test2: str = "Order: 123"
 print(test2.lstrip("Order: ")) # '123'
-test3 = "Error: 500"
+test3: str = "Error: 500"
 print(test3.lstrip("Error: ")) # '500' but also strips 'E', 'r', 'o', etc.!
 
 # Safe Python 3.9+ methods (Exact substring removal):
-filename = "draft_invoice_2026.pdf"
-clean = filename.removeprefix("draft_").removesuffix(".pdf")
+filename: str = "draft_invoice_2026.pdf"
+clean: str = filename.removeprefix("draft_").removesuffix(".pdf")
 print(clean)  # 'invoice_2026'</pre></div>
 
         <h3 id="4-5-splitting-joining-and-partitioning">4.5. Splitting, Joining &amp; Partitioning</h3>
@@ -527,34 +531,35 @@ print(clean)  # 'invoice_2026'</pre></div>
         </ul>
 
         <div class="code"><pre># split vs split(' '):
-text = "apple   banana  orange"
+text: str = "apple   banana  orange"
 print(text.split())       # ['apple', 'banana', 'orange'] (Collapses consecutive spaces)
 print(text.split(" "))   # ['apple', '', '', 'banana', '', 'orange'] (Exact space match)
 
 # Efficient joining:
-words = ["Python", "is", "fast", "and", "clean"]
-sentence = " ".join(words)
+words: list[str] = ["Python", "is", "fast", "and", "clean"]
+sentence: str = " ".join(words)
 print(sentence)  # 'Python is fast and clean'
 
 # Partitioning URLs and emails:
-email = "developer@domain.com"
+email: str = "developer@domain.com"
+user: str; at_sym: str; domain: str
 user, at_sym, domain = email.partition("@")
 print(f"User: {user}, Domain: {domain}")  # User: developer, Domain: domain.com</pre></div>
 
         <h3 id="4-6-string-replacement-and-translation-tables">4.6. String Replacement &amp; Translation Tables</h3>
         <div class="code"><pre># replace(old, new[, count])
-code_snippet = "var x = 10; var y = 20; var z = 30;"
-updated = code_snippet.replace("var", "let", 2)  # Replace only first 2 occurrences
+code_snippet: str = "var x = 10; var y = 20; var z = 30;"
+updated: str = code_snippet.replace("var", "let", 2)  # Replace only first 2 occurrences
 print(updated)  # 'let x = 10; let y = 20; var z = 30;'
 
 # translate() with str.maketrans() for bulk 1-to-1 character substitutions:
-vowel_map = str.maketrans("aeiou", "12345")
-cipher = "hello world".translate(vowel_map)
+vowel_map: dict[int, int | None] = str.maketrans("aeiou", "12345")
+cipher: str = "hello world".translate(vowel_map)
 print(cipher)  # 'h2ll4 w4rld'
 
 # Bulk deletion using 3-argument maketrans(x, y, delete_chars):
-remove_punct = str.maketrans("", "", ",.!?")
-clean_text = "Wait! Are you sure, really sure?".translate(remove_punct)
+remove_punct: dict[int, int | None] = str.maketrans("", "", ",.!?")
+clean_text: str = "Wait! Are you sure, really sure?".translate(remove_punct)
 print(clean_text)  # 'Wait Are you sure really sure'</pre></div>
       </section>
 
@@ -578,22 +583,23 @@ print(clean_text)  # 'Wait Are you sure really sure'</pre></div>
 
         <h3 id="5-1-program-1-string-reversal-3-approaches">5.1. Program 1: String Reversal (3 Approaches)</h3>
         <p>Comparison of slice reversal, built-in sequence inversion, and two-pointer manual traversal:</p>
-        <div class="code"><pre>sample = "PythonMastery"
+        <div class="code"><pre>sample: str = "PythonMastery"
 
 # Approach 1: Slicing (Fastest, C-level implementation)
-reversed_slice = sample[::-1]
+reversed_slice: str = sample[::-1]
 
 # Approach 2: reversed() generator joined
-reversed_builtin = "".join(reversed(sample))
+reversed_builtin: str = "".join(reversed(sample))
 
 # Approach 3: Two-pointer in-place on list representation (Classic algorithm)
-chars = list(sample)
-left, right = 0, len(chars) - 1
-while left < right:
+chars: list[str] = list(sample)
+left: int = 0
+right: int = len(chars) - 1
+while left &lt; right:
     chars[left], chars[right] = chars[right], chars[left]
     left += 1
     right -= 1
-reversed_twopointer = "".join(chars)
+reversed_twopointer: str = "".join(chars)
 
 print("Slice:      ", reversed_slice)
 print("Builtin:    ", reversed_builtin)
@@ -601,7 +607,7 @@ print("Two-pointer:", reversed_twopointer)</pre></div>
 
         <h3 id="5-2-program-2-advanced-palindrome-verification">5.2. Program 2: Advanced Palindrome Verification</h3>
         <p>Checks whether a sentence reads identically forwards and backwards, ignoring casing, punctuation, and whitespaces:</p>
-        <div class="code"><pre>test_cases = [
+        <div class="code"><pre>test_cases: list[str] = [
     "A man, a plan, a canal: Panama",
     "race a car",
     "Was it a car or a cat I saw?"
@@ -609,15 +615,15 @@ print("Two-pointer:", reversed_twopointer)</pre></div>
 
 for text in test_cases:
     # Filter only alphanumeric characters and normalize to lowercase
-    filtered = [c.lower() for c in text if c.isalnum()]
-    is_palindrome = (filtered == filtered[::-1])
+    filtered: list[str] = [c.lower() for c in text if c.isalnum()]
+    is_palindrome: bool = (filtered == filtered[::-1])
     print(f"{text!r:35} -> Palindrome: {is_palindrome}")</pre></div>
 
         <h3 id="5-string-practice-programs-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="5-3-program-3-anagram-detection">5.3. Program 3: Anagram Detection</h3>
         <p>Two strings are anagrams if they contain identical character frequencies:</p>
-        <div class="code"><pre>pairs = [
+        <div class="code"><pre>pairs: list[tuple[str, str]] = [
     ("listen", "silent"),
     ("Astronomer", "Moon starer"),
     ("hello", "world")
@@ -625,15 +631,14 @@ for text in test_cases:
 
 for s1, s2 in pairs:
     # Approach 1: O(N log N) using sorted()
-    is_anagram_sort = sorted(s1.replace(" ", "").lower()) == sorted(s2.replace(" ", "").lower())
+    is_anagram_sort: bool = sorted(s1.replace(" ", "").lower()) == sorted(s2.replace(" ", "").lower())
 
     # Approach 2: O(N) linear time using dictionary frequency map
-    clean1 = [c.lower() for c in s1 if c.isalnum()]
-    clean2 = [c.lower() for c in s2 if c.isalnum()]
-    if len(clean1) != len(clean2):
-        is_anagram_count = False
-    else:
-        freq = {}
+    clean1: list[str] = [c.lower() for c in s1 if c.isalnum()]
+    clean2: list[str] = [c.lower() for c in s2 if c.isalnum()]
+    is_anagram_count: bool = False
+    if len(clean1) == len(clean2):
+        freq: dict[str, int] = {}
         for c in clean1:
             freq[c] = freq.get(c, 0) + 1
         is_anagram_count = True
@@ -647,15 +652,16 @@ for s1, s2 in pairs:
 
         <h3 id="5-4-program-4-run-length-string-compression">5.4. Program 4: Run-Length String Compression</h3>
         <p>Compresses consecutive repeated characters into character + count (e.g. <code class="inline">"a4b3c2"</code>):</p>
-        <div class="code"><pre>samples = ["aaaabbbcc", "aabcccccaaa", "abcdef"]
+        <div class="code"><pre>samples: list[str] = ["aaaabbbcc", "aabcccccaaa", "abcdef"]
 
 for s in samples:
+    compressed: str = ""
     if not s:
         compressed = ""
     else:
-        result = []
-        current_char = s[0]
-        count = 1
+        result: list[str] = []
+        current_char: str = s[0]
+        count: int = 1
         for i in range(1, len(s)):
             if s[i] == current_char:
                 count += 1
@@ -664,18 +670,18 @@ for s in samples:
                 current_char = s[i]
                 count = 1
         result.append(f"{current_char}{count}")
-        rle = "".join(result)
-        compressed = rle if len(rle) < len(s) else s
+        rle: str = "".join(result)
+        compressed = rle if len(rle) &lt; len(s) else s
 
     print(f"Original: {s:12} -> Compressed: {compressed}")</pre></div>
 
         <h3 id="5-5-program-5-character-classifier-and-segregation">5.5. Program 5: Character Classifier &amp; Segregation</h3>
         <p>Separates a mixed string into distinct alphabet, digit, and special symbol components:</p>
-        <div class="code"><pre>raw_data = "PY10@thon_2026!#Code"
+        <div class="code"><pre>raw_data: str = "PY10@thon_2026!#Code"
 
-alphas = []
-digits = []
-specials = []
+alphas: list[str] = []
+digits: list[str] = []
+specials: list[str] = []
 for char in raw_data:
     if char.isalpha():
         alphas.append(char)
@@ -684,7 +690,7 @@ for char in raw_data:
     else:
         specials.append(char)
 
-classified = {
+classified: dict[str, str] = {
     "alphabets": "".join(alphas),
     "digits": "".join(digits),
     "specials": "".join(specials)
@@ -696,16 +702,16 @@ print("Specials: ", classified["specials"])   # @!#</pre></div>
 
         <h3 id="5-6-program-6-reverse-order-of-words-and-reverse-each-word">5.6. Program 6: Reverse Order of Words &amp; Reverse Each Word</h3>
         <p>Two classic interview variations for word processing in sentences:</p>
-        <div class="code"><pre>text = "Learning Python is very easy"
+        <div class="code"><pre>text: str = "Learning Python is very easy"
 
 # Task A: Reverse order of words in sentence
 # "Learning Python is very easy" -> "easy very is Python Learning"
-words = text.split()
-reversed_words_order = " ".join(words[::-1])
+words: list[str] = text.split()
+reversed_words_order: str = " ".join(words[::-1])
 
 # Task B: Reverse internal characters of each individual word
 # "Learning Python is very easy" -> "gninraeL nohtyP si yrev ysae"
-reversed_each_word = " ".join(word[::-1] for word in text.split())
+reversed_each_word: str = " ".join(word[::-1] for word in text.split())
 
 print("Original:            ", text)
 print("Reversed words order:", reversed_words_order)
@@ -713,29 +719,30 @@ print("Reversed each word:  ", reversed_each_word)</pre></div>
 
         <h3 id="5-7-program-7-merge-characters-of-two-strings-alternately">5.7. Program 7: Merge Characters of Two Strings Alternately</h3>
         <p>Merges two strings character-by-character into a single string, appending any remaining characters from the longer string:</p>
-        <div class="code"><pre>pairs = [("RAVI", "TEJA"), ("BHARAT", "12"), ("XY", "12345")]
+        <div class="code"><pre>pairs: list[tuple[str, str]] = [("RAVI", "TEJA"), ("BHARAT", "12"), ("XY", "12345")]
 
 for s1, s2 in pairs:
-    result = []
-    i, j = 0, 0
-    while i < len(s1) or j < len(s2):
-        if i < len(s1):
+    result: list[str] = []
+    i: int = 0
+    j: int = 0
+    while i &lt; len(s1) or j &lt; len(s2):
+        if i &lt; len(s1):
             result.append(s1[i])
             i += 1
-        if j < len(s2):
+        if j &lt; len(s2):
             result.append(s2[j])
             j += 1
-    merged = "".join(result)
+    merged: str = "".join(result)
     print(f"Merge {s1:8} + {s2:8} -> {merged}")</pre></div>
 
         <h3 id="5-8-program-8-sort-characters-alphabets-followed-by-digits">5.8. Program 8: Sort Characters (Alphabets Followed by Digits)</h3>
         <p>Sorts characters of a mixed string so all alphabetical characters appear first in ascending alphabetical order, followed by all numerical digits in ascending numerical order (e.g. <code class="inline">"B4A1D3" -&gt; "ABD134"</code>):</p>
-        <div class="code"><pre>samples = ["B4A1D3", "Z9A2C1"]
+        <div class="code"><pre>samples: list[str] = ["B4A1D3", "Z9A2C1"]
 
 for s in samples:
-    alphas = sorted(c for c in s if c.isalpha())
-    digits = sorted(c for c in s if c.isdigit())
-    sorted_str = "".join(alphas + digits)
+    alphas: list[str] = sorted(c for c in s if c.isalpha())
+    digits: list[str] = sorted(c for c in s if c.isdigit())
+    sorted_str: str = "".join(alphas + digits)
     print(f"Input: {s} -> Output: {sorted_str}")</pre></div>
       </section>
 
@@ -777,8 +784,8 @@ for s in samples:
               <li><strong>Performance Advantage:</strong> Comparing two interned strings for equality (<code class="inline">a is b</code> or <code class="inline">a == b</code>) collapses from an $O(N)$ character-by-character scan into a single $O(1)$ memory pointer address comparison.</li>
               <li><strong>Manual Interning:</strong> Dynamic or runtime strings can be explicitly interned using the <code class="inline">sys.intern()</code> function:
                 <div class="code"><pre>import sys
-s1 = sys.intern("long_dynamic_identifier_" + str(10))
-s2 = sys.intern("long_dynamic_identifier_" + str(10))
+s1: str = sys.intern("long_dynamic_identifier_" + str(10))
+s2: str = sys.intern("long_dynamic_identifier_" + str(10))
 print(s1 is s2)  # True</pre></div>
               </li>
             </ul>
@@ -829,7 +836,8 @@ print(s1 is s2)  # True</pre></div>
             <p>Because strings are immutable, executing <code class="inline">s += item</code> inside an $N$-iteration loop cannot append to the existing buffer. In the worst case, Python must allocate a new string buffer of size $(K + \text{item\_len})$, copy all existing bytes into it, and discard the old buffer. This results in <strong>$O(N^2)$ quadratic time complexity</strong>.</p>
             <p><strong>The Idiomatic Solution:</strong> Collect strings in a list and assemble them once using <code class="inline">str.join()</code>, which computes total memory required upfront and copies characters in a single <strong>$O(N)$ linear pass</strong>:</p>
             <div class="code"><pre># Bad: O(N^2)
-res = ""
+words: list[str] = ["Python", "is", "awesome"]
+res: str = ""
 for word in words:
     res += word + " "
 
@@ -865,7 +873,7 @@ res = " ".join(words)</pre></div>
             <ul>
               <li><strong><code class="inline">s.split()</code> (delimiter=None):</strong> Strips leading and trailing whitespace first, and collapses any run of contiguous whitespace (spaces, tabs, newlines) into a single split point. It will <strong>never produce empty strings</strong> in the resulting list.</li>
               <li><strong><code class="inline">s.split(" ")</code> (explicit delimiter):</strong> Treats every individual space character literally. Two consecutive spaces will result in an empty string <code class="inline">""</code> between them:
-                <div class="code"><pre>line = "  alpha   beta  "
+                <div class="code"><pre>line: str = "  alpha   beta  "
 print(line.split())      # ['alpha', 'beta']
 print(line.split(" "))   # ['', '', 'alpha', '', '', 'beta', '', '']</pre></div>
               </li>
@@ -884,8 +892,8 @@ print(line.split(" "))   # ['', '', 'alpha', '', '', 'beta', '', '']</pre></div>
               <li>For instance, the German lowercase sharp s (<code class="inline">'ß'</code>) is already lowercase, so <code class="inline">'ß'.lower()</code> remains <code class="inline">'ß'</code>.</li>
               <li>However, in German capitalization, <code class="inline">'ß'</code> corresponds to <code class="inline">'SS'</code>.</li>
               <li><code class="inline">casefold()</code> performs full Unicode case folding. <code class="inline">'ß'.casefold()</code> converts to <code class="inline">'ss'</code>, allowing accurate, language-agnostic caseless equality comparisons:
-                <div class="code"><pre>s1 = "der Fluß"
-s2 = "der Fluss"
+                <div class="code"><pre>s1: str = "der Fluß"
+s2: str = "der Fluss"
 print(s1.lower() == s2.lower())       # False
 print(s1.casefold() == s2.casefold()) # True</pre></div>
               </li>
@@ -929,7 +937,7 @@ print(s1.casefold() == s2.casefold()) # True</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>msg = "DEVELOPER"
+                <div class="code"><pre>msg: str = "DEVELOPER"
 print("First 4:", msg[:4])       # DEVE
 print("Last 3: ", msg[-3:])      # PER
 print("Every 2:", msg[::2])       # DVLPRe
@@ -944,11 +952,11 @@ print("Reverse:", msg[::-1])      # REPOLEVED</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>raw_name = "   bHaRat sOnWaNe   "
-clean_name = raw_name.strip().title()
-role = "senior software engineer"
+                <div class="code"><pre>raw_name: str = "   bHaRat sOnWaNe   "
+clean_name: str = raw_name.strip().title()
+role: str = "senior software engineer"
 
-profile = f"User: {clean_name} | Role: {role.upper()} | Initials: {''.join(w[0] for w in clean_name.split())}"
+profile: str = f"User: {clean_name} | Role: {role.upper()} | Initials: {''.join(w[0] for w in clean_name.split())}"
 print(profile)</pre></div>
               </div>
             </details>
@@ -964,16 +972,18 @@ print(profile)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>url = "https://www.example.com/docs/python-notes-v2.pdf"
+                <div class="code"><pre>url: str = "https://www.example.com/docs/python-notes-v2.pdf"
 
 # Extract protocol:
+protocol: str; rest: str
 protocol, _, rest = url.partition("://")
 
 # Extract domain:
-domain = rest.split("/")[0]
+domain: str = rest.split("/")[0]
 
-# Extract filename & extension:
-filename = rest.split("/")[-1]
+# Extract filename &amp; extension:
+filename: str = rest.split("/")[-1]
+basename: str; ext: str
 basename, _, ext = filename.rpartition(".")
 
 print(f"Protocol: {protocol}")  # https
@@ -990,8 +1000,8 @@ print(f"Ext:      {ext}")       # pdf</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>text = "engineering"
-freq = {}
+                <div class="code"><pre>text: str = "engineering"
+freq: dict[str, int] = {}
 for char in text:
     freq[char] = freq.get(char, 0) + 1
 
@@ -1007,9 +1017,9 @@ for char, count in sorted(freq.items()):
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>sentence = "Python is amazingly elegant"
+                <div class="code"><pre>sentence: str = "Python is amazingly elegant"
 # Target: "nohtyP si ylgnizama tnagele"
-reversed_words = " ".join(word[::-1] for word in sentence.split())
+reversed_words: str = " ".join(word[::-1] for word in sentence.split())
 print("Original:", sentence)
 print("Reversed:", reversed_words)</pre></div>
               </div>
@@ -1022,14 +1032,14 @@ print("Reversed:", reversed_words)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>text = "BANANA"
-pattern = "ANA"
+                <div class="code"><pre>text: str = "BANANA"
+pattern: str = "ANA"
 
-count = 0
+count: int = 0
 if pattern:
-    start = 0
+    start: int = 0
     while True:
-        idx = text.find(pattern, start)
+        idx: int = text.find(pattern, start)
         if idx == -1:
             break
         count += 1
@@ -1052,12 +1062,12 @@ print(f"Occurrences of {pattern!r} in {text!r}: {count}")  # 2</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>words = ["eat", "tea", "tan", "ate", "nat", "bat"]
+                <div class="code"><pre>words: list[str] = ["eat", "tea", "tan", "ate", "nat", "bat"]
 
 # Group by sorted tuple signature:
-anagram_groups = {}
+anagram_groups: dict[str, list[str]] = {}
 for w in words:
-    key = "".join(sorted(w))
+    key: str = "".join(sorted(w))
     anagram_groups.setdefault(key, []).append(w)
 
 print("Anagram Groups:", list(anagram_groups.values()))
@@ -1072,11 +1082,11 @@ print("Anagram Groups:", list(anagram_groups.values()))
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>test_ips = ["192.168.1.1", "256.100.0.1", "192.168.01.1", "10.0.0.0", "abc.def.gha.xyz"]
+                <div class="code"><pre>test_ips: list[str] = ["192.168.1.1", "256.100.0.1", "192.168.01.1", "10.0.0.0", "abc.def.gha.xyz"]
 
 for ip in test_ips:
-    octets = ip.split(".")
-    is_valid = True
+    octets: list[str] = ip.split(".")
+    is_valid: bool = True
     if len(octets) != 4:
         is_valid = False
     else:
@@ -1085,14 +1095,14 @@ for ip in test_ips:
                 is_valid = False
                 break
             # Leading zero check: "01" is invalid, but "0" is valid
-            if len(octet) > 1 and octet[0] == "0":
+            if len(octet) &gt; 1 and octet[0] == "0":
                 is_valid = False
                 break
-            val = int(octet)
-            if not (0 <= val <= 255):
+            val: int = int(octet)
+            if not (0 &lt;= val &lt;= 255):
                 is_valid = False
                 break
-    print(f"{ip:18} -> Valid: {is_valid}")</pre></div>
+    print(f"{ip:18} -&gt; Valid: {is_valid}")</pre></div>
               </div>
             </details>
           </li>

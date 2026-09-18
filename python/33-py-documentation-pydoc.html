@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-why-documentation-matters">1.1. Why Documentation Matters</a>
+            <a href="#1-2-type-annotations-and-docstrings">1.2. Type Annotations &amp; Docstrings Synergy</a>
           </div>
         </div>
         <div class="nav-section">
@@ -105,6 +106,20 @@
           <li><strong>Powers IDE Introspection:</strong> Modern code editors (VS Code, PyCharm, Antigravity) use docstrings to display inline tooltips, autocompletion hints, and parameter signatures.</li>
           <li><strong>Enables Automated Site Generation:</strong> Automated build systems (Sphinx, MkDocs) extract docstrings directly from Python code into searchable HTML documentation sites.</li>
         </ul>
+
+        <h3 id="1-2-type-annotations-and-docstrings">1.2. Type Annotations &amp; Docstrings Synergy</h3>
+        <p>In modern Python (PEP 484 / PEP 526), types belong directly in the function signature rather than solely inside docstrings. This allows static type checkers (Mypy, Pyright) and documentation generators (Pydoc, Sphinx) to inspect and cross-reference signatures automatically:</p>
+        <div class="code"><pre>def normalize_token(raw_token: str, max_length: int = 32) -&gt; str:
+    """Normalize a security bearer token.
+
+    Args:
+        raw_token: Raw token string received from request header.
+        max_length: Maximum allowed length for truncated token.
+
+    Returns:
+        Cleaned, stripped, and truncated token string.
+    """
+    return raw_token.strip()[:max_length]</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -235,8 +250,8 @@ def format_user_label(username: str, user_id: int) -> str:
 
         <div class="code"><pre>import inspect
 
-raw_doc = calculate_compound_interest.__doc__
-clean_doc = inspect.getdoc(calculate_compound_interest)
+raw_doc: str | None = calculate_compound_interest.__doc__
+clean_doc: str = inspect.getdoc(calculate_compound_interest) or ""
 
 print("Function name:   ", calculate_compound_interest.__name__)
 print("Clean docstring:\n", clean_doc)</pre></div>
@@ -438,7 +453,7 @@ def calculate_bmi(weight_kg: float, height_m: float) -> float:
         raise ValueError("Weight and height must be positive numbers")
     return round(weight_kg / (height_m ** 2), 2)
 
-print("BMI:", calculate_bmi(70, 1.75))</pre></div>
+print("BMI:", calculate_bmi(70.0, 1.75))</pre></div>
               </div>
             </details>
           </li>
@@ -454,7 +469,7 @@ import inspect
 
 class DataPipeline:
     """Enterprise streaming data pipeline worker."""
-    def execute(self):
+    def execute(self) -> None:
         """Execute ETL sequence on incoming batches."""
         pass
 
@@ -477,6 +492,7 @@ print("Method doc:\n", inspect.getdoc(DataPipeline.execute))</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Self-Documenting API Service
 import inspect
+from typing import Any
 
 class PaymentService:
     """Service handling multi-currency payment operations."""
@@ -490,14 +506,14 @@ class PaymentService:
         return True
 
     @classmethod
-    def generate_api_manual(cls):
+    def generate_api_manual(cls) -> None:
         print(f"=== API Manual for {cls.__name__} ===")
         print(f"Description: {inspect.getdoc(cls)}\n")
         print("Methods:")
         for name, func in inspect.getmembers(cls, predicate=inspect.isfunction):
             if not name.startswith("_") and name != "generate_api_manual":
-                sig = inspect.signature(func)
-                doc = inspect.getdoc(func) or "No documentation provided."
+                sig: inspect.Signature = inspect.signature(func)
+                doc: str = inspect.getdoc(func) or "No documentation provided."
                 print(f"  - {name}{sig}: {doc}")
 
 PaymentService.generate_api_manual()</pre></div>
@@ -512,14 +528,16 @@ PaymentService.generate_api_manual()</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Edge Case: Lost docstrings in flawed decorators
-def bad_decorator(func):
-    def wrapper(*args, **kwargs):
+from typing import Callable, Any
+
+def bad_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         """Wrapper docstring."""
         return func(*args, **kwargs)
     return wrapper
 
 @bad_decorator
-def sample_task():
+def sample_task() -> None:
     """Important business logic docstring."""
     pass
 

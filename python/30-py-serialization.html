@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-what-is-serialization-and-deserialization">1.1. What is Serialization &amp; Deserialization?</a>
             <a href="#1-2-format-comparison-matrix">1.2. Format Comparison Matrix</a>
+            <a href="#1-3-serialization-typing">1.3. Serialization Typing &amp; Signatures</a>
           </div>
         </div>
         <div class="nav-section">
@@ -162,6 +163,28 @@
             </tr>
           </tbody>
         </table>
+
+        <h3 id="1-3-serialization-typing">1.3. Serialization Typing &amp; Signatures</h3>
+        <p>In modern typed Python, serialization functions accept generic objects and return encoded strings or bytes. Deserialized outputs start as dynamically-typed payloads (<code>Any</code>) requiring explicit casting or type narrowing:</p>
+        <div class="code"><pre>import json
+import pickle
+from typing import Any
+
+# Serializer signatures:
+# json.dumps(obj: Any, ...) -&gt; str
+# json.loads(s: str, ...) -&gt; Any
+# pickle.dumps(obj: Any, ...) -&gt; bytes
+# pickle.loads(data: bytes, ...) -&gt; Any
+
+raw_data: dict[str, Any] = {"service": "auth", "port": 8080, "active": True}
+
+# Typed JSON round-trip:
+encoded_json: str = json.dumps(raw_data)
+decoded_dict: dict[str, Any] = json.loads(encoded_json)
+
+# Typed pickle round-trip:
+encoded_pickle: bytes = pickle.dumps(raw_data)
+decoded_pickle: dict[str, Any] = pickle.loads(encoded_pickle)</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -187,23 +210,23 @@
         <div class="code"><pre>import pickle
 
 class Employee:
-    def __init__(self, emp_id, name, skills):
-        self.emp_id = emp_id
-        self.name = name
-        self.skills = skills
+    def __init__(self, emp_id: int, name: str, skills: list[str]) -> None:
+        self.emp_id: int = emp_id
+        self.name: str = name
+        self.skills: list[str] = skills
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Employee({self.emp_id}, '{self.name}', {self.skills})"
 
-original_emp = Employee(101, "Alice", ["Python", "Docker", "PostgreSQL"])
+original_emp: Employee = Employee(101, "Alice", ["Python", "Docker", "PostgreSQL"])
 
 # 1. In-memory pickling:
-serialized_bytes = pickle.dumps(original_emp)
+serialized_bytes: bytes = pickle.dumps(original_emp)
 print(f"Pickled byte size: {len(serialized_bytes)} bytes")
 print("Raw bytes preview:", serialized_bytes[:30])
 
 # 2. In-memory unpickling:
-reconstructed_emp = pickle.loads(serialized_bytes)
+reconstructed_emp: Employee = pickle.loads(serialized_bytes)
 print("Reconstructed:", reconstructed_emp)
 print("Type preserved:", type(reconstructed_emp))  # &lt;class '__main__.Employee'&gt;
 print("Skills preserved:", reconstructed_emp.skills)</pre></div>
@@ -213,29 +236,30 @@ print("Skills preserved:", reconstructed_emp.skills)</pre></div>
         <p>Certain resources cannot be pickled (e.g., open file descriptors, active database connections, thread locks, network sockets). By implementing <code>__getstate__</code> and <code>__setstate__</code>, a class can filter out non-serializable fields before pickling and re-initialize them upon unpickling.</p>
 
         <div class="code"><pre>import pickle
+from typing import Any
 
 class SessionManager:
-    def __init__(self, user, token):
-        self.user = user
-        self.token = token
-        self.transient_lock = "Non-serializable system handle"
+    def __init__(self, user: str, token: str) -> None:
+        self.user: str = user
+        self.token: str = token
+        self.transient_lock: str = "Non-serializable system handle"
 
-    def __getstate__(self):
+    def __getstate__(self) -> dict[str, Any]:
         """Called by pickle.dump/dumps to get state dictionary for serialization."""
-        state = self.__dict__.copy()
+        state: dict[str, Any] = self.__dict__.copy()
         # Omit transient resources:
         state.pop("transient_lock", None)
         return state
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: dict[str, Any]) -> None:
         """Called by pickle.load/loads to restore object state."""
         self.__dict__.update(state)
         # Re-initialize transient resource:
         self.transient_lock = "Freshly initialized lock"
 
-sess = SessionManager("admin", "tok_xyz987")
-raw = pickle.dumps(sess)
-restored = pickle.loads(raw)
+sess: SessionManager = SessionManager("admin", "tok_xyz987")
+raw: bytes = pickle.dumps(sess)
+restored: SessionManager = pickle.loads(raw)
 print("Restored user:", restored.user)
 print("Restored lock:", restored.transient_lock)</pre></div>
 
@@ -266,8 +290,9 @@ print("Restored lock:", restored.transient_lock)</pre></div>
         </ul>
 
         <div class="code"><pre>import json
+from typing import Any
 
-payload = {
+payload: dict[str, Any] = {
     "status": "success",
     "code": 200,
     "authenticated": True,
@@ -280,11 +305,11 @@ payload = {
 }
 
 # Serialize with formatting:
-json_string = json.dumps(payload, indent=2, sort_keys=True)
+json_string: str = json.dumps(payload, indent=2, sort_keys=True)
 print("Serialized JSON:\n", json_string)
 
 # Deserialize:
-parsed = json.loads(json_string)
+parsed: dict[str, Any] = json.loads(json_string)
 print("\nParsed username:", parsed["user"]["name"])
 print("Parsed roles:", parsed["user"]["roles"])</pre></div>
 
@@ -296,9 +321,10 @@ print("Parsed roles:", parsed["user"]["roles"])</pre></div>
         <div class="code"><pre>import json
 from datetime import datetime, date
 from decimal import Decimal
+from typing import Any
 import uuid
 
-def custom_json_serializer(obj):
+def custom_json_serializer(obj: Any) -> Any:
     """Custom serializer function passed to json.dumps(default=...)."""
     if isinstance(obj, (datetime, date)):
         return obj.isoformat()
@@ -310,7 +336,7 @@ def custom_json_serializer(obj):
         return obj.__dict__
     raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
-transaction = {
+transaction: dict[str, Any] = {
     "tx_id": uuid.uuid4(),
     "timestamp": datetime.now(),
     "amount": Decimal("1499.50"),
@@ -318,7 +344,7 @@ transaction = {
 }
 
 # Serializing with custom serializer:
-json_output = json.dumps(transaction, default=custom_json_serializer, indent=2)
+json_output: str = json.dumps(transaction, default=custom_json_serializer, indent=2)
 print("Serialized Custom Data:\n", json_output)</pre></div>
       </section>
 
@@ -340,15 +366,15 @@ print("Serialized Custom Data:\n", json_output)</pre></div>
 import jsonpickle
 
 class Order:
-    def __init__(self, order_id, customer, total):
-        self.order_id = order_id
-        self.customer = customer
-        self.total = total
+    def __init__(self, order_id: str, customer: str, total: float) -> None:
+        self.order_id: str = order_id
+        self.customer: str = customer
+        self.total: float = total
 
-order = Order("ORD-99", "Bharat", 299.95)
+order: Order = Order("ORD-99", "Bharat", 299.95)
 
 # 1. Encode into JSON with Python class metadata:
-frozen_json = jsonpickle.encode(order, indent=2)
+frozen_json: str = jsonpickle.encode(order, indent=2)
 print("jsonpickle output:\n", frozen_json)
 # {
 #   "py/object": "__main__.Order",
@@ -358,7 +384,7 @@ print("jsonpickle output:\n", frozen_json)
 # }
 
 # 2. Reconstruct original class instance:
-restored_order = jsonpickle.decode(frozen_json)
+restored_order: Order = jsonpickle.decode(frozen_json)
 print("Restored class instance:", type(restored_order))  # &lt;class '__main__.Order'&gt;
 print("Order Total:", restored_order.total)</pre></div>
 
@@ -367,20 +393,21 @@ print("Order Total:", restored_order.total)</pre></div>
         <p>In real-world web applications (using <code>requests</code> or <code>urllib.request</code>), API communication is conducted over JSON payloads.</p>
 
         <div class="code"><pre>import json
+from typing import Any
 
 # Simulating an HTTP API response string:
-api_response_body = '{"data": [{"id": 1, "title": "Buy groceries"}, {"id": 2, "title": "Deploy API"}]}'
+api_response_body: str = '{"data": [{"id": 1, "title": "Buy groceries"}, {"id": 2, "title": "Deploy API"}]}'
 
-def parse_api_todos(response_text):
+def parse_api_todos(response_text: str) -> list[str]:
     try:
-        payload = json.loads(response_text)
-        todos = payload.get("data", [])
-        return [item["title"] for item in todos]
+        payload: dict[str, Any] = json.loads(response_text)
+        todos: list[dict[str, Any]] = payload.get("data", [])
+        return [str(item["title"]) for item in todos]
     except json.JSONDecodeError as err:
         print(f"Failed to decode API JSON response: {err}")
         return []
 
-todo_titles = parse_api_todos(api_response_body)
+todo_titles: list[str] = parse_api_todos(api_response_body)
 print("Parsed Todo Titles:", todo_titles)</pre></div>
       </section>
 
@@ -400,8 +427,9 @@ print("Parsed Todo Titles:", todo_titles)</pre></div>
         <p>The standard Python library for YAML is <strong>PyYAML</strong> (installed via <code>pip install pyyaml</code>, imported as <code>yaml</code>).</p>
 
         <div class="code"><pre>import yaml
+from typing import Any
 
-server_config = {
+server_config: dict[str, Any] = {
     "server": {
         "host": "0.0.0.0",
         "port": 8080,
@@ -416,11 +444,11 @@ server_config = {
 }
 
 # 1. Dumping to YAML text:
-yaml_text = yaml.dump(server_config, sort_keys=False)
+yaml_text: str = yaml.dump(server_config, sort_keys=False)
 print("Generated YAML Config:\n", yaml_text)
 
 # 2. Parsing YAML text:
-parsed_config = yaml.safe_load(yaml_text)
+parsed_config: dict[str, Any] = yaml.safe_load(yaml_text)
 print("Parsed port:", parsed_config["server"]["port"])
 print("Enabled features:", parsed_config["features"])</pre></div>
 
@@ -436,8 +464,9 @@ print("Enabled features:", parsed_config["features"])</pre></div>
         <p>YAML supports storing multiple documents in a single file separated by three hyphens (<code>---</code>), widely used in Kubernetes manifests.</p>
 
         <div class="code"><pre>import yaml
+from typing import Any
 
-multi_doc = """
+multi_doc: str = """
 ---
 name: Service-A
 version: 1.0.0
@@ -447,7 +476,7 @@ version: 2.1.0
 """
 
 # safe_load_all returns an iterator over all documents in the stream:
-documents = list(yaml.safe_load_all(multi_doc))
+documents: list[dict[str, Any]] = list(yaml.safe_load_all(multi_doc))
 for doc in documents:
     print(f"Service: {doc['name']}, Version: {doc['version']}")</pre></div>
       </section>
@@ -523,13 +552,19 @@ for doc in documents:
           </summary>
           <div class="qa-answer-body">
             <p>You can pass a fallback function to the <code>default</code> parameter of <code>json.dumps()</code>, or subclass <code>json.JSONEncoder</code>:</p>
-            <div class="code"><pre>def serialize_custom(obj):
+            <div class="code"><pre>from datetime import datetime
+from decimal import Decimal
+import json
+from typing import Any
+
+def serialize_custom(obj: Any) -> Any:
     if isinstance(obj, datetime):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return float(obj)
     raise TypeError
 
+data: dict[str, Any] = {"created": datetime.now(), "price": Decimal("19.99")}
 json.dumps(data, default=serialize_custom)</pre></div>
           </div>
         </details>
@@ -604,10 +639,11 @@ json.dumps(data, default=serialize_custom)</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import json
+from typing import Any
 
-data = {"user": "Alice", "active": True, "scores": [95, 88, 92]}
-json_str = json.dumps(data)
-parsed = json.loads(json_str)
+data: dict[str, Any] = {"user": "Alice", "active": True, "scores": [95, 88, 92]}
+json_str: str = json.dumps(data)
+parsed: dict[str, Any] = json.loads(json_str)
 print("Reconstructed name:", parsed["user"])</pre></div>
               </div>
             </details>
@@ -642,15 +678,15 @@ safe YAML parsing, and defensive security measures against insecure deserializat
 import pickle
 
 class Player:
-    def __init__(self, username, level, inventory):
-        self.username = username
-        self.level = level
-        self.inventory = inventory
+    def __init__(self, username: str, level: int, inventory: list[str]) -> None:
+        self.username: str = username
+        self.level: int = level
+        self.inventory: list[str] = inventory
 
-p1 = Player("GamerOne", 45, ["sword", "shield", "potion"])
-p1_bytes = pickle.dumps(p1)
+p1: Player = Player("GamerOne", 45, ["sword", "shield", "potion"])
+p1_bytes: bytes = pickle.dumps(p1)
 
-restored_p1 = pickle.loads(p1_bytes)
+restored_p1: Player = pickle.loads(p1_bytes)
 print("Restored Player:", restored_p1.username, "| Level:", restored_p1.level)</pre></div>
               </div>
             </details>
@@ -666,21 +702,22 @@ print("Restored Player:", restored_p1.username, "| Level:", restored_p1.level)</
 import json
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 
-order_data = {
+order_data: dict[str, Any] = {
     "order_id": 9982,
     "created_at": datetime(2026, 9, 14, 15, 30),
     "amount": Decimal("129.95")
 }
 
-def custom_encoder(obj):
+def custom_encoder(obj: Any) -> str:
     if isinstance(obj, datetime):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
     raise TypeError(f"Type {type(obj)} not serializable")
 
-json_output = json.dumps(order_data, default=custom_encoder, indent=2)
+json_output: str = json.dumps(order_data, default=custom_encoder, indent=2)
 print("Serialized Order:\n", json_output)</pre></div>
               </div>
             </details>
@@ -694,8 +731,9 @@ print("Serialized Order:\n", json_output)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 3: Safe YAML parsing
 import yaml
+from typing import Any
 
-yaml_doc = """
+yaml_doc: str = """
 environment: production
 database:
   host: postgres.internal
@@ -708,7 +746,7 @@ logging:
     - file
 """
 
-cfg = yaml.safe_load(yaml_doc)
+cfg: dict[str, Any] = yaml.safe_load(yaml_doc)
 print("Loaded DB Host:", cfg["database"]["host"])
 print("Log Handlers:  ", cfg["logging"]["handlers"])</pre></div>
               </div>
@@ -730,10 +768,11 @@ print("Log Handlers:  ", cfg["logging"]["handlers"])</pre></div>
 import json
 import yaml
 import pickle
+from typing import Any
 
 class DataSerializer:
     @staticmethod
-    def serialize(data, fmt="json"):
+    def serialize(data: Any, fmt: str = "json") -> str | bytes:
         fmt = fmt.lower()
         if fmt == "json":
             return json.dumps(data, indent=2)
@@ -745,20 +784,20 @@ class DataSerializer:
             raise ValueError(f"Unsupported format: {fmt}")
 
     @staticmethod
-    def deserialize(raw_data, fmt="json"):
+    def deserialize(raw_data: str | bytes, fmt: str = "json") -> Any:
         fmt = fmt.lower()
         if fmt == "json":
-            return json.loads(raw_data)
+            return json.loads(raw_data if isinstance(raw_data, str) else raw_data.decode("utf-8"))
         elif fmt in ("yaml", "yml"):
             return yaml.safe_load(raw_data)
         elif fmt == "pickle":
-            return pickle.loads(raw_data)
+            return pickle.loads(raw_data if isinstance(raw_data, bytes) else raw_data.encode("latin1"))
         else:
             raise ValueError(f"Unsupported format: {fmt}")
 
-sample = {"app": "Microservice", "replicas": 3, "active": True}
-json_res = DataSerializer.serialize(sample, "json")
-yaml_res = DataSerializer.serialize(sample, "yaml")
+sample: dict[str, Any] = {"app": "Microservice", "replicas": 3, "active": True}
+json_res: str | bytes = DataSerializer.serialize(sample, "json")
+yaml_res: str | bytes = DataSerializer.serialize(sample, "yaml")
 
 print("JSON parsed:", DataSerializer.deserialize(json_res, "json")["app"])
 print("YAML parsed:", DataSerializer.deserialize(yaml_res, "yaml")["replicas"])</pre></div>
@@ -775,13 +814,14 @@ print("YAML parsed:", DataSerializer.deserialize(yaml_res, "yaml")["replicas"])<
                 <div class="code"><pre># Edge Case: Circular references
 import pickle
 import json
+from typing import Any
 
-cyclic = [1, 2]
+cyclic: list[Any] = [1, 2]
 cyclic.append(cyclic)
 
 # Pickle handles cycles naturally:
-pickled_cycle = pickle.dumps(cyclic)
-restored_cycle = pickle.loads(pickled_cycle)
+pickled_cycle: bytes = pickle.dumps(cyclic)
+restored_cycle: list[Any] = pickle.loads(pickled_cycle)
 print("Pickle cycle verified:", restored_cycle[2] is restored_cycle)  # True
 
 # Standard json.dumps crashes on cyclic references:

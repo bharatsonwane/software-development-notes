@@ -103,7 +103,7 @@
           <li><strong>Type casting</strong> (type conversion) creates a value of another type using constructors like <code class="inline">int()</code>, <code class="inline">float()</code>, <code class="inline">str()</code>, <code class="inline">bool()</code>, <code class="inline">complex()</code>.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> cast explicitly when reading input (<code class="inline">int(input(...))</code>). Watch for <code class="inline">ValueError</code> on bad strings and float→int truncation.</div>
+        <div class="callout"><strong>Default rule today:</strong> cast explicitly when reading input (<code class="inline">int(input(...))</code>). Pair casting with explicit variable annotations (<code class="inline">raw_input: str = "42"</code>, <code class="inline">count: int = int(raw_input)</code>) so type intent remains unambiguous across the conversion boundary. Watch for <code class="inline">ValueError</code> on bad strings and float→int truncation.</div>
         <ul>
           <li>After reading sections 2–4, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">05-practice.py</code> before File 06. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
@@ -120,9 +120,11 @@
         <ul>
           <li>Python does not auto-convert incompatible types in all cases (e.g. <code class="inline">"5" + 1</code> raises <code class="inline">TypeError</code>). Convert first.</li>
         </ul>
-        <div class="code"><pre>"5" + "1"       # "51" — string concat
-# "5" + 1       # TypeError
-int("5") + 1    # 6</pre></div>
+        <div class="code"><pre>raw_a: str = "5"
+raw_b: str = "1"
+concat: str = raw_a + raw_b  # "51" — string concat
+# raw_a + 1                  # TypeError: can only concatenate str (not "int") to str
+total: int = int(raw_a) + 1  # 6</pre></div>
       </section>
 
       <section id="3-constructors">
@@ -149,18 +151,19 @@ int("5") + 1    # 6</pre></div>
           </li>
         </ul>
 
-        <div class="code"><pre># --- int() Conversion Examples ---
-print(int(15.89))      # 15 (truncated)
-print(int(-15.89))     # -15 (truncated toward zero)
-print(int(True))       # 1
-print(int(False))      # 0
-print(int("100"))      # 100
+        <div class="code"><pre># --- int() Conversion Examples with Annotations ---
+val_trunc: int = int(15.89)       # 15 (truncated)
+val_neg: int = int(-15.89)        # -15 (truncated toward zero)
+b_true: int = int(True)           # 1
+b_false: int = int(False)         # 0
+parsed_num: int = int("100")      # 100
 
 # Errors:
-# int(10 + 5j)         # TypeError: can't convert complex to int
-# int("10.5")          # ValueError: invalid literal for int() with base 10: '10.5'
+# int(10 + 5j)                    # TypeError: can't convert complex to int
+# int("10.5")                     # ValueError: invalid literal for int() with base 10: '10.5'
 # Fix for float string:
-print(int(float("10.5")))  # 10</pre></div>
+float_str: str = "10.5"
+nested_int: int = int(float(float_str))  # 10</pre></div>
 
         <h3 id="3-2-float-casting-rules">3.2. float() Casting Rules</h3>
         <ul>
@@ -172,13 +175,13 @@ print(int(float("10.5")))  # 10</pre></div>
           </li>
         </ul>
 
-        <div class="code"><pre># --- float() Conversion Examples ---
-print(float(50))         # 50.0
-print(float(True))       # 1.0
-print(float(False))      # 0.0
-print(float("3.14159"))  # 3.14159
-print(float("2.5e-3"))   # 0.0025
-print(float("inf"))      # inf
+        <div class="code"><pre># --- float() Conversion Examples with Annotations ---
+from_int: float = float(50)         # 50.0
+from_bool: float = float(True)      # 1.0
+from_false: float = float(False)    # 0.0
+from_str: float = float("3.14159")   # 3.14159
+sci_val: float = float("2.5e-3")     # 0.0025
+inf_val: float = float("inf")        # inf
 
 # Errors:
 # float(10 + 2j)         # TypeError: can't convert complex to float
@@ -199,16 +202,16 @@ print(float("inf"))      # inf
           <br />• <code class="inline">complex("10 + 5j")</code> &rarr; <code class="inline">ValueError: complex() arg is a malformed string</code>
         </div>
 
-        <div class="code"><pre># --- complex() Examples ---
-print(complex(10))        # (10+0j)
-print(complex(10.5))      # (10.5+0j)
-print(complex(True))      # (1+0j)
-print(complex(10, 20))    # (10+20j)
-print(complex(1.5, -2.5)) # (1.5-2.5j)
+        <div class="code"><pre># --- complex() Examples with Annotations ---
+z1: complex = complex(10)          # (10+0j)
+z2: complex = complex(10.5)        # (10.5+0j)
+z3: complex = complex(True)        # (1+0j)
+z4: complex = complex(10, 20)      # (10+20j)
+z5: complex = complex(1.5, -2.5)   # (1.5-2.5j)
 
 # String conversions:
-print(complex("10+20j"))  # (10+20j) - No spaces around '+'
-print(complex("5.5-3.2j"))# (5.5-3.2j)
+z_parsed: complex = complex("10+20j")   # (10+20j) - No spaces around '+'
+z_float: complex = complex("5.5-3.2j")  # (5.5-3.2j)
 
 # Whitespace Syntax Pitfall:
 # complex("10 + 20j")     # ValueError: complex() arg is a malformed string
@@ -256,12 +259,12 @@ print(complex("5.5-3.2j"))# (5.5-3.2j)
           <li>The <code class="inline">str()</code> constructor converts <strong>any Python object</strong> into its human-readable string representation by invoking the object's <code class="inline">__str__()</code> dunder method.</li>
         </ul>
 
-        <div class="code"><pre>print(str(100))        # "100"
-print(str(10.5))       # "10.5"
-print(str(True))       # "True"
-print(str(10 + 5j))    # "(10+5j)"
-print(str([1, 2, 3]))  # "[1, 2, 3]"
-print(str(None))       # "None"</pre></div>
+        <div class="code"><pre>s1: str = str(100)        # "100"
+s2: str = str(10.5)       # "10.5"
+s3: str = str(True)       # "True"
+s4: str = str(10 + 5j)    # "(10+5j)"
+s5: str = str([1, 2, 3])  # "[1, 2, 3]"
+s6: str = str(None)       # "None"</pre></div>
 
         <h3 id="3-6-collection-type-casting">3.6. Collection Type Casting</h3>
         <p>Python provides constructors to convert between sequence and collection types seamlessly:</p>
@@ -303,17 +306,17 @@ print(str(None))       # "None"</pre></div>
         </table>
 
         <div class="code"><pre># Converting string to list of characters:
-chars = list("Python")
+chars: list[str] = list("Python")
 print("list('Python'):", chars)  # ['P', 'y', 't', 'h', 'o', 'n']
 
 # Removing duplicates using set():
-duplicates = [10, 20, 20, 30, 10, 40]
-unique_list = list(set(duplicates))
+duplicates: list[int] = [10, 20, 20, 30, 10, 40]
+unique_list: list[int] = list(set(duplicates))
 print("Deduplicated:   ", unique_list)
 
 # Constructing dict from key-value tuples:
-pairs = [("roll", 101), ("name", "Alice"), ("active", True)]
-student = dict(pairs)
+pairs: list[tuple[str, object]] = [("roll", 101), ("name", "Alice"), ("active", True)]
+student: dict[str, object] = dict(pairs)
 print("dict(pairs):    ", student)  # {'roll': 101, 'name': 'Alice', 'active': True}</pre></div>
       </section>
 
@@ -329,16 +332,16 @@ print("dict(pairs):    ", student)  # {'roll': 101, 'name': 'Alice', 'active': T
         <ul>
           <li><code class="inline">int(string, base)</code> parses digits in a given base (2–36):</li>
         </ul>
-        <div class="code"><pre>int("1010", 2)   # 10
-int("FF", 16)    # 255
-int("17", 8)     # 15</pre></div>
+        <div class="code"><pre>dec_val: int = int("1010", 2)   # 10
+hex_val: int = int("FF", 16)    # 255
+oct_val: int = int("17", 8)     # 15</pre></div>
         <ul>
           <li>Format ints as other bases:</li>
         </ul>
-        <div class="code"><pre>bin(10)   # '0b1010'
-oct(10)   # '0o12'
-hex(10)   # '0xa'
-format(10, "b")  # '1010' without prefix</pre></div>
+        <div class="code"><pre>b_rep: str = bin(10)   # '0b1010'
+o_rep: str = oct(10)   # '0o12'
+h_rep: str = hex(10)   # '0xa'
+f_rep: str = format(10, "b")  # '1010' without prefix</pre></div>
         <h3 id="4-bases-pitfalls-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3 id="4-1-pitfalls">4.1. Pitfalls</h3>
         <ul>
@@ -442,13 +445,13 @@ format(10, "b")  # '1010' without prefix</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Casting string to int:
-s = &quot;42&quot;
-val_int = int(s)
+s: str = &quot;42&quot;
+val_int: int = int(s)
 print(f&quot;int(&#x27;{s}&#x27;) -&gt;&quot;, val_int, type(val_int))
 
 # Float to int truncation (drops decimals, no rounding):
-f = 3.9
-trunc = int(f)
+f: float = 3.9
+trunc: int = int(f)
 print(f&quot;int({f}) -&gt;&quot;, trunc, &quot;(truncated toward zero)&quot;)</pre></div>
               </div>
             </details>
@@ -461,9 +464,12 @@ print(f&quot;int({f}) -&gt;&quot;, trunc, &quot;(truncated toward zero)&quot;)</
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Casting boolean values to int:
-print(&quot;int(True):&quot;, int(True))    # 1
-print(&quot;int(False):&quot;, int(False))  # 0
-print(&quot;float(True):&quot;, float(True)) # 1.0</pre></div>
+b_true: int = int(True)
+b_false: int = int(False)
+flt_true: float = float(True)
+print(&quot;int(True):&quot;, b_true)       # 1
+print(&quot;int(False):&quot;, b_false)     # 0
+print(&quot;float(True):&quot;, flt_true)   # 1.0</pre></div>
               </div>
             </details>
           </li>
@@ -474,16 +480,19 @@ print(&quot;float(True):&quot;, float(True)) # 1.0</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Base conversions:
+                <div class="code"><pre># Base conversions with typed variables:
 # Binary string to int (base 2):
-n = int(&quot;1010&quot;, 2)
+n: int = int(&quot;1010&quot;, 2)
 print(&quot;int(&#x27;1010&#x27;, 2):&quot;, n)  # 10
 
 # Conversion helpers:
-num = 42
-print(&quot;bin:&quot;, bin(num))  # &#x27;0b101010&#x27;
-print(&quot;oct:&quot;, oct(num))  # &#x27;0o52&#x27;
-print(&quot;hex:&quot;, hex(num))  # &#x27;0x2a&#x27;</pre></div>
+num: int = 42
+b_str: str = bin(num)  # &#x27;0b101010&#x27;
+o_str: str = oct(num)  # &#x27;0o52&#x27;
+h_str: str = hex(num)  # &#x27;0x2a&#x27;
+print(&quot;bin:&quot;, b_str)
+print(&quot;oct:&quot;, o_str)
+print(&quot;hex:&quot;, h_str)</pre></div>
               </div>
             </details>
           </li>
@@ -499,20 +508,20 @@ print(&quot;hex:&quot;, hex(num))  # &#x27;0x2a&#x27;</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Demonstrating safe string-to-int conversion:
 # Case 1: Pure digits (succeeds directly)
-s1 = "123"
-num1 = int(s1) if s1.isdigit() else None
-print(f"s1={s1!r} -> {num1}")  # 123
+s1: str = &quot;123&quot;
+num1: int | None = int(s1) if s1.isdigit() else None
+print(f&quot;s1={s1!r} -&gt; {num1}&quot;)  # 123
 
 # Case 2: Alphabetic text (rejected safely)
-s2 = "abc"
-num2 = int(s2) if s2.isdigit() else None
-print(f"s2={s2!r} -> {num2}")  # None
+s2: str = &quot;abc&quot;
+num2: int | None = int(s2) if s2.isdigit() else None
+print(f&quot;s2={s2!r} -&gt; {num2}&quot;)  # None
 
 # Case 3: Float string (requires two-step float-then-int conversion)
-s3 = "12.5"
-# Direct int("12.5") raises ValueError; two-step conversion truncates cleanly:
-num3 = int(float(s3))
-print(f"s3={s3!r} -> {num3}")  # 12</pre></div>
+s3: str = &quot;12.5&quot;
+# Direct int(&quot;12.5&quot;) raises ValueError; two-step conversion truncates cleanly:
+num3: int = int(float(s3))
+print(f&quot;s3={s3!r} -&gt; {num3}&quot;)  # 12</pre></div>
               </div>
             </details>
           </li>
@@ -524,20 +533,20 @@ print(f"s3={s3!r} -> {num3}")  # 12</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mapping user string inputs to booleans using membership checks:
-true_inputs = ("1", "true", "yes", "y", "on")
-false_inputs = ("0", "false", "no", "n", "off")
+true_inputs: tuple[str, ...] = (&quot;1&quot;, &quot;true&quot;, &quot;yes&quot;, &quot;y&quot;, &quot;on&quot;)
+false_inputs: tuple[str, ...] = (&quot;0&quot;, &quot;false&quot;, &quot;no&quot;, &quot;n&quot;, &quot;off&quot;)
 
-val1 = "yes"
-is_active1 = val1.strip().lower() in true_inputs
-print(f"Input: {val1!r} -> Boolean: {is_active1}")  # True
+val1: str = &quot;yes&quot;
+is_active1: bool = val1.strip().lower() in true_inputs
+print(f&quot;Input: {val1!r} -&gt; Boolean: {is_active1}&quot;)  # True
 
-val2 = "0"
-is_active2 = val2.strip().lower() in true_inputs
-print(f"Input: {val2!r} -> Boolean: {is_active2}")  # False
+val2: str = &quot;0&quot;
+is_active2: bool = val2.strip().lower() in true_inputs
+print(f&quot;Input: {val2!r} -&gt; Boolean: {is_active2}&quot;)  # False
 
-val3 = "TRUE"
-is_active3 = val3.strip().lower() in true_inputs
-print(f"Input: {val3!r} -> Boolean: {is_active3}")  # True</pre></div>
+val3: str = &quot;TRUE&quot;
+is_active3: bool = val3.strip().lower() in true_inputs
+print(f&quot;Input: {val3!r} -&gt; Boolean: {is_active3}&quot;)  # True</pre></div>
               </div>
             </details>
           </li>
@@ -549,10 +558,10 @@ print(f"Input: {val3!r} -> Boolean: {is_active3}")  # True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Parsing currency string and formatting back:
-price_str = &quot;12.50&quot;
-price = float(price_str)
-tax = price * 0.08
-total = price + tax
+price_str: str = &quot;12.50&quot;
+price: float = float(price_str)
+tax: float = price * 0.08
+total: float = price + tax
 
 # Format back with 2 decimal places:
 print(f&quot;Subtotal: ${price:.2f}&quot;)
@@ -590,10 +599,11 @@ for i in range(16):
                 <div class="code"><pre># Pitfall 1: int() fails directly on float strings:
 # int(&quot;3.14&quot;) -&gt; ValueError: invalid literal for int() with base 10: &#x27;3.14&#x27;
 # Proper fix: convert to float first, then int:
-print(&quot;int(float(&#x27;3.14&#x27;)):&quot;, int(float(&quot;3.14&quot;)))
+parsed_int: int = int(float(&quot;3.14&quot;))
+print(&quot;int(float(&#x27;3.14&#x27;)):&quot;, parsed_int)
 
 # Pitfall 2: float(&#x27;nan&#x27;) never equals itself:
-nan_val = float(&quot;nan&quot;)
+nan_val: float = float(&quot;nan&quot;)
 print(&quot;nan == nan:&quot;, nan_val == nan_val)  # False!
 import math
 print(&quot;math.isnan(nan):&quot;, math.isnan(nan_val))  # True</pre></div>
@@ -608,15 +618,15 @@ print(&quot;math.isnan(nan):&quot;, math.isnan(nan_val))  # True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># UTF-8 Encoding and Decoding between str and bytes:
-text = &quot;Hello, Python! 🐍&quot;  # Includes snake emoji
+text: str = &quot;Hello, Python! 🐍&quot;  # Includes snake emoji
 print(&quot;Original str:&quot;, text)
 
 # String to bytes (encode):
-encoded_bytes = text.encode(&quot;utf-8&quot;)
+encoded_bytes: bytes = text.encode(&quot;utf-8&quot;)
 print(&quot;Encoded bytes:&quot;, encoded_bytes)
 
 # Bytes back to string (decode):
-decoded_str = encoded_bytes.decode(&quot;utf-8&quot;)
+decoded_str: str = encoded_bytes.decode(&quot;utf-8&quot;)
 print(&quot;Decoded str:&quot;, decoded_str)
 print(&quot;Matches original:&quot;, text == decoded_str)</pre></div>
               </div>

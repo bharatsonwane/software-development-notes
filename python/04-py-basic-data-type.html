@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-technical-study-rules">1.2. Technical Study Rules</a>
           </div>
         </div>
         <div class="nav-section">
@@ -128,6 +129,11 @@
           <li>Python has five core <strong>fundamental (scalar/primitive) data types</strong>: <code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>, <code class="inline">bool</code>, and <code class="inline">NoneType</code>.</li>
           <li>Every value in Python is an <strong>object</strong>. Even simple integer literals like <code class="inline">42</code> or boolean literals like <code class="inline">True</code> are complete heap-allocated objects with methods, attributes, and internal descriptors.</li>
           <li><strong>Universal Immutability:</strong> All five fundamental types are strictly <strong>immutable</strong>. Once constructed in memory, their internal value can never change. Reassigning a variable simply rebinds the identifier to a different object.</li>
+        </ul>
+        <h3 id="1-2-technical-study-rules">1.2. Technical Study Rules</h3>
+        <div class="callout"><strong>Default rule today:</strong> Use explicit scalar type annotations (<code class="inline">age: int = 25</code>, <code class="inline">price: float = 19.99</code>, <code class="inline">is_active: bool = True</code>, <code class="inline">result: str | None = None</code>) when declaring variables. Use <code class="inline">is None</code> rather than <code class="inline">== None</code>.</div>
+        <ul>
+          <li>Review sections 2–6, then complete practice tasks in <a href="#p-practice">Section P</a> before moving to File 05.</li>
         </ul>
       </section>
 
@@ -339,12 +345,12 @@ print(int("0xface", 16))  # 64206</pre></div>
           <li>You can write floating-point numbers in <strong>fractional form</strong> or <strong>exponential (scientific) form</strong> using <code class="inline">e</code> or <code class="inline">E</code> (e.g., <code class="inline">1.2e3 = 1.2 * 10^3 = 1200.0</code>).</li>
         </ul>
 
-        <div class="code"><pre>pi = 3.14159
-rate = -0.0025
+        <div class="code"><pre>pi: float = 3.14159
+rate: float = -0.0025
 
 # Exponential / Scientific notation:
-big_val = 1.2e3     # 1.2 * 10^3 = 1200.0
-tiny_val = 2.5E-4   # 2.5 * 10^-4 = 0.00025
+big_val: float = 1.2e3     # 1.2 * 10^3 = 1200.0
+tiny_val: float = 2.5E-4   # 2.5 * 10^-4 = 0.00025
 print(big_val, tiny_val)
 
 # Base restriction pitfall:
@@ -425,8 +431,8 @@ print("Conjugate:             ", z.conjugate())         # (3-4j)</pre></div>
           <li>Complex numbers do <strong>not</strong> support relational order comparisons like <code class="inline">&lt;</code>, <code class="inline">&lt;=</code>, <code class="inline">&gt;</code>, <code class="inline">&gt;=</code> (raises <code class="inline">TypeError: '&lt;' not supported between instances of 'complex' and 'complex'</code>) because mathematically the complex plane has no natural ordering.</li>
         </ul>
 
-        <div class="code"><pre>z1 = 3 + 4j
-z2 = 1 - 2j
+        <div class="code"><pre>z1: complex = 3 + 4j
+z2: complex = 1 - 2j
 
 print("Addition:      ", z1 + z2)       # (4+2j)
 print("Subtraction:   ", z1 - z2)       # (2+6j)
@@ -549,17 +555,17 @@ print(bool(-10))      # True  (non-zero number!)</pre></div>
           <li><code class="inline">is</code> compares memory pointer addresses and cannot be overridden by user classes; <code class="inline">==</code> calls <code class="inline">__eq__</code>, which can be modified or slow.</li>
         </ul>
 
-        <div class="code"><pre># NoneType represents the intentional absence of a value:
-x = None
-print("Value:", x)
-print("Type: ", type(x))  # <class 'NoneType'>
+        <div class="code"><pre># NoneType represents the intentional absence of a value (annotated as None or Optional):
+current_user: str | None = None
+print("Value:", current_user)
+print("Type: ", type(current_user))  # &lt;class 'NoneType'&gt;
 
 # Best Practice checking for None (always use 'is'):
-if x is None:
-    print("x has no value (unassigned/empty)")
+if current_user is None:
+    print("current_user has no value (unassigned/empty)")
 
 # In Python, operations or functions that produce side effects (like print()) return None:
-result = print("Displaying a message...")
+result: None = print("Displaying a message...")
 print("print() return value:", result)          # None
 print("Is result None?      ", result is None)  # True</pre></div>
       </section>
@@ -677,10 +683,10 @@ print("Is result None?      ", result is None)  # True</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># 25 in different bases:
-b_val = 0b11001
-o_val = 0o31
-h_val = 0x19
+                <div class="code"><pre># 25 in different bases (explicit int type annotations):
+b_val: int = 0b11001
+o_val: int = 0o31
+h_val: int = 0x19
 
 print("Binary: ", b_val)  # 25
 print("Octal:  ", o_val)  # 25
@@ -695,10 +701,13 @@ print("Hex:    ", h_val)  # 25</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>n = 160
-print("bin:", bin(n))  # '0b10100000'
-print("oct:", oct(n))  # '0o240'
-print("hex:", hex(n))  # '0xa0'</pre></div>
+                <div class="code"><pre>n: int = 160
+bin_str: str = bin(n)  # '0b10100000'
+oct_str: str = oct(n)  # '0o240'
+hex_str: str = hex(n)  # '0xa0'
+print("bin:", bin_str)
+print("oct:", oct_str)
+print("hex:", hex_str)</pre></div>
               </div>
             </details>
           </li>

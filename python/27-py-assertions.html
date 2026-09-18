@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview-what-is-an-assertion">1.1. Overview: What is an Assertion?</a>
+            <a href="#1-2-assertions-and-type-narrowing">1.2. Assertions &amp; Type Narrowing</a>
           </div>
         </div>
         <div class="nav-section">
@@ -103,6 +104,17 @@
         <div class="callout">
           <strong>Key Mental Model:</strong> Assertions are internal guard rails for the developer, not error-handling mechanisms for end users. An assertion failure represents a <strong>bug in the software itself</strong>, indicating that an internal invariant or assumption was violated.
         </div>
+
+        <h3 id="1-2-assertions-and-type-narrowing">1.2. Assertions &amp; Type Narrowing (PEP 484)</h3>
+        <p>In modern typed Python, assertions inform static type checkers (like Mypy and Pyright) to narrow union types (e.g. from <code>T | None</code> to <code>T</code>):</p>
+        <div class="code"><pre>def process_user(username: str | None, age: int | None) -> str:
+    # Type narrowing via assertions:
+    assert username is not None, "Username must be provided"
+    assert age is not None, "Age must be provided"
+    # Type checker now recognizes username as str and age as int:
+    return f"User {username.upper()} is {age} years old"
+
+print(process_user("Alice", 28))</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -124,14 +136,14 @@
         </ul>
 
         <div class="code"><pre># Form 1: Simple assertion without message
-total_count = 15
+total_count: int = 15
 assert total_count > 0
 
 # Form 2: Augmented assertion with descriptive diagnostic message (BEST PRACTICE)
-def apply_discount(price, discount_percent):
+def apply_discount(price: float | int, discount_percent: float | int) -> float:
     assert 0 &lt;= discount_percent &lt;= 100, f"Discount must be between 0 and 100%, got {discount_percent}"
     assert price >= 0, f"Price cannot be negative, got {price}"
-    discounted_price = price * (1 - discount_percent / 100)
+    discounted_price: float = price * (1 - discount_percent / 100)
     assert 0 &lt;= discounted_price &lt;= price, "Postcondition failure: discounted price out of bounds!"
     return discounted_price
 
@@ -146,7 +158,7 @@ except AssertionError as err:
         <h3 id="2-2-assertions-for-internal-invariants">2.2. Assertions for Internal Invariants</h3>
         <p>Invariants are conditions that must hold true at specific points in program execution (e.g. loop invariants, state machine transitions, unreachable default cases).</p>
 
-        <div class="code"><pre>def process_transaction_state(state):
+        <div class="code"><pre>def process_transaction_state(state: str) -> str:
     if state == "PENDING":
         return "Waiting for payment"
     elif state == "CONFIRMED":
@@ -210,7 +222,7 @@ except AssertionError as err:
         <p>Because any non-empty tuple evaluates to <code>True</code> in Python boolean logic, <strong>the assertion will NEVER fail</strong>, even if the condition is <code>False</code>!</p>
 
         <div class="code"><pre># THE FATAL BUG:
-x = -5
+x: int = -5
 
 # This creates a 2-tuple: (False, "x must be positive")
 # A non-empty tuple is ALWAYS truthy in Python!
@@ -363,9 +375,9 @@ except AssertionError as e:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def compute_square_root(x):
+                <div class="code"><pre>def compute_square_root(x: float | int) -> float:
     assert x >= 0, f"Precondition failed: x must be non-negative, got {x}"
-    result = x ** 0.5
+    result: float = x ** 0.5
     assert result >= 0, "Postcondition failed: square root cannot be negative"
     return result
 
@@ -401,7 +413,7 @@ and distinguishing assertions from runtime validation exceptions.
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 1: Both assert forms
 # Form 1:
-val = 10
+val: int = 10
 assert val == 10
 
 # Form 2 with message:
@@ -446,28 +458,28 @@ except AssertionError as err:
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Matrix Dimension Invariant Validator
 class Matrix:
-    def __init__(self, data):
+    def __init__(self, data: list[list[int | float]]) -> None:
         assert isinstance(data, list) and len(data) > 0, "Matrix data must be a non-empty list"
-        self.rows = len(data)
-        self.cols = len(data[0])
+        self.rows: int = len(data)
+        self.cols: int = len(data[0])
         # Invariant: all rows must have identical column count
         for row in data:
             assert len(row) == self.cols, f"Row length mismatch: expected {self.cols}, got {len(row)}"
-        self.data = data
+        self.data: list[list[int | float]] = data
 
-    def add(self, other):
+    def add(self, other: "Matrix") -> "Matrix":
         # Invariant: matrices must have identical dimensions for addition
         assert self.rows == other.rows and self.cols == other.cols, \
             f"Dimension mismatch: ({self.rows}x{self.cols}) vs ({other.rows}x{other.cols})"
-        result = [
+        result: list[list[int | float]] = [
             [self.data[r][c] + other.data[r][c] for c in range(self.cols)]
             for r in range(self.rows)
         ]
         return Matrix(result)
 
-m1 = Matrix([[1, 2], [3, 4]])
-m2 = Matrix([[5, 6], [7, 8]])
-m3 = m1.add(m2)
+m1: Matrix = Matrix([[1, 2], [3, 4]])
+m2: Matrix = Matrix([[5, 6], [7, 8]])
+m3: Matrix = m1.add(m2)
 print("Matrix addition result:", m3.data)</pre></div>
               </div>
             </details>
@@ -480,14 +492,14 @@ print("Matrix addition result:", m3.data)</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Edge Case: Side-effects in assertions
-queue = ["job1", "job2"]
+queue: list[str] = ["job1", "job2"]
 
 # BAD: Mutating state inside assert:
 # In normal mode, queue.pop(0) runs. Under python -O, it is skipped entirely!
 assert queue.pop(0) == "job1"
 
 # GOOD: Mutate explicitly outside assert, then assert invariant:
-item = queue.pop(0)
+item: str = queue.pop(0)
 assert item == "job2"</pre></div>
               </div>
             </details>

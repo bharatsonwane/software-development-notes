@@ -45,6 +45,17 @@
             <a href="#8-3-virtual-environment-isolation-venv">8.3. Virtual Environment Isolation (venv)</a>
           </div>
         </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#9-typing-system">9. Python's Typing Model &amp; Explicit Type Hints</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#9-1-dynamic-and-strong-typing">9.1. Dynamic &amp; Strong Typing at Runtime</a>
+            <a href="#9-2-type-hints-and-gradual-typing">9.2. Modern Type Hints &amp; Gradual Typing (PEP 484)</a>
+            <a href="#9-3-static-type-checkers">9.3. Static Type Verification vs. Runtime Execution</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
         <div class="nav-section">
           <div class="nav-section-header">
@@ -81,6 +92,7 @@
           <span class="chip">PVM &amp; Bytecode</span>
           <span class="chip">GIL Architecture</span>
           <span class="chip">Python 3.x</span>
+          <span class="chip">Type Hints (PEP 484)</span>
         </div>
       </header>
 
@@ -98,9 +110,9 @@
           <li>It provides a high level of abstraction from underlying hardware architectures, automating manual memory allocation and deallocation while exposing a uniform, portable interface across operating systems.</li>
         </ul>
         <h3 id="1-2-technical-study-rules">1.2. Technical Study Rules</h3>
-        <div class="callout"><strong>Engineering Standard:</strong> Target <strong>Python 3.10+</strong> exclusively. Always develop inside an isolated virtual environment (<code class="inline">.venv</code>). Emphasize explicit typing and structural clarity over obscure one-liners.</div>
+        <div class="callout"><strong>Engineering Standard:</strong> Target <strong>Python 3.10+</strong> exclusively. Always develop inside an isolated virtual environment (<code class="inline">.venv</code>). Emphasize readability, structural clarity, and adopt <strong>explicit type hints</strong> (see <a href="#9-typing-system">Section 9</a>) for maintainable production code.</div>
         <ul>
-          <li>After reading sections 2–8, complete <a href="#p-practice">P. Practical Assignment</a> before File 02. Review <a href="#c-common-questions">C. Common questions</a> for technical interviews.</li>
+          <li>After reading sections 2–9, complete <a href="#p-practice">P. Practical Assignment</a> before File 02. Review <a href="#c-common-questions">C. Common questions</a> for technical interviews.</li>
         </ul>
       </section>
 
@@ -539,6 +551,90 @@ which python                       # macOS / Linux (Windows: where python)
 deactivate</pre></div>
       </section>
 
+      <section id="9-typing-system">
+        <div class="heading-with-levels">
+          <h2>9. Python's Typing Model &amp; Explicit Type Hints</h2>
+          <div class="h2-levels">
+            <span class="tier l1">L1</span>
+            <span class="tier l2">L2</span>
+          </div>
+        </div>
+        <h3 id="9-typing-system-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
+        <h3 id="9-1-dynamic-and-strong-typing">9.1. Dynamic &amp; Strong Typing at Runtime</h3>
+        <p>A frequent point of confusion is distinguishing between <strong>dynamic vs. static</strong> typing and <strong>strong vs. weak</strong> typing. Python is both <strong>dynamically typed</strong> and <strong>strongly typed</strong>:</p>
+
+        <table>
+          <thead>
+            <tr><th>Typing Dimension</th><th>Classification</th><th>What It Means in Python</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Type Binding Time</strong></td>
+              <td><strong>Dynamic</strong></td>
+              <td>Types are bound to <strong>values (objects in memory)</strong>, not variable names. A variable name is merely an identifier bound to an object. You do not declare types when creating variables, and a name can rebind to an object of a different type during execution.</td>
+            </tr>
+            <tr>
+              <td><strong>Type Coercion Strictness</strong></td>
+              <td><strong>Strong</strong></td>
+              <td>Python enforces type safety strictly at runtime. It will <strong>never implicitly coerce</strong> incompatible types across operations. For example, adding an integer to a string (<code class="inline">10 + "20"</code>) immediately raises a <code class="inline">TypeError</code> rather than coercing silently.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="code"><pre># Dynamic: variable binds to int, then to str:
+item = 42                 # type(item) is &lt;class 'int'&gt;
+item = "Product SKU"      # Valid: now type(item) is &lt;class 'str'&gt;
+
+# Strong: no automatic silent conversion across incompatible types:
+# total = 100 + "25"      # Raises TypeError: unsupported operand type(s)
+total = 100 + int("25")   # Explicit conversion required -&gt; 125</pre></div>
+
+        <h3 id="9-typing-system-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
+        <h3 id="9-2-type-hints-and-gradual-typing">9.2. Modern Type Hints &amp; Gradual Typing (PEP 484)</h3>
+        <p>Starting with Python 3.5+ (PEP 484) and expanded extensively in Python 3.9+ (PEP 585) and Python 3.10+ (PEP 604), Python introduced <strong>Type Hints</strong> (also called <em>Type Annotations</em>). This architectural model is known as <strong>Gradual Typing</strong>.</p>
+
+        <p>Type hints allow developers to annotate variables, function parameters, and return values with explicit expected types without turning Python into a compiled language:</p>
+
+        <div class="code"><pre># 1. Variable Type Annotations:
+user_id: int = 1042
+username: str = "alex_dev"
+is_active: bool = True
+
+# 2. Function Signature Annotations (Parameters &amp; Return Type):
+def calculate_subtotal(unit_price: float, quantity: int) -&gt; float:
+    return unit_price * quantity
+
+# 3. Modern Collection Annotations (Python 3.9+ built-in generics):
+tags: list[str] = ["backend", "python", "api"]
+user_scores: dict[str, int] = {"alex": 95, "sarah": 98}
+
+# 4. Modern Union Types (Python 3.10+ | syntax):
+def parse_identifier(raw: int | str) -&gt; str:
+    return str(raw).strip().upper()</pre></div>
+
+        <div class="callout">
+          <strong>Key Insight:</strong> At runtime, CPython completely <strong>ignores</strong> type hints during execution! If you pass a string into a function annotated with <code class="inline">int</code>, Python executes it without raising an error as long as the underlying operations succeed. Type hints exist for <strong>humans, IDEs, and static analysis tools</strong>.
+        </div>
+
+        <h3 id="9-3-static-type-checkers">9.3. Static Type Verification vs. Runtime Execution</h3>
+        <p>How do explicit type hints improve real-world engineering without runtime overhead?</p>
+
+        <ul>
+          <li><strong>Zero Runtime Performance Penalty:</strong> Python does not check type hints at runtime, ensuring your high-performance code runs with zero additional overhead.</li>
+          <li><strong>Static Type Checkers (<code class="inline">mypy</code>, <code class="inline">pyright</code>):</strong> Tooling checks types before running the program (often in CI/CD pipelines or pre-commit hooks).</li>
+          <li><strong>IDE Autocomplete &amp; Refactoring:</strong> Editors (VS Code, PyCharm) read type hints to provide instant autocomplete, inline documentation, and error squiggles before you run your code.</li>
+          <li><strong>Self-Documenting Code Contracts:</strong> Readers immediately understand what parameters a function expects and what it returns without digging through its implementation.</li>
+          <li><strong>Runtime Reflection via <code class="inline">__annotations__</code>:</strong> Functions and modules store their type hints in a special dictionary attribute named <code class="inline">__annotations__</code>, which libraries like <strong>Pydantic</strong> and <strong>FastAPI</strong> use for automated data validation.</li>
+        </ul>
+
+        <div class="code"><pre>def send_notification(user: str, retries: int = 3) -&gt; bool:
+    return True
+
+# Accessing type hints programmatically at runtime:
+print(send_notification.__annotations__)
+# Output: {'user': &lt;class 'str'&gt;, 'retries': &lt;class 'int'&gt;, 'return': &lt;class 'bool'&gt;}</pre></div>
+      </section>
+
       <section id="c-common-questions">
         <div class="heading-with-levels">
           <h2>C. Common questions</h2>
@@ -754,6 +850,7 @@ print("Size of empty list []:", sys.getsizeof([]), "bytes")   # ~56 bytes</pre><
         <ul>
           <li>I can explain Python's multi-paradigm architecture (Functional, OOP, Scripting, Modular).</li>
           <li>I understand the distinction between Dynamic Typing and Strong Typing.</li>
+          <li>I understand Python's typing model (Dynamic Typing + Strong Typing + PEP 484 Type Hints) and why CPython doesn't enforce annotations at runtime.</li>
           <li>I can describe the 7 major Python flavors (CPython, Jython, IronPython, PyPy, Cython, MicroPython, Anaconda).</li>
           <li>I can trace the execution pipeline from source code to bytecode (<code class="inline">.pyc</code>) to PVM execution.</li>
           <li>I understand why CPython utilizes the Global Interpreter Lock (GIL) and its impact on CPU concurrency.</li>

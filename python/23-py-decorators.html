@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
             <a href="#1-2-first-class-functions-in-action">1.2. First-Class Functions in Action</a>
+            <a href="#1-3-typing-decorators-pep-612">1.3. Typing Decorators (ParamSpec &amp; TypeVar)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -138,19 +139,21 @@
           <li><strong>Function Returning:</strong> A function can create and return another function.</li>
         </ul>
 
-        <div class="code"><pre># Demonstrating functions as first-class objects
-def shout(text):
+        <div class="code"><pre>from collections.abc import Callable
+
+# Demonstrating functions as first-class objects
+def shout(text: str) -> str:
     return text.upper()
 
-def whisper(text):
+def whisper(text: str) -> str:
     return text.lower()
 
 # 1. Assigned to a variable:
-loud_speaker = shout
+loud_speaker: Callable[[str], str] = shout
 print(loud_speaker("hello world"))  # HELLO WORLD
 
 # 2. Passed as an argument to another function:
-def greet(func, message):
+def greet(func: Callable[[str], str], message: str) -> str:
     # 'func' is executed dynamically
     return func(message)
 
@@ -158,13 +161,40 @@ print(greet(shout, "good morning"))    # GOOD MORNING
 print(greet(whisper, "SECRET MESSAGE"))  # secret message
 
 # 3. Returned from another function:
-def get_speaker(volume):
+def get_speaker(volume: int) -> Callable[[str], str]:
     if volume > 5:
         return shout
     return whisper
 
-speaker = get_speaker(8)
+speaker: Callable[[str], str] = get_speaker(8)
 print(speaker("testing microphone"))   # TESTING MICROPHONE</pre></div>
+
+        <h3 id="1-3-typing-decorators-pep-612">1.3. Typing Decorators (ParamSpec &amp; TypeVar, PEP 612)</h3>
+        <div class="callout tip">
+          <div class="callout-title">PEP 612: Parameter Specification Variables (<code class="inline">ParamSpec</code>)</div>
+          <p>Typing a decorator without losing parameter types or return types requires <code class="inline">ParamSpec</code> and <code class="inline">TypeVar</code> from <code class="inline">typing</code>:</p>
+        </div>
+        <div class="code"><pre>from collections.abc import Callable
+from typing import ParamSpec, TypeVar
+import functools
+
+P = ParamSpec("P")
+R = TypeVar("R")
+
+def typed_decorator(func: Callable[P, R]) -> Callable[P, R]:
+    @functools.wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        print("[TRACE] Before calling wrapped function")
+        result: R = func(*args, **kwargs)
+        print("[TRACE] After calling wrapped function")
+        return result
+    return wrapper
+
+@typed_decorator
+def greet_person(name: str, count: int = 1) -> str:
+    return f"Hello, {name}!" * count
+
+print(greet_person("Bharat", count=2))</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -181,36 +211,38 @@ print(speaker("testing microphone"))   # TESTING MICROPHONE</pre></div>
         <h3 id="2-1-function-aliasing">2.1. Function Aliasing</h3>
         <p>When you define a function in Python using <code>def func(): ...</code>, Python creates a function object in memory and binds the identifier <code>func</code> to that object. Assigning that function identifier to another variable name creates an <strong>alias</strong>. Both names now reference the exact same underlying function object in memory (sharing the same <code>id()</code>).</p>
 
-        <div class="code"><pre>def calculate_tax(income):
+        <div class="code"><pre>from collections.abc import Callable
+
+def calculate_tax(income: float) -> float:
     return income * 0.18
 
 # Aliasing calculate_tax to compute_tax
-compute_tax = calculate_tax
+compute_tax: Callable[[float], float] = calculate_tax
 
 print(id(calculate_tax))  # e.g., 4324785440
 print(id(compute_tax))    # 4324785440 (identical memory address)
 
-print(compute_tax(100000))      # 18000.0
-print(calculate_tax(100000))    # 18000.0
+print(compute_tax(100000.0))      # 18000.0
+print(calculate_tax(100000.0))    # 18000.0
 
 # If we delete the original variable name:
 del calculate_tax
 
 # The function object is NOT garbage collected because compute_tax still references it!
-print(compute_tax(100000))      # 18000.0
+print(compute_tax(100000.0))      # 18000.0
 
 # Calling calculate_tax now fails because the name was unbound:
-# calculate_tax(100000)  # NameError: name 'calculate_tax' is not defined
+# calculate_tax(100000.0)  # NameError: name 'calculate_tax' is not defined
 print("'calculate_tax' in globals():", "calculate_tax" in globals())  # False</pre></div>
 
         <h3 id="2-function-aliasing-and-nested-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3 id="2-2-nested-inner-functions">2.2. Nested (Inner) Functions</h3>
         <p>A <strong>nested function</strong> is a function defined inside the body of another enclosing function. Inner functions are not accessible directly from outside the enclosing function unless explicitly returned.</p>
 
-        <div class="code"><pre>def outer_function(message):
+        <div class="code"><pre>def outer_function(message: str) -> None:
     print("Outer function starting...")
 
-    def inner_function():
+    def inner_function() -> None:
         # Inner function has access to the enclosing scope variable 'message'
         print(f"Inner function received: {message}")
 
@@ -233,17 +265,19 @@ print("'inner_function' in globals():", "inner_function" in globals())  # False<
           <li>The enclosing function must return the nested function object.</li>
         </ol>
 
-        <div class="code"><pre>def make_multiplier(factor):
+        <div class="code"><pre>from collections.abc import Callable
+
+def make_multiplier(factor: int) -> Callable[[int], int]:
     # 'factor' lives in the outer function's local scope
-    def multiply(number):
+    def multiply(number: int) -> int:
         # 'multiply' captures 'factor' from its enclosing environment
         return number * factor
 
     return multiply  # Return the inner function object without calling it
 
 # Create closures with different captured state:
-double = make_multiplier(2)
-triple = make_multiplier(3)
+double: Callable[[int], int] = make_multiplier(2)
+triple: Callable[[int], int] = make_multiplier(3)
 
 print(double(10))  # 20
 print(double(25))  # 50
@@ -253,8 +287,10 @@ print(triple(25))  # 75
 
 # Inspecting closure cells:
 print("double.__closure__:", double.__closure__)
-print("Captured cell value:", double.__closure__[0].cell_contents)  # 2
-print("triple captured value:", triple.__closure__[0].cell_contents)  # 3</pre></div>
+if double.__closure__:
+    print("Captured cell value:", double.__closure__[0].cell_contents)  # 2
+if triple.__closure__:
+    print("triple captured value:", triple.__closure__[0].cell_contents)  # 3</pre></div>
       </section>
 
       <!-- SECTION 3 -->
@@ -272,9 +308,11 @@ print("triple captured value:", triple.__closure__[0].cell_contents)  # 3</pre><
         <p>A decorator is a function that takes another function as an argument, defines a wrapper function that adds behavior before and/or after calling the original function, and returns that wrapper function.</p>
         <p>Python provides the <code>@decorator_name</code> syntax sugar, introduced in PEP 318. Writing <code>@my_dec</code> right above a function definition is syntactically equivalent to <code>func = my_dec(func)</code>.</p>
 
-        <div class="code"><pre># 1. Defining the decorator
-def announce(func):
-    def wrapper():
+        <div class="code"><pre>from collections.abc import Callable
+
+# 1. Defining the decorator
+def announce(func: Callable[[], None]) -> Callable[[], None]:
+    def wrapper() -> None:
         print("--- Before executing the function ---")
         func()
         print("--- After executing the function ---")
@@ -282,13 +320,13 @@ def announce(func):
 
 # 2. Applying using the @ syntax
 @announce
-def say_hello():
+def say_hello() -> None:
     print("Hello, Python Developers!")
 
 say_hello()
 
 # Equivalent manual assignment without the @ symbol:
-def say_bye():
+def say_bye() -> None:
     print("Goodbye everyone!")
 
 say_bye = announce(say_bye)
@@ -298,20 +336,23 @@ say_bye()</pre></div>
         <h3 id="3-2-supporting-arbitrary-arguments-with-args-and-kwargs">3.2. Supporting Arbitrary Arguments with <code>*args</code> and <code>**kwargs</code></h3>
         <p>In real-world applications, functions accept various numbers of positional and keyword arguments, and return values. If the wrapper function does not accept <code>*args, **kwargs</code> or forgets to <code>return</code> the result of <code>func(*args, **kwargs)</code>, the decorated function will either crash with a <code>TypeError</code> or return <code>None</code>.</p>
 
-        <div class="code"><pre>def debug_decorator(func):
-    def wrapper(*args, **kwargs):
+        <div class="code"><pre>from collections.abc import Callable
+from typing import Any
+
+def debug_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         print(f"[DEBUG] Executing {func.__name__} with args={args}, kwargs={kwargs}")
         # Always capture and return the original function's result!
-        result = func(*args, **kwargs)
+        result: Any = func(*args, **kwargs)
         print(f"[DEBUG] Finished {func.__name__}, returned: {result}")
         return result
     return wrapper
 
 @debug_decorator
-def multiply_and_offset(x, y, offset=0):
+def multiply_and_offset(x: int, y: int, offset: int = 0) -> int:
     return (x * y) + offset
 
-output = multiply_and_offset(5, 4, offset=10)
+output: int = multiply_and_offset(5, 4, offset=10)
 print("Final result:", output)  # 30</pre></div>
 
         <h3 id="3-3-preserving-metadata-with-functools-wraps">3.3. Preserving Metadata with <code>functools.wraps</code></h3>
@@ -319,16 +360,18 @@ print("Final result:", output)  # 30</pre></div>
         <p>The standard library provides <code>@functools.wraps</code> to automatically copy the original function's metadata to the wrapper function.</p>
 
         <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
 
 # WRONG WAY: Without functools.wraps
-def flawed_decorator(func):
-    def wrapper(*args, **kwargs):
+def flawed_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         """This is the wrapper docstring."""
         return func(*args, **kwargs)
     return wrapper
 
 @flawed_decorator
-def calculate_area(radius):
+def calculate_area(radius: float) -> float:
     """Calculates the area of a circle given its radius."""
     import math
     return math.pi * radius * radius
@@ -338,14 +381,14 @@ print("Function name:", calculate_area.__name__)  # 'wrapper' (LOST!)
 print("Docstring:    ", calculate_area.__doc__)   # 'This is the wrapper docstring.' (LOST!)
 
 # RIGHT WAY: With functools.wraps
-def proper_decorator(func):
+def proper_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         return func(*args, **kwargs)
     return wrapper
 
 @proper_decorator
-def calculate_perimeter(radius):
+def calculate_perimeter(radius: float) -> float:
     """Calculates the perimeter of a circle given its radius."""
     import math
     return 2 * math.pi * radius
@@ -372,37 +415,41 @@ print("Original func:", calculate_perimeter.__wrapped__) # Access original un-wr
 
         <div class="code"><pre>import time
 import functools
+from collections.abc import Callable
+from typing import Any
 
-def timer(func):
+def timer(func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to measure and log execution duration."""
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        run_duration = end_time - start_time
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        start_time: float = time.perf_counter()
+        result: Any = func(*args, **kwargs)
+        end_time: float = time.perf_counter()
+        run_duration: float = end_time - start_time
         print(f"[TIMER] '{func.__name__}' completed in {run_duration:.6f} seconds")
         return result
     return wrapper
 
 @timer
-def heavy_computation(iterations):
+def heavy_computation(iterations: int) -> int:
     return sum(i * i for i in range(iterations))
 
-val = heavy_computation(1_000_000)</pre></div>
+val: int = heavy_computation(1_000_000)</pre></div>
 
         <h3 id="4-decorator-demo-patterns-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3 id="4-2-pattern-2-access-control-and-authentication">4.2. Pattern 2: Access Control and Authentication</h3>
         <p>Verifying permissions or active session states before permitting function execution.</p>
 
         <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
 
-CURRENT_USER = {"username": "alice", "role": "admin"}
+CURRENT_USER: dict[str, str] = {"username": "alice", "role": "admin"}
 
-def require_admin(func):
+def require_admin(func: Callable[..., Any]) -> Callable[..., Any]:
     """Restricts access to users with the 'admin' role."""
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         if CURRENT_USER.get("role") != "admin":
             raise PermissionError(f"User {CURRENT_USER.get('username')} lacks admin privileges!")
         print(f"[AUTH] Access granted for {CURRENT_USER.get('username')}")
@@ -410,7 +457,7 @@ def require_admin(func):
     return wrapper
 
 @require_admin
-def delete_database():
+def delete_database() -> str:
     return "Database purged successfully."
 
 print(delete_database())
@@ -427,12 +474,14 @@ except PermissionError as err:
 
         <div class="code"><pre>import time
 import functools
+from collections.abc import Callable
+from typing import Any
 
-def retry_on_exception(max_retries=3, delay_seconds=0.1):
-    def decorator(func):
+def retry_on_exception(max_retries: int = 3, delay_seconds: float = 0.1) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            attempts = 0
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            attempts: int = 0
             while attempts < max_retries:
                 try:
                     return func(*args, **kwargs)
@@ -446,10 +495,10 @@ def retry_on_exception(max_retries=3, delay_seconds=0.1):
     return decorator
 
 # Simulating an unreliable external network service
-call_count = 0
+call_count: int = 0
 
 @retry_on_exception(max_retries=4, delay_seconds=0.05)
-def fetch_cloud_metrics():
+def fetch_cloud_metrics() -> dict[str, Any]:
     global call_count
     call_count += 1
     if call_count < 3:
@@ -462,21 +511,23 @@ print("Result:", fetch_cloud_metrics())</pre></div>
         <p>Caching expensive function results based on immutable argument tuples to eliminate redundant calculations.</p>
 
         <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
 
-def memoize(func):
-    cache = {}
+def memoize(func: Callable[..., Any]) -> Any:
+    cache: dict[tuple[Any, ...], Any] = {}
     @functools.wraps(func)
-    def wrapper(*args):
+    def wrapper(*args: Any) -> Any:
         if args in cache:
             return cache[args]
-        result = func(*args)
+        result: Any = func(*args)
         cache[args] = result
         return result
-    wrapper.cache = cache  # Expose cache for inspection or clearing
+    wrapper.cache = cache  # type: ignore[attr-defined]
     return wrapper
 
 @memoize
-def fibonacci(n):
+def fibonacci(n: int) -> int:
     if n <= 1:
         return n
     return fibonacci(n - 1) + fibonacci(n - 2)
@@ -524,26 +575,28 @@ print("Cache info:     ", fib_lru.cache_info())</pre></div>
         <p>The <code>@decorator</code> syntax is applied at function <em>definition time</em>. However, in certain testing or dynamic scenarios, you may want to apply a decorator conditionally or call the underlying function without its decorator.</p>
 
         <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
 
-def double_output(func):
+def double_output(func: Callable[..., int]) -> Callable[..., int]:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> int:
         return func(*args, **kwargs) * 2
     return wrapper
 
-def base_calculation(x, y):
+def base_calculation(x: int, y: int) -> int:
     return x + y
 
 # 1. Normal un-decorated call:
 print("Direct call:", base_calculation(10, 5))  # 15
 
 # 2. Dynamic manual decoration on demand:
-decorated_calc = double_output(base_calculation)
+decorated_calc: Callable[..., int] = double_output(base_calculation)
 print("Manually decorated call:", decorated_calc(10, 5))  # 30
 
 # 3. Accessing the un-decorated function using __wrapped__:
 @double_output
-def compute_total(a, b):
+def compute_total(a: int, b: int) -> int:
     return a + b
 
 print("Decorated total:", compute_total(10, 5))            # 30
@@ -553,21 +606,25 @@ print("Unwrapped bypass total:", compute_total.__wrapped__(10, 5))  # 15</pre></
         <h3 id="5-2-decorator-chaining-stacking">5.2. Decorator Chaining (Stacking)</h3>
         <p>Multiple decorators can be applied to a single function by stacking them one above the other. The decorators are applied <strong>bottom-to-top</strong> (from the closest to the function outward), but the resulting wrappers execute from <strong>top-to-bottom</strong>.</p>
 
-        <div class="code"><pre>def make_bold(func):
+        <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
+
+def make_bold(func: Callable[..., str]) -> Callable[..., str]:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> str:
         return f"&lt;b&gt;{func(*args, **kwargs)}&lt;/b&gt;"
     return wrapper
 
-def make_italic(func):
+def make_italic(func: Callable[..., str]) -> Callable[..., str]:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> str:
         return f"&lt;i&gt;{func(*args, **kwargs)}&lt;/i&gt;"
     return wrapper
 
-def make_underlined(func):
+def make_underlined(func: Callable[..., str]) -> Callable[..., str]:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> str:
         return f"&lt;u&gt;{func(*args, **kwargs)}&lt;/u&gt;"
     return wrapper
 
@@ -575,7 +632,7 @@ def make_underlined(func):
 @make_bold
 @make_italic
 @make_underlined
-def render_heading(title):
+def render_heading(title: str) -> str:
     return title
 
 print(render_heading("Decorator Chaining"))
@@ -596,15 +653,17 @@ print(render_heading("Decorator Chaining"))
         <p>When a decorator accepts configuration arguments (e.g., <code>@repeat(num_times=3)</code>), an additional outer enclosing function is required to accept those arguments and return the actual decorator.</p>
 
         <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
 
 # Layer 1: Takes arguments for the decorator
-def repeat(num_times):
+def repeat(num_times: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     # Layer 2: Takes the function to decorate
-    def actual_decorator(func):
+    def actual_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         # Layer 3: The wrapper that runs when func is invoked
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            last_result = None
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            last_result: Any = None
             for i in range(num_times):
                 print(f"[Run {i + 1}/{num_times}]")
                 last_result = func(*args, **kwargs)
@@ -613,34 +672,38 @@ def repeat(num_times):
     return actual_decorator
 
 @repeat(num_times=3)
-def send_ping(host):
+def send_ping(host: str) -> str:
     print(f"Ping sent to {host}")
     return "ACK"
 
-status = send_ping("192.168.1.1")</pre></div>
+status: str = send_ping("192.168.1.1")</pre></div>
 
         <h3 id="5-4-class-based-decorators-via-call">5.4. Class-Based Decorators (via <code>__call__</code>)</h3>
         <p>Decorators can also be implemented using Python classes. A class becomes a decorator when it implements <code>__init__</code> (to receive the function) and <code>__call__</code> (to act as the callable wrapper). Class-based decorators are ideal for maintaining state across calls.</p>
 
-        <div class="code"><pre>class CallCounter:
+        <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
+
+class CallCounter:
     """Class-based decorator to track execution count across calls."""
-    def __init__(self, func):
-        self.func = func
-        self.count = 0
+    def __init__(self, func: Callable[..., Any]) -> None:
+        self.func: Callable[..., Any] = func
+        self.count: int = 0
         functools.update_wrapper(self, func)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         self.count += 1
         print(f"[STAT] '{self.func.__name__}' has been called {self.count} time(s).")
         return self.func(*args, **kwargs)
 
 @CallCounter
-def process_payment(amount):
-    return f"Payment of ${amount} processed."
+def process_payment(amount: float) -> str:
+    return f"Payment of ${amount:.2f} processed."
 
-print(process_payment(100))
-print(process_payment(250))
-print(process_payment(500))
+print(process_payment(100.0))
+print(process_payment(250.0))
+print(process_payment(500.0))
 print("Total recorded calls:", process_payment.count)  # 3</pre></div>
       </section>
 
@@ -744,10 +807,15 @@ def my_func():
               <li>The middle function receives the target function to decorate (e.g., <code>def decorator(func):</code>).</li>
               <li>The innermost wrapper function receives <code>*args, **kwargs</code> passed to the decorated function at runtime.</li>
             </ol>
-            <div class="code"><pre>def repeat(times):
-    def decorator(func):
+            <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
+
+def repeat(times: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            res: Any = None
             for _ in range(times):
                 res = func(*args, **kwargs)
             return res
@@ -778,21 +846,25 @@ def my_func():
           </summary>
           <div class="qa-answer-body">
             <p>Instance methods pass <code>self</code> as their first positional argument. When writing a decorator that may be used on methods, always ensure the inner wrapper function accepts <code>*args, **kwargs</code> and passes them through to <code>func(*args, **kwargs)</code>. The <code>self</code> reference will naturally be passed as <code>args[0]</code>.</p>
-            <div class="code"><pre>def log_method(func):
+            <div class="code"><pre>import functools
+from collections.abc import Callable
+from typing import Any
+
+def log_method(func: Callable[..., Any]) -> Callable[..., Any]:
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         # args[0] is the instance (self)
-        instance = args[0] if args else None
+        instance: Any = args[0] if args else None
         print(f"[METHOD LOG] Invoking {func.__name__} on {instance}")
         return func(*args, **kwargs)
     return wrapper
 
 class Account:
-    def __init__(self, balance):
-        self.balance = balance
+    def __init__(self, balance: float) -> None:
+        self.balance: float = balance
 
     @log_method
-    def deposit(self, amount):
+    def deposit(self, amount: float) -> float:
         self.balance += amount
         return self.balance</pre></div>
           </div>
@@ -833,17 +905,19 @@ class Account:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Introduction to decorators:
+                <div class="code"><pre>from collections.abc import Callable
+
+# Introduction to decorators:
 # A decorator is a higher-order function that wraps a callable to add behavior.
-def my_decorator(func):
-    def wrapper():
+def my_decorator(func: Callable[[], None]) -> Callable[[], None]:
+    def wrapper() -> None:
         print("[Before function execution]")
         func()
         print("[After function execution]")
     return wrapper
 
 @my_decorator
-def say_hello():
+def say_hello() -> None:
     print("Hello from inner function!")
 
 say_hello()</pre></div>
@@ -876,25 +950,28 @@ functools.wraps metadata preservation, and decorator chaining.
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Task 1: Function aliasing and nested functions
-def greet(name):
+                <div class="code"><pre>from collections.abc import Callable
+
+# Task 1: Function aliasing and nested functions
+def greet(name: str) -> str:
     return f"Greetings, {name}!"
 
 # 1. Aliasing:
-say_hi = greet
+say_hi: Callable[[str], str] = greet
 print("greet id: ", id(greet))
 print("say_hi id:", id(say_hi))
 print("say_hi output:", say_hi("Bharat"))
 
 # 2. Nested function with closure:
-def make_multiplier(factor):
-    def multiply(x):
+def make_multiplier(factor: int) -> Callable[[int], int]:
+    def multiply(x: int) -> int:
         return x * factor
     return multiply
 
-triple = make_multiplier(3)
+triple: Callable[[int], int] = make_multiplier(3)
 print("triple(10):", triple(10))  # 30
-print("Closure cell contents:", triple.__closure__[0].cell_contents)  # 3</pre></div>
+if triple.__closure__:
+    print("Closure cell contents:", triple.__closure__[0].cell_contents)  # 3</pre></div>
               </div>
             </details>
           </li>
@@ -906,23 +983,25 @@ print("Closure cell contents:", triple.__closure__[0].cell_contents)  # 3</pre><
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 2: Introduction to decorators with arguments and @wraps
-from functools import wraps
+import functools
+from collections.abc import Callable
+from typing import Any
 
-def log_execution(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
+def log_execution(func: Callable[..., Any]) -> Callable[..., Any]:
+    @functools.wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         print(f"[LOG] Calling {func.__name__} with args={args}, kwargs={kwargs}")
-        result = func(*args, **kwargs)
+        result: Any = func(*args, **kwargs)
         print(f"[LOG] {func.__name__} returned {result}")
         return result
     return wrapper
 
 @log_execution
-def add_numbers(a, b):
+def add_numbers(a: int, b: int) -> int:
     """Calculates sum of two numbers."""
     return a + b
 
-sum_result = add_numbers(15, 27)
+sum_result: int = add_numbers(15, 27)
 print("Preserved __name__:", add_numbers.__name__)
 print("Preserved __doc__: ", add_numbers.__doc__)</pre></div>
               </div>
@@ -937,20 +1016,22 @@ print("Preserved __doc__: ", add_numbers.__doc__)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 3: Decorator demo patterns (execution timer)
 import time
-from functools import wraps
+import functools
+from collections.abc import Callable
+from typing import Any
 
-def measure_time(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        result = func(*args, **kwargs)
-        elapsed = time.perf_counter() - start
+def measure_time(func: Callable[..., Any]) -> Callable[..., Any]:
+    @functools.wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        start: float = time.perf_counter()
+        result: Any = func(*args, **kwargs)
+        elapsed: float = time.perf_counter() - start
         print(f"[TIME] {func.__name__} executed in {elapsed:.6f}s")
         return result
     return wrapper
 
 @measure_time
-def compute_squares(n):
+def compute_squares(n: int) -> int:
     return sum(i * i for i in range(n))
 
 print("Total sum of squares:", compute_squares(200_000))</pre></div>
@@ -965,34 +1046,36 @@ print("Total sum of squares:", compute_squares(200_000))</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 4: Calling with/without decorator; chaining
-from functools import wraps
+import functools
+from collections.abc import Callable
+from typing import Any
 
-def bold(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
+def bold(func: Callable[..., str]) -> Callable[..., str]:
+    @functools.wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> str:
         return f"&lt;b&gt;{func(*args, **kwargs)}&lt;/b&gt;"
     return wrapper
 
-def italic(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
+def italic(func: Callable[..., str]) -> Callable[..., str]:
+    @functools.wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> str:
         return f"&lt;i&gt;{func(*args, **kwargs)}&lt;/i&gt;"
     return wrapper
 
 # Decorator chaining: applied bottom-up, executed top-down
 @bold
 @italic
-def format_text(text):
+def format_text(text: str) -> str:
     return text
 
 print("Chained output:", format_text("Python Decorators"))
 # Output: &lt;b&gt;&lt;i&gt;Python Decorators&lt;/i&gt;&lt;/b&gt;
 
 # Equivalent manual assignment:
-def raw_text(text):
+def raw_text(text: str) -> str:
     return text
 
-manual_decorated = bold(italic(raw_text))
+manual_decorated: Callable[..., str] = bold(italic(raw_text))
 print("Manual output: ", manual_decorated("Python Decorators"))</pre></div>
               </div>
             </details>
@@ -1010,38 +1093,40 @@ print("Manual output: ", manual_decorated("Python Decorators"))</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Stateful Memoization Decorator with Cache Stats
-from functools import wraps
+import functools
+from collections.abc import Callable
+from typing import Any
 
-def smart_cache(func):
-    cache = {}
-    stats = {"hits": 0, "misses": 0}
+def smart_cache(func: Callable[..., Any]) -> Any:
+    cache: dict[tuple[Any, ...], Any] = {}
+    stats: dict[str, int] = {"hits": 0, "misses": 0}
 
-    @wraps(func)
-    def wrapper(*args, bypass_cache=False, **kwargs):
-        key = args + tuple(sorted(kwargs.items()))
+    @functools.wraps(func)
+    def wrapper(*args: Any, bypass_cache: bool = False, **kwargs: Any) -> Any:
+        key: tuple[Any, ...] = args + tuple(sorted(kwargs.items()))
         if not bypass_cache and key in cache:
             stats["hits"] += 1
             return cache[key]
         
         stats["misses"] += 1
-        result = func(*args, **kwargs)
+        result: Any = func(*args, **kwargs)
         cache[key] = result
         return result
 
-    def get_stats():
+    def get_stats() -> dict[str, int]:
         return stats.copy()
 
-    def clear_cache():
+    def clear_cache() -> None:
         cache.clear()
         stats["hits"] = 0
         stats["misses"] = 0
 
-    wrapper.stats = get_stats
-    wrapper.clear = clear_cache
+    wrapper.stats = get_stats  # type: ignore[attr-defined]
+    wrapper.clear = clear_cache  # type: ignore[attr-defined]
     return wrapper
 
 @smart_cache
-def fib(n):
+def fib(n: int) -> int:
     if n &lt; 2:
         return n
     return fib(n - 1) + fib(n - 2)
@@ -1062,16 +1147,16 @@ print("Stats after cache hit:  ", fib.stats())</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Decorator Edge Cases &amp; Pitfalls:
 # 1. Missing *args, **kwargs in wrapper:
-#    Fix: Always define wrapper(*args, **kwargs) and return func(*args, **kwargs).
+#    Fix: Always define wrapper(*args: Any, **kwargs: Any) -> Any and return func(*args, **kwargs).
 #
 # 2. Forgetting @functools.wraps:
 #    Fix: Always apply @wraps(func) to preserve __name__, docstrings, and signatures.
 #
 # 3. Decorator with arguments requires 3 nested functions:
-#    def dec_with_args(param):
-#        def real_decorator(func):
+#    def dec_with_args(param: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+#        def real_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
 #            @wraps(func)
-#            def wrapper(*args, **kwargs):
+#            def wrapper(*args: Any, **kwargs: Any) -> Any:
 #                ...
 #            return wrapper
 #        return real_decorator</pre></div>

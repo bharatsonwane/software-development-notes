@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-protocols-and-abstract-typing-pep-544">1.2. Protocols (PEP 544) &amp; ABC Typing</a>
           </div>
         </div>
         <div class="nav-section">
@@ -159,6 +160,33 @@
           <li><strong>Polymorphism</strong> (Greek for "many forms") is the OOP ability to treat different underlying types through a uniform interface. In Python, this is manifested through operator overloading, method overriding, and duck typing.</li>
           <li><strong>Encapsulation</strong> bundles data (attributes) and methods that operate on that data into a single unit while restricting direct outside access to internal representation (data hiding).</li>
         </ul>
+
+        <h3 id="1-2-protocols-and-abstract-typing-pep-544">1.2. Protocols (PEP 544) &amp; ABC Typing</h3>
+        <div class="callout tip">
+          <div class="callout-title">PEP 544: Structural Subtyping (Static Duck Typing)</div>
+          <p>Python supports two complementary approaches to polymorphic typing:</p>
+          <ul>
+            <li><strong>Nominal Subtyping (<code class="inline">abc.ABC</code>):</strong> Classes must explicitly inherit from the base class.</li>
+            <li><strong>Structural Subtyping (<code class="inline">typing.Protocol</code>):</strong> Any class implementing the required methods matches the type without explicit inheritance!</li>
+          </ul>
+        </div>
+        <div class="code"><pre>from typing import Protocol, runtime_checkable
+
+@runtime_checkable
+class Renderable(Protocol):
+    def render(self, content: str) -> str:
+        """Structural interface contract."""
+        ...
+
+# Classes match Renderable purely by signature:
+class MarkdownRenderer:
+    def render(self, content: str) -> str:
+        return f"# {content}"
+
+def display(renderer: Renderable, text: str) -> None:
+    print(renderer.render(text))
+
+display(MarkdownRenderer(), "Hello Polymorphism")</pre></div>
       </section>
 
       <!-- SECTION 2: OPERATOR OVERLOADING -->
@@ -233,28 +261,28 @@
         </table>
 
         <div class="code"><pre>class Vector2D:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, x: float, y: float) -> None:
+        self.x: float = x
+        self.y: float = y
 
-    def __add__(self, other):
+    def __add__(self, other: object) -> "Vector2D":
         if isinstance(other, Vector2D):
             return Vector2D(self.x + other.x, self.y + other.y)
         return NotImplemented
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Vector2D):
             return self.x == other.x and self.y == other.y
         return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Vector2D({self.x}, {self.y})"
 
-v1 = Vector2D(2, 4)
-v2 = Vector2D(3, 1)
-v3 = v1 + v2
-print("v1 + v2 =", v3)          # Vector2D(5, 5)
-print("v1 == Vector2D(2, 4):", v1 == Vector2D(2, 4))  # True</pre></div>
+v1: Vector2D = Vector2D(2.0, 4.0)
+v2: Vector2D = Vector2D(3.0, 1.0)
+v3: Vector2D = v1 + v2
+print("v1 + v2 =", v3)          # Vector2D(5.0, 5.0)
+print("v1 == Vector2D(2.0, 4.0):", v1 == Vector2D(2.0, 4.0))  # True</pre></div>
 
         <h3 id="2-operator-overloading-and-str-repr-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
@@ -284,28 +312,29 @@ print("v1 == Vector2D(2, 4):", v1 == Vector2D(2, 4))  # True</pre></div>
         <h3 id="3-2-pythonic-overloading-patterns">3.2. Pythonic Overloading Patterns</h3>
         <div class="code"><pre># Pattern 1: Default arguments and type inspection:
 class Calculator:
-    def add(self, a, b=0, c=0):
+    def add(self, a: int, b: int = 0, c: int = 0) -> int:
         return a + b + c
 
-calc = Calculator()
+calc: Calculator = Calculator()
 print(calc.add(10))        # 10
 print(calc.add(10, 20))    # 30
 print(calc.add(10, 20, 30))# 60
 
 # Pattern 2: singledispatchmethod from functools (Python 3.8+):
 from functools import singledispatchmethod
+from typing import Any
 
 class Formatter:
     @singledispatchmethod
-    def format(self, val):
+    def format(self, val: Any) -> str:
         return f"Unknown: {val}"
 
     @format.register(int)
-    def _(self, val):
+    def _(self, val: int) -> str:
         return f"Integer: {val:,}"
 
     @format.register(list)
-    def _(self, val):
+    def _(self, val: list[Any]) -> str:
         return f"List of {len(val)} items"</pre></div>
       </section>
 
@@ -324,20 +353,20 @@ class Formatter:
         <p>When a subclass provides its own definition of a method already declared in its superclass, it <strong>overrides</strong> the parent's behavior:</p>
 
         <div class="code"><pre>class NotificationService:
-    def send(self, recipient, message):
+    def send(self, recipient: str, message: str) -> None:
         print(f"Generic notification to {recipient}: {message}")
 
 class EmailNotification(NotificationService):
-    def send(self, recipient, message):
+    def send(self, recipient: str, message: str) -> None:
         # Override to send email
         print(f"Sending SMTP email to {recipient}: {message}")
 
 class SMSNotification(NotificationService):
-    def send(self, recipient, message):
+    def send(self, recipient: str, message: str) -> None:
         # Override to send SMS
         print(f"Dispatching SMS to {recipient}: {message}")
 
-def notify_user(service: NotificationService, user, text):
+def notify_user(service: NotificationService, user: str, text: str) -> None:
     service.send(user, text)  # Polymorphic dispatch
 
 notify_user(EmailNotification(), "sonwane@example.com", "Welcome!")
@@ -378,7 +407,7 @@ class StripeGateway(PaymentGateway):
         print(f"Charging ${amount} via Stripe.")
         return True
 
-s = StripeGateway()
+s: StripeGateway = StripeGateway()
 s.process_payment(99.0)</pre></div>
       </section>
 
@@ -400,14 +429,14 @@ s.process_payment(99.0)</pre></div>
         </div>
 
         <div class="code"><pre>class PDFRenderer:
-    def render(self, content):
+    def render(self, content: str) -> str:
         return f"Rendering PDF: {content}"
 
 class HTMLRenderer:
-    def render(self, content):
+    def render(self, content: str) -> str:
         return f"&lt;html&gt;&lt;body&gt;{content}&lt;/body&gt;&lt;/html&gt;"
 
-def publish_document(renderer, text):
+def publish_document(renderer: PDFRenderer | HTMLRenderer, text: str) -> None:
     # Works for any object having a .render() method
     print(renderer.render(text))
 
@@ -459,10 +488,10 @@ publish_document(HTMLRenderer(), "Financial Report")</pre></div>
         <p>When an attribute begins with at least two underscores and at most one trailing underscore, Python internally renames it to prevent accidental overrides in subclasses:</p>
 
         <div class="code"><pre>class Vault:
-    def __init__(self, passcode):
-        self.__passcode = passcode  # Mangled to _Vault__passcode
+    def __init__(self, passcode: str) -> None:
+        self.__passcode: str = passcode  # Mangled to _Vault__passcode
 
-v = Vault("SecretPass123")
+v: Vault = Vault("SecretPass123")
 
 # Direct access raises AttributeError:
 # print(v.__passcode)  # AttributeError: 'Vault' object has no attribute '__passcode'
@@ -486,8 +515,8 @@ print("Mangled access:", v._Vault__passcode)  # SecretPass123</pre></div>
         <p>In Python, you don't write Java-style <code class="inline">get_age()</code> and <code class="inline">set_age()</code> methods. You expose attributes cleanly and use the <code class="inline">@property</code> decorator when validation or computation is needed:</p>
 
         <div class="code"><pre>class BankAccount:
-    def __init__(self, initial_balance: float):
-        self._balance = initial_balance
+    def __init__(self, initial_balance: float) -> None:
+        self._balance: float = initial_balance
 
     @property
     def balance(self) -> float:
@@ -495,13 +524,13 @@ print("Mangled access:", v._Vault__passcode)  # SecretPass123</pre></div>
         return self._balance
 
     @balance.setter
-    def balance(self, new_balance: float):
+    def balance(self, new_balance: float) -> None:
         """Setter with validation."""
         if new_balance < 0:
             raise ValueError("Balance cannot be negative!")
         self._balance = new_balance
 
-acc = BankAccount(100.0)
+acc: BankAccount = BankAccount(100.0)
 print("Balance:", acc.balance)  # 100.0 (Accessed like an attribute)
 acc.balance = 250.0             # Uses setter
 # acc.balance = -50.0           # Raises ValueError: Balance cannot be negative!</pre></div>
@@ -520,21 +549,21 @@ acc.balance = 250.0             # Uses setter
 
         <h3 id="9-1-complete-encapsulated-banking-application">9.1. Complete Encapsulated Banking Application</h3>
         <div class="code"><pre>class SecureAccount:
-    def __init__(self, account_number: str, holder_name: str, pin: str, initial_deposit: float = 0.0):
-        self.account_number = account_number
-        self.holder_name = holder_name
-        self.__pin = pin
-        self.__balance = initial_deposit
-        self.__statement = []
+    def __init__(self, account_number: str, holder_name: str, pin: str, initial_deposit: float = 0.0) -> None:
+        self.account_number: str = account_number
+        self.holder_name: str = holder_name
+        self.__pin: str = pin
+        self.__balance: float = initial_deposit
+        self.__statement: list[str] = []
         self.__record_transaction("Account opened", initial_deposit)
 
-    def __record_transaction(self, action: str, amount: float):
+    def __record_transaction(self, action: str, amount: float) -> None:
         self.__statement.append(f"{action}: ${amount:.2f} | Balance: ${self.__balance:.2f}")
 
     def verify_pin(self, pin: str) -> bool:
         return self.__pin == pin
 
-    def deposit(self, amount: float):
+    def deposit(self, amount: float) -> None:
         if amount <= 0:
             raise ValueError("Deposit amount must be positive.")
         self.__balance += amount
@@ -552,10 +581,10 @@ acc.balance = 250.0             # Uses setter
         return amount
 
     @property
-    def balance(self):
+    def balance(self) -> float:
         return self.__balance
 
-    def print_statement(self, pin: str):
+    def print_statement(self, pin: str) -> None:
         if not self.verify_pin(pin):
             raise PermissionError("Invalid PIN.")
         print(f"Statement for {self.holder_name} ({self.account_number}):")
@@ -563,7 +592,7 @@ acc.balance = 250.0             # Uses setter
             print("  ", entry)
 
 # Demo:
-user_acc = SecureAccount("ACC-1002", "Bharat Sonwane", "4920", 500.0)
+user_acc: SecureAccount = SecureAccount("ACC-1002", "Bharat Sonwane", "4920", 500.0)
 user_acc.deposit(200.0)
 user_acc.withdraw(150.0, "4920")
 user_acc.print_statement("4920")</pre></div>
@@ -704,19 +733,19 @@ user_acc.print_statement("4920")</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Point2D:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self, x: float, y: float) -> None:
+        self.x: float = x
+        self.y: float = y
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"({self.x}, {self.y})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Point2D(x={self.x}, y={self.y})"
 
-p = Point2D(5, 10)
-print("str(): ", str(p))   # (5, 10)
-print("repr():", repr(p))  # Point2D(x=5, y=10)</pre></div>
+p: Point2D = Point2D(5.0, 10.0)
+print("str(): ", str(p))   # (5.0, 10.0)
+print("repr():", repr(p))  # Point2D(x=5.0, y=10.0)</pre></div>
               </div>
             </details>
           </li>
@@ -728,18 +757,18 @@ print("repr():", repr(p))  # Point2D(x=5, y=10)</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Temperature:
-    def __init__(self, celsius: float):
-        self._celsius = celsius
+    def __init__(self, celsius: float) -> None:
+        self._celsius: float = celsius
 
     @property
     def fahrenheit(self) -> float:
-        return (self._celsius * 9/5) + 32
+        return (self._celsius * 9 / 5) + 32
 
     @fahrenheit.setter
-    def fahrenheit(self, val: float):
-        self._celsius = (val - 32) * 5/9
+    def fahrenheit(self, val: float) -> None:
+        self._celsius = (val - 32) * 5 / 9
 
-t = Temperature(0.0)
+t: Temperature = Temperature(0.0)
 print("0°C in °F:", t.fahrenheit)  # 32.0
 t.fahrenheit = 212.0
 print("212°F in °C:", t._celsius)  # 100.0</pre></div>
@@ -758,26 +787,32 @@ print("212°F in °C:", t._celsius)  # 100.0</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class ComplexNum:
-    def __init__(self, real: float, imag: float):
-        self.real = real
-        self.imag = imag
+    def __init__(self, real: float, imag: float) -> None:
+        self.real: float = real
+        self.imag: float = imag
 
-    def __add__(self, other):
-        return ComplexNum(self.real + other.real, self.imag + other.imag)
+    def __add__(self, other: object) -> "ComplexNum":
+        if isinstance(other, ComplexNum):
+            return ComplexNum(self.real + other.real, self.imag + other.imag)
+        return NotImplemented
 
-    def __sub__(self, other):
-        return ComplexNum(self.real - other.real, self.imag - other.imag)
+    def __sub__(self, other: object) -> "ComplexNum":
+        if isinstance(other, ComplexNum):
+            return ComplexNum(self.real - other.real, self.imag - other.imag)
+        return NotImplemented
 
-    def __eq__(self, other):
-        return self.real == other.real and self.imag == other.imag
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, ComplexNum):
+            return self.real == other.real and self.imag == other.imag
+        return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.real} + {self.imag}i"
 
-c1 = ComplexNum(3, 4)
-c2 = ComplexNum(1, 2)
-print("c1 + c2 =", c1 + c2)  # 4 + 6i
-print("c1 - c2 =", c1 - c2)  # 2 + 2i</pre></div>
+c1: ComplexNum = ComplexNum(3.0, 4.0)
+c2: ComplexNum = ComplexNum(1.0, 2.0)
+print("c1 + c2 =", c1 + c2)  # 4.0 + 6.0i
+print("c1 - c2 =", c1 - c2)  # 2.0 + 2.0i</pre></div>
               </div>
             </details>
           </li>
@@ -797,21 +832,21 @@ class Shape(ABC):
         pass
 
 class Circle(Shape):
-    def __init__(self, radius: float):
-        self.radius = radius
+    def __init__(self, radius: float) -> None:
+        self.radius: float = radius
 
     def area(self) -> float:
         return math.pi * self.radius ** 2
 
 class Rectangle(Shape):
-    def __init__(self, width: float, height: float):
-        self.width = width
-        self.height = height
+    def __init__(self, width: float, height: float) -> None:
+        self.width: float = width
+        self.height: float = height
 
     def area(self) -> float:
         return self.width * self.height
 
-shapes = [Circle(5), Rectangle(4, 6)]
+shapes: list[Shape] = [Circle(5.0), Rectangle(4.0, 6.0)]
 for s in shapes:
     print(f"Area: {s.area():.2f}")</pre></div>
               </div>
@@ -825,10 +860,10 @@ for s in shapes:
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class SecretBox:
-    def __init__(self, secret):
-        self.__secret_key = secret
+    def __init__(self, secret: str) -> None:
+        self.__secret_key: str = secret
 
-sb = SecretBox("VaultKey_9901")
+sb: SecretBox = SecretBox("VaultKey_9901")
 print("Instance keys:", list(sb.__dict__.keys()))
 # ['_SecretBox__secret_key']</pre></div>
               </div>
@@ -841,19 +876,25 @@ print("Instance keys:", list(sb.__dict__.keys()))
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>class MP3:
-    def play(self):
+                <div class="code"><pre>from typing import Protocol
+
+class Playable(Protocol):
+    def play(self) -> str:
+        ...
+
+class MP3:
+    def play(self) -> str:
         return "Playing MP3 stream"
 
 class WAV:
-    def play(self):
+    def play(self) -> str:
         return "Playing uncompressed WAV"
 
 class OGG:
-    def play(self):
+    def play(self) -> str:
         return "Playing OGG vorbis stream"
 
-def play_audio(audio_track):
+def play_audio(audio_track: Playable) -> None:
     print(audio_track.play())
 
 for track in [MP3(), WAV(), OGG()]:
@@ -875,23 +916,23 @@ for track in [MP3(), WAV(), OGG()]:
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Money:
-    def __init__(self, amount: float, currency: str = "USD"):
-        self.amount = round(amount, 2)
-        self.currency = currency.upper()
+    def __init__(self, amount: float, currency: str = "USD") -> None:
+        self.amount: float = round(amount, 2)
+        self.currency: str = currency.upper()
 
-    def __add__(self, other):
+    def __add__(self, other: object) -> "Money":
         if not isinstance(other, Money) or self.currency != other.currency:
             raise ValueError("Cannot add Money of different currencies!")
         return Money(self.amount + other.amount, self.currency)
 
-    def __mul__(self, factor: float):
+    def __mul__(self, factor: float) -> "Money":
         return Money(self.amount * factor, self.currency)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.currency} {self.amount:,.2f}"
 
-m1 = Money(150.50, "USD")
-m2 = Money(49.50, "USD")
+m1: Money = Money(150.50, "USD")
+m2: Money = Money(49.50, "USD")
 print("Total:", m1 + m2)     # USD 200.00
 print("Tripled:", m1 * 3)    # USD 451.50</pre></div>
               </div>
@@ -904,30 +945,36 @@ print("Tripled:", m1 * 3)    # USD 451.50</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>class PositiveNumber:
-    def __set_name__(self, owner, name):
-        self.name = name
+                <div class="code"><pre>from typing import Any
 
-    def __get__(self, instance, owner):
+class PositiveNumber:
+    def __set_name__(self, owner: type, name: str) -> None:
+        self.name: str = name
+
+    def __get__(self, instance: Any, owner: type | None = None) -> Any:
         if instance is None:
             return self
         return instance.__dict__.get(self.name, 0)
 
-    def __set__(self, instance, value):
+    def __set__(self, instance: Any, value: float) -> None:
         if value <= 0:
             raise ValueError(f"{self.name} must be positive!")
         instance.__dict__[self.name] = value
 
 class Product:
-    price = PositiveNumber()
-    stock = PositiveNumber()
+    price: PositiveNumber = PositiveNumber()
+    stock: PositiveNumber = PositiveNumber()
 
-    def __init__(self, price, stock):
-        self.price = price
-        self.stock = stock
+    def __init__(self, price: float, stock: int) -> None:
+        self.price: float = price
+        self.stock: int = stock
 
-p = Product(19.99, 50)
+p: Product = Product(19.99, 50)
 print(f"Product: ${p.price}, Stock: {p.stock}")</pre></div>
+              </div>
+            </details>
+          </li>
+        </ol>
               </div>
             </details>
           </li>

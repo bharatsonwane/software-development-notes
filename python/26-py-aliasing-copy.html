@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-overview-how-python-manages-variables-and-memory">1.1. Overview: How Python Manages Variables and Memory</a>
             <a href="#1-2-identity-is-vs-equality">1.2. Identity (is) vs Equality (==)</a>
+            <a href="#1-3-typing-identity-and-copy">1.3. Typing Identity &amp; Copy Operations</a>
           </div>
         </div>
         <div class="nav-section">
@@ -107,13 +108,40 @@
           <li><strong>Identity (<code>is</code>):</strong> Evaluates whether two variables point to the exact same memory address (compares <code>id(a) == id(b)</code>).</li>
         </ul>
 
-        <div class="code"><pre>list_a = [1, 2, 3]
-list_b = [1, 2, 3]
-list_c = list_a  # Aliasing
+        <div class="code"><pre>list_a: list[int] = [1, 2, 3]
+list_b: list[int] = [1, 2, 3]
+list_c: list[int] = list_a  # Aliasing
 
 print("list_a == list_b:", list_a == list_b)  # True (equal content)
 print("list_a is list_b:", list_a is list_b)  # False (distinct objects in RAM)
 print("list_a is list_c:", list_a is list_c)  # True (same memory location!)</pre></div>
+
+        <h3 id="1-3-typing-identity-and-copy">1.3. Typing Identity &amp; Copy Operations (TypeVar &amp; Generic Containers)</h3>
+        <p>In modern Python 3.10+, static type checkers preserve container types through copy operations. Use <code>TypeVar</code> when implementing custom copy dunder protocols:</p>
+        <div class="code"><pre>import copy
+from typing import TypeVar, Any
+
+T = TypeVar("T")
+
+def duplicate_container(data: list[T]) -> list[T]:
+    """Clone container while preserving exact item types."""
+    return copy.copy(data)
+
+class Node:
+    def __init__(self, val: int) -> None:
+        self.val: int = val
+
+    def __copy__(self: T) -> T:
+        return type(self)(self.val)
+
+    def __deepcopy__(self: T, memo: dict[int, Any]) -> T:
+        copied: T = type(self)(self.val)
+        memo[id(self)] = copied
+        return copied
+
+n1: Node = Node(42)
+n2: Node = copy.deepcopy(n1)
+print(f"n1 val={n1.val}, n2 val={n2.val}, is duplicate={n1 is not n2}")</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -131,8 +159,8 @@ print("list_a is list_c:", list_a is list_c)  # True (same memory location!)</pr
         <p><strong>Aliasing</strong> happens when you assign one variable to another using the assignment operator <code>=</code> (e.g., <code>b = a</code>). This creates a second reference to the exact same object; no new object is allocated in memory.</p>
         <p>If the underlying object is mutable, modifying it through any alias immediately affects all other references to it.</p>
 
-        <div class="code"><pre>original_users = ["Alice", "Bob"]
-alias_users = original_users  # Aliasing: both point to the same list
+        <div class="code"><pre>original_users: list[str] = ["Alice", "Bob"]
+alias_users: list[str] = original_users  # Aliasing: both point to the same list
 
 # Mutating via the alias:
 alias_users.append("Charlie")
@@ -151,8 +179,8 @@ print("id(alias):   ", id(alias_users))   # Identical IDs</pre></div>
           <li>Constructor function: <code>clone = list(original)</code></li>
         </ul>
 
-        <div class="code"><pre>original_nums = [10, 20, 30]
-cloned_nums = original_nums[:]  # Creating a clone
+        <div class="code"><pre>original_nums: list[int] = [10, 20, 30]
+cloned_nums: list[int] = original_nums[:]  # Creating a clone
 
 cloned_nums.append(40)
 
@@ -179,10 +207,10 @@ print("original is cloned:", original_nums is cloned_nums)  # False</pre></div>
         <div class="code"><pre>import copy
 
 # Matrix with nested lists
-matrix = [[1, 2], [3, 4]]
+matrix: list[list[int]] = [[1, 2], [3, 4]]
 
 # Creating a shallow copy
-shallow_matrix = copy.copy(matrix)
+shallow_matrix: list[list[int]] = copy.copy(matrix)
 
 # 1. Mutating the outer container:
 shallow_matrix.append([5, 6])
@@ -201,15 +229,16 @@ print("Inner list identity:", matrix[0] is shallow_matrix[0])  # True!</pre></di
         <p>A <strong>deep copy</strong> constructed via <code>copy.deepcopy()</code> creates a new compound object and then <strong>recursively</strong> copies all nested objects found within it, creating completely independent duplicate copies at every level of depth.</p>
 
         <div class="code"><pre>import copy
+from typing import Any
 
-original_data = {
+original_data: dict[str, Any] = {
     "project": "Alpha",
     "teams": ["Engineering", "DevOps"],
     "meta": {"version": 1.0}
 }
 
 # Deep copy
-deep_data = copy.deepcopy(original_data)
+deep_data: dict[str, Any] = copy.deepcopy(original_data)
 
 # Mutating nested structures in the deep copy:
 deep_data["teams"].append("Security")
@@ -224,12 +253,15 @@ print("Deep copy version:", deep_data["meta"]["version"])      # 2.0</pre></div>
         <h3 id="3-3-cyclic-references-and-memoization">3.3. Cyclic References and Memoization</h3>
         <p>In complex data structures, an object may reference itself (circular reference). If <code>copy.deepcopy()</code> simply used naive recursion, it would crash with a <code>RecursionError</code>. Instead, <code>deepcopy()</code> maintains an internal <code>memo</code> dictionary tracking already-copied objects to safely handle self-referencing and cyclic graphs.</p>
 
-        <div class="code"><pre># Self-referencing list:
-cyclic_list = [1, 2]
+        <div class="code"><pre>import copy
+from typing import Any
+
+# Self-referencing list:
+cyclic_list: list[Any] = [1, 2]
 cyclic_list.append(cyclic_list)  # Index 2 points to cyclic_list itself!
 
 # Deep copy handles cycles safely without infinite recursion:
-safe_copy = copy.deepcopy(cyclic_list)
+safe_copy: list[Any] = copy.deepcopy(cyclic_list)
 print("Safe copy element 0:", safe_copy[0])
 print("Safe copy cycle check:", safe_copy[2] is safe_copy)  # True (Preserves cycle structure!)</pre></div>
       </section>
@@ -315,7 +347,8 @@ print("Safe copy cycle check:", safe_copy[2] is safe_copy)  # True (Preserves cy
           <div class="qa-answer-body">
             <p>Because immutable objects (integers, floats, strings, frozensets, and tuples containing only immutables) can never be modified in-place, Python optimizes copying by returning the original object reference directly:</p>
             <div class="code"><pre>import copy
-s = "hello"
+
+s: str = "hello"
 print(copy.copy(s) is s)      # True
 print(copy.deepcopy(s) is s)  # True</pre></div>
             <p>However, if a tuple contains a mutable object (e.g. <code>t = ([1, 2], 3)</code>), <code>deepcopy(t)</code> will create a new tuple containing a deep-copied list.</p>
@@ -383,9 +416,9 @@ print(copy.deepcopy(s) is s)  # True</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import copy
 
-orig = [[10, 20]]
-shallow = copy.copy(orig)
-deep = copy.deepcopy(orig)
+orig: list[list[int]] = [[10, 20]]
+shallow: list[list[int]] = copy.copy(orig)
+deep: list[list[int]] = copy.deepcopy(orig)
 
 orig[0][0] = 999
 print("Shallow affected:", shallow[0][0])  # 999
@@ -420,8 +453,8 @@ shallow copy vulnerabilities with nested mutables, and deep copy isolation.
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 1: Aliasing
-a = ["dev", "prod"]
-b = a
+a: list[str] = ["dev", "prod"]
+b: list[str] = a
 
 b.append("stage")
 print("List a:", a)
@@ -438,8 +471,10 @@ print("Same object?", id(a) == id(b))  # True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 2: Shallow copy trap
-config_a = {"env": "prod", "ports": [80, 443]}
-config_b = config_a.copy()  # Shallow copy
+from typing import Any
+
+config_a: dict[str, Any] = {"env": "prod", "ports": [80, 443]}
+config_b: dict[str, Any] = config_a.copy()  # Shallow copy
 
 # Top-level change is safe:
 config_b["env"] = "stage"
@@ -460,9 +495,10 @@ print("config_a ports:", config_a["ports"])  # [80, 443, 8080] (MUTATED!)</pre><
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 3: Deep copy resolution
 import copy
+from typing import Any
 
-config_orig = {"env": "prod", "ports": [80, 443]}
-config_clone = copy.deepcopy(config_orig)
+config_orig: dict[str, Any] = {"env": "prod", "ports": [80, 443]}
+config_clone: dict[str, Any] = copy.deepcopy(config_orig)
 
 config_clone["ports"].append(8080)
 print("Original ports:", config_orig["ports"])   # [80, 443] (Safe!)
@@ -484,31 +520,32 @@ print("Clone ports:   ", config_clone["ports"])  # [80, 443, 8080]</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Config Snapshot Manager
 import copy
+from typing import Any
 
 class ConfigManager:
-    def __init__(self, initial_config):
-        self.config = copy.deepcopy(initial_config)
-        self.snapshots = []
+    def __init__(self, initial_config: dict[str, Any]) -> None:
+        self.config: dict[str, Any] = copy.deepcopy(initial_config)
+        self.snapshots: list[dict[str, Any]] = []
 
-    def set(self, key_path, value):
-        keys = key_path.split(".")
-        target = self.config
+    def set(self, key_path: str, value: Any) -> None:
+        keys: list[str] = key_path.split(".")
+        target: Any = self.config
         for k in keys[:-1]:
             target = target[k]
         target[keys[-1]] = value
 
-    def create_snapshot(self):
+    def create_snapshot(self) -> None:
         self.snapshots.append(copy.deepcopy(self.config))
         print("[SNAPSHOT] Saved state.")
 
-    def rollback(self):
+    def rollback(self) -> None:
         if not self.snapshots:
             raise IndexError("No snapshots available for rollback!")
         self.config = self.snapshots.pop()
         print("[ROLLBACK] Restored previous state.")
 
-initial = {"database": {"host": "localhost", "replicas": ["db1", "db2"]}}
-mgr = ConfigManager(initial)
+initial: dict[str, Any] = {"database": {"host": "localhost", "replicas": ["db1", "db2"]}}
+mgr: ConfigManager = ConfigManager(initial)
 mgr.create_snapshot()
 
 mgr.set("database.host", "remote.host.com")
@@ -529,13 +566,14 @@ print("Restored config:", mgr.config)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Edge Case: Circular references
 import copy
+from typing import Any
 
-node_a = {"name": "A"}
-node_b = {"name": "B"}
+node_a: dict[str, Any] = {"name": "A"}
+node_b: dict[str, Any] = {"name": "B"}
 node_a["neighbor"] = node_b
 node_b["neighbor"] = node_a  # Cycle!
 
-deep_nodes = copy.deepcopy(node_a)
+deep_nodes: dict[str, Any] = copy.deepcopy(node_a)
 print("Node name:", deep_nodes["name"])
 print("Neighbor name:", deep_nodes["neighbor"]["name"])
 print("Cycle preserved?", deep_nodes["neighbor"]["neighbor"] is deep_nodes)  # True</pre></div>

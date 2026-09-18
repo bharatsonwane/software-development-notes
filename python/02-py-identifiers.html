@@ -109,7 +109,7 @@
           <li>An <strong>identifier</strong> is a name you give to a variable, function, class, module, etc. Python has strict rules for what is legal, plus conventions for what is readable.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">snake_case</code> for variables/functions, <code class="inline">PascalCase</code> for classes, and never start names with a digit. Indent with <strong>4 spaces</strong>.</div>
+        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">snake_case</code> for variables/functions, <code class="inline">PascalCase</code> for classes, and never start names with a digit. Indent with <strong>4 spaces</strong>. Apply <strong>explicit type annotations</strong> (<code class="inline">variable_name: type = value</code>) for structural clarity and IDE support.</div>
         <ul>
           <li>After reading sections 2–4, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">02-practice.py</code> before File 03. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
@@ -171,6 +171,17 @@
             <tr><td>Modules &amp; Packages</td><td>short lowercase (<code class="inline">snake_case</code>)</td><td><code class="inline">json</code>, <code class="inline">http_parser</code></td><td>Matches underlying filesystem naming without platform case ambiguity.</td></tr>
           </tbody>
         </table>
+
+        <div class="callout">
+          <strong>PEP 8 Spacing Rules for Explicit Type Annotations:</strong>
+          <ul>
+            <li><strong>Variable Annotations:</strong> The colon has no leading space, exactly one trailing space, and spaces around the assignment operator (<code class="inline">=</code>):<br />
+            <code class="inline">user_count: int = 42</code> &nbsp;<em>(Correct)</em><br />
+            <code class="inline">user_count:int=42</code> or <code class="inline">user_count : int = 42</code> &nbsp;<em>(Incorrect / PEP 8 violation)</em></li>
+            <li><strong>Constants:</strong> <code class="inline">DEFAULT_TIMEOUT: int = 30</code></li>
+            <li><strong>Function Signatures:</strong> <code class="inline">def process_record(record_id: int, is_priority: bool = False) -&gt; str:</code></li>
+          </ul>
+        </div>
 
         <h3 id="2-identifiers-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h4>2.2. The 5 Underscore (<code class="inline">_</code>) Patterns in Python</h4>
@@ -238,7 +249,7 @@
         <div class="code"><pre># Demonstrating the 5 Underscore Conventions with Basic Variables:
 
 # 1. Single Leading Underscore (_var): Conventional indicator for internal variables
-_internal_db_port = 5432
+_internal_db_port: int = 5432
 print("Internal config port:", _internal_db_port)
 
 # 2. Double Leading Underscore (__var): Triggers Name Mangling in OOP classes
@@ -247,8 +258,8 @@ print("Internal config port:", _internal_db_port)
 # For regular script variables, stick to standard names or single leading underscore!
 
 # 3. Trailing Underscore (var_): Prevents collisions with reserved keywords
-class_ = "Physics 101"   # 'class' is a reserved keyword, so we append '_'
-def_ = "Definition of terms"
+class_: str = "Physics 101"   # 'class' is a reserved keyword, so we append '_'
+def_: str = "Definition of terms"
 print(f"Course: {class_}, Topic: {def_}")
 
 # 4. System-defined / Dunder (__var__): Reserved by Python runtime
@@ -643,19 +654,19 @@ x = 10; y = 20; z = x + y  # Syntactically valid, but strongly discouraged by PE
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># 5 Valid identifiers:
-user_name = &quot;Alice&quot;
-_internal_count = 10
-totalScore2 = 98.5
-__private_var = True
-MAX_CONNECTIONS = 100
+                <div class="code"><pre># 5 Valid identifiers with explicit type hints:
+user_name: str = "Alice"
+_internal_count: int = 10
+total_score: float = 98.5
+is_verified: bool = True
+MAX_CONNECTIONS: int = 100
 
 # 3 Invalid identifiers (would raise SyntaxError):
 # 2fast = 50        # Error: cannot start with a number
-# user-name = &quot;Bob&quot; # Error: hyphen is minus operator
-# for = 10          # Error: &#x27;for&#x27; is a reserved keyword
+# user-name = "Bob" # Error: hyphen is minus operator
+# for = 10          # Error: 'for' is a reserved keyword
 
-print(f&quot;Valid identifiers initialized: {user_name}, {_internal_count}, {totalScore2}&quot;)</pre></div>
+print(f"Valid identifiers initialized: {user_name}, {_internal_count}, {total_score}")</pre></div>
               </div>
             </details>
           </li>
@@ -669,10 +680,10 @@ print(f&quot;Valid identifiers initialized: {user_name}, {_internal_count}, {tot
                 <div class="code"><pre>import keyword
 
 # Print list of Python keywords
-print(&quot;Total keywords in Python:&quot;, len(keyword.kwlist))
-print(&quot;Keywords:&quot;, keyword.kwlist[:10], &quot;... and more.&quot;)
+print("Total keywords in Python:", len(keyword.kwlist))
+print("Keywords:", keyword.kwlist[:10], "... and more.")
 
-# help(&quot;keywords&quot;) in interactive shell shows all reserved words:
+# help("keywords") in interactive shell shows all reserved words:
 # False, None, True, and, as, assert, async, await, break, class, def...</pre></div>
               </div>
             </details>
@@ -684,15 +695,15 @@ print(&quot;Keywords:&quot;, keyword.kwlist[:10], &quot;... and more.&quot;)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Valid 4-space indentation block:
-x = 10
-if x &gt; 5:
-    print(&quot;x is greater than 5&quot;)
-    print(&quot;Indented consistently with 4 spaces&quot;)
+                <div class="code"><pre># Valid 4-space indentation block with typed variable:
+threshold: int = 10
+if threshold > 5:
+    print("threshold is greater than 5")
+    print("Indented consistently with 4 spaces")
 
 # Bad indentation example (commented out to prevent IndentationError):
-# if x &gt; 5:
-# print(&quot;This will raise IndentationError: expected an indented block&quot;)</pre></div>
+# if threshold > 5:
+# print("This will raise IndentationError: expected an indented block")</pre></div>
               </div>
             </details>
           </li>
@@ -702,17 +713,17 @@ if x &gt; 5:
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>snake_case rename</strong> — Rename bad names like <code class="inline">MyVar</code>, <code class="inline">x1x</code> style into clear snake_case.</span>
+                <span class="qa-question-title"><strong>snake_case rename &amp; type annotation</strong> — Rename bad names like <code class="inline">MyVar</code>, <code class="inline">x1x</code> style into clear snake_case with explicit type annotations.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Renaming bad identifiers to clean PEP 8 snake_case:
-# Bad: MyVar = &quot;data&quot;, x1x = 42, l00pCount = 5
-item_name = &quot;data&quot;
-item_count = 42
-loop_count = 5
+                <div class="code"><pre># Renaming bad identifiers to clean PEP 8 snake_case with explicit type hints:
+# Bad: MyVar = "data", x1x = 42, l00pCount = 5
+item_name: str = "data"
+item_count: int = 42
+loop_count: int = 5
 
-print(f&quot;Clean snake_case variables: {item_name}, {item_count}, {loop_count}&quot;)</pre></div>
+print(f"Clean snake_case variables: {item_name}, {item_count}, {loop_count}")</pre></div>
               </div>
             </details>
           </li>

@@ -136,6 +136,14 @@
           <li>Unlike static arrays in C, C++, or Java where the size and type must be declared upfront, Python lists automatically manage memory allocation and resizing behind the scenes.</li>
         </ul>
 
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>Type Annotations for Lists (PEP 585 / Python 3.9+):</strong>
+            Specify homogeneous item types using built-in generic bracket notation: <code class="inline">nums: list[int] = [1, 2, 3]</code> or <code class="inline">names: list[str] = ["Alice", "Bob"]</code>. For heterogeneous collections, use union types (<code class="inline">list[int | str]</code>) or generic objects (<code class="inline">list[object]</code>). 2D nested lists (matrices) are typed as <code class="inline">matrix: list[list[int]]</code>.
+          </div>
+        </div>
+
         <h3 id="1-2-internal-implementation-in-cpython">1.2. Internal Implementation in CPython</h3>
         <div class="callout">
           <strong>Under the Hood (PyListObject):</strong>
@@ -199,33 +207,33 @@
 
         <h3 id="2-2-ways-to-create-a-list">2.2. Ways to Create a List</h3>
         <div class="code"><pre># 1. Empty list:
-empty1 = []
-empty2 = list()
+empty1: list[int] = []
+empty2: list[str] = list()
 
 # 2. Homogeneous and heterogeneous literals:
-numbers = [10, 20, 30, 40]
-mixed = [101, "Sonwane", 98.5, True, [1, 2]]
+numbers: list[int] = [10, 20, 30, 40]
+mixed: list[object] = [101, "Sonwane", 98.5, True, [1, 2]]
 
 # 3. Using the list() constructor on iterables:
-chars = list("PYTHON")              # ['P', 'Y', 'T', 'H', 'O', 'N']
-range_list = list(range(1, 6))      # [1, 2, 3, 4, 5]
-from_tuple = list((10, 20, 30))     # [10, 20, 30]
-from_set = list({1, 2, 3})          # [1, 2, 3]
+chars: list[str] = list("PYTHON")              # ['P', 'Y', 'T', 'H', 'O', 'N']
+range_list: list[int] = list(range(1, 6))      # [1, 2, 3, 4, 5]
+from_tuple: list[int] = list((10, 20, 30))     # [10, 20, 30]
+from_set: list[int] = list({1, 2, 3})          # [1, 2, 3]
 
 # 4. Using the repetition operator (*):
-zeros = [0] * 5                     # [0, 0, 0, 0, 0]
-placeholders = [None] * 4           # [None, None, None, None]
+zeros: list[int] = [0] * 5                     # [0, 0, 0, 0, 0]
+placeholders: list[str | None] = [None] * 4    # [None, None, None, None]
 
 # 5. Using split() on strings:
-words = "Python is clean and powerful".split()
-print("Words:", words)              # ['Python', 'is', 'clean', 'and', 'powerful']</pre></div>
+words: list[str] = "Python is clean and powerful".split()
+print("Words:", words)                         # ['Python', 'is', 'clean', 'and', 'powerful']</pre></div>
 
         <h3 id="2-list-properties-and-creation-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="2-3-indexing-and-slicing-operations">2.3. Indexing and Slicing Operations</h3>
         <p>Lists support the exact same indexing and slicing syntax as strings, with the vital addition that <strong>list slices can be modified in-place</strong> (slice assignment).</p>
 
-        <div class="code"><pre>nums = [10, 20, 30, 40, 50, 60]
+        <div class="code"><pre>nums: list[int] = [10, 20, 30, 40, 50, 60]
 
 # Positive and negative indexing:
 print(nums[0])    # 10 (First item)
@@ -243,7 +251,7 @@ print(nums[::-1])  # [60, 50, 40, 99, 20, 10] (Reversed copy)</pre></div>
         <h3 id="2-4-in-place-slice-assignment-advanced-mutation">2.4. In-Place Slice Assignment (Advanced Mutation)</h3>
         <p>Unlike immutable sequences, you can assign an iterable to a slice of a list. This allows inserting, replacing, and deleting sub-ranges in a single statement:</p>
 
-        <div class="code"><pre>letters = ["a", "b", "c", "d", "e"]
+        <div class="code"><pre>letters: list[str | int] = ["a", "b", "c", "d", "e"]
 
 # 1. Replace a slice range:
 letters[1:3] = ["X", "Y"]
@@ -300,7 +308,7 @@ print("Cleared in-place:", letters)    # []</pre></div>
           </tbody>
         </table>
 
-        <div class="code"><pre>colors = ["red", "green"]
+        <div class="code"><pre>colors: list[str | list[str]] = ["red", "green"]
 
 # append() adds the argument as a SINGLE element:
 colors.append("blue")
@@ -352,14 +360,14 @@ print(colors)               # ['red', 'orange', 'green', 'blue', 'cyan', 'magent
           </tbody>
         </table>
 
-        <div class="code"><pre>tasks = ["design", "code", "test", "deploy", "monitor"]
+        <div class="code"><pre>tasks: list[str] = ["design", "code", "test", "deploy", "monitor"]
 
 # pop() removes and returns last element:
-last = tasks.pop()
+last: str = tasks.pop()
 print(f"Popped: {last}, Remaining: {tasks}")  # Popped: monitor
 
 # pop(index) removes from specific index:
-first = tasks.pop(0)
+first: str = tasks.pop(0)
 print(f"Popped index 0: {first}, Remaining: {tasks}")  # Popped: design
 
 # remove(val) removes the FIRST matching value:
@@ -380,7 +388,7 @@ print("After clear():", tasks)         # []</pre></div>
         <h3 id="3-list-functions-and-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="3-3-searching-counting-and-membership-testing">3.3. Searching, Counting &amp; Membership Testing</h3>
-        <div class="code"><pre>items = ["apple", "banana", "cherry", "banana", "date"]
+        <div class="code"><pre>items: list[str] = ["apple", "banana", "cherry", "banana", "date"]
 
 # index(val[, start[, stop]])
 print(items.index("banana"))      # 1 (First occurrence)
@@ -405,7 +413,7 @@ print("fig" not in items)      # True</pre></div>
           </ul>
         </div>
 
-        <div class="code"><pre>nums = [5, 2, 9, 1, 7]
+        <div class="code"><pre>nums: list[int] = [5, 2, 9, 1, 7]
 
 # In-place sort (ascending):
 nums.sort()
@@ -416,13 +424,13 @@ nums.sort(reverse=True)
 print("In-place descending:", nums)    # [9, 7, 5, 2, 1]
 
 # Custom key sorting:
-words = ["banana", "pie", "apple", "fig", "elderberry"]
+words: list[str] = ["banana", "pie", "apple", "fig", "elderberry"]
 words.sort(key=len)                    # Sort by string length
 print("Sorted by length:", words)      # ['pie', 'fig', 'apple', 'banana', 'elderberry']
 
 # sorted() creates a new list:
-original = [40, 10, 30, 20]
-new_sorted = sorted(original)
+original: list[int] = [40, 10, 30, 20]
+new_sorted: list[int] = sorted(original)
 print("Original untouched:", original) # [40, 10, 30, 20]
 print("New sorted list:   ", new_sorted)# [10, 20, 30, 40]
 
@@ -439,10 +447,10 @@ print("In-place reversed:", new_sorted)# [40, 30, 20, 10]</pre></div>
 
         <div class="code"><pre>import copy
 
-original = [1, [2, 3], 4]
+original: list[object] = [1, [2, 3], 4]
 
 # 1. Aliasing:
-alias = original
+alias: list[object] = original
 alias[0] = 999
 print("Aliasing mutates original:", original[0])  # 999
 
@@ -450,18 +458,20 @@ print("Aliasing mutates original:", original[0])  # 999
 original = [1, [2, 3], 4]
 
 # 2. Shallow Copy:
-shallow = original.copy()  # or original[:]
-shallow[0] = 100           # Modifying top-level primitive does NOT affect original
-shallow[1].append(444)     # Modifying nested list DOES mutate original!
-print("Original nested:", original)  # [1, [2, 3, 444], 4]
-print("Shallow nested: ", shallow)   # [100, [2, 3, 444], 4]
+shallow: list[object] = original.copy()  # or original[:]
+shallow[0] = 100                         # Modifying top-level primitive does NOT affect original
+if isinstance(shallow[1], list):
+    shallow[1].append(444)               # Modifying nested list DOES mutate original!
+print("Original nested:", original)      # [1, [2, 3, 444], 4]
+print("Shallow nested: ", shallow)       # [100, [2, 3, 444], 4]
 
 # Reset original:
 original = [1, [2, 3], 4]
 
 # 3. Deep Copy:
-deep = copy.deepcopy(original)
-deep[1].append(999)
+deep: list[object] = copy.deepcopy(original)
+if isinstance(deep[1], list):
+    deep[1].append(999)
 print("Original after deepcopy:", original)  # [1, [2, 3], 4] (Completely isolated!)
 print("Deepcopy result:        ", deep)      # [1, [2, 3, 999], 4]</pre></div>
       </section>
@@ -481,7 +491,7 @@ print("Deepcopy result:        ", deep)      # [1, [2, 3, 999], 4]</pre></div>
         <p>A nested list is a list where elements are themselves lists. In Python, this serves as the natural representation for 2D matrices, grids, spreadsheets, and tabular records:</p>
 
         <div class="code"><pre># 3x3 Matrix:
-matrix = [
+matrix: list[list[int]] = [
     [10, 20, 30],   # Row 0
     [40, 50, 60],   # Row 1
     [70, 80, 90]    # Row 2
@@ -506,7 +516,7 @@ for r_idx, row in enumerate(matrix):
         </div>
 
         <div class="code"><pre># WRONG: Creates 3 references to ONE inner list
-bad_matrix = [[0] * 3] * 3
+bad_matrix: list[list[int]] = [[0] * 3] * 3
 bad_matrix[0][0] = 7
 print("Bad matrix:")
 for row in bad_matrix:
@@ -517,7 +527,7 @@ for row in bad_matrix:
 # [7, 0, 0]  <-- Row 2 also modified!
 
 # CORRECT: List comprehension generates independent list instances per row
-good_matrix = [[0] * 3 for _ in range(3)]
+good_matrix: list[list[int]] = [[0] * 3 for _ in range(3)]
 good_matrix[0][0] = 7
 print("Good matrix:")
 for row in good_matrix:
@@ -528,26 +538,26 @@ for row in good_matrix:
 # [0, 0, 0]</pre></div>
 
         <h3 id="4-3-matrix-transposition-and-flattening">4.3. Matrix Transposition &amp; Flattening</h3>
-        <div class="code"><pre>matrix = [
+        <div class="code"><pre>matrix: list[list[int]] = [
     [1, 2, 3, 4],
     [5, 6, 7, 8],
     [9, 10, 11, 12]
 ]
 
 # 1. Transpose using nested comprehension (swapping rows & cols):
-rows = len(matrix)
-cols = len(matrix[0])
-transposed = [[matrix[r][c] for r in range(rows)] for c in range(cols)]
+rows: int = len(matrix)
+cols: int = len(matrix[0])
+transposed: list[list[int]] = [[matrix[r][c] for r in range(rows)] for c in range(cols)]
 print("Transposed:")
 for row in transposed:
     print(" ", row)
 
 # 2. Transpose using zip(*matrix):
-zip_transposed = [list(col) for col in zip(*matrix)]
+zip_transposed: list[list[int]] = [list(col) for col in zip(*matrix)]
 print("Zip Transposed:", zip_transposed)
 
 # 3. Flattening a 2D matrix into a 1D list:
-flattened = [val for row in matrix for val in row]
+flattened: list[int] = [val for row in matrix for val in row]
 print("Flattened:", flattened)
 # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]</pre></div>
       </section>
@@ -570,7 +580,7 @@ print("Flattened:", flattened)
 # [ <expression> for <item> in <iterable> if <condition> ]
 
 # Traditional for-loop:
-squares = []
+squares: list[int] = []
 for x in range(1, 6):
     squares.append(x ** 2)
 
@@ -582,12 +592,12 @@ print("Squares:", squares)  # [1, 4, 9, 16, 25]</pre></div>
         <p>The <code class="inline">if</code> condition at the end acts as a filter; only elements for which the condition evaluates to <code class="inline">True</code> are included:</p>
 
         <div class="code"><pre># Filter even numbers from 1 to 20:
-evens = [x for x in range(1, 21) if x % 2 == 0]
+evens: list[int] = [x for x in range(1, 21) if x % 2 == 0]
 print("Evens:", evens)
 
 # Filter words longer than 4 characters and convert to uppercase:
-words = ["python", "is", "a", "clean", "and", "dynamic", "language"]
-long_words = [w.upper() for w in words if len(w) > 4]
+words: list[str] = ["python", "is", "a", "clean", "and", "dynamic", "language"]
+long_words: list[str] = [w.upper() for w in words if len(w) > 4]
 print("Long words:", long_words)  # ['PYTHON', 'CLEAN', 'DYNAMIC', 'LANGUAGE']</pre></div>
 
         <h3 id="5-list-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -602,28 +612,28 @@ print("Long words:", long_words)  # ['PYTHON', 'CLEAN', 'DYNAMIC', 'LANGUAGE']</
         </div>
 
         <div class="code"><pre># Label numbers as 'Even' or 'Odd':
-labels = ["Even" if x % 2 == 0 else "Odd" for x in range(1, 8)]
+labels: list[str] = ["Even" if x % 2 == 0 else "Odd" for x in range(1, 8)]
 print(labels)  # ['Odd', 'Even', 'Odd', 'Even', 'Odd', 'Even', 'Odd']
 
 # Normalize prices (apply 10% discount if over $100):
-prices = [45, 120, 80, 250, 95]
-discounted = [p * 0.9 if p > 100 else p for p in prices]
-print("Discounted:", discounted)  # [45, 108.0, 80, 225.0, 95]</pre></div>
+prices: list[int] = [45, 120, 80, 250, 95]
+discounted: list[float] = [p * 0.9 if p > 100 else float(p) for p in prices]
+print("Discounted:", discounted)  # [45.0, 108.0, 80.0, 225.0, 95.0]</pre></div>
 
         <h3 id="5-4-nested-comprehensions-and-cartesian-products">5.4. Nested Comprehensions &amp; Cartesian Products</h3>
         <p>Multiple <code class="inline">for</code> clauses inside a comprehension evaluate in order from left to right, matching the nesting order of traditional loops:</p>
 
         <div class="code"><pre># Cartesian product of suits and ranks:
-suits = ["♠", "♥", "♦", "♣"]
-ranks = ["A", "K", "Q", "J", "10"]
+suits: list[str] = ["♠", "♥", "♦", "♣"]
+ranks: list[str] = ["A", "K", "Q", "J", "10"]
 
-deck = [f"{r}{s}" for s in suits for r in ranks]
+deck: list[str] = [f"{r}{s}" for s in suits for r in ranks]
 print("Deck preview:", deck[:8])
 # Output: ['A♠', 'K♠', 'Q♠', 'J♠', '10♠', 'A♥', 'K♥', 'Q♥']
 
 # Flattening a 3-level deeply nested list:
-deep_nested = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
-flat = [num for sub1 in deep_nested for sub2 in sub1 for num in sub2]
+deep_nested: list[list[list[int]]] = [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
+flat: list[int] = [num for sub1 in deep_nested for sub2 in sub1 for num in sub2]
 print("Flat 3D:", flat)  # [1, 2, 3, 4, 5, 6, 7, 8]</pre></div>
 
         <h3 id="5-5-readability-and-best-practices-when-not-to-use-comprehensions">5.5. Readability &amp; Best Practices: When NOT to use Comprehensions</h3>
@@ -669,12 +679,12 @@ print("Flat 3D:", flat)  # [1, 2, 3, 4, 5, 6, 7, 8]</pre></div>
             <p>The core distinction is how iterable arguments are handled:</p>
             <ul>
               <li><strong><code class="inline">lst.append(x)</code>:</strong> Adds its argument as a <strong>single entity</strong> to the end of the list. If <code class="inline">x</code> is a list or tuple, the entire collection is nested as one element:
-                <div class="code"><pre>a = [1, 2]
+                <div class="code"><pre>a: list[object] = [1, 2]
 a.append([3, 4])
 print(a)  # [1, 2, [3, 4]] (Length becomes 3)</pre></div>
               </li>
               <li><strong><code class="inline">lst.extend(iterable)</code>:</strong> Iterates through the argument and appends each element individually:
-                <div class="code"><pre>b = [1, 2]
+                <div class="code"><pre>b: list[int] = [1, 2]
 b.extend([3, 4])
 print(b)  # [1, 2, 3, 4] (Length becomes 4)</pre></div>
               </li>
@@ -749,7 +759,7 @@ print(b)  # [1, 2, 3, 4] (Length becomes 4)</pre></div>
         lst.remove(item)</pre></div>
               </li>
               <li><strong>Use a list comprehension to construct a new filtered list (Recommended):</strong>
-                <div class="code"><pre>lst = [item for item in lst if not condition(item)]</pre></div>
+                <div class="code"><pre>lst: list[int] = [item for item in lst if not condition(item)]</pre></div>
               </li>
             </ol>
           </div>
@@ -833,7 +843,7 @@ print(b)  # [1, 2, 3, 4] (Length becomes 4)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>items = [10, 20, 30, 40, 50]
+                <div class="code"><pre>items: list[int] = [10, 20, 30, 40, 50]
 
 # Replace sub-range [1:3] (elements 20, 30):
 items[1:3] = [99, 88]
@@ -856,7 +866,7 @@ print("Deleted slice:", items)  # [10, 88, 40, 50]</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>even_squares = [x**2 for x in range(1, 26) if x % 2 == 0]
+                <div class="code"><pre>even_squares: list[int] = [x**2 for x in range(1, 26) if x % 2 == 0]
 print("Even squares (1-25):", even_squares)
 # [4, 16, 36, 64, 100, 144, 196, 256, 324, 400, 484, 576]</pre></div>
               </div>
@@ -873,10 +883,10 @@ print("Even squares (1-25):", even_squares)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>sample = [10, 20, 30, 20, 40, 10, 50, 30]
+                <div class="code"><pre>sample: list[int] = [10, 20, 30, 20, 40, 10, 50, 30]
 
-seen = set()
-deduplicated = []
+seen: set[int] = set()
+deduplicated: list[int] = []
 for item in sample:
     if item not in seen:
         seen.add(item)
@@ -895,10 +905,10 @@ print("Deduplicated:", deduplicated)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>data = [0, 1, 0, 3, 12, 0, 9]
+                <div class="code"><pre>data: list[int] = [0, 1, 0, 3, 12, 0, 9]
 print("Before:            ", data)
 
-non_zero_pos = 0
+non_zero_pos: int = 0
 for i in range(len(data)):
     if data[i] != 0:
         data[non_zero_pos], data[i] = data[i], data[non_zero_pos]
@@ -916,20 +926,21 @@ print("Zeros moved to end:", data)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>test_lists = [
+                <div class="code"><pre>test_lists: list[list[int]] = [
     [12, 35, 1, 10, 35, 34],
     [10, 10, 10]
 ]
 
 for nums in test_lists:
-    first = second = float("-inf")
+    first: float = float("-inf")
+    second: float = float("-inf")
     for n in nums:
         if n > first:
             second = first
-            first = n
+            first = float(n)
         elif first > n > second:
-            second = n
-    second_val = second if second != float("-inf") else None
+            second = float(n)
+    second_val: float | None = second if second != float("-inf") else None
     print(f"List: {nums} -> Second largest: {second_val}")
 # Second largest: 34, None</pre></div>
               </div>
@@ -942,20 +953,20 @@ for nums in test_lists:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>matrix = [
+                <div class="code"><pre>matrix: list[list[int]] = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 9]
 ]
-n = len(matrix)
+n: int = len(matrix)
 
 # 1. Transpose:
-transposed = [[matrix[r][c] for r in range(n)] for c in range(n)]
+transposed: list[list[int]] = [[matrix[r][c] for r in range(n)] for c in range(n)]
 print("Transposed:", transposed)
 
 # 2. Main and anti-diagonal sums:
-main_diag = sum(matrix[i][i] for i in range(n))
-anti_diag = sum(matrix[i][n - 1 - i] for i in range(n))
+main_diag: int = sum(matrix[i][i] for i in range(n))
+anti_diag: int = sum(matrix[i][n - 1 - i] for i in range(n))
 print(f"Main Diagonal Sum: {main_diag}, Anti Diagonal Sum: {anti_diag}")
 # Main Diagonal Sum: 15, Anti Diagonal Sum: 15</pre></div>
               </div>
@@ -974,17 +985,17 @@ print(f"Main Diagonal Sum: {main_diag}, Anti Diagonal Sum: {anti_diag}")
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>irregular = [1, [2, [3, 4], 5], [[6, 7], 8], [9, [10, [11]]]]
+                <div class="code"><pre>irregular: list[object] = [1, [2, [3, 4], 5], [[6, 7], 8], [9, [10, [11]]]]
 
 # Iterative stack-based flattening preserving element order
 # (Recursive function definitions are covered in Module 14: Functions)
-stack = list(reversed(irregular))
-flat = []
+stack: list[object] = list(reversed(irregular))
+flat: list[int] = []
 while stack:
-    curr = stack.pop()
+    curr: object = stack.pop()
     if isinstance(curr, list):
         stack.extend(reversed(curr))
-    else:
+    elif isinstance(curr, int):
         flat.append(curr)
 
 print("Deep flattened:", flat)
@@ -999,18 +1010,18 @@ print("Deep flattened:", flat)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>arr = [10, 2, -2, -20, 10]
-target_val = -10
+                <div class="code"><pre>arr: list[int] = [10, 2, -2, -20, 10]
+target_val: int = -10
 
-prefix_map = {0: -1}  # prefix_sum: index
-current_sum = 0
-found_subarray = None
+prefix_map: dict[int, int] = {0: -1}  # prefix_sum: index
+current_sum: int = 0
+found_subarray: list[int] | None = None
 
 for i, num in enumerate(arr):
     current_sum += num
-    diff = current_sum - target_val
+    diff: int = current_sum - target_val
     if diff in prefix_map:
-        start_idx = prefix_map[diff] + 1
+        start_idx: int = prefix_map[diff] + 1
         found_subarray = arr[start_idx : i + 1]
         break
     prefix_map[current_sum] = i

@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-functional-programming-in-python">1.1. Functional Programming in Python</a>
+            <a href="#1-2-callable-and-functional-type-annotations">1.2. Callable &amp; Functional Type Annotations</a>
           </div>
         </div>
         <div class="nav-section">
@@ -132,6 +133,16 @@
             </ol>
           </li>
         </ul>
+
+        <h3 id="1-2-callable-and-functional-type-annotations">1.2. Callable &amp; Functional Type Annotations</h3>
+        <div class="callout">
+          <strong>Type Hints in Functional Programming:</strong>
+          <ul>
+            <li><strong>The Callable Type:</strong> Import from <code class="inline">collections.abc import Callable</code>. Syntax: <code class="inline">Callable[[Arg1Type, Arg2Type], ReturnType]</code>.</li>
+            <li><strong>Typing Lambdas:</strong> When storing a lambda or passing a callable parameter: <code class="inline">square: Callable[[int], int] = lambda x: x ** 2</code>.</li>
+            <li><strong>Typing Lazy Streams:</strong> <code class="inline">map</code> and <code class="inline">filter</code> return generator-like iterators typed via <code class="inline">from collections.abc import Iterator</code> (e.g., <code class="inline">Iterator[int]</code>).</li>
+          </ul>
+        </div>
       </section>
 
       <!-- SECTION 2: ANONYMOUS / LAMBDA FUNCTIONS -->
@@ -155,18 +166,20 @@
           <li><strong>Short Lifespan:</strong> Typically used as throwaway inline arguments to higher-order functions.</li>
         </ul>
 
-        <div class="code"><pre># Standard def function:
-def square(x):
+        <div class="code"><pre>from collections.abc import Callable
+
+# Standard def function:
+def square(x: int) -> int:
     return x ** 2
 
-# Equivalent lambda:
-square_lambda = lambda x: x ** 2
+# Equivalent lambda with Callable type annotation:
+square_lambda: Callable[[int], int] = lambda x: x ** 2
 
 print(square(5))         # 25
 print(square_lambda(5))  # 25
 
 # Multiple parameters:
-add = lambda a, b, c: a + b + c
+add: Callable[[int, int, int], int] = lambda a, b, c: a + b + c
 print("Sum:", add(10, 20, 30))  # 60</pre></div>
 
         <h3 id="2-anonymous-lambda-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -174,20 +187,22 @@ print("Sum:", add(10, 20, 30))  # 60</pre></div>
         <h3 id="2-2-conditional-expressions-in-lambdas">2.2. Conditional Expressions in Lambdas</h3>
         <p>While <code class="inline">if-elif-else</code> statements are forbidden, single-line ternary conditional expressions are fully supported:</p>
 
-        <div class="code"><pre># lambda param: val_if_true if condition else val_if_false
-even_odd = lambda n: "Even" if n % 2 == 0 else "Odd"
+        <div class="code"><pre>from collections.abc import Callable
+
+# lambda param: val_if_true if condition else val_if_false
+even_odd: Callable[[int], str] = lambda n: "Even" if n % 2 == 0 else "Odd"
 print(even_odd(8))   # Even
 print(even_odd(15))  # Odd
 
 # Nested conditional:
-classify = lambda score: "A" if score >= 90 else ("B" if score >= 80 else "C")
+classify: Callable[[int], str] = lambda score: "A" if score >= 90 else ("B" if score >= 80 else "C")
 print("Grade:", classify(85))  # B</pre></div>
 
         <h3 id="2-3-lambdas-as-custom-sorting-keys">2.3. Lambdas as Custom Sorting Keys</h3>
         <p>The most ubiquitous and idiomatic use case for lambdas is the <code class="inline">key=</code> argument in <code class="inline">sort()</code>, <code class="inline">sorted()</code>, <code class="inline">min()</code>, and <code class="inline">max()</code>:</p>
 
         <div class="code"><pre># Sorting records by multiple criteria:
-employees = [
+employees: list[dict[str, str | int]] = [
     {"name": "Alice", "salary": 90000, "age": 30},
     {"name": "Bob", "salary": 65000, "age": 24},
     {"name": "Charlie", "salary": 90000, "age": 28},
@@ -195,10 +210,12 @@ employees = [
 ]
 
 # Sort primarily by salary descending, secondarily by age ascending:
-employees.sort(key=lambda e: (-e["salary"], e["age"]))
+employees.sort(key=lambda e: (-int(e["salary"]), int(e["age"])))
 print("Sorted employees:")
 for emp in employees:
-    print(f"  {emp['name']:<8} Salary: ${emp['salary']:,}, Age: {emp['age']}")
+    salary: int = int(emp["salary"])
+    age: int = int(emp["age"])
+    print(f"  {str(emp['name']):<8} Salary: ${salary:,}, Age: {age}")
 # Diana    Salary: $110,000, Age: 35
 # Charlie  Salary: $90,000, Age: 28
 # Alice    Salary: $90,000, Age: 30
@@ -219,14 +236,16 @@ for emp in employees:
         <h3 id="3-1-mechanics-and-lazy-evaluation">3.1. Mechanics &amp; Lazy Evaluation</h3>
         <p><code class="inline">filter(function, iterable)</code> constructs an iterator from elements of <code class="inline">iterable</code> for which <code class="inline">function(item)</code> returns <code class="inline">True</code>:</p>
 
-        <div class="code"><pre>nums = [12, 5, 8, 19, 24, 7, 30]
+        <div class="code"><pre>from collections.abc import Iterator
+
+nums: list[int] = [12, 5, 8, 19, 24, 7, 30]
 
 # Filter even numbers:
-evens_iter = filter(lambda x: x % 2 == 0, nums)
+evens_iter: Iterator[int] = filter(lambda x: x % 2 == 0, nums)
 print(type(evens_iter))  # &lt;class 'filter'&gt; (Lazy generator-like iterator)
 
 # Consume iterator into a list:
-evens = list(evens_iter)
+evens: list[int] = list(evens_iter)
 print("Evens:", evens)   # [12, 8, 24, 30]</pre></div>
 
         <h3 id="3-filter-with-lambda-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -234,8 +253,8 @@ print("Evens:", evens)   # [12, 8, 24, 30]</pre></div>
         <h3 id="3-2-truthiness-filtering-with-filter-none-iterable">3.2. Truthiness Filtering with <code class="inline">filter(None, iterable)</code></h3>
         <p>If <code class="inline">function</code> is <code class="inline">None</code>, Python's identity truth-testing is used; all falsy elements (<code class="inline">0</code>, <code class="inline">""</code>, <code class="inline">None</code>, <code class="inline">False</code>, <code class="inline">[]</code>) are stripped away:</p>
 
-        <div class="code"><pre>raw_data = ["active", "", None, "pending", 0, False, "archived", []]
-cleaned = list(filter(None, raw_data))
+        <div class="code"><pre>raw_data: list[object] = ["active", "", None, "pending", 0, False, "archived", []]
+cleaned: list[object] = list(filter(None, raw_data))
 print("Truthy values only:", cleaned)
 # ['active', 'pending', 'archived']</pre></div>
       </section>
@@ -255,13 +274,13 @@ print("Truthy values only:", cleaned)
         <p><code class="inline">map(function, iterable)</code> applies <code class="inline">function</code> to every item of <code class="inline">iterable</code> and yields the results lazily:</p>
 
         <div class="code"><pre># Transform strings: strip whitespace and capitalize
-users = ["  alice ", "BOB", "  charlie  "]
-cleaned = list(map(lambda s: s.strip().title(), users))
+users: list[str] = ["  alice ", "BOB", "  charlie  "]
+cleaned: list[str] = list(map(lambda s: s.strip().title(), users))
 print("Cleaned users:", cleaned)  # ['Alice', 'Bob', 'Charlie']
 
 # Convert temperatures Celsius to Fahrenheit:
-celsius = [0, 20, 37, 100]
-fahrenheit = list(map(lambda c: round((c * 9/5) + 32, 1), celsius))
+celsius: list[int] = [0, 20, 37, 100]
+fahrenheit: list[float] = list(map(lambda c: round((c * 9/5) + 32, 1), celsius))
 print("Fahrenheit:", fahrenheit)  # [32.0, 68.0, 98.6, 212.0]</pre></div>
 
         <h3 id="4-map-with-lambda-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -270,11 +289,11 @@ print("Fahrenheit:", fahrenheit)  # [32.0, 68.0, 98.6, 212.0]</pre></div>
         <p><code class="inline">map()</code> accepts multiple iterables. The function must accept as many parameters as there are iterables. Iteration stops when the shortest iterable is exhausted:</p>
 
         <div class="code"><pre># Vector addition across parallel lists:
-v1 = [10, 20, 30]
-v2 = [1, 2, 3]
-v3 = [100, 200, 300]
+v1: list[int] = [10, 20, 30]
+v2: list[int] = [1, 2, 3]
+v3: list[int] = [100, 200, 300]
 
-sums = list(map(lambda x, y, z: x + y + z, v1, v2, v3))
+sums: list[int] = list(map(lambda x, y, z: x + y + z, v1, v2, v3))
 print("Parallel sum:", sums)  # [111, 222, 333]</pre></div>
       </section>
 
@@ -295,8 +314,8 @@ print("Parallel sum:", sums)  # [111, 222, 333]</pre></div>
         <div class="code"><pre>from functools import reduce
 
 # Calculating cumulative product (Factorial of 5):
-nums = [1, 2, 3, 4, 5]
-product = reduce(lambda acc, x: acc * x, nums)
+nums: list[int] = [1, 2, 3, 4, 5]
+product: int = reduce(lambda acc, x: acc * x, nums)
 print("Product (5!):", product)  # 120
 
 # Execution flow:
@@ -312,23 +331,25 @@ print("Product (5!):", product)  # 120
           <strong>Safety Best Practice:</strong> If an iterable is empty and no initializer is provided, <code class="inline">reduce()</code> raises <code class="inline">TypeError: reduce() of empty iterable with no initial value</code>. Always pass an <code class="inline">initializer</code> as the 3rd argument to serve as a safe default fallback.
         </div>
 
-        <div class="code"><pre># Finding maximum element using reduce:
-nums = [45, 12, 89, 34, 78, 23]
-max_num = reduce(lambda a, b: a if a > b else b, nums)
+        <div class="code"><pre>from functools import reduce
+
+# Finding maximum element using reduce:
+nums: list[int] = [45, 12, 89, 34, 78, 23]
+max_num: int = reduce(lambda a, b: a if a &gt; b else b, nums)
 print("Maximum:", max_num)  # 89
 
 # Using initializer for safe sum:
-empty_list = []
-safe_sum = reduce(lambda a, b: a + b, empty_list, 0)
+empty_list: list[int] = []
+safe_sum: int = reduce(lambda a, b: a + b, empty_list, 0)
 print("Safe sum:", safe_sum)  # 0 (No TypeError)</pre></div>
 
         <h3 id="5-3-when-to-use-comprehensions-instead-of-map-filter">5.3. When to Use Comprehensions Instead of map/filter</h3>
         <p>In modern Python, list and generator comprehensions are almost universally preferred over <code class="inline">map</code> and <code class="inline">filter</code> with lambdas for readability and performance:</p>
         <div class="code"><pre># map + filter with lambda:
-res1 = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(10))))
+res1: list[int] = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, range(10))))
 
 # Equivalent List Comprehension (Far more readable and faster in Python):
-res2 = [x**2 for x in range(10) if x % 2 == 0]
+res2: list[int] = [x**2 for x in range(10) if x % 2 == 0]
 print(res1 == res2)  # True</pre></div>
       </section>
 
@@ -400,7 +421,9 @@ print(res1 == res2)  # True</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>This is the famous <strong>late-binding closure trap</strong>:</p>
-            <div class="code"><pre>funcs = [lambda: i for i in range(3)]
+            <div class="code"><pre>from collections.abc import Callable
+
+funcs: list[Callable[[], int]] = [lambda: i for i in range(3)]
 print([f() for f in funcs])  # Outputs [2, 2, 2], NOT [0, 1, 2]!</pre></div>
             <p><strong>Cause:</strong> The variable <code class="inline">i</code> is not evaluated when the lambda is created; it is looked up when the lambda is <em>called</em>. By that time, the loop has completed and <code class="inline">i</code> is 2.</p>
             <p><strong>The Fix:</strong> Bind <code class="inline">i</code> immediately as a default parameter:
@@ -482,7 +505,7 @@ print([f() for f in funcs])  # Outputs [2, 2, 2], NOT [0, 1, 2]!</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>products = [("Keyboard", 80), ("Mouse", 30), ("Monitor", 350), ("Headset", 120)]
+                <div class="code"><pre>products: list[tuple[str, int]] = [("Keyboard", 80), ("Mouse", 30), ("Monitor", 350), ("Headset", 120)]
 products.sort(key=lambda item: item[1], reverse=True)
 print("Sorted products:", products)
 # [('Monitor', 350), ('Headset', 120), ('Keyboard', 80), ('Mouse', 30)]</pre></div>
@@ -496,8 +519,9 @@ print("Sorted products:", products)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>raw = ["  python ", "", "   ", "javascript", None, "  rust "]
-cleaned = list(map(str.strip, filter(lambda s: bool(s and s.strip()), raw)))
+                <div class="code"><pre>raw: list[str | None] = ["  python ", "", "   ", "javascript", None, "  rust "]
+filtered_strings: list[str] = [s for s in raw if s is not None]
+cleaned: list[str] = list(map(str.strip, filter(lambda s: bool(s.strip()), filtered_strings)))
 print("Cleaned:", cleaned)  # ['python', 'javascript', 'rust']</pre></div>
               </div>
             </details>
@@ -513,12 +537,12 @@ print("Cleaned:", cleaned)  # ['python', 'javascript', 'rust']</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>emails = [
+                <div class="code"><pre>emails: list[str] = [
     "alice@gmail.com", "bob@yahoo.com", "charlie@gmail.com",
     "diana@company.org", "evan@yahoo.com"
 ]
 
-domains = set(map(lambda email: email.split("@")[1], emails))
+domains: set[str] = set(map(lambda email: email.split("@")[1], emails))
 print("Unique domains:", domains)
 # {'gmail.com', 'yahoo.com', 'company.org'}</pre></div>
               </div>
@@ -533,8 +557,8 @@ print("Unique domains:", domains)
               <div class="qa-answer-body">
                 <div class="code"><pre>from functools import reduce
 
-matrix = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
-flattened = reduce(lambda acc, sublist: acc + sublist, matrix, [])
+matrix: list[list[int]] = [[1, 2, 3], [4, 5], [6, 7, 8, 9]]
+flattened: list[int] = reduce(lambda acc, sublist: acc + sublist, matrix, [])
 print("Flattened via reduce:", flattened)
 # [1, 2, 3, 4, 5, 6, 7, 8, 9]</pre></div>
               </div>
@@ -547,11 +571,13 @@ print("Flattened via reduce:", flattened)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Binding multiplier parameter n=n at definition time:
-multipliers = [lambda x, n=n: x * n for n in range(1, 5)]
+                <div class="code"><pre>from collections.abc import Callable
+
+# Binding multiplier parameter n=n at definition time:
+multipliers: list[Callable[[int], int]] = [lambda x, n=n: x * n for n in range(1, 5)]
 
 # Test with input 10:
-results = [m(10) for m in multipliers]
+results: list[int] = [m(10) for m in multipliers]
 print("Results [10*1, 10*2, 10*3, 10*4]:", results)
 # [10, 20, 30, 40]</pre></div>
               </div>
@@ -566,13 +592,13 @@ print("Results [10*1, 10*2, 10*3, 10*4]:", results)
               <div class="qa-answer-body">
                 <div class="code"><pre>from functools import reduce
 
-tokens = ["apple", "banana", "apple", "cherry", "banana", "apple"]
+tokens: list[str] = ["apple", "banana", "apple", "cherry", "banana", "apple"]
 
-def tally_reducer(acc, token):
+def tally_reducer(acc: dict[str, int], token: str) -> dict[str, int]:
     acc[token] = acc.get(token, 0) + 1
     return acc
 
-counts = reduce(tally_reducer, tokens, {})
+counts: dict[str, int] = reduce(tally_reducer, tokens, {})
 print("Word counts via reduce:", counts)
 # {'apple': 3, 'banana': 2, 'cherry': 1}</pre></div>
               </div>
@@ -592,8 +618,9 @@ print("Word counts via reduce:", counts)
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>from functools import reduce
+from collections.abc import Iterator
 
-transactions = [
+transactions: list[dict[str, str | float]] = [
     {"category": "Electronics", "amount": 120.0, "status": "completed"},
     {"category": "Groceries",   "amount": 45.0,  "status": "completed"},
     {"category": "Electronics", "amount": 250.0, "status": "refunded"},
@@ -602,15 +629,16 @@ transactions = [
 ]
 
 # 1. Filter completed transactions
-completed = filter(lambda t: t["status"] == "completed", transactions)
+completed: Iterator[dict[str, str | float]] = filter(lambda t: t["status"] == "completed", transactions)
 
 # 2. Reduce to aggregate amounts per category
-def aggregate(acc, t):
-    cat = t["category"]
-    acc[cat] = acc.get(cat, 0.0) + t["amount"]
+def aggregate(acc: dict[str, float], t: dict[str, str | float]) -> dict[str, float]:
+    cat: str = str(t["category"])
+    amt: float = float(t["amount"])
+    acc[cat] = acc.get(cat, 0.0) + amt
     return acc
 
-totals = reduce(aggregate, completed, {})
+totals: dict[str, float] = reduce(aggregate, completed, {})
 print("Category Totals:", totals)
 # {'Electronics': 200.0, 'Groceries': 110.0}</pre></div>
               </div>
@@ -623,18 +651,20 @@ print("Category Totals:", totals)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def dynamic_sort(dataset: list, *sort_keys) -> list:
+                <div class="code"><pre>from typing import Any
+
+def dynamic_sort(dataset: list[dict[str, Any]], *sort_keys: tuple[str, bool]) -> list[dict[str, Any]]:
     """Sort list of dicts by arbitrary keys with ascending/descending indicators."""
-    def sort_extractor(item):
-        key_tuple = []
+    def sort_extractor(item: dict[str, Any]) -> tuple[Any, ...]:
+        key_tuple: list[Any] = []
         for k, descending in sort_keys:
-            val = item[k]
+            val: Any = item[k]
             key_tuple.append(-val if descending and isinstance(val, (int, float)) else val)
         return tuple(key_tuple)
 
     return sorted(dataset, key=sort_extractor)
 
-items = [
+items: list[dict[str, Any]] = [
     {"dept": "Sales", "salary": 50000},
     {"dept": "Engineering", "salary": 90000},
     {"dept": "Engineering", "salary": 110000},
@@ -642,7 +672,7 @@ items = [
 ]
 
 # Sort by dept ascending, salary descending:
-sorted_items = dynamic_sort(items, ("dept", False), ("salary", True))
+sorted_items: list[dict[str, Any]] = dynamic_sort(items, ("dept", False), ("salary", True))
 for it in sorted_items:
     print(it)</pre></div>
               </div>

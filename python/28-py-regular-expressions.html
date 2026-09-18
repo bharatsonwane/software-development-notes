@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-overview-why-regular-expressions">1.1. Overview: Why Regular Expressions?</a>
             <a href="#1-2-the-crucial-role-of-raw-strings-r">1.2. The Crucial Role of Raw Strings: r"..."</a>
+            <a href="#1-3-regular-expression-typing">1.3. Regular Expression Typing (re.Pattern &amp; re.Match)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -144,13 +145,34 @@
         <div class="code"><pre>import re
 
 # Without raw string: '\b' is treated as ASCII backspace (\x08)
-bad_pattern = "\bword\b"
+bad_pattern: str = "\bword\b"
 
 # With raw string: '\b' is passed literally to the regex engine as a word boundary
-good_pattern = r"\bword\b"
+good_pattern: str = r"\bword\b"
 
-text = "a word in a sentence"
+text: str = "a word in a sentence"
 print("Match found:", bool(re.search(good_pattern, text)))  # True</pre></div>
+
+        <h3 id="1-3-regular-expression-typing">1.3. Regular Expression Typing (re.Pattern &amp; re.Match)</h3>
+        <p>In modern Python 3.9+, <code>re.Pattern</code> and <code>re.Match</code> are generic types parameterized by <code>str</code> or <code>bytes</code>:</p>
+        <div class="code"><pre>import re
+from collections.abc import Iterator
+
+# In Python 3.9+, Pattern and Match are generic types:
+pattern: re.Pattern[str] = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
+text: str = "Support: info@example.com, Admin: admin@example.org"
+
+# re.search returns re.Match[str] | None:
+match: re.Match[str] | None = pattern.search(text)
+if match:
+    email: str = match.group()
+    print("First match:", email)
+
+# re.findall returns list[str] (or list[tuple[str, ...]] if groups used):
+all_emails: list[str] = pattern.findall(text)
+
+# re.finditer returns Iterator[re.Match[str]]:
+matches_iter: Iterator[re.Match[str]] = pattern.finditer(text)</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -171,12 +193,12 @@ print("Match found:", bool(re.search(good_pattern, text)))  # True</pre></div>
         <div class="code"><pre>import re
 
 # 1. Compiling a reusable Pattern object
-date_pattern = re.compile(r"\d{4}-\d{2}-\d{2}")
+date_pattern: re.Pattern[str] = re.compile(r"\d{4}-\d{2}-\d{2}")
 
-log_entry = "Audit event recorded on 2026-09-14 at 10:30 UTC"
+log_entry: str = "Audit event recorded on 2026-09-14 at 10:30 UTC"
 
 # 2. Searching using the compiled pattern:
-match = date_pattern.search(log_entry)
+match: re.Match[str] | None = date_pattern.search(log_entry)
 if match:
     print("Found date:", match.group())  # 2026-09-14</pre></div>
 
@@ -192,10 +214,12 @@ if match:
           <li><code>match.span()</code>: Returns a 2-tuple <code>(start, end)</code>.</li>
         </ul>
 
-        <div class="code"><pre>text = "User ID: USR-9842 logged in"
-pattern = r"USR-(\d+)"
+        <div class="code"><pre>import re
 
-match = re.search(pattern, text)
+text: str = "User ID: USR-9842 logged in"
+pattern: str = r"USR-(\d+)"
+
+match: re.Match[str] | None = re.search(pattern, text)
 if match:
     print("Full match:    ", match.group())    # USR-9842
     print("Captured ID:   ", match.group(1))  # 9842
@@ -316,15 +340,17 @@ if match:
         <h3 id="3-4-greedy-vs-lazy-non-greedy-matching">3.4. Greedy vs Lazy (Non-Greedy) Matching</h3>
         <p>By default, quantifiers (<code>*</code>, <code>+</code>, <code>{n,m}</code>) are <strong>greedy</strong>: they match as much text as possible. Adding a <code>?</code> suffix (<code>*?</code>, <code>+?</code>, <code>{n,m}?</code>) makes them <strong>lazy (non-greedy)</strong>: they match the minimal text required.</p>
 
-        <div class="code"><pre>html_snippet = "&lt;b&gt;First&lt;/b&gt; and &lt;b&gt;Second&lt;/b&gt;"
+        <div class="code"><pre>import re
 
-# Greedy: Matches from the first '<' to the absolute LAST '>'
-greedy_pattern = r"&lt;b&gt;.*&lt;/b&gt;"
+html_snippet: str = "&lt;b&gt;First&lt;/b&gt; and &lt;b&gt;Second&lt;/b&gt;"
+
+# Greedy: Matches from the first '&lt;' to the absolute LAST '&gt;'
+greedy_pattern: str = r"&lt;b&gt;.*&lt;/b&gt;"
 print("Greedy:", re.findall(greedy_pattern, html_snippet))
 # Output: ['&lt;b&gt;First&lt;/b&gt; and &lt;b&gt;Second&lt;/b&gt;']
 
-# Lazy: Matches from '<' to the NEAREST '>'
-lazy_pattern = r"&lt;b&gt;.*?&lt;/b&gt;"
+# Lazy: Matches from '&lt;' to the NEAREST '&gt;'
+lazy_pattern: str = r"&lt;b&gt;.*?&lt;/b&gt;"
 print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
 # Output: ['&lt;b&gt;First&lt;/b&gt;', '&lt;b&gt;Second&lt;/b&gt;']</pre></div>
       </section>
@@ -395,32 +421,37 @@ print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
 
         <div class="code"><pre>import re
 
-sample_text = "Call 555-1234 or 555-5678 today"
+sample_text: str = "Call 555-1234 or 555-5678 today"
 
 # 1. re.match vs re.fullmatch vs re.search
 print("re.match:", re.match(r"\d{3}-\d{4}", sample_text))  # None (doesn't start with digits)
 print("re.fullmatch (exact):", bool(re.fullmatch(r"[A-Za-z0-9\s-]+", sample_text)))  # True
 print("re.fullmatch (partial):", re.fullmatch(r"\d{3}-\d{4}", sample_text))          # None
-print("re.search:", re.search(r"\d{3}-\d{4}", sample_text).group())                  # 555-1234
+search_m: re.Match[str] | None = re.search(r"\d{3}-\d{4}", sample_text)
+if search_m:
+    print("re.search:", search_m.group())                  # 555-1234
 
 # 2. re.findall:
-print("re.findall:", re.findall(r"\d{3}-\d{4}", sample_text))  # ['555-1234', '555-5678']
+found_list: list[str] = re.findall(r"\d{3}-\d{4}", sample_text)
+print("re.findall:", found_list)  # ['555-1234', '555-5678']
 
 # 3. re.finditer:
 for m in re.finditer(r"\d{3}-\d{4}", sample_text):
     print(f"Match found: {m.group()} at index span {m.span()}")
 
 # 4. re.sub vs re.subn (search & replace with counter):
-sanitized = re.sub(r"\d{3}-\d{4}", "[REDACTED]", sample_text)
+sanitized: str = re.sub(r"\d{3}-\d{4}", "[REDACTED]", sample_text)
 print("Sanitized text (sub):", sanitized)
 
+new_text: str
+count: int
 new_text, count = re.subn(r"\d{3}-\d{4}", "[REDACTED]", sample_text)
 print(f"Sanitized (subn): {new_text} | Total replacements made: {count}")
 # Output: Call [REDACTED] or [REDACTED] today | Total replacements made: 2
 
 # 5. re.split:
-data_row = "item1, item2; item3 | item4"
-tokens = re.split(r"[,;|]\s*", data_row)
+data_row: str = "item1, item2; item3 | item4"
+tokens: list[str] = re.split(r"[,;|]\s*", data_row)
 print("Split tokens:", tokens)  # ['item1', 'item2', 'item3', 'item4']</pre></div>
 
         <h3 id="4-important-functions-of-re-module-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -432,8 +463,10 @@ print("Split tokens:", tokens)  # ['item1', 'item2', 'item3', 'item4']</pre></di
           <li><code>re.VERBOSE</code> (or <code>re.X</code>): Allows writing formatted regex across multiple lines with comments and ignored whitespace.</li>
         </ul>
 
-        <div class="code"><pre># Using re.VERBOSE for clean, documented regular expressions:
-phone_regex = re.compile(r"""
+        <div class="code"><pre>import re
+
+# Using re.VERBOSE for clean, documented regular expressions:
+phone_regex: re.Pattern[str] = re.compile(r"""
     ^(\+\d{1,3}[- ]?)?   # Optional country code (+1, +91)
     (\(?\d{3}\)?[- ]?)   # Area code (e.g. 555 or (555))
     \d{3}                # 3 digits
@@ -460,25 +493,25 @@ print(bool(phone_regex.match("+1-555-019-2834")))  # True</pre></div>
         <div class="code"><pre>import re
 
 # 1. Phone Number Validator (10-digit Indian mobile starting with 6, 7, 8, or 9):
-def is_valid_indian_mobile(phone):
-    pattern = r"^[6-9]\d{9}$"
+def is_valid_indian_mobile(phone: str) -> bool:
+    pattern: str = r"^[6-9]\d{9}$"
     return bool(re.match(pattern, phone))
 
 print("Valid mobile 9876543210:", is_valid_indian_mobile("9876543210"))  # True
 print("Invalid mobile 4567890123:", is_valid_indian_mobile("4567890123"))  # False
 
 # 2. Email Address Validator:
-def is_valid_email(email):
-    pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+def is_valid_email(email: str) -> bool:
+    pattern: str = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     return bool(re.match(pattern, email))
 
 print("user@example.com:   ", is_valid_email("user@example.com"))     # True
 print("invalid-email@.com: ", is_valid_email("invalid-email@.com")) # False
 
 # 3. Extracting IPv4 Addresses from Server Logs:
-log_data = "Failed SSH connection from 192.168.1.45 to port 22, alternate attempt 10.0.0.1"
-ip_pattern = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
-extracted_ips = re.findall(ip_pattern, log_data)
+log_data: str = "Failed SSH connection from 192.168.1.45 to port 22, alternate attempt 10.0.0.1"
+ip_pattern: str = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
+extracted_ips: list[str] = re.findall(ip_pattern, log_data)
 print("Extracted IPs:", extracted_ips)  # ['192.168.1.45', '10.0.0.1']</pre></div>
       </section>
 
@@ -498,7 +531,7 @@ print("Extracted IPs:", extracted_ips)  # ['192.168.1.45', '10.0.0.1']</pre></di
 
         <div class="code"><pre>import re
 
-html_content = """
+html_content: str = """
 &lt;html&gt;
   &lt;head&gt;&lt;title&gt;Python Engineering Notes&lt;/title&gt;&lt;/head&gt;
   &lt;body&gt;
@@ -511,19 +544,19 @@ html_content = """
 """
 
 # 1. Extract Page Title:
-title_match = re.search(r"&lt;title&gt;(.*?)&lt;/title&gt;", html_content, re.IGNORECASE)
+title_match: re.Match[str] | None = re.search(r"&lt;title&gt;(.*?)&lt;/title&gt;", html_content, re.IGNORECASE)
 if title_match:
     print("Page Title:", title_match.group(1))
 
 # 2. Extract All Hyperlinks and Anchor Text:
-link_pattern = r'&lt;a\s+(?:[^&gt;]*?\s+)?href="([^"]*)"&gt;(.*?)&lt;/a&gt;'
-links = re.findall(link_pattern, html_content)
+link_pattern: str = r'&lt;a\s+(?:[^&gt;]*?\s+)?href="([^"]*)"&gt;(.*?)&lt;/a&gt;'
+links: list[tuple[str, str]] = re.findall(link_pattern, html_content)
 print("\nExtracted Hyperlinks:")
 for url, text in links:
     print(f"  - [{text}]: {url}")
 
 # 3. Extract All Email Addresses:
-emails = re.findall(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", html_content)
+emails: list[str] = re.findall(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", html_content)
 print("\nFound Emails:", emails)</pre></div>
 
         <div class="callout">
@@ -612,7 +645,9 @@ print("\nFound Emails:", emails)</pre></div>
           </summary>
           <div class="qa-answer-body">
             <p>In <code>re.sub(pattern, repl, string)</code>, the <code>repl</code> argument can be a Python function instead of a string. For each match, Python passes the <code>Match</code> object to your function, and replaces the match with the function's return value:</p>
-            <div class="code"><pre>def double_num(m):
+            <div class="code"><pre>import re
+
+def double_num(m: re.Match[str]) -> str:
     return str(int(m.group()) * 2)
 
 print(re.sub(r"\d+", double_num, "Scores: 10, 25"))  # Scores: 20, 50</pre></div>
@@ -677,8 +712,8 @@ print(re.sub(r"\d+", double_num, "Scores: 10, 25"))  # Scores: 20, 50</pre></div
               <div class="qa-answer-body">
                 <div class="code"><pre>import re
 
-text = "Error code: ERR-404 at endpoint"
-m = re.search(r"ERR-\d+", text)
+text: str = "Error code: ERR-404 at endpoint"
+m: re.Match[str] | None = re.search(r"ERR-\d+", text)
 if m:
     print("Match:", m.group())
     print("Span: ", m.span())</pre></div>
@@ -714,9 +749,9 @@ regex compilation flags, and practical data extraction and sanitization pipeline
                 <div class="code"><pre># Task 1: Predefined character classes
 import re
 
-text = "Item #42 costs $199.99 (SKU_A1)"
-digits = re.findall(r"\d+", text)
-words = re.findall(r"\w+", text)
+text: str = "Item #42 costs $199.99 (SKU_A1)"
+digits: list[str] = re.findall(r"\d+", text)
+words: list[str] = re.findall(r"\w+", text)
 
 print("Digits:", digits)  # ['42', '199', '99']
 print("Words: ", words)   # ['Item', '42', 'costs', '199', '99', 'SKU_A1']</pre></div>
@@ -733,9 +768,9 @@ print("Words: ", words)   # ['Item', '42', 'costs', '199', '99', 'SKU_A1']</pre>
                 <div class="code"><pre># Task 2: Greedy vs Lazy
 import re
 
-line = 'The "cat" sat on the "mat".'
-greedy = re.findall(r'"(.*)"', line)
-lazy = re.findall(r'"(.*?)"', line)
+line: str = 'The "cat" sat on the "mat".'
+greedy: list[str] = re.findall(r'"(.*)"', line)
+lazy: list[str] = re.findall(r'"(.*?)"', line)
 
 print("Greedy:", greedy)  # ['cat" sat on the "mat']
 print("Lazy:  ", lazy)    # ['cat', 'mat']</pre></div>
@@ -752,8 +787,8 @@ print("Lazy:  ", lazy)    # ['cat', 'mat']</pre></div>
                 <div class="code"><pre># Task 3: Sanitization with re.sub
 import re
 
-customer_notes = "Contact customer at 9876543210 or alternate 9123456780."
-masked = re.sub(r"\b[6-9]\d{9}\b", "**********", customer_notes)
+customer_notes: str = "Contact customer at 9876543210 or alternate 9123456780."
+masked: str = re.sub(r"\b[6-9]\d{9}\b", "**********", customer_notes)
 print("Masked notes:", masked)</pre></div>
               </div>
             </details>
@@ -773,13 +808,13 @@ print("Masked notes:", masked)</pre></div>
                 <div class="code"><pre># Mini Project: Web Log Parser with Named Groups
 import re
 
-log_lines = [
+log_lines: list[str] = [
     '192.168.1.10 - - [14/Sep/2026:12:00:01 +0000] "GET /api/v1/users HTTP/1.1" 200 4532',
     '10.0.0.5 - - [14/Sep/2026:12:01:15 +0000] "POST /api/v1/login HTTP/1.1" 401 234',
     '172.16.0.2 - - [14/Sep/2026:12:02:40 +0000] "GET /static/logo.png HTTP/1.1" 304 0'
 ]
 
-log_regex = re.compile(r"""
+log_regex: re.Pattern[str] = re.compile(r"""
     ^(?P&lt;ip&gt;[\d.]+)\s+-\s+-\s+
     \[(?P&lt;timestamp&gt;[^\]]+)\]\s+
     "(?P&lt;method&gt;[A-Z]+)\s+(?P&lt;path&gt;\S+)\s+HTTP/[0-9.]+"\s+
@@ -787,9 +822,9 @@ log_regex = re.compile(r"""
     (?P&lt;bytes&gt;\d+)
 """, re.VERBOSE)
 
-parsed_records = []
+parsed_records: list[dict[str, str]] = []
 for line in log_lines:
-    match = log_regex.match(line)
+    match: re.Match[str] | None = log_regex.match(line)
     if match:
         parsed_records.append(match.groupdict())
 
@@ -809,9 +844,9 @@ for r in parsed_records:
                 <div class="code"><pre># Edge Case: Escaping meta-characters
 import re
 
-price = "Item costs 3.50 + tax"
+price: str = "Item costs 3.50 + tax"
 # Matching literal '.' and '+':
-m = re.findall(r"\d+\.\d+|\+", price)
+m: list[str] = re.findall(r"\d+\.\d+|\+", price)
 print("Escaped matches:", m)  # ['3.50', '+']</pre></div>
               </div>
             </details>

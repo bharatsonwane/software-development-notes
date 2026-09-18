@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-file-typing-textio-binaryio">1.2. File Stream Typing (TextIO, BinaryIO)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -147,6 +148,27 @@
           <li>In Python, file interactions are handled via file stream objects created by the built-in <code class="inline">open()</code> function.</li>
           <li>Python provides robust support for text files, binary assets (images, PDFs), structured formats (CSV, JSON), archives (ZIP, TAR), and filesystem navigation.</li>
         </ul>
+
+        <h3 id="1-2-file-typing-textio-binaryio">1.2. File Stream Typing (TextIO, BinaryIO, PathLike)</h3>
+        <div class="callout tip">
+          <div class="callout-title">PEP 484 &amp; PEP 519: Typing File Streams &amp; Paths</div>
+          <p>When writing functions that accept open file descriptors or filesystem paths, use standard type annotations from <code class="inline">typing</code> and <code class="inline">os</code>:</p>
+        </div>
+        <div class="code"><pre>from typing import TextIO, BinaryIO
+import os
+from pathlib import Path
+
+# Functions accepting open file stream handles:
+def process_text_stream(stream: TextIO) -> list[str]:
+    return [line.strip() for line in stream]
+
+def process_binary_stream(stream: BinaryIO, chunk_size: int = 4096) -> bytes:
+    return stream.read(chunk_size)
+
+# Functions accepting file paths (str or PathLike):
+def read_configuration(file_path: str | os.PathLike[str] | Path) -> str:
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read()</pre></div>
       </section>
 
       <!-- SECTION 2: FILE TYPES, OPEN/CLOSE, MODES, PROPERTIES -->
@@ -227,7 +249,9 @@
         <h3 id="2-file-types-open-close-modes-properties-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="2-3-file-object-attributes">2.3. File Object Attributes</h3>
-        <div class="code"><pre>f = open("sample.txt", "w", encoding="utf-8")
+        <div class="code"><pre>import io
+
+f: io.TextIOWrapper = open("sample.txt", "w", encoding="utf-8")
 print("File name:  ", f.name)       # sample.txt
 print("Open mode:  ", f.mode)       # w
 print("Is readable:", f.readable()) # False
@@ -258,7 +282,7 @@ print("After close:", f.closed)     # True</pre></div>
     f.write("Line 1: System initiated.\n")
     f.write("Line 2: Service listening on port 8080.\n")
     
-    lines = ["Line 3: Database connected.\n", "Line 4: All checks passed.\n"]
+    lines: list[str] = ["Line 3: Database connected.\n", "Line 4: All checks passed.\n"]
     f.writelines(lines)</pre></div>
 
         <h3 id="3-write-and-read-operations-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -299,7 +323,7 @@ print("After close:", f.closed)     # True</pre></div>
         <div class="code"><pre># Idiomatic line-by-line processing for massive log files:
 with open("log.txt", "r", encoding="utf-8") as f:
     for line_num, line in enumerate(f, start=1):
-        clean_line = line.rstrip("\n")
+        clean_line: str = line.rstrip("\n")
         print(f"[{line_num}] {clean_line}")</pre></div>
       </section>
 
@@ -363,7 +387,7 @@ with open("log.txt", "r", encoding="utf-8") as f:
         <p>Binary mode reads and writes raw <code class="inline">bytes</code> objects, ideal for copying media files:</p>
 
         <div class="code"><pre># Binary file copy chunk-by-chunk (Memory-safe for 10GB files):
-def copy_binary_file(source_path, dest_path, chunk_size=65536):
+def copy_binary_file(source_path: str, dest_path: str, chunk_size: int = 65536) -> None:
     with open(source_path, "rb") as src, open(dest_path, "wb") as dst:
         while chunk := src.read(chunk_size):
             dst.write(chunk)</pre></div>
@@ -374,20 +398,20 @@ def copy_binary_file(source_path, dest_path, chunk_size=65536):
         <div class="code"><pre>import csv
 
 # 1. Writing CSV with DictWriter:
-data = [
+data: list[dict[str, int | str]] = [
     {"id": 101, "name": "Alice", "score": 92},
     {"id": 102, "name": "Bob", "score": 85},
     {"id": 103, "name": "Charlie", "score": 98}
 ]
 
 with open("students.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=["id", "name", "score"])
+    writer: csv.DictWriter = csv.DictWriter(f, fieldnames=["id", "name", "score"])
     writer.writeheader()
     writer.writerows(data)
 
 # 2. Reading CSV with DictReader:
 with open("students.csv", "r", encoding="utf-8") as f:
-    reader = csv.DictReader(f)
+    reader: csv.DictReader = csv.DictReader(f)
     for row in reader:
         print(f"Student: {row['name']:<8} Score: {row['score']}")</pre></div>
 
@@ -455,7 +479,7 @@ with zipfile.ZipFile("backup.zip", "r") as archive:
 import time
 
 # Inspect file metadata with os.stat:
-stats = os.stat("sample.txt")
+stats: os.stat_result = os.stat("sample.txt")
 print(f"File Size:     {stats.st_size} bytes")
 print(f"Last Modified: {time.ctime(stats.st_mtime)}")
 
@@ -463,7 +487,7 @@ print(f"Last Modified: {time.ctime(stats.st_mtime)}")
 for root, dirs, files in os.walk("."):
     for file in files:
         if file.endswith(".py"):
-            rel_path = os.path.join(root, file)
+            rel_path: str = os.path.join(root, file)
             print("Python file:", rel_path)</pre></div>
 
         <h3 id="6-3-classic-program-count-lines-words-and-characters-in-a-file">6.3. Classic Program: Count Lines, Words, and Characters in a File</h3>
@@ -471,21 +495,21 @@ for root, dirs, files in os.walk("."):
 
         <div class="code"><pre>import os
 
-def analyze_file_content(filepath: str):
+def analyze_file_content(filepath: str) -> None:
     """Counts total lines, words, and characters in a file."""
     if not os.path.isfile(filepath):
         print(f"Error: File '{filepath}' does not exist.")
         return
 
-    line_count = 0
-    word_count = 0
-    char_count = 0
+    line_count: int = 0
+    word_count: int = 0
+    char_count: int = 0
 
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             line_count += 1
             char_count += len(line)
-            words = line.split()
+            words: list[str] = line.split()
             word_count += len(words)
 
     print(f"--- File Statistics: {os.path.basename(filepath)} ---")
@@ -514,7 +538,7 @@ analyze_file_content("log.txt")</pre></div>
         <div class="code"><pre>import subprocess
 
 # Run a CLI command safely without shell=True:
-result = subprocess.run(
+result: subprocess.CompletedProcess[str] = subprocess.run(
     ["echo", "Hello from Python subprocess!"],
     capture_output=True,
     text=True,
@@ -685,7 +709,7 @@ with open("warmup.txt", "r", encoding="utf-8") as f:
                 <div class="code"><pre>import os
 
 if os.path.exists("warmup.txt"):
-    size = os.path.getsize("warmup.txt")
+    size: int = os.path.getsize("warmup.txt")
     print(f"warmup.txt exists! Size: {size} bytes")</pre></div>
               </div>
             </details>
@@ -702,7 +726,7 @@ if os.path.exists("warmup.txt"):
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>def count_error_logs(filepath: str) -> int:
-    count = 0
+    count: int = 0
     with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
         for line in f:
             if "[ERROR]" in line:
@@ -726,10 +750,11 @@ print("Error count:", count_error_logs("test_server.log"))  # 2</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import csv
 
-def filter_completed_orders(src_csv, dst_csv):
+def filter_completed_orders(src_csv: str, dst_csv: str) -> None:
     with open(src_csv, "r", encoding="utf-8") as src, open(dst_csv, "w", newline="", encoding="utf-8") as dst:
-        reader = csv.DictReader(src)
-        writer = csv.DictWriter(dst, fieldnames=reader.fieldnames)
+        reader: csv.DictReader = csv.DictReader(src)
+        fieldnames: list[str] = list(reader.fieldnames or [])
+        writer: csv.DictWriter = csv.DictWriter(dst, fieldnames=fieldnames)
         writer.writeheader()
         for row in reader:
             if row["status"].lower() == "completed":
@@ -747,13 +772,13 @@ def filter_completed_orders(src_csv, dst_csv):
                 <div class="code"><pre>import os
 import zipfile
 
-def archive_text_files(target_dir, output_zip):
+def archive_text_files(target_dir: str, output_zip: str) -> None:
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zip_out:
         for root, _, files in os.walk(target_dir):
             for file in files:
                 if file.endswith(".txt"):
-                    abs_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(abs_path, target_dir)
+                    abs_path: str = os.path.join(root, file)
+                    rel_path: str = os.path.relpath(abs_path, target_dir)
                     zip_out.write(abs_path, arcname=rel_path)
     print(f"Archive created: {output_zip}")</pre></div>
               </div>
@@ -769,9 +794,11 @@ def archive_text_files(target_dir, output_zip):
                 <div class="code"><pre>import subprocess
 import shutil
 
-# Check executable existence and returncode (Exception handling is taught in Module 24):
+# Check executable existence and returncode (Exception handling is taught in Module 22):
 if shutil.which("git"):
-    res = subprocess.run(["git", "--version"], capture_output=True, text=True)
+    res: subprocess.CompletedProcess[str] = subprocess.run(
+        ["git", "--version"], capture_output=True, text=True
+    )
     if res.returncode == 0:
         print("Detected Git Version:", res.stdout.strip())
     else:
@@ -796,13 +823,13 @@ else:
               <div class="qa-answer-body">
                 <div class="code"><pre>import time
 
-def tail_file(filepath: str, max_iterations=5):
+def tail_file(filepath: str, max_iterations: int = 5) -> None:
     with open(filepath, "r", encoding="utf-8") as f:
         # Move cursor to the end of the file:
         f.seek(0, 2)
-        iterations = 0
+        iterations: int = 0
         while iterations < max_iterations:
-            line = f.readline()
+            line: str = f.readline()
             if line:
                 print("New appended line:", line.strip())
             else:
@@ -820,7 +847,7 @@ def tail_file(filepath: str, max_iterations=5):
               <div class="qa-answer-body">
                 <div class="code"><pre>import hashlib
 
-def calculate_sha256(filepath: str, chunk_size=65536) -> str:
+def calculate_sha256(filepath: str, chunk_size: int = 65536) -> str:
     sha = hashlib.sha256()
     with open(filepath, "rb") as f:
         while chunk := f.read(chunk_size):

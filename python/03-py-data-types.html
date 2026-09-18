@@ -97,7 +97,7 @@
           <li>For an in-depth breakdown of individual scalar types (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>, <code class="inline">bool</code>, <code class="inline">None</code>), see <a href="./04-py-basic-data-type.html"><strong>04. Basic Data Types</strong></a>.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">type(x)</code> / <code class="inline">isinstance</code> when debugging; treat <code class="inline">int</code>/<code class="inline">str</code>/<code class="inline">tuple</code> as immutable — “change” means create a new object.</div>
+        <div class="callout"><strong>Default rule today:</strong> use <code class="inline">type(x)</code> / <code class="inline">isinstance</code> when debugging; treat <code class="inline">int</code>/<code class="inline">str</code>/<code class="inline">tuple</code> as immutable — “change” means create a new object. Pair declarations with <strong>explicit type annotations</strong> (<code class="inline">var: type = val</code>) to declare intended contracts.</div>
         <ul>
           <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">03-practice.py</code> before File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
         </ul>
@@ -217,9 +217,10 @@
           <strong>Detailed Discussion on Basic Types:</strong>
           For in-depth explanations, number systems (binary, octal, hex), base conversion functions (<code class="inline">bin()</code>, <code class="inline">oct()</code>, <code class="inline">hex()</code>), IEEE 754 float quirks, complex numbers, truthy/falsy rules, and <code class="inline">None</code>, please refer to <a href="./04-py-basic-data-type.html"><strong>04. Basic Data Types</strong></a>.
         </div>
-        <div class="code"><pre>x = 10
-type(x)              # &lt;class 'int'&gt;
-isinstance(x, int)   # True</pre></div>
+        <div class="code"><pre># Declaring with explicit type annotations vs inspecting runtime type:
+x: int = 10
+print(type(x))            # &lt;class 'int'&gt;
+print(isinstance(x, int))  # True</pre></div>
       </section>
 
       <section id="3-immutability">
@@ -240,8 +241,8 @@ isinstance(x, int)   # True</pre></div>
           <li>You can format the ID with <code class="inline">hex(id(x))</code> to see standard hexadecimal memory pointer addresses (e.g., <code class="inline">0x104b2c890</code>).</li>
         </ul>
 
-        <div class="code"><pre>name = "Bharat"
-num = 42
+        <div class="code"><pre>name: str = "Bharat"
+num: int = 42
 
 print("Decimal ID:    ", id(name))        # e.g., 4376483504
 print("Hex Memory Addr:", hex(id(name)))  # e.g., 0x104dd2eb0
@@ -616,18 +617,18 @@ print("Decoded text: ", decoded)         # Python 🐍</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Create one value of each fundamental data type:
-val_int = 42
-val_float = 3.14159
-val_complex = 2 + 5j
-val_bool = True
-val_none = None
+                <div class="code"><pre># Create one value of each fundamental data type with explicit type hints:
+val_int: int = 42
+val_float: float = 3.14159
+val_complex: complex = 2 + 5j
+val_bool: bool = True
+val_none: None = None
 
-print(&quot;val_int:&quot;, type(val_int), val_int)
-print(&quot;val_float:&quot;, type(val_float), val_float)
-print(&quot;val_complex:&quot;, type(val_complex), val_complex)
-print(&quot;val_bool:&quot;, type(val_bool), val_bool)
-print(&quot;val_none:&quot;, type(val_none), val_none)</pre></div>
+print("val_int:", type(val_int), val_int)
+print("val_float:", type(val_float), val_float)
+print("val_complex:", type(val_complex), val_complex)
+print("val_bool:", type(val_bool), val_bool)
+print("val_none:", type(val_none), val_none)</pre></div>
               </div>
             </details>
           </li>
@@ -672,16 +673,16 @@ print(&quot;list from range:&quot;, lst)  # [0, 1, 2, 3, 4]</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Int is immutable: rebinding creates a new object with a new id
-x = 100
-print(&quot;Initial x id:&quot;, id(x))
+x: int = 100
+print("Initial x id:", id(x))
 x = x + 1
-print(&quot;After reassignment x id:&quot;, id(x))  # Different id!
+print("After reassignment x id:", id(x))  # Different id!
 
 # List is mutable: mutating in-place preserves the id
-nums = [1, 2, 3]
-print(&quot;Initial nums id:&quot;, id(nums))
+nums: list[int] = [1, 2, 3]
+print("Initial nums id:", id(nums))
 nums.append(4)
-print(&quot;After append nums id:&quot;, id(nums))  # Exactly the same id!</pre></div>
+print("After append nums id:", id(nums))  # Exactly the same id!</pre></div>
               </div>
             </details>
           </li>

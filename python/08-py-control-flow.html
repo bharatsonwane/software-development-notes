@@ -163,7 +163,7 @@
 
         <h3 id="1-2-the-indentation-philosophy-in-python">1.2. The Indentation Philosophy in Python</h3>
         <div class="callout">
-          <strong>Syntactic Rule:</strong> Unlike languages that use curly braces (<code class="inline">{ }</code>) or keywords (<code class="inline">begin...end</code>), Python defines code blocks strictly using <strong>whitespace indentation</strong> (4 spaces per PEP 8). A colon (<code class="inline">:</code>) at the end of a line signals the header of an indented block.
+          <strong>Syntactic &amp; Typing Rules:</strong> Unlike languages that use curly braces (<code class="inline">{ }</code>), Python defines code blocks strictly using <strong>whitespace indentation</strong> (4 spaces per PEP 8). Always type-annotate accumulator variables, status flags, and state trackers (<code class="inline">total: int = 0</code>, <code class="inline">is_prime: bool = True</code>, <code class="inline">grade: str = "A"</code>) so branching logic and iterative counters maintain explicit types throughout execution.
         </div>
       </section>
 
@@ -179,13 +179,13 @@
 
         <h3 id="2-1-simple-if-statement">2.1. Simple if Statement</h3>
         <p>Executes a block of code only when the specified condition evaluates to truthy.</p>
-        <div class="code"><pre>age = 19
+        <div class="code"><pre>age: int = 19
 if age &gt;= 18:
     print("Eligible to vote")</pre></div>
 
         <h3 id="2-2-if-else-statement">2.2. if-else Statement</h3>
         <p>Provides two mutually exclusive execution paths: one when the condition is truthy, and one when it is falsy.</p>
-        <div class="code"><pre>n = 15
+        <div class="code"><pre>n: int = 15
 if n % 2 == 0:
     print(f"{n} is Even")
 else:
@@ -193,7 +193,8 @@ else:
 
         <h3 id="2-3-if-elif-else-ladder">2.3. if-elif-else Ladder</h3>
         <p>Handles multiple mutually exclusive conditions. Python tests conditions sequentially from top to bottom and executes <em>only the first</em> branch whose condition is truthy.</p>
-        <div class="code"><pre>score = 82
+        <div class="code"><pre>score: int = 82
+grade: str
 
 if score &gt;= 90:
     grade = "A+"
@@ -212,7 +213,7 @@ print(f"Score: {score} -&gt; Grade: {grade}")  # Grade: A</pre></div>
 
         <h3 id="2-4-nested-conditional-statements">2.4. Nested Conditional Statements</h3>
         <p>An <code class="inline">if</code> statement placed inside another <code class="inline">if</code> statement allows hierarchical decision making.</p>
-        <div class="code"><pre>num = 12
+        <div class="code"><pre>num: int = 12
 if num &gt; 0:
     if num % 2 == 0:
         print("Positive Even number")
@@ -229,7 +230,7 @@ else:
           <li>Python 3.10 introduced <strong>Structural Pattern Matching</strong> via <code class="inline">match</code> and <code class="inline">case</code>, supporting value matching, wildcard defaults (<code class="inline">case _</code>), and sequence destructuring.</li>
         </ul>
         <div class="code"><pre># Demonstrating Structural Pattern Matching on a command variable:
-cmd = "load data.csv"
+cmd: str = "load data.csv"
 
 match cmd.split():
     case ["quit"]:
@@ -243,14 +244,8 @@ match cmd.split():
 
         <h3 id="2-6-common-conditional-pitfalls">2.6. Common Conditional Pitfalls</h3>
         <ul>
-          <li><strong>The Multi-Value Comparison Trap:</strong>
-            <br /><code class="inline">if x == 1 or 2 or 3:</code> does NOT check if <code class="inline">x</code> is 1, 2, or 3. Because <code class="inline">2</code> is truthy, the condition is always <code class="inline">True</code>.
-            <br /><em>Correct:</em> <code class="inline">if x in (1, 2, 3):</code>.
-          </li>
-          <li><strong>Redundant Boolean Equality Checks:</strong>
-            <br />Writing <code class="inline">if is_valid == True:</code> is unpythonic and prone to bugs with custom types.
-            <br /><em>Correct:</em> <code class="inline">if is_valid:</code>.
-          </li>
+          <li><strong>Assignment vs. Comparison:</strong> Using <code class="inline">=</code> instead of <code class="inline">==</code> inside <code class="inline">if</code> raises a <code class="inline">SyntaxError</code> (unlike C/C++ which permits accidental assignment).</li>
+          <li><strong>Truthiness Over-Reliance:</strong> <code class="inline">if x:</code> behaves differently for <code class="inline">0</code>, <code class="inline">""</code>, and <code class="inline">None</code>. Check <code class="inline">if x is not None:</code> when zero is a legitimate value.</li>
         </ul>
       </section>
 
@@ -273,12 +268,12 @@ for char in "PYTHON":
 print()
 
 # 2. Iterating over a list:
-names = ["Alice", "Bob", "Charlie"]
+names: list[str] = ["Alice", "Bob", "Charlie"]
 for name in names:
     print(f"Hello, {name}")
 
 # 3. Iterating over a dictionary (keys, values, items):
-person = {"name": "Bharat", "role": "Engineer"}
+person: dict[str, str] = {"name": "Bharat", "role": "Engineer"}
 for key, val in person.items():
     print(f"{key} -&gt; {val}")</pre></div>
 
@@ -317,7 +312,7 @@ for key, val in person.items():
         </table>
 
         <div class="code"><pre># Sum of first 100 positive integers:
-total = sum(range(1, 101))
+total: int = sum(range(1, 101))
 print("Sum 1..100:", total)  # 5050
 
 # Countdown loop:
@@ -329,8 +324,8 @@ print("Blastoff!")</pre></div>
         <p>A <code class="inline">while</code> loop executes its body repeatedly as long as its condition evaluates to truthy. It is primarily used when the total number of iterations is <strong>not known in advance</strong> (indefinite iteration).</p>
 
         <div class="code"><pre># Sum digits of a number:
-num = 12345
-digit_sum = 0
+num: int = 12345
+digit_sum: int = 0
 while num &gt; 0:
     digit_sum += num % 10
     num //= 10
@@ -380,8 +375,8 @@ for row in range(1, 4):
         </ul>
 
         <div class="code"><pre># Linear search with early exit:
-target = 42
-numbers = [10, 25, 33, 42, 59, 80]
+target: int = 42
+numbers: list[int] = [10, 25, 33, 42, 59, 80]
 
 for idx, val in enumerate(numbers):
     if val == target:
@@ -396,7 +391,7 @@ for idx, val in enumerate(numbers):
         </ul>
 
         <div class="code"><pre># Print only odd numbers, skip negatives:
-data = [-4, 7, 12, 15, -2, 9, 20]
+data: list[int] = [-4, 7, 12, 15, -2, 9, 20]
 for x in data:
     if x &lt;= 0 or x % 2 == 0:
         continue  # Skip negatives and evens
@@ -409,7 +404,7 @@ for x in data:
         </ul>
 
         <div class="code"><pre># 'pass' satisfies Python's mandatory block indentation syntax without doing anything:
-status = "maintenance"
+status: str = "maintenance"
 if status == "maintenance":
     pass  # Placeholder: business logic to be added in future release
 
@@ -427,22 +422,22 @@ for item in [10, 20, 30]:
 # The else block executes ONLY if the loop completes without hitting 'break'!
 
 # Test 1: n = 17 (Prime number)
-n = 17
-for d in range(2, int(n ** 0.5) + 1):
-    if n % d == 0:
-        print(f"{n} is divisible by {d} -> Not Prime")
+n1: int = 17
+for d in range(2, int(n1 ** 0.5) + 1):
+    if n1 % d == 0:
+        print(f"{n1} is divisible by {d} -&gt; Not Prime")
         break
 else:
-    print(f"{n} is a PRIME number!")  # Executes because no break occurred!
+    print(f"{n1} is a PRIME number!")  # Executes because no break occurred!
 
 # Test 2: n = 15 (Composite number)
-n = 15
-for d in range(2, int(n ** 0.5) + 1):
-    if n % d == 0:
-        print(f"{n} is divisible by {d} -> Not Prime")
+n2: int = 15
+for d in range(2, int(n2 ** 0.5) + 1):
+    if n2 % d == 0:
+        print(f"{n2} is divisible by {d} -&gt; Not Prime")
         break  # Bypasses the else block!
 else:
-    print(f"{n} is a PRIME number!")</pre></div>
+    print(f"{n2} is a PRIME number!")</pre></div>
       </section>
 
       <section id="5-pattern-programs">
@@ -456,80 +451,38 @@ else:
         <h3 id="5-pattern-programs-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <h3 id="5-1-the-matrix-methodology-for-pattern-generation">5.1. The Matrix Methodology for Pattern Generation</h3>
-        <p>Pattern programs develop nested loop mastery and spatial indexing. Every grid pattern is decomposed into:</p>
-        <ul>
-          <li><strong>Outer Loop (<code class="inline">i</code>):</strong> Controls row count from top to bottom (<code class="inline">1</code> to <code class="inline">n</code>).</li>
-          <li><strong>Inner Loop (<code class="inline">j</code>):</strong> Controls column count, determining what gets printed in row <code class="inline">i</code>.</li>
-        </ul>
+        <p>Pattern printing transforms 2D visual layouts into nested loop indices: outer loop controls rows ($i$), inner loop controls columns ($j$).</p>
 
         <div class="code"><pre># 1. Solid Square Pattern (n x n):
-n = 4
+n: int = 4
 for i in range(n):
-    print("* " * n)
-# Output:
-# * * * * 
-# * * * * 
-# * * * * 
-# * * * * 
+    for j in range(n):
+        print("*", end=" ")
+    print()
 
-# 2. Right-Angled Star Triangle:
-n = 5
+# 2. Right-Angled Triangle Pattern (Incremental):
 for i in range(1, n + 1):
     print("* " * i)
-# Output:
-# * 
-# * * 
-# * * * 
-# * * * * 
-# * * * * * 
 
 # 3. Inverted Right-Angled Triangle:
 for i in range(n, 0, -1):
-    print("* " * i)
-# Output:
-# * * * * * 
-# * * * * 
-# * * * 
-# * * 
-# * </pre></div>
+    print("* " * i)</pre></div>
 
         <h3 id="5-pattern-programs-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="5-2-numerical-and-centered-pyramid-patterns">5.2. Numerical and Centered Pyramid Patterns</h3>
         <div class="code"><pre># 4. Number Incremental Triangle:
-n = 4
+n: int = 4
 for i in range(1, n + 1):
     for j in range(1, i + 1):
         print(j, end=" ")
     print()
-# Output:
-# 1 
-# 1 2 
-# 1 2 3 
-# 1 2 3 4 
 
-# 5. Full Equilateral Pyramid:
-n = 4
+# 5. Centered Pyramid Pattern:
 for i in range(1, n + 1):
-    spaces = " " * (n - i)
-    stars = "* " * i
-    print(spaces + stars)
-# Output:
-#    * 
-#   * * 
-#  * * * 
-# * * * * 
-
-# 6. Alphabet / Character Triangle:
-for i in range(1, 5):
-    for j in range(i):
-        print(chr(65 + j), end=" ")  # 65 is 'A'
-    print()
-# Output:
-# A 
-# A B 
-# A B C 
-# A B C D </pre></div>
+    spaces: str = " " * (n - i)
+    stars: str = "* " * i
+    print(spaces + stars)</pre></div>
       </section>
 
       <section id="6-numerical-algorithms">
@@ -546,8 +499,8 @@ for i in range(1, 5):
         <p>A prime number is a positive integer greater than 1 with no positive divisors other than 1 and itself. In optimized loop execution, divisors need only be checked up to $\lfloor\sqrt{n}\rfloor$.</p>
 
         <div class="code"><pre># Prime Number Verification using while / for and break:
-num = 29
-is_prime = True
+num: int = 29
+is_prime: bool = True
 
 if num &lt; 2:
     is_prime = False
@@ -563,13 +516,13 @@ print(f"{num} is prime:", is_prime)  # True</pre></div>
         <p>An Armstrong number of $k$ digits is an integer such that the sum of each digit raised to the power of $k$ equals the number itself (e.g. $153 = 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153$).</p>
 
         <div class="code"><pre># Armstrong Number Verification using a while loop:
-num = 153
-temp = num
-num_digits = len(str(num))
-armstrong_sum = 0
+num: int = 153
+temp: int = num
+num_digits: int = len(str(num))
+armstrong_sum: int = 0
 
 while temp &gt; 0:
-    digit = temp % 10
+    digit: int = temp % 10
     armstrong_sum += digit ** num_digits
     temp //= 10
 
@@ -584,8 +537,8 @@ else:
         <p>Generates the sequence where each number is the sum of the two preceding numbers: $0, 1, 1, 2, 3, 5, 8, 13, \dots$</p>
 
         <div class="code"><pre># Fibonacci Series Generation using a while loop:
-terms = 10
-fib = [0, 1]
+terms: int = 10
+fib: list[int] = [0, 1]
 
 while len(fib) &lt; terms:
     fib.append(fib[-1] + fib[-2])
@@ -597,12 +550,12 @@ print(f"First {terms} Fibonacci numbers:", fib)
         <p>A palindrome number reads identically forward and backward (e.g. 12321). We can verify it arithmetically without string conversion:</p>
 
         <div class="code"><pre># Palindrome Number Check without string conversion (arithmetic digit reversal):
-num = 12321
-original = num
-reversed_num = 0
+num: int = 12321
+original: int = num
+reversed_num: int = 0
 
 while num &gt; 0:
-    last_digit = num % 10
+    last_digit: int = num % 10
     reversed_num = (reversed_num * 10) + last_digit
     num //= 10
 
@@ -613,15 +566,15 @@ else:
 
         <h3 id="6-5-factorial-calculation-iterative">6.5. Factorial Calculation (Iterative)</h3>
         <div class="code"><pre># Iterative Factorial Calculation using a for loop:
-n = 5
-factorial_result = 1
+n: int = 5
+factorial_result: int = 1
 for i in range(2, n + 1):
     factorial_result *= i
 
 print(f"{n}! =", factorial_result)   # 120
 
 # Note: In Module 14 (Functions), we will learn how to encapsulate these
-# exact algorithmic loops into reusable functions (def is_prime(n): ...).</pre></div>
+# exact algorithmic loops into reusable functions (def is_prime(n: int) -&gt; bool: ...).</pre></div>
       </section>
 
       <section id="7-number-to-word-mini-project">
@@ -641,34 +594,35 @@ print(f"{n}! =", factorial_result)   # 120
         <h3 id="7-number-to-word-mini-project-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="7-2-complete-python-implementation">7.2. Complete Python Implementation</h3>
-        <div class="code"><pre>test_cases = [0, 7, 19, 42, 105, 512, 1000, 4520, 24050, 99999]
+        <div class="code"><pre>test_cases: list[int] = [0, 7, 19, 42, 105, 512, 1000, 4520, 24050, 99999]
 
-units = [
+units: list[str] = [
     "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
     "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
     "Seventeen", "Eighteen", "Nineteen"
 ]
-tens = [
+tens: list[str] = [
     "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
 ]
 
 for num in test_cases:
-    original = num
+    original: int = num
+    words_repr: str = ""
     if num == 0:
         words_repr = "Zero"
     else:
-        parts = []
+        parts: list[str] = []
 
         # 1. Process Thousands (1 to 99)
-        thousands = num // 1000
-        if thousands > 0:
-            t_words = []
-            if thousands >= 100:
+        thousands: int = num // 1000
+        if thousands &gt; 0:
+            t_words: list[str] = []
+            if thousands &gt;= 100:
                 t_words.append(units[thousands // 100] + " Hundred")
                 thousands %= 100
-            if 1 <= thousands <= 19:
+            if 1 &lt;= thousands &lt;= 19:
                 t_words.append(units[thousands])
-            elif thousands >= 20:
+            elif thousands &gt;= 20:
                 t_words.append(tens[thousands // 10])
                 if thousands % 10 != 0:
                     t_words.append(units[thousands % 10])
@@ -676,14 +630,14 @@ for num in test_cases:
             num %= 1000
 
         # 2. Process Remaining Hundreds and below (1 to 999)
-        if num > 0:
-            h_words = []
-            if num >= 100:
+        if num &gt; 0:
+            h_words: list[str] = []
+            if num &gt;= 100:
                 h_words.append(units[num // 100] + " Hundred")
                 num %= 100
-            if 1 <= num <= 19:
+            if 1 &lt;= num &lt;= 19:
                 h_words.append(units[num])
-            elif num >= 20:
+            elif num &gt;= 20:
                 h_words.append(tens[num // 10])
                 if num % 10 != 0:
                     h_words.append(units[num % 10])
@@ -691,7 +645,7 @@ for num in test_cases:
 
         words_repr = " ".join(parts)
 
-    print(f"{original:>6d} -> {words_repr}")</pre></div>
+    print(f"{original:&gt;6d} -&gt; {words_repr}")</pre></div>
       </section>
 
       <section id="c-common-questions">
@@ -817,12 +771,12 @@ for num in test_cases:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>inputs = [14, 7, 22, 9, -1]
+                <div class="code"><pre>inputs: list[int] = [14, 7, 22, 9, -1]
 for val in inputs:
     if val == -1:
         print("Sentinel -1 encountered. Stopping.")
         break
-    status = "Even" if val % 2 == 0 else "Odd"
+    status: str = "Even" if val % 2 == 0 else "Odd"
     print(f"Number {val} is {status}")</pre></div>
               </div>
             </details>
@@ -854,7 +808,7 @@ for r in range(1, 6):
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>primes = []
+                <div class="code"><pre>primes: list[int] = []
 for n in range(2, 51):
     for d in range(2, int(n ** 0.5) + 1):
         if n % d == 0:
@@ -873,8 +827,8 @@ print("Primes between 2 and 50:", primes)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>n = 5  # Total rows
-mid = n // 2
+                <div class="code"><pre>n: int = 5  # Total rows
+mid: int = n // 2
 
 # Upper pyramid:
 for i in range(mid + 1):

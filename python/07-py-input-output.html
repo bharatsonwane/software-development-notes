@@ -128,6 +128,7 @@
           <strong>Default Best Practices:</strong>
           <ol style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
             <li><strong>Always remember:</strong> <code class="inline">input()</code> and <code class="inline">sys.argv</code> <em>always</em> produce strings (<code class="inline">str</code>). Always cast explicitly when numbers are expected.</li>
+            <li><strong>Explicit Type Annotations:</strong> Type-annotate input variables (<code class="inline">raw_name: str = input(...)</code>, <code class="inline">age: int = int(raw_age)</code>, <code class="inline">cli_args: list[str] = sys.argv[1:]</code>) to clearly delineate untrusted external string input from typed internal state.</li>
             <li><strong>Prefer f-strings:</strong> Use formatted string literals (<code class="inline">f"..."</code>) for all string interpolation. They are cleaner, faster, and less error-prone than <code class="inline">%</code> or <code class="inline">.format()</code>.</li>
             <li><strong>Security First:</strong> Never pass untrusted user input directly into <code class="inline">eval()</code> due to arbitrary code execution risks.</li>
           </ol>
@@ -158,15 +159,15 @@
           <br /><code class="inline">input("Num 1: ") + input("Num 2: ")</code> with entries <code class="inline">10</code> and <code class="inline">20</code> yields <code class="inline">"1020"</code>, not <code class="inline">30</code>!
         </div>
 
-        <div class="code"><pre># Basic input usage:
-name = input("Enter your name: ")
+        <div class="code"><pre># Basic input usage with type annotations:
+name: str = input("Enter your name: ")
 print("Hello,", name)
 print("Type of name:", type(name))  # Always &lt;class 'str'&gt;
 
 # The string addition pitfall:
-num1 = input("Enter first number: ")   # User types 10 -&gt; "10"
-num2 = input("Enter second number: ")  # User types 20 -&gt; "20"
-print("num1 + num2 =", num1 + num2)   # "1020" (String concatenation!)</pre></div>
+num1_str: str = input("Enter first number: ")   # User types 10 -&gt; "10"
+num2_str: str = input("Enter second number: ")  # User types 20 -&gt; "20"
+print("num1_str + num2_str =", num1_str + num2_str)   # "1020" (String concatenation!)</pre></div>
 
         <h3 id="2-2-typecasting-user-input">2.2. Typecasting User Input</h3>
         <p>To perform mathematical operations or type-sensitive comparisons, you must explicitly cast the string returned by <code class="inline">input()</code> using type constructor functions:</p>
@@ -208,13 +209,13 @@ print("num1 + num2 =", num1 + num2)   # "1020" (String concatenation!)</pre></di
         </div>
 
         <div class="code"><pre># Correct numeric casting:
-age = int(input("Enter your age: "))
-height = float(input("Enter height in meters: "))
+age: int = int(input("Enter your age: "))
+height: float = float(input("Enter height in meters: "))
 print(f"Next year you will be {age + 1} years old.")
 
 # Safe boolean parsing pattern:
-raw_flag = input("Enable notifications? (yes/no): ").strip().lower()
-is_enabled = raw_flag in ("yes", "y", "true", "1")
+raw_flag: str = input("Enable notifications? (yes/no): ").strip().lower()
+is_enabled: bool = raw_flag in ("yes", "y", "true", "1")
 print("Notifications active:", is_enabled)</pre></div>
 
         <h3 id="2-input-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -255,15 +256,19 @@ print("Notifications active:", is_enabled)</pre></div>
         </table>
 
         <div class="code"><pre># 1. Unpacking two strings:
+first_name: str
+last_name: str
 first_name, last_name = input("Enter first and last name: ").split()
 print(f"Initials: {first_name[0]}.{last_name[0]}.")
 
 # 2. Reading multiple integers into separate variables:
+a: int
+b: int
 a, b = map(int, input("Enter two integers separated by space: ").split())
 print(f"{a} + {b} = {a + b}")
 
 # 3. Reading arbitrary number of integers into a list:
-numbers = list(map(int, input("Enter space-separated integers: ").split()))
+numbers: list[int] = list(map(int, input("Enter space-separated integers: ").split()))
 print("Count:", len(numbers), "| Sum:", sum(numbers), "| Max:", max(numbers))
 
 # Note: In Module 10 (Lists), we will also learn List Comprehensions:
@@ -384,14 +389,14 @@ for i, arg in enumerate(sys.argv):
         <div class="code"><pre>import sys
 
 # Safe command-line argument processing pattern:
-if len(sys.argv) < 3:
+if len(sys.argv) &lt; 3:
     print(f"Usage: python3 {sys.argv[0]} &lt;num1&gt; &lt;num2&gt;")
     sys.exit(1)
 
-num1 = float(sys.argv[1])
-num2 = float(sys.argv[2])
+num1: float = float(sys.argv[1])
+num2: float = float(sys.argv[2])
 print(f"Result: {num1} + {num2} = {num1 + num2}")
-# Note: In Module 24 (Exception Handling), we will learn how to catch
+# Note: In Module 22 (Exception Handling), we will learn how to catch
 # ValueError if the user enters non-numeric text!</pre></div>
 
         <h3 id="3-4-calculating-the-sum-of-arbitrary-command-line-arguments">3.4. Calculating the Sum of Arbitrary Command-Line Arguments</h3>
@@ -400,12 +405,12 @@ print(f"Result: {num1} + {num2} = {num1 + num2}")
         <div class="code"><pre>import sys
 
 # Slice off the script name and convert all remaining arguments:
-raw_args = sys.argv[1:]
+raw_args: list[str] = sys.argv[1:]
 
 if not raw_args:
     print("No numbers provided! Pass numbers like: python3 sum_args.py 10 20 30")
 else:
-    numbers = [float(arg) for arg in raw_args]
+    numbers: list[float] = [float(arg) for arg in raw_args]
     print(f"Processed {len(numbers)} numbers.")
     print(f"Sum: {sum(numbers):.2f} | Average: {sum(numbers)/len(numbers):.2f}")</pre></div>
       </section>
@@ -666,7 +671,7 @@ print(f"{'Ultra Monitor':&lt;15} | {2:^6} | ${349.50:&gt;9.2f}")
 print(f"Use {{name}} for variable injection.")  # Use {name} for variable injection.
 
 # Python 3.8+ Debug feature:
-num = 42
+num: int = 42
 print(f"{num=}, {num*2=}")  # num=42, num*2=84</pre></div>
 
         <h3 id="4-4-comparison-formatting-vs-str-format-vs-f-strings">4.4. Comparison: %-Formatting vs. str.format() vs. f-Strings</h3>
@@ -703,8 +708,8 @@ print(f"{num=}, {num*2=}")  # num=42, num*2=84</pre></div>
           </tbody>
         </table>
 
-        <div class="code"><pre>item = "Widget"
-cost = 19.5
+        <div class="code"><pre>item: str = "Widget"
+cost: float = 19.5
 
 # 1. Legacy %-formatting:
 print("Item: %s, Cost: $%.2f" % (item, cost))
@@ -826,11 +831,11 @@ print(f"Item: {item}, Cost: ${cost:.2f}")</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>name = input("Enter your name: ")
-birth_year = int(input("Enter your birth year: "))
-current_year = 2026
+                <div class="code"><pre>name: str = input("Enter your name: ")
+birth_year: int = int(input("Enter your birth year: "))
+current_year: int = 2026
 
-age = current_year - birth_year
+age: int = current_year - birth_year
 print(f"Hello, {name}! You are {age} years old.")</pre></div>
               </div>
             </details>
@@ -843,8 +848,11 @@ print(f"Hello, {name}! You are {age} years old.")</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Reading 3 integers using map():
+n1: int
+n2: int
+n3: int
 n1, n2, n3 = map(int, input("Enter 3 numbers separated by spaces: ").split())
-total = n1 + n2 + n3
+total: int = n1 + n2 + n3
 print(f"{n1} + {n2} + {n3} = {total}")</pre></div>
               </div>
             </details>
@@ -881,7 +889,7 @@ if len(sys.argv) &lt; 2:
     sys.exit(1)
 
 # Read arguments using map():
-numbers = list(map(float, sys.argv[1:]))
+numbers: list[float] = list(map(float, sys.argv[1:]))
 print(f"Arguments passed: {numbers}")
 print(f"Total sum:        {sum(numbers):.2f}")
 print(f"Average:          {sum(numbers)/len(numbers):.2f}")</pre></div>
@@ -898,10 +906,10 @@ print(f"Average:          {sum(numbers)/len(numbers):.2f}")</pre></div>
                 <div class="code"><pre># Formatting receipt rows using f-strings alignment specifiers:
 # Specifiers: &lt; (left), ^ (center), &gt; (right), , (comma), .2f (2 decimals)
 
-item_name = "Pro Mechanical Keyboard"
-quantity = 2
-unit_price = 149.99
-line_total = quantity * unit_price
+item_name: str = "Pro Mechanical Keyboard"
+quantity: int = 2
+unit_price: float = 149.99
+line_total: float = quantity * unit_price
 
 print("=" * 60)
 print(f"{'INVOICE RECEIPT':^60}")
@@ -924,13 +932,14 @@ print("=" * 60)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import ast
 
-user_data = '{"name": "Bharat", "scores": [95, 88, 92], "active": True}'
+user_data: str = '{"name": "Bharat", "scores": [95, 88, 92], "active": True}'
 
 # ast.literal_eval parses Python literals safely without running arbitrary shell code:
-parsed_obj = ast.literal_eval(user_data)
+parsed_obj: dict[str, object] = ast.literal_eval(user_data)
 print("Successfully parsed object:", type(parsed_obj))
 print("User name:    ", parsed_obj["name"])
-print("Score average:", sum(parsed_obj["scores"]) / len(parsed_obj["scores"]))</pre></div>
+scores_list: list[int] = parsed_obj["scores"]  # type: ignore
+print("Score average:", sum(scores_list) / len(scores_list))</pre></div>
               </div>
             </details>
           </li>

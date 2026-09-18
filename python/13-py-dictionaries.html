@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
             <a href="#1-2-cpython-internals-the-compact-hash-table">1.2. CPython Internals: The Compact Hash Table</a>
+            <a href="#1-3-dictionary-type-annotations-pep-585">1.3. Dictionary Type Annotations (PEP 585)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -155,6 +156,18 @@
             <li>This saves 20% to 25% RAM and provides guaranteed <strong>insertion-ordered iteration</strong> for free.</li>
           </ul>
         </div>
+
+        <h3 id="1-3-dictionary-type-annotations-pep-585">1.3. Dictionary Type Annotations (PEP 585)</h3>
+        <div class="callout">
+          <strong>Type Hints Best Practice (PEP 585 &amp; Python 3.9+):</strong>
+          Use the built-in generic <code class="inline">dict[KeyType, ValueType]</code> syntax directly without importing from <code class="inline">typing</code>:
+          <ul>
+            <li><strong>Uniform Primitive Maps:</strong> <code class="inline">user_counts: dict[str, int] = {}</code></li>
+            <li><strong>Heterogeneous / JSON-like Values:</strong> Use <code class="inline">dict[str, Any]</code> (from <code class="inline">typing import Any</code>) or <code class="inline">dict[str, object]</code>.</li>
+            <li><strong>Compound Hashable Keys:</strong> Tuples as grid coordinates: <code class="inline">grid: dict[tuple[int, int], str] = {(0, 0): "origin"}</code>.</li>
+            <li><strong>Optional / Union Values (Python 3.10+):</strong> <code class="inline">cache: dict[str, str | None] = {}</code> or <code class="inline">scores: dict[str, int | float] = {}</code>.</li>
+          </ul>
+        </div>
       </section>
 
       <!-- SECTION 2: DICT PROPERTIES, CREATION, ACCESS -->
@@ -190,12 +203,14 @@
         </table>
 
         <h3 id="2-2-creation-patterns">2.2. Creation Patterns</h3>
-        <div class="code"><pre># 1. Empty dictionary:
-d1 = {}
-d2 = dict()
+        <div class="code"><pre>from typing import Any
+
+# 1. Empty dictionary:
+d1: dict[str, int] = {}
+d2: dict[str, str] = dict()
 
 # 2. Literal syntax:
-user = {
+user: dict[str, Any] = {
     "id": 101,
     "name": "Bharat Sonwane",
     "role": "Lead Engineer",
@@ -203,15 +218,15 @@ user = {
 }
 
 # 3. dict() constructor with keyword arguments:
-config = dict(host="localhost", port=8080, debug=True)
+config: dict[str, Any] = dict(host="localhost", port=8080, debug=True)
 
 # 4. dict() constructor from sequence of (key, value) pairs:
-pairs = [("a", 1), ("b", 2), ("c", 3)]
-d_from_pairs = dict(pairs)
+pairs: list[tuple[str, int]] = [("a", 1), ("b", 2), ("c", 3)]
+d_from_pairs: dict[str, int] = dict(pairs)
 
 # 5. dict.fromkeys(keys, default_val):
-keys = ["cpu", "memory", "disk"]
-metrics = dict.fromkeys(keys, 0)
+keys: list[str] = ["cpu", "memory", "disk"]
+metrics: dict[str, int] = dict.fromkeys(keys, 0)
 print("Metrics:", metrics)  # {'cpu': 0, 'memory': 0, 'disk': 0}</pre></div>
 
         <h3 id="2-dict-properties-creation-access-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -225,15 +240,18 @@ print("Metrics:", metrics)  # {'cpu': 0, 'memory': 0, 'disk': 0}</pre></div>
           </ul>
         </div>
 
-        <div class="code"><pre>profile = {"username": "sonwanebr", "tier": "gold"}
+        <div class="code"><pre>profile: dict[str, str] = {"username": "sonwanebr", "tier": "gold"}
 
 # Unsafe access:
-print(profile["username"])  # 'sonwanebr'
+username: str = profile["username"]
+print(username)  # 'sonwanebr'
 # print(profile["email"])   # Raises KeyError: 'email'
 
 # Safe access with get():
-print(profile.get("email"))                 # None (No error)
-print(profile.get("email", "not_provided")) # 'not_provided'
+email: str | None = profile.get("email")
+print(email)                                            # None (No error)
+fallback_email: str = profile.get("email", "not_provided")
+print(fallback_email)                                  # 'not_provided'
 
 # Membership testing: O(1) constant time on keys
 if "tier" in profile:
@@ -252,7 +270,7 @@ if "tier" in profile:
         <h3 id="3-update-delete-and-important-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <h3 id="3-1-mutating-and-adding-key-value-pairs">3.1. Mutating &amp; Adding Key-Value Pairs</h3>
-        <div class="code"><pre>inventory = {"apples": 50, "bananas": 100}
+        <div class="code"><pre>inventory: dict[str, int] = {"apples": 50, "bananas": 100}
 
 # 1. Direct assignment (Updates existing key or inserts new key):
 inventory["apples"] = 75     # Updates 'apples'
@@ -267,8 +285,8 @@ print("After update:", inventory)</pre></div>
         <p><code class="inline">d.setdefault(key, default)</code> checks if <code class="inline">key</code> exists. If present, it returns its current value. If missing, it inserts <code class="inline">key</code> with value <code class="inline">default</code> and returns that default:</p>
 
         <div class="code"><pre># Grouping words by their first letter using setdefault:
-words = ["apple", "apricot", "banana", "blueberry", "cherry"]
-grouped = {}
+words: list[str] = ["apple", "apricot", "banana", "blueberry", "cherry"]
+grouped: dict[str, list[str]] = {}
 
 for w in words:
     grouped.setdefault(w[0], []).append(w)
@@ -307,28 +325,30 @@ print("Grouped words:", grouped)
           </tbody>
         </table>
 
-        <div class="code"><pre>cache = {"req_1": "OK", "req_2": "FAIL", "req_3": "TIMEOUT"}
+        <div class="code"><pre>cache: dict[str, str] = {"req_1": "OK", "req_2": "FAIL", "req_3": "TIMEOUT"}
 
 # pop():
-val = cache.pop("req_2")
+val: str = cache.pop("req_2")
 print(f"Popped: {val}, Remaining: {cache}")
 
 # pop() with default prevents KeyError:
-missing = cache.pop("req_99", "NOT_FOUND")
+missing: str = cache.pop("req_99", "NOT_FOUND")
 print("Missing key pop:", missing)  # 'NOT_FOUND'
 
 # popitem() removes last item (LIFO):
-last_pair = cache.popitem()
+last_pair: tuple[str, str] = cache.popitem()
 print("Popped item:", last_pair)   # ('req_3', 'TIMEOUT')</pre></div>
 
         <h3 id="3-4-dictionary-view-objects-keys-values-items">3.4. Dictionary View Objects: <code class="inline">keys()</code>, <code class="inline">values()</code>, <code class="inline">items()</code></h3>
         <p>These methods return <strong>dynamic view objects</strong> that reflect changes in the underlying dictionary in real time:</p>
 
-        <div class="code"><pre>prices = {"pen": 10, "notebook": 50, "marker": 25}
+        <div class="code"><pre>from collections.abc import ItemsView, KeysView, ValuesView
 
-k_view = prices.keys()
-v_view = prices.values()
-i_view = prices.items()
+prices: dict[str, int] = {"pen": 10, "notebook": 50, "marker": 25}
+
+k_view: KeysView[str] = prices.keys()
+v_view: ValuesView[int] = prices.values()
+i_view: ItemsView[str, int] = prices.items()
 
 print("Keys:  ", list(k_view))
 print("Values:", list(v_view))
@@ -358,32 +378,32 @@ for item, price in prices.items():
         <div class="code"><pre># Syntax: { key_expr: value_expr for item in iterable if condition }
 
 # Numbers mapped to their squares:
-squares = {x: x**2 for x in range(1, 6)}
+squares: dict[int, int] = {x: x**2 for x in range(1, 6)}
 print("Squares:", squares)  # {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}
 
 # Filter dictionary: keep items above threshold:
-salaries = {"Alice": 85000, "Bob": 52000, "Charlie": 95000, "Diana": 48000}
-high_earners = {k: v for k, v in salaries.items() if v >= 80000}
+salaries: dict[str, int] = {"Alice": 85000, "Bob": 52000, "Charlie": 95000, "Diana": 48000}
+high_earners: dict[str, int] = {k: v for k, v in salaries.items() if v >= 80000}
 print("High earners:", high_earners)  # {'Alice': 85000, 'Charlie': 95000}</pre></div>
 
         <h3 id="4-dict-programs-and-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="4-2-inverting-a-dictionary-key-value-swap">4.2. Inverting a Dictionary (Key-Value Swap)</h3>
         <div class="code"><pre># Inverting key-value pairs:
-code_to_country = {"US": "United States", "IN": "India", "DE": "Germany"}
-country_to_code = {country: code for code, country in code_to_country.items()}
+code_to_country: dict[str, str] = {"US": "United States", "IN": "India", "DE": "Germany"}
+country_to_code: dict[str, str] = {country: code for code, country in code_to_country.items()}
 print("Inverted:", country_to_code)
 # {'United States': 'US', 'India': 'IN', 'Germany': 'DE'}</pre></div>
 
         <h3 id="4-3-character-and-word-frequency-counters">4.3. Character &amp; Word Frequency Counters</h3>
         <div class="code"><pre># Character frequency map:
-msg = "mississippi"
-freq = {ch: msg.count(ch) for ch in set(msg)}
+msg: str = "mississippi"
+freq: dict[str, int] = {ch: msg.count(ch) for ch in set(msg)}
 print("Char Frequency:", freq)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}
 
 # Word frequency using dict.get():
-quote = "code clean code fast debug code"
-word_counts = {}
+quote: str = "code clean code fast debug code"
+word_counts: dict[str, int] = {}
 for w in quote.split():
     word_counts[w] = word_counts.get(w, 0) + 1
 print("Word Counts:", word_counts)  # {'code': 3, 'clean': 1, 'fast': 1, 'debug': 1}</pre></div>
@@ -403,11 +423,13 @@ print("Word Counts:", word_counts)  # {'code': 3, 'clean': 1, 'fast': 1, 'debug'
         <h3 id="5-1-dictionary-merging-in-python-3-9-pep-584">5.1. Dictionary Merging in Python 3.9+ (PEP 584)</h3>
         <p>Python 3.9 introduced the union operator (<code class="inline">|</code>) and in-place update operator (<code class="inline">|=</code>) for dictionaries. The right-hand operand takes precedence on duplicate keys:</p>
 
-        <div class="code"><pre>default_cfg = {"host": "localhost", "port": 8080, "timeout": 30}
-user_cfg = {"port": 9000, "debug": True}
+        <div class="code"><pre>from typing import Any
+
+default_cfg: dict[str, Any] = {"host": "localhost", "port": 8080, "timeout": 30}
+user_cfg: dict[str, Any] = {"port": 9000, "debug": True}
 
 # 1. Merge operator (|) returns a brand new dictionary:
-merged = default_cfg | user_cfg
+merged: dict[str, Any] = default_cfg | user_cfg
 print("Merged (user overrides default):", merged)
 # {'host': 'localhost', 'port': 9000, 'timeout': 30, 'debug': True}
 
@@ -416,13 +438,15 @@ default_cfg |= user_cfg
 print("In-place updated default_cfg:", default_cfg)
 
 # 3. Older pre-3.9 unpacking method:
-unpacked = {**default_cfg, **user_cfg}</pre></div>
+unpacked: dict[str, Any] = {**default_cfg, **user_cfg}</pre></div>
 
         <h3 id="5-merging-and-nested-collections-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="5-2-deep-merging-and-nested-dictionaries">5.2. Deep Merging &amp; Nested Dictionaries</h3>
-        <div class="code"><pre># Nested JSON-like record:
-company = {
+        <div class="code"><pre>from typing import Any
+
+# Nested JSON-like record:
+company: dict[str, Any] = {
     "org": "TechCorp",
     "departments": {
         "engineering": {"head": "Rahul", "members": 45},
@@ -431,14 +455,15 @@ company = {
 }
 
 # Safe nested navigation:
-eng_head = company.get("departments", {}).get("engineering", {}).get("head")
+eng_dept: dict[str, Any] = company.get("departments", {}).get("engineering", {})
+eng_head: str | None = eng_dept.get("head")
 print("Engineering Head:", eng_head)  # Rahul
 
 # Merging dictionary configurations with Python 3.9+ '|' merge operator:
-base_config = {"ui": {"theme": "light", "fontSize": 14}, "api": "v1"}
-user_overrides = {"ui": {"theme": "dark", "fontSize": 14}, "debug": True}
+base_config: dict[str, Any] = {"ui": {"theme": "light", "fontSize": 14}, "api": "v1"}
+user_overrides: dict[str, Any] = {"ui": {"theme": "dark", "fontSize": 14}, "debug": True}
 
-merged_config = base_config | user_overrides
+merged_config: dict[str, Any] = base_config | user_overrides
 print("Merged Configuration:", merged_config)
 # {'ui': {'theme': 'dark', 'fontSize': 14}, 'api': 'v1', 'debug': True}</pre></div>
       </section>
@@ -457,8 +482,10 @@ print("Merged Configuration:", merged_config)
         <h3 id="6-1-supermarket-inventory-and-invoice-generation-system">6.1. Supermarket Inventory &amp; Invoice Generation System</h3>
         <p>A complete, modular Python application using nested dictionaries for catalog lookup, stock tracking, and invoice generation:</p>
 
-        <div class="code"><pre># Supermarket catalog: Item -> {price, stock, unit}
-catalog = {
+        <div class="code"><pre>from typing import Any
+
+# Supermarket catalog: Item -> {name, price, stock}
+catalog: dict[str, dict[str, Any]] = {
     "101": {"name": "Milk (1L)",     "price": 60.0,  "stock": 25},
     "102": {"name": "Brown Bread",   "price": 45.0,  "stock": 15},
     "103": {"name": "Eggs (Dozen)",  "price": 84.0,  "stock": 40},
@@ -467,20 +494,20 @@ catalog = {
 }
 
 # Customer shopping cart: {item_id: quantity_purchased}
-cart = {"101": 2, "103": 1, "105": 2}
+cart: dict[str, int] = {"101": 2, "103": 1, "105": 2}
 
 # Supermarket Invoice Calculation:
-subtotal = 0.0
-tax_rate = 0.05
-line_items = []
+subtotal: float = 0.0
+tax_rate: float = 0.05
+line_items: list[dict[str, Any]] = []
 
 for item_id, qty in cart.items():
     if item_id in catalog:
-        product = catalog[item_id]
+        product: dict[str, Any] = catalog[item_id]
         if qty <= product["stock"]:
             # Deduct inventory stock:
             product["stock"] -= qty
-            total_price = qty * product["price"]
+            total_price: float = qty * product["price"]
             subtotal += total_price
             line_items.append({
                 "name": product["name"],
@@ -489,10 +516,10 @@ for item_id, qty in cart.items():
                 "total": total_price
             })
 
-tax = subtotal * tax_rate
-grand_total = subtotal + tax
+tax: float = subtotal * tax_rate
+grand_total: float = subtotal + tax
 
-invoice = {
+invoice: dict[str, Any] = {
     "items": line_items,
     "subtotal": subtotal,
     "tax": tax,
@@ -655,9 +682,10 @@ print("=" * 48)</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>student = {"name": "Bharat", "score": 95}
+                <div class="code"><pre>student: dict[str, int | str] = {"name": "Bharat", "score": 95}
 print("Name:", student["name"])
-print("Grade:", student.get("grade", "Pending"))  # 'Pending' without KeyError</pre></div>
+grade: object = student.get("grade", "Pending")
+print("Grade:", grade)  # 'Pending' without KeyError</pre></div>
               </div>
             </details>
           </li>
@@ -668,8 +696,8 @@ print("Grade:", student.get("grade", "Pending"))  # 'Pending' without KeyError</
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>mapping = {"A": 1, "B": 2, "C": 3}
-inverted = {v: k for k, v in mapping.items()}
+                <div class="code"><pre>mapping: dict[str, int] = {"A": 1, "B": 2, "C": 3}
+inverted: dict[int, str] = {v: k for k, v in mapping.items()}
 print("Inverted:", inverted)  # {1: 'A', 2: 'B', 3: 'C'}</pre></div>
               </div>
             </details>
@@ -687,10 +715,10 @@ print("Inverted:", inverted)  # {1: 'A', 2: 'B', 3: 'C'}</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import string
 
-text = "Python is fast, Python is simple. Code clean, code fast!"
-clean_text = text.translate(str.maketrans("", "", string.punctuation)).lower()
+text: str = "Python is fast, Python is simple. Code clean, code fast!"
+clean_text: str = text.translate(str.maketrans("", "", string.punctuation)).lower()
 
-word_counts = {}
+word_counts: dict[str, int] = {}
 for word in clean_text.split():
     word_counts[word] = word_counts.get(word, 0) + 1
 
@@ -706,10 +734,12 @@ print("Word counts:", word_counts)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>base_config = {"host": "127.0.0.1", "port": 5000, "ssl": False, "workers": 4}
-env_config = {"port": 8000, "ssl": True}
+                <div class="code"><pre>from typing import Any
 
-effective_config = base_config | env_config
+base_config: dict[str, Any] = {"host": "127.0.0.1", "port": 5000, "ssl": False, "workers": 4}
+env_config: dict[str, Any] = {"port": 8000, "ssl": True}
+
+effective_config: dict[str, Any] = base_config | env_config
 print("Effective Config:", effective_config)
 # {'host': '127.0.0.1', 'port': 8000, 'ssl': True, 'workers': 4}</pre></div>
               </div>
@@ -722,13 +752,13 @@ print("Effective Config:", effective_config)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>sample = "abracadabra"
-freq = {}
+                <div class="code"><pre>sample: str = "abracadabra"
+freq: dict[str, int] = {}
 for ch in sample:
     freq[ch] = freq.get(ch, 0) + 1
 
 # Sort by count descending:
-sorted_freq = sorted(freq.items(), key=lambda item: item[1], reverse=True)
+sorted_freq: list[tuple[str, int]] = sorted(freq.items(), key=lambda item: item[1], reverse=True)
 print("Top 2 characters:", sorted_freq[:2])
 # [('a', 5), ('b', 2)]</pre></div>
               </div>
@@ -741,7 +771,7 @@ print("Top 2 characters:", sorted_freq[:2])
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>employees = [
+                <div class="code"><pre>employees: list[dict[str, str]] = [
     {"name": "Alice", "dept": "Engineering"},
     {"name": "Bob", "dept": "HR"},
     {"name": "Charlie", "dept": "Engineering"},
@@ -749,7 +779,7 @@ print("Top 2 characters:", sorted_freq[:2])
     {"name": "Evan", "dept": "HR"}
 ]
 
-dept_map = {}
+dept_map: dict[str, list[str]] = {}
 for emp in employees:
     dept_map.setdefault(emp["dept"], []).append(emp["name"])
 
@@ -771,7 +801,9 @@ print("Employees by Dept:", dept_map)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>nested = {
+                <div class="code"><pre>from typing import Any
+
+nested: dict[str, Any] = {
     "server": {
         "host": "localhost",
         "port": 8080,
@@ -781,13 +813,13 @@ print("Employees by Dept:", dept_map)
 }
 
 # Flattening nested dictionary into dot-notated keys using a stack loop:
-flattened = {}
-stack = [("", nested)]
+flattened: dict[str, Any] = {}
+stack: list[tuple[str, dict[str, Any]]] = [("", nested)]
 
 while stack:
     parent_key, current_dict = stack.pop()
     for k, v in current_dict.items():
-        new_key = f"{parent_key}.{k}" if parent_key else k
+        new_key: str = f"{parent_key}.{k}" if parent_key else k
         if isinstance(v, dict):
             stack.append((new_key, v))
         else:
@@ -809,14 +841,16 @@ print("Flattened Dict:", flattened)
 
 # Implementing TTL (Time-to-Live) expiration using a standard dictionary:
 # Key -> (value, expires_at_timestamp)
-cache = {}
+cache: dict[str, tuple[str, float]] = {}
 
 # Storing a key with 0.1s TTL:
 cache["session_123"] = ("user_active", time.time() + 0.1)
 
 # Immediate retrieval:
-key = "session_123"
+key: str = "session_123"
 if key in cache:
+    val: str
+    exp: float
     val, exp = cache[key]
     if time.time() &lt;= exp:
         print("Immediate get: ", val)  # 'user_active'

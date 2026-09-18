@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-module-typing-and-typeshed">1.2. Module Typing &amp; Typeshed (types.ModuleType)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -136,6 +137,15 @@
           <li>As programs grow in size, putting all code in a single file becomes unmaintainable. Modules allow dividing large applications into self-contained, logically cohesive units that can be reused across different projects.</li>
           <li>Modules provide <strong>namespace isolation</strong>: functions or variables defined in one module do not automatically clash with identical names in other modules.</li>
         </ul>
+
+        <h3 id="1-2-module-typing-and-typeshed">1.2. Module Typing &amp; Typeshed (<code class="inline">types.ModuleType</code>)</h3>
+        <div class="callout">
+          <strong>Typing Dynamic Modules:</strong>
+          <ul>
+            <li><strong>The Module Type:</strong> When accepting or returning dynamically imported module objects (via <code class="inline">importlib</code>), annotate them with <code class="inline">from types import ModuleType</code>.</li>
+            <li><strong>Public Export List:</strong> Explicitly annotate <code class="inline">__all__: list[str] = ["add", "multiply"]</code> for static type checkers (Mypy, Pyright) and runtime safety.</li>
+          </ul>
+        </div>
       </section>
 
       <!-- SECTION 2: INTRODUCTION TO MODULES -->
@@ -155,12 +165,12 @@
         <div class="code"><pre># calc.py
 """A simple arithmetic utility module."""
 
-PI = 3.14159
+PI: float = 3.14159
 
-def add(a, b):
+def add(a: int | float, b: int | float) -> int | float:
     return a + b
 
-def multiply(a, b):
+def multiply(a: int | float, b: int | float) -> int | float:
     return a * b</pre></div>
 
         <p>In another file located in the same directory, we can import and utilize it immediately:</p>
@@ -284,7 +294,7 @@ importlib.reload(math)</pre></div>
         <div class="code"><pre>import math
 
 # Inspect all symbols in math:
-symbols = dir(math)
+symbols: list[str] = dir(math)
 print("Total symbols in math:", len(symbols))
 print("First 10 symbols:", symbols[:10])</pre></div>
 
@@ -330,7 +340,7 @@ print("First 10 symbols:", symbols[:10])</pre></div>
         </div>
 
         <div class="code"><pre># service.py
-def start_server():
+def start_server() -> None:
     print("Server running on port 8080...")
 
 if __name__ == "__main__":
@@ -392,7 +402,7 @@ if __name__ == "__main__":
 
         <div class="code"><pre>import random
 
-deck = ["A♠", "K♠", "Q♠", "J♠", "10♠", "A♥", "K♥", "Q♥", "J♥", "10♥"]
+deck: list[str] = ["A♠", "K♠", "Q♠", "J♠", "10♠", "A♥", "K♥", "Q♥", "J♥", "10♥"]
 
 # Pick one card:
 print("Single pick: ", random.choice(deck))
@@ -401,13 +411,13 @@ print("Single pick: ", random.choice(deck))
 print("Sample draw: ", random.sample(deck, k=3))
 
 # Shuffle deck in-place:
-cards = list(deck)
+cards: list[str] = list(deck)
 random.shuffle(cards)
 print("Shuffled:    ", cards[:4])
 
 # OTP / Verification Code Generator:
-def generate_otp(length=6) -> str:
-    digits = [str(random.randint(0, 9)) for _ in range(length)]
+def generate_otp(length: int = 6) -> str:
+    digits: list[str] = [str(random.randint(0, 9)) for _ in range(length)]
     return "".join(digits)
 
 print("Generated 6-digit OTP:", generate_otp())</pre></div>
@@ -479,7 +489,7 @@ print("Log base 10 (1000):", math.log10(1000))       # 3.0
 print("Log base 2 (64):   ", math.log2(64))          # 6.0
 
 # Trigonometry (Expects radians; use math.radians()):
-angle_rad = math.radians(90)
+angle_rad: float = math.radians(90)
 print("sin(90 deg):       ", math.sin(angle_rad))    # 1.0</pre></div>
       </section>
 
@@ -639,7 +649,7 @@ print("sin(90 deg):       ", math.sin(angle_rad))    # 1.0</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import math
 
-c_funcs = [fn for fn in dir(math) if fn.startswith("c")]
+c_funcs: list[str] = [fn for fn in dir(math) if fn.startswith("c")]
 print("Math functions starting with 'c':", c_funcs)
 # ['cbrt', 'ceil', 'comb', 'copysign', 'cos', 'cosh']</pre></div>
               </div>
@@ -654,7 +664,7 @@ print("Math functions starting with 'c':", c_funcs)
               <div class="qa-answer-body">
                 <div class="code"><pre>import random
 
-pin = f"{random.randint(0, 9999):04d}"
+pin: str = f"{random.randint(0, 9999):04d}"
 print("Random 4-digit PIN:", pin)</pre></div>
               </div>
             </details>
@@ -673,10 +683,10 @@ print("Random 4-digit PIN:", pin)</pre></div>
                 <div class="code"><pre>import random
 import string
 
-def generate_password(length=12) -> str:
-    pool = string.ascii_letters + string.digits + "!@#$%^&*"
+def generate_password(length: int = 12) -> str:
+    pool: str = string.ascii_letters + string.digits + "!@#$%^&*"
     # Ensure at least 1 lower, 1 upper, 1 digit, 1 special
-    pwd = [
+    pwd: list[str] = [
         random.choice(string.ascii_lowercase),
         random.choice(string.ascii_uppercase),
         random.choice(string.digits),
@@ -699,16 +709,16 @@ print("Generated password:", generate_password(16))</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import math
 
-p1 = (0, 0)
-p2 = (3, 4)
+p1: tuple[int, int] = (0, 0)
+p2: tuple[int, int] = (3, 4)
 
 # Distance: math.dist() in Python 3.8+
-distance = math.dist(p1, p2)
+distance: float = math.dist(p1, p2)
 
 # Angle in degrees from X axis:
-dx = p2[0] - p1[0]
-dy = p2[1] - p1[1]
-angle_deg = math.degrees(math.atan2(dy, dx))
+dx: int = p2[0] - p1[0]
+dy: int = p2[1] - p1[1]
+angle_deg: float = math.degrees(math.atan2(dy, dx))
 
 print(f"Distance: {distance}, Angle: {angle_deg:.2f}°")
 # Distance: 5.0, Angle: 53.13°</pre></div>
@@ -724,8 +734,8 @@ print(f"Distance: {distance}, Angle: {angle_deg:.2f}°")
               <div class="qa-answer-body">
                 <div class="code"><pre>import random
 
-balls = list(range(1, 50))
-winning_draw = sorted(random.sample(balls, k=6))
+balls: list[int] = list(range(1, 50))
+winning_draw: list[int] = sorted(random.sample(balls, k=6))
 print("Winning Lottery Numbers:", winning_draw)</pre></div>
               </div>
             </details>
@@ -738,17 +748,18 @@ print("Winning Lottery Numbers:", winning_draw)</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import math
+from types import ModuleType
 
-def inspect_public_functions(mod):
-    funcs = {}
+def inspect_public_functions(mod: ModuleType) -> dict[str, str]:
+    funcs: dict[str, str] = {}
     for name in dir(mod):
         if not name.startswith("_"):
-            obj = getattr(mod, name)
+            obj: object = getattr(mod, name)
             if callable(obj):
                 funcs[name] = (obj.__doc__ or "").strip().split("\n")[0]
     return funcs
 
-math_docs = inspect_public_functions(math)
+math_docs: dict[str, str] = inspect_public_functions(math)
 for fn_name in sorted(list(math_docs.keys()))[:5]:
     print(f"{fn_name:<10}: {math_docs[fn_name]}")</pre></div>
               </div>
@@ -770,16 +781,16 @@ for fn_name in sorted(list(math_docs.keys()))[:5]:
                 <div class="code"><pre>import random
 import math
 
-def estimate_pi(num_samples=100_000) -> float:
-    inside_circle = 0
+def estimate_pi(num_samples: int = 100_000) -> float:
+    inside_circle: int = 0
     for _ in range(num_samples):
-        x = random.random()
-        y = random.random()
-        if x**2 + y**2 <= 1.0:
+        x: float = random.random()
+        y: float = random.random()
+        if x**2 + y**2 &lt;= 1.0:
             inside_circle += 1
     return (inside_circle / num_samples) * 4
 
-est = estimate_pi(100_000)
+est: float = estimate_pi(100_000)
 print(f"Estimated Pi: {est:.5f} | Actual math.pi: {math.pi:.5f} | Error: {abs(est - math.pi):.5f}")</pre></div>
               </div>
             </details>
@@ -793,14 +804,15 @@ print(f"Estimated Pi: {est:.5f} | Actual math.pi: {math.pi:.5f} | Error: {abs(es
               <div class="qa-answer-body">
                 <div class="code"><pre>import importlib
 import importlib.util
+from types import ModuleType
 
-plugin_registry = {}
+plugin_registry: dict[str, ModuleType] = {}
 
-def load_plugin(module_name: str):
-    # Verify module existence via find_spec (Exceptions covered in Module 24)
+def load_plugin(module_name: str) -> ModuleType | None:
+    # Verify module existence via find_spec (Exceptions covered in Module 22)
     spec = importlib.util.find_spec(module_name)
     if spec is not None:
-        mod = importlib.import_module(module_name)
+        mod: ModuleType = importlib.import_module(module_name)
         plugin_registry[module_name] = mod
         print(f"Successfully loaded plugin: {module_name}")
         return mod

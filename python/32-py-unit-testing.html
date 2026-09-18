@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-why-automated-testing">1.1. Why Automated Testing?</a>
+            <a href="#1-2-unit-testing-type-annotations">1.2. Unit Testing Type Annotations</a>
           </div>
         </div>
         <div class="nav-section">
@@ -133,6 +134,24 @@
           <li><strong>Acts as Living Documentation:</strong> Clear tests demonstrate exactly how classes and functions are intended to be invoked.</li>
           <li><strong>Enables CI/CD:</strong> Automated test suites run on every commit or pull request before code reaches production servers.</li>
         </ul>
+
+        <h3 id="1-2-unit-testing-type-annotations">1.2. Unit Testing Type Annotations</h3>
+        <p>In modern typed Python (with Mypy / Pyright in strict mode), all test functions and test methods should have an explicit return type hint of <code>None</code>, and fixtures should annotate their yielded types:</p>
+        <div class="code"><pre>import unittest
+from typing import Generator
+from unittest.mock import MagicMock
+
+class MathTestCase(unittest.TestCase):
+    def test_multiplication(self) -&gt; None:
+        result: int = 5 * 10
+        self.assertEqual(result, 50)
+
+def sample_fixture() -&gt; Generator[list[int], None, None]:
+    data: list[int] = [1, 2, 3]
+    yield data
+    data.clear()
+
+mock_service: MagicMock = MagicMock(return_value="mocked")</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -156,27 +175,27 @@
 
         <div class="code"><pre>import unittest
 
-def add(x, y):
+def add(x: int, y: int) -> int:
     return x + y
 
-def divide(x, y):
+def divide(x: float, y: float) -> float:
     if y == 0:
         raise ValueError("Cannot divide by zero!")
     return x / y
 
 class TestMathOperations(unittest.TestCase):
-    def test_add_positive_integers(self):
+    def test_add_positive_integers(self) -> None:
         self.assertEqual(add(10, 5), 15)
 
-    def test_add_negative_integers(self):
+    def test_add_negative_integers(self) -> None:
         self.assertEqual(add(-10, -5), -15)
 
-    def test_divide_valid(self):
-        self.assertAlmostEqual(divide(10, 3), 3.3333333, places=5)
+    def test_divide_valid(self) -> None:
+        self.assertAlmostEqual(divide(10.0, 3.0), 3.3333333, places=5)
 
-    def test_divide_by_zero_raises_value_error(self):
+    def test_divide_by_zero_raises_value_error(self) -> None:
         with self.assertRaises(ValueError):
-            divide(10, 0)
+            divide(10.0, 0.0)
 
 if __name__ == "__main__":
     unittest.main()</pre></div>
@@ -284,12 +303,12 @@ class TestWebAppLogin(unittest.TestCase):
         <p><strong><code>pytest</code></strong> is the modern industry standard framework for Python testing. In pytest, tests are simple standalone functions, assertions use standard Python <code>assert</code> statements, and failure outputs provide rich value introspection.</p>
 
         <div class="code"><pre># Clean pytest test function:
-def test_string_formatting():
-    name = "Bharat"
-    greeting = f"Hello, {name}!"
+def test_string_formatting() -> None:
+    name: str = "Bharat"
+    greeting: str = f"Hello, {name}!"
     # Plain Python assert: pytest rewrites the bytecode to show exact failed diffs!
     assert greeting == "Hello, Bharat!"
-    assert len(greeting) > 0</pre></div>
+    assert len(greeting) &gt; 0</pre></div>
 
         <h3 id="4-limitations-of-unittest-intro-to-pytest-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3 id="4-2-parametrized-tests-with-pytest-mark-parametrize">4.2. Parametrized Tests with <code>@pytest.mark.parametrize</code></h3>
@@ -297,8 +316,8 @@ def test_string_formatting():
 
         <div class="code"><pre>import pytest
 
-def is_palindrome(text):
-    clean = "".join(c.lower() for c in text if c.isalnum())
+def is_palindrome(text: str) -> bool:
+    clean: str = "".join(c.lower() for c in text if c.isalnum())
     return clean == clean[::-1]
 
 @pytest.mark.parametrize("test_input, expected", [
@@ -309,7 +328,7 @@ def is_palindrome(text):
     ("12321", True),
     ("12345", False)
 ])
-def test_palindrome_detection(test_input, expected):
+def test_palindrome_detection(test_input: str, expected: bool) -> None:
     assert is_palindrome(test_input) == expected</pre></div>
       </section>
 
@@ -334,29 +353,30 @@ def test_palindrome_detection(test_input, expected):
         </ul>
 
         <div class="code"><pre>import unittest
+from typing import Any
 
 class TestDatabaseWorker(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         print("\n[DB SETUP] Connecting to shared database...")
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:
         print("\n[DB TEARDOWN] Dropping shared database connection...")
 
-    def setUp(self):
+    def setUp(self) -> None:
         # Fresh isolated state before each test
-        self.session_data = {"user": "Alice", "cart": []}
+        self.session_data: dict[str, Any] = {"user": "Alice", "cart": []}
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         # Cleanup state after each test
         self.session_data.clear()
 
-    def test_add_item(self):
+    def test_add_item(self) -> None:
         self.session_data["cart"].append("Item-1")
         self.assertEqual(len(self.session_data["cart"]), 1)
 
-    def test_empty_cart(self):
+    def test_empty_cart(self) -> None:
         self.assertEqual(len(self.session_data["cart"]), 0)</pre></div>
 
         <h3 id="5-setup-teardown-class-level-fixtures-in-pytest-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -364,22 +384,24 @@ class TestDatabaseWorker(unittest.TestCase):
         <p><code>pytest</code> replaces rigid class lifecycles with <strong>fixtures</strong> via <code>@pytest.fixture</code>. Fixtures use dependency injection: test functions request fixtures simply by declaring them as parameters.</p>
         <p>Teardown logic is implemented using the <code>yield</code> keyword: code before <code>yield</code> runs as setup; code after <code>yield</code> runs as teardown!</p>
 
-        <div class="code"><pre>import pytest
+        <div class="code"><pre>from collections.abc import Generator
+import pytest
+from typing import Any
 
 @pytest.fixture(scope="function")
-def sample_user():
+def sample_user() -> Generator[dict[str, Any], None, None]:
     # Setup:
     print("\n[SETUP] Creating test user object...")
-    user = {"id": 101, "name": "Bharat", "role": "admin"}
+    user: dict[str, Any] = {"id": 101, "name": "Bharat", "role": "admin"}
     yield user  # Provide value to test function
     # Teardown:
     print("\n[TEARDOWN] Purging user session...")
 
-def test_user_role(sample_user):
+def test_user_role(sample_user: dict[str, Any]) -> None:
     assert sample_user["role"] == "admin"
 
-def test_user_id(sample_user):
-    assert sample_user["id"] > 0</pre></div>
+def test_user_id(sample_user: dict[str, Any]) -> None:
+    assert sample_user["id"] &gt; 0</pre></div>
       </section>
 
       <!-- SECTION 6 -->
@@ -399,14 +421,14 @@ def test_user_id(sample_user):
         <div class="code"><pre>from unittest.mock import patch, MagicMock
 
 # Function that depends on external network API:
-def get_current_weather(city):
+def get_current_weather(city: str) -> float:
     import urllib.request
     # In reality, this makes an HTTP call to api.weather.com
     raise ConnectionError("No internet in unit test environment!")
 
-def weather_advisory(city):
-    temp = get_current_weather(city)
-    if temp > 35:
+def weather_advisory(city: str) -> str:
+    temp: float = get_current_weather(city)
+    if temp &gt; 35:
         return "Heat advisory!"
     elif temp &lt; 5:
         return "Frost advisory!"
@@ -414,9 +436,9 @@ def weather_advisory(city):
 
 # Mocking get_current_weather to test advisory logic in isolation:
 @patch("__main__.get_current_weather")
-def test_weather_heat_advisory(mock_weather):
-    mock_weather.return_value = 40  # Simulate 40 degrees without internet!
-    advisory = weather_advisory("Delhi")
+def test_weather_heat_advisory(mock_weather: MagicMock) -> None:
+    mock_weather.return_value = 40.0  # Simulate 40 degrees without internet!
+    advisory: str = weather_advisory("Delhi")
     assert advisory == "Heat advisory!"
     mock_weather.assert_called_once_with("Delhi")</pre></div>
       </section>
@@ -480,7 +502,7 @@ def test_weather_heat_advisory(mock_weather):
     divide(10, 0)</pre></div>
             <p><strong>In <code>pytest</code>:</strong></p>
             <div class="code"><pre>with pytest.raises(ValueError) as exc_info:
-    divide(10, 0)
+    divide(10.0, 0.0)
 assert "Cannot divide by zero" in str(exc_info.value)</pre></div>
           </div>
         </details>
@@ -577,11 +599,11 @@ assert "Cannot divide by zero" in str(exc_info.value)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import unittest
 
-def reverse_str(s):
+def reverse_str(s: str) -> str:
     return s[::-1]
 
 class TestReverse(unittest.TestCase):
-    def test_reverse(self):
+    def test_reverse(self) -> None:
         self.assertEqual(reverse_str("python"), "nohtyp")
 
 if __name__ == "__main__":
@@ -616,17 +638,18 @@ parametrization matrices, exception assertions, and external API mocking.
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 1: Testing exceptions
-def withdraw(balance, amount):
-    if amount > balance:
+import unittest
+
+def withdraw(balance: float, amount: float) -> float:
+    if amount &gt; balance:
         raise ValueError("Insufficient balance")
     return balance - amount
 
 # unittest approach:
-import unittest
 class TestWithdrawal(unittest.TestCase):
-    def test_overdraft(self):
+    def test_overdraft(self) -> None:
         with self.assertRaises(ValueError):
-            withdraw(100, 200)</pre></div>
+            withdraw(100.0, 200.0)</pre></div>
               </div>
             </details>
           </li>
@@ -638,15 +661,16 @@ class TestWithdrawal(unittest.TestCase):
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 2: Pytest fixture with yield teardown
+from collections.abc import Generator
 import pytest
 
 @pytest.fixture
-def managed_resource():
-    resource = ["init"]
+def managed_resource() -> Generator[list[str], None, None]:
+    resource: list[str] = ["init"]
     yield resource
     resource.clear()
 
-def test_resource_manipulation(managed_resource):
+def test_resource_manipulation(managed_resource: list[str]) -> None:
     managed_resource.append("updated")
     assert len(managed_resource) == 2</pre></div>
               </div>
@@ -660,18 +684,18 @@ def test_resource_manipulation(managed_resource):
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 3: Mocking with patch
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
-def charge_credit_card(card_num, amount):
+def charge_credit_card(card_num: str, amount: float) -> bool:
     raise ConnectionError("No real gateway call in test!")
 
-def checkout(card_num, amount):
-    success = charge_credit_card(card_num, amount)
+def checkout(card_num: str, amount: float) -> str:
+    success: bool = charge_credit_card(card_num, amount)
     return "APPROVED" if success else "DECLINED"
 
 @patch("__main__.charge_credit_card", return_value=True)
-def test_successful_checkout(mock_charge):
-    status = checkout("4111222233334444", 99.0)
+def test_successful_checkout(mock_charge: MagicMock) -> None:
+    status: str = checkout("4111222233334444", 99.0)
     assert status == "APPROVED"
     mock_charge.assert_called_once()</pre></div>
               </div>
@@ -690,11 +714,14 @@ def test_successful_checkout(mock_charge):
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Shopping Cart Unit Test Suite
-class ShoppingCart:
-    def __init__(self):
-        self.items = {}
+import pytest
+from typing import Any
 
-    def add_item(self, item_name, price, quantity=1):
+class ShoppingCart:
+    def __init__(self) -> None:
+        self.items: dict[str, dict[str, Any]] = {}
+
+    def add_item(self, item_name: str, price: float, quantity: int = 1) -> None:
         if price &lt; 0 or quantity &lt; 1:
             raise ValueError("Invalid price or quantity")
         if item_name in self.items:
@@ -702,28 +729,26 @@ class ShoppingCart:
         else:
             self.items[item_name] = {"price": price, "quantity": quantity}
 
-    def total(self, discount_pct=0):
-        subtotal = sum(i["price"] * i["quantity"] for i in self.items.values())
-        return subtotal * (1 - discount_pct / 100)
+    def total(self, discount_pct: float = 0.0) -> float:
+        subtotal: float = sum(float(i["price"]) * int(i["quantity"]) for i in self.items.values())
+        return subtotal * (1.0 - discount_pct / 100.0)
 
 # Pytest test suite:
-import pytest
-
 @pytest.fixture
-def populated_cart():
-    cart = ShoppingCart()
+def populated_cart() -> ShoppingCart:
+    cart: ShoppingCart = ShoppingCart()
     cart.add_item("Book", 20.0, 2)   # 40.0
     cart.add_item("Pen", 5.0, 4)     # 20.0
     return cart
 
-def test_cart_total(populated_cart):
+def test_cart_total(populated_cart: ShoppingCart) -> None:
     assert populated_cart.total() == 60.0
 
-def test_cart_discount(populated_cart):
-    assert populated_cart.total(discount_pct=10) == 54.0
+def test_cart_discount(populated_cart: ShoppingCart) -> None:
+    assert populated_cart.total(discount_pct=10.0) == 54.0
 
-def test_invalid_item():
-    cart = ShoppingCart()
+def test_invalid_item() -> None:
+    cart: ShoppingCart = ShoppingCart()
     with pytest.raises(ValueError):
         cart.add_item("Bad", -10.0)</pre></div>
               </div>
@@ -740,7 +765,7 @@ def test_invalid_item():
 # 0.1 + 0.2 == 0.30000000000000004!
 import pytest
 
-def test_float_addition():
+def test_float_addition() -> None:
     # BAD: assert 0.1 + 0.2 == 0.3 (FAILS!)
     # GOOD: Use pytest.approx
     assert (0.1 + 0.2) == pytest.approx(0.3)</pre></div>

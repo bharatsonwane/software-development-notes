@@ -93,7 +93,7 @@
           <li>Python classifies operators into clear, dedicated categories: Arithmetic, Relational (Comparison), Logical, Bitwise, Assignment, Identity, Membership, Ternary, and Precedence hierarchies.</li>
         </ul>
         <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
-        <div class="callout"><strong>Default Best Practices:</strong> Use <code class="inline">==</code> for value equality and <code class="inline">is</code> strictly for singletons like <code class="inline">None</code>. Always prefer <code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code> for boolean logic over bitwise operators. When writing complex expressions, use parentheses to ensure clear intent regardless of operator precedence.</div>
+        <div class="callout"><strong>Default Best Practices:</strong> Type-annotate variables and computed results (<code class="inline">quotient: float = a / b</code>, <code class="inline">is_valid: bool = count &gt; 0</code>). Use <code class="inline">==</code> for value equality and <code class="inline">is</code> strictly for singletons like <code class="inline">None</code>. Always prefer <code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code> for boolean logic over bitwise operators. When writing complex expressions, use parentheses to ensure clear intent regardless of operator precedence.</div>
         <ul>
           <li>After reading sections 2–10, complete <a href="#p-practice">P. Practical Assignment</a> before moving to File 07. Review <a href="#c-common-questions">C. Common questions</a> for interview preparation.</li>
         </ul>
@@ -128,26 +128,26 @@
         <h3 id="2-arithmetic-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h4>Critical Arithmetic Nuances:</h4>
         <div class="code"><pre># 1. True division (/) always yields float:
-print(10 / 2)       # 5.0 (always float, never int)
-print(7 / 2)        # 3.5
+div1: float = 10 / 2       # 5.0 (always float, never int)
+div2: float = 7 / 2        # 3.5
 
 # 2. Floor division (//) rounds toward negative infinity (floor):
-print(5 // 2)       # 2   (2.5 floored to 2)
-print(-5 // 2)      # -3  (floor(-2.5) is -3, NOT -2!)
-print(10.0 // 3)    # 3.0 (returns float if any operand is float)
+floor1: int = 5 // 2       # 2   (2.5 floored to 2)
+floor2: int = -5 // 2      # -3  (floor(-2.5) is -3, NOT -2!)
+floor3: float = 10.0 // 3  # 3.0 (returns float if any operand is float)
 
 # 3. Modulo (%) remainder formula: r = x - (x // y) * y:
-print(5 % 2)        # 1   (5 - (2) * 2 = 1)
-print(-5 % 2)       # 1   (-5 - (-3) * 2 = -5 - (-6) = 1)
-print(5 % -2)       # -1  (5 - (-3) * (-2) = 5 - 6 = -1)
+mod1: int = 5 % 2          # 1   (5 - (2) * 2 = 1)
+mod2: int = -5 % 2         # 1   (-5 - (-3) * 2 = -5 - (-6) = 1)
+mod3: int = 5 % -2         # -1  (5 - (-3) * (-2) = 5 - 6 = -1)
 
 # 4. Exponentiation (**) is right-to-left associative:
-print(2 ** 3 ** 2)  # 512 (evaluates as 2 ** (3 ** 2) = 2 ** 9 = 512, NOT (2**3)**2 = 64)
+pwr: int = 2 ** 3 ** 2     # 512 (evaluates as 2 ** (3 ** 2) = 2 ** 9 = 512, NOT (2**3)**2 = 64)
 
 # 5. Sequence replication and concatenation:
-print("Py" * 3)     # "PyPyPy"
-print([1, 2] + [3]) # [1, 2, 3]
-print([0] * 4)      # [0, 0, 0, 0]</pre></div>
+seq_str: str = "Py" * 3    # "PyPyPy"
+seq_lst: list[int] = [1, 2] + [3]  # [1, 2, 3]
+rep_lst: list[int] = [0] * 4       # [0, 0, 0, 0]</pre></div>
       </section>
 
       <section id="3-relational">
@@ -213,30 +213,24 @@ print(10 == 10.0)         # True  (mathematical value equality)
         <ul>
           <li>Logical operators test the truth value of <em>any</em> Python object, not just booleans.</li>
           <li><strong>Falsy values:</strong> <code class="inline">False</code>, <code class="inline">None</code>, numeric zero (<code class="inline">0</code>, <code class="inline">0.0</code>, <code class="inline">0j</code>), empty sequences/collections (<code class="inline">""</code>, <code class="inline">()</code>, <code class="inline">[]</code>, <code class="inline">{}</code>, <code class="inline">set()</code>, <code class="inline">range(0)</code>).</li>
-          <li><strong>Truthy values:</strong> All other objects (non-zero numbers, non-empty collections, valid objects).</li>
-        </ul>
-
-        <h4>4.2. Return Value Rules (Operand Evaluation)</h4>
-        <div class="callout">
-          <strong>Key Rule to Remember:</strong> In Python, <code class="inline">and</code> and <code class="inline">or</code> do <strong>not</strong> necessarily return a boolean! They return the <em>actual operand</em> that determined the outcome of the expression. Only <code class="inline">not</code> is guaranteed to always return a pure <code class="inline">bool</code> (<code class="inline">True</code> or <code class="inline">False</code>).
-        </div>
+        <p>Logical operators perform boolean evaluation (<code class="inline">and</code>, <code class="inline">or</code>, <code class="inline">not</code>). Unlike other languages, Python's <code class="inline">and</code> and <code class="inline">or</code> operators do <strong>not</strong> necessarily return boolean <code class="inline">True</code> or <code class="inline">False</code>; they return the <em>actual operand value</em> that determined the outcome.</p>
 
         <table>
           <thead>
-            <tr><th>Operator</th><th>Syntax</th><th>Evaluation Rule</th><th>Return Value Rule</th></tr>
+            <tr><th>Operator</th><th>Expression</th><th>Rule</th><th>Return Value Rule</th></tr>
           </thead>
           <tbody>
             <tr>
               <td><strong><code class="inline">and</code></strong></td>
               <td><code class="inline">x and y</code></td>
-              <td>Evaluates <code class="inline">x</code>. If <code class="inline">x</code> is falsy, stops immediately. Otherwise, evaluates <code class="inline">y</code>.</td>
-              <td>Returns the <strong>first falsy operand</strong>, or the <strong>last operand</strong> if all are truthy.</td>
+              <td>Evaluates <code class="inline">x</code> first.</td>
+              <td>If <code class="inline">x</code> is <strong>falsy</strong>, stops and returns <code class="inline">x</code>. If <code class="inline">x</code> is <strong>truthy</strong>, evaluates and returns <code class="inline">y</code>.</td>
             </tr>
             <tr>
               <td><strong><code class="inline">or</code></strong></td>
               <td><code class="inline">x or y</code></td>
-              <td>Evaluates <code class="inline">x</code>. If <code class="inline">x</code> is truthy, stops immediately. Otherwise, evaluates <code class="inline">y</code>.</td>
-              <td>Returns the <strong>first truthy operand</strong>, or the <strong>last operand</strong> if all are falsy.</td>
+              <td>Evaluates <code class="inline">x</code> first.</td>
+              <td>If <code class="inline">x</code> is <strong>truthy</strong>, stops and returns <code class="inline">x</code>. If <code class="inline">x</code> is <strong>falsy</strong>, evaluates and returns <code class="inline">y</code>.</td>
             </tr>
             <tr>
               <td><strong><code class="inline">not</code></strong></td>
@@ -264,9 +258,9 @@ print(0 or "")              # "" (both falsy -&gt; returns last operand)
 print([] or {} or "found")  # "found" (returns first truthy)
 print([] or 0 or None)      # None (all falsy -&gt; returns last operand)
 
-# Idiomatic default fallback:
-user_input = ""
-display_name = user_input or "Guest"
+# Idiomatic default fallback with explicit typing:
+user_input: str = ""
+display_name: str = user_input or "Guest"
 print("Welcome,", display_name)  # "Welcome, Guest"
 
 # --- 3. 'not': always returns a pure boolean ---
@@ -289,32 +283,32 @@ print(not not "hello")      # True (double negation bool conversion: bool("hello
         <div class="code"><pre># Short-circuiting proof using division-by-zero:
 # If Python evaluated both sides, (100 / 0) would crash with ZeroDivisionError!
 
-denominator = 0
+denominator: int = 0
 
 # Test 1: 'and' short-circuits on False:
 # The left operand is False, so Python NEVER evaluates the right operand:
-result1 = (denominator != 0) and (100 / denominator > 10)
+result1: bool = (denominator != 0) and (100 / denominator &gt; 10)
 print("Result 1 (False and ...):", result1)  # Prints: False (Safe! No ZeroDivisionError)
 
 # Test 2: 'or' short-circuits on True:
 # The left operand is True, so Python NEVER evaluates the right operand:
-result2 = (denominator == 0) or (100 / denominator > 10)
+result2: bool = (denominator == 0) or (100 / denominator &gt; 10)
 print("Result 2 (True or ...):  ", result2)  # Prints: True (Safe! No ZeroDivisionError)
 
 # Practical defensive guards using short-circuiting:
 # 1. Null / None guard:
-user = None
-if user is not None and user.is_active:
-    print("User is active")  # Safe: user.is_active never executed if user is None
+user: str | None = None
+if user is not None and len(user) &gt; 0:
+    print("User is valid")  # Safe: len(user) never executed if user is None
 
 # 2. Zero-division guard:
-count = 0
-total = 150
+count: int = 0
+total: int = 150
 if count != 0 and (total / count) &gt; 50:
     print("Threshold reached")  # Safe: division never attempted if count == 0
 
 # 3. Collection bounds guard:
-data = []
+data: list[str] = []
 if len(data) &gt; 0 and data[0] == "admin":
     print("Welcome Admin")  # Safe: IndexError prevented</pre></div>
 
@@ -331,11 +325,11 @@ if len(data) &gt; 0 and data[0] == "admin":
           </tbody>
         </table>
 
-        <div class="code"><pre># DANGEROUS BUG: Using '&' for condition checking:
-x = 5
+        <div class="code"><pre># DANGEROUS BUG: Using '&amp;' for condition checking:
+x: int = 5
 # WRONG:
 # if x &gt; 0 &amp; x &lt; 10:  # Syntax error or unexpected result!
-# Because '&' binds tighter than '&gt;' and '&lt;', this parses as:
+# Because '&amp;' binds tighter than '&gt;' and '&lt;', this parses as:
 # x &gt; (0 &amp; x) &lt; 10  -&gt;  x &gt; 0 &lt; 10 (chained comparison, completely different!)
 
 # CORRECT:
@@ -377,16 +371,16 @@ if x in (1, 2, 3):
         <h3 id="5-bitwise-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h4>Bitmasks and Permission Flags:</h4>
         <div class="code"><pre># Bitmask flags representation:
-READ_PERM    = 0b001  # 1
-WRITE_PERM   = 0b010  # 2
-EXECUTE_PERM = 0b100  # 4
+READ_PERM: int = 0b001     # 1
+WRITE_PERM: int = 0b010    # 2
+EXECUTE_PERM: int = 0b100  # 4
 
 # Setting permissions using OR (|):
-user_perms = READ_PERM | WRITE_PERM  # 0b011 (3)
+user_perms: int = READ_PERM | WRITE_PERM  # 0b011 (3)
 
 # Checking permissions using AND (&amp;):
-can_read = bool(user_perms &amp; READ_PERM)        # True
-can_exec = bool(user_perms &amp; EXECUTE_PERM)     # False
+can_read: bool = bool(user_perms &amp; READ_PERM)        # True
+can_exec: bool = bool(user_perms &amp; EXECUTE_PERM)     # False
 
 # Clearing / toggling permission using XOR (^):
 user_perms = user_perms ^ WRITE_PERM  # Clears WRITE_PERM (0b001)</pre></div>
@@ -404,10 +398,13 @@ user_perms = user_perms ^ WRITE_PERM  # Clears WRITE_PERM (0b001)</pre></div>
         <p>Assignment operators bind values or objects to variable identifiers.</p>
 
         <h4>6.1. Simple &amp; Multiple Assignment</h4>
-        <div class="code"><pre># Simple assignment:
-x = 10
+        <div class="code"><pre># Simple assignment with type annotation:
+count: int = 10
 
 # Chained / multiple assignment (all point to the same object):
+a: int
+b: int
+c: int
 a = b = c = 100
 
 # Tuple unpacking assignment:
@@ -445,24 +442,24 @@ print(x, y)  # 20 10</pre></div>
         </div>
 
         <div class="code"><pre># Immutable objects (integers): re-binds variable to a new object:
-x = 10
+x: int = 10
 print(id(x))
 x += 1
 print(id(x))  # Different memory address!
 
 # Mutable objects (lists):
-list1 = [1, 2, 3]
-list2 = list1
-list1 += [4]         # Calls __iadd__; mutates list1 in-place!
-print(list1)         # [1, 2, 3, 4]
-print(list2)         # [1, 2, 3, 4] (list2 sees the change!)
-print(list1 is list2)# True
+list1: list[int] = [1, 2, 3]
+list2: list[int] = list1
+list1 += [4]          # Calls __iadd__; mutates list1 in-place!
+print(list1)          # [1, 2, 3, 4]
+print(list2)          # [1, 2, 3, 4] (list2 sees the change!)
+print(list1 is list2) # True
 
 # Contrast with lst = lst + [...]:
-list3 = [1, 2, 3]
-list4 = list3
-list3 = list3 + [4]  # Creates a NEW list object and rebinds list3
-print(list3 is list4)# False (list4 remains [1, 2, 3])</pre></div>
+list3: list[int] = [1, 2, 3]
+list4: list[int] = list3
+list3 = list3 + [4]   # Creates a NEW list object and rebinds list3
+print(list3 is list4) # False (list4 remains [1, 2, 3])</pre></div>
       </section>
 
       <section id="7-identity">
@@ -487,16 +484,16 @@ print(list3 is list4)# False (list4 remains [1, 2, 3])</pre></div>
         </table>
 
         <div class="code"><pre># Value equality (==) vs Object identity (is):
-a = [1, 2, 3]
-b = [1, 2, 3]
-c = a
+a: list[int] = [1, 2, 3]
+b: list[int] = [1, 2, 3]
+c: list[int] = a
 
 print(a == b)      # True  (contents/values are identical)
 print(a is b)      # False (separate objects in heap memory)
 print(a is c)      # True  (both refer to the exact same object)
 
 # Idiomatic check for None:
-result = None
+result: str | None = None
 if result is None:      # Correct singleton identity check
     print("No result found")</pre></div>
 
@@ -508,14 +505,14 @@ if result is None:      # Correct singleton identity check
           <li><strong>Golden Rule:</strong> Never use <code class="inline">is</code> to compare numeric or string values! Always use <code class="inline">==</code>. Reserve <code class="inline">is</code> for singletons like <code class="inline">None</code>, <code class="inline">True</code>, and <code class="inline">False</code>.</li>
         </ul>
 
-        <div class="code"><pre>x = 256
-y = 256
-print(x is y)  # True (small integer cached by CPython)
+        <div class="code"><pre>x1: int = 256
+y1: int = 256
+print(x1 is y1)  # True (small integer cached by CPython)
 
-x = 257
-y = 257
-print(x is y)  # False (in REPL; separate heap allocations!)
-print(x == y)  # True (values are equal! Always use ==)</pre></div>
+x2: int = 257
+y2: int = 257
+print(x2 is y2)  # False (in REPL; separate heap allocations!)
+print(x2 == y2)  # True (values are equal! Always use ==)</pre></div>
       </section>
 
       <section id="8-membership">
@@ -544,7 +541,7 @@ print("py" in "python")        # True
 print("z" not in "python")     # True
 
 # Lists and tuples:
-numbers = [10, 20, 30, 40]
+numbers: list[int] = [10, 20, 30, 40]
 print(20 in numbers)           # True
 print(50 not in numbers)       # True</pre></div>
 
@@ -555,7 +552,7 @@ print(50 not in numbers)       # True</pre></div>
           <li><strong>Lookup Performance:</strong> Checking membership in a <code class="inline">set</code> or <code class="inline">dict</code> runs in <strong>$O(1)$ average time</strong> (via hash table lookup), whereas checking a <code class="inline">list</code> or <code class="inline">tuple</code> requires <strong>$O(n)$ linear scan</strong>.</li>
         </ul>
 
-        <div class="code"><pre>user = {"id": 101, "name": "Bharat", "role": "admin"}
+        <div class="code"><pre>user: dict[str, object] = {"id": 101, "name": "Bharat", "role": "admin"}
 
 # Checks keys by default:
 print("name" in user)          # True
@@ -565,7 +562,7 @@ print("Bharat" in user)        # False (does NOT check values!)
 print("Bharat" in user.values())  # True
 
 # Performance tip:
-allowed_ids = {101, 102, 103}  # Use set for O(1) membership test
+allowed_ids: set[int] = {101, 102, 103}  # Use set for O(1) membership test
 if 101 in allowed_ids:
     print("Access granted")</pre></div>
       </section>
@@ -593,19 +590,20 @@ if 101 in allowed_ids:
         </ul>
 
         <div class="code"><pre># Basic conditional assignment:
-age = 20
-status = "Adult" if age &gt;= 18 else "Minor"
+age: int = 20
+status: str = "Adult" if age &gt;= 18 else "Minor"
 print("Status:", status)  # Status: Adult
 
 # Finding minimum and maximum of two numbers:
-a, b = 45, 80
-min_val = a if a &lt; b else b
-max_val = a if a &gt; b else b
+a: int = 45
+b: int = 80
+min_val: int = a if a &lt; b else b
+max_val: int = a if a &gt; b else b
 print(f"Min: {min_val}, Max: {max_val}")  # Min: 45, Max: 80
 
 # Dynamic user input:
-num = 17
-result = "Even" if num % 2 == 0 else "Odd"
+num: int = 17
+result: str = "Even" if num % 2 == 0 else "Odd"
 print(f"{num} is {result}")  # 17 is Odd</pre></div>
 
         <h4>Nesting of Ternary Operators (Multi-Condition Chaining):</h4>
@@ -1042,11 +1040,16 @@ if (n := len(text)) &gt; 10:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Arithmetic operators:
-print(&quot;7 // 2 (integer floor division):&quot;, 7 // 2)  # 3
-print(&quot;7 % 2  (modulo remainder):&quot;, 7 % 2)         # 1
-print(&quot;7 ** 2 (exponentiation):&quot;, 7 ** 2)          # 49
-print(&quot;7 / 2  (float true division):&quot;, 7 / 2)      # 3.5</pre></div>
+                <div class="code"><pre># Arithmetic operators with typed result variables:
+val_floor: int = 7 // 2
+val_mod: int = 7 % 2
+val_pow: int = 7 ** 2
+val_div: float = 7 / 2
+
+print(&quot;7 // 2 (integer floor division):&quot;, val_floor)  # 3
+print(&quot;7 % 2  (modulo remainder):&quot;, val_mod)         # 1
+print(&quot;7 ** 2 (exponentiation):&quot;, val_pow)          # 49
+print(&quot;7 / 2  (float true division):&quot;, val_div)      # 3.5</pre></div>
               </div>
             </details>
           </li>
@@ -1059,12 +1062,12 @@ print(&quot;7 / 2  (float true division):&quot;, 7 / 2)      # 3.5</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Short-circuit evaluation:
 # In &#x27;False and ...&#x27;, the right-hand expression is NEVER evaluated
-result = False and print(&quot;This will NEVER be printed!&quot;)
-print(&quot;Short-circuit and result:&quot;, result)  # False
+res_and: bool = False and (print(&quot;This will NEVER be printed!&quot;) is None)
+print(&quot;Short-circuit and result:&quot;, res_and)  # False
 
 # In &#x27;True or ...&#x27;, the right side is also skipped
-result2 = True or print(&quot;Also never evaluated&quot;)
-print(&quot;Short-circuit or result:&quot;, result2)   # True</pre></div>
+res_or: bool = True or (print(&quot;Also never evaluated&quot;) is None)
+print(&quot;Short-circuit or result:&quot;, res_or)   # True</pre></div>
               </div>
             </details>
           </li>
@@ -1076,10 +1079,18 @@ print(&quot;Short-circuit or result:&quot;, result2)   # True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Membership operators &#x27;in&#x27; and &#x27;not in&#x27;:
-print(&quot;&#x27;a&#x27; in &#x27;cat&#x27;:&quot;, &#x27;a&#x27; in &#x27;cat&#x27;)          # True
-print(&quot;&#x27;z&#x27; in &#x27;cat&#x27;:&quot;, &#x27;z&#x27; in &#x27;cat&#x27;)          # False
-print(&quot;3 in [1, 2, 3]:&quot;, 3 in [1, 2, 3])      # True
-print(&quot;10 not in [1, 2, 3]:&quot;, 10 not in [1, 2, 3]) # True</pre></div>
+word: str = &quot;cat&quot;
+items: list[int] = [1, 2, 3]
+
+is_a_in_cat: bool = &#x27;a&#x27; in word
+is_z_in_cat: bool = &#x27;z&#x27; in word
+is_3_in_items: bool = 3 in items
+is_10_missing: bool = 10 not in items
+
+print(&quot;&#x27;a&#x27; in &#x27;cat&#x27;:&quot;, is_a_in_cat)          # True
+print(&quot;&#x27;z&#x27; in &#x27;cat&#x27;:&quot;, is_z_in_cat)          # False
+print(&quot;3 in [1, 2, 3]:&quot;, is_3_in_items)      # True
+print(&quot;10 not in [1, 2, 3]:&quot;, is_10_missing) # True</pre></div>
               </div>
             </details>
           </li>
@@ -1094,22 +1105,23 @@ print(&quot;10 not in [1, 2, 3]:&quot;, 10 not in [1, 2, 3]) # True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Clamping n into range [lo, hi] using nested ternary comparisons:
-lo, hi = 5, 10
+lo: int = 5
+hi: int = 10
 
 # Test Case 1 (Below lower bound):
-n1 = 3
-clamped1 = lo if n1 < lo else (hi if n1 > hi else n1)
-print(f"clamp({n1}, {lo}, {hi}) -> {clamped1}")  # 5
+n1: int = 3
+clamped1: int = lo if n1 &lt; lo else (hi if n1 &gt; hi else n1)
+print(f&quot;clamp({n1}, {lo}, {hi}) -&gt; {clamped1}&quot;)  # 5
 
 # Test Case 2 (Inside valid range):
-n2 = 7
-clamped2 = lo if n2 < lo else (hi if n2 > hi else n2)
-print(f"clamp({n2}, {lo}, {hi}) -> {clamped2}")  # 7
+n2: int = 7
+clamped2: int = lo if n2 &lt; lo else (hi if n2 &gt; hi else n2)
+print(f&quot;clamp({n2}, {lo}, {hi}) -&gt; {clamped2}&quot;)  # 7
 
 # Test Case 3 (Above upper bound):
-n3 = 15
-clamped3 = lo if n3 < lo else (hi if n3 > hi else n3)
-print(f"clamp({n3}, {lo}, {hi}) -> {clamped3}")  # 10</pre></div>
+n3: int = 15
+clamped3: int = lo if n3 &lt; lo else (hi if n3 &gt; hi else n3)
+print(f&quot;clamp({n3}, {lo}, {hi}) -&gt; {clamped3}&quot;)  # 10</pre></div>
               </div>
             </details>
           </li>
@@ -1121,13 +1133,17 @@ print(f"clamp({n3}, {lo}, {hi}) -> {clamped3}")  # 10</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># &#x27;==&#x27; checks equality of values; &#x27;is&#x27; checks identity (same memory address):
-list1 = [1, 2, 3]
-list2 = [1, 2, 3]
-list3 = list1
+list1: list[int] = [1, 2, 3]
+list2: list[int] = [1, 2, 3]
+list3: list[int] = list1
 
-print(&quot;list1 == list2:&quot;, list1 == list2)  # True (same values)
-print(&quot;list1 is list2:&quot;, list1 is list2)  # False (different heap objects)
-print(&quot;list1 is list3:&quot;, list1 is list3)  # True (both reference the exact same object)</pre></div>
+eq_test: bool = (list1 == list2)
+is_test1: bool = (list1 is list2)
+is_test2: bool = (list1 is list3)
+
+print(&quot;list1 == list2:&quot;, eq_test)   # True (same values)
+print(&quot;list1 is list2:&quot;, is_test1)  # False (different heap objects)
+print(&quot;list1 is list3:&quot;, is_test2)  # True (both reference the exact same object)</pre></div>
               </div>
             </details>
           </li>
@@ -1139,20 +1155,20 @@ print(&quot;list1 is list3:&quot;, list1 is list3)  # True (both reference the e
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Bitwise flags with | (OR) and &amp; (AND):
-READ_PERMISSION = 0b001
-WRITE_PERMISSION = 0b010
-EXECUTE_PERMISSION = 0b100
+READ_PERMISSION: int = 0b001
+WRITE_PERMISSION: int = 0b010
+EXECUTE_PERMISSION: int = 0b100
 
 # Pack permissions:
-user_perm = READ_PERMISSION | WRITE_PERMISSION  # 0b011
+user_perm: int = READ_PERMISSION | WRITE_PERMISSION  # 0b011
 
 # Unpack / check permission:
-can_read = bool(user_perm &amp; READ_PERMISSION)
-can_execute = bool(user_perm &amp; EXECUTE_PERMISSION)
+can_read: bool = bool(user_perm &amp; READ_PERMISSION)
+can_execute: bool = bool(user_perm &amp; EXECUTE_PERMISSION)
 
-print("User permissions bin:", bin(user_perm))
-print("Can read:", can_read)        # True
-print("Can execute:", can_execute)  # False</pre></div>
+print(&quot;User permissions bin:&quot;, bin(user_perm))
+print(&quot;Can read:&quot;, can_read)        # True
+print(&quot;Can execute:&quot;, can_execute)  # False</pre></div>
               </div>
             </details>
           </li>
@@ -1165,12 +1181,12 @@ print("Can execute:", can_execute)  # False</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Operator Precedence Demonstration:
 # Multiplication has higher precedence than addition:
-calc1 = 2 + 3 * 4
-print("2 + 3 * 4:", calc1)      # 14 (3 * 4 = 12; 2 + 12 = 14)
+calc1: int = 2 + 3 * 4
+print(&quot;2 + 3 * 4:&quot;, calc1)      # 14 (3 * 4 = 12; 2 + 12 = 14)
 
 # Parentheses override default precedence:
-calc2 = (2 + 3) * 4
-print("(2 + 3) * 4:", calc2)    # 20 (5 * 4 = 20)</pre></div>
+calc2: int = (2 + 3) * 4
+print(&quot;(2 + 3) * 4:&quot;, calc2)    # 20 (5 * 4 = 20)</pre></div>
               </div>
             </details>
           </li>
@@ -1182,19 +1198,22 @@ print("(2 + 3) * 4:", calc2)    # 20 (5 * 4 = 20)</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Finding min and max of 3 numbers using nested ternary expressions:
-a, b, c = 42, 17, 89
+a: int = 42
+b: int = 17
+c: int = 89
 
-min_val = a if a &lt; b and a &lt; c else b if b &lt; c else c
-max_val = a if a &gt; b and a &gt; c else b if b &gt; c else c
+min_val: int = a if a &lt; b and a &lt; c else b if b &lt; c else c
+max_val: int = a if a &gt; b and a &gt; c else b if b &gt; c else c
 
-print(f"Numbers: a={a}, b={b}, c={c}")
-print("Minimum Value:", min_val)  # 17
-print("Maximum Value:", max_val)  # 89
+print(f&quot;Numbers: a={a}, b={b}, c={c}&quot;)
+print(&quot;Minimum Value:&quot;, min_val)  # 17
+print(&quot;Maximum Value:&quot;, max_val)  # 89
 
 # Three-way equality/relative size test:
-x, y = 50, 50
-status = "Equal" if x == y else "x is greater" if x &gt; y else "y is greater"
-print("Comparison status:", status)  # Equal</pre></div>
+x: int = 50
+y: int = 50
+status: str = &quot;Equal&quot; if x == y else &quot;x is greater&quot; if x &gt; y else &quot;y is greater&quot;
+print(&quot;Comparison status:&quot;, status)  # Equal</pre></div>
               </div>
             </details>
           </li>
@@ -1210,15 +1229,15 @@ print("Comparison status:", status)  # Equal</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Traditional XOR swap (low-level, historical):
-a = 15
-b = 27
+a: int = 15
+b: int = 27
 # a = a ^ b
 # b = a ^ b
 # a = a ^ b
 
 # Pythonic tuple unpacking swap (idiomatic, readable, fast):
 a, b = b, a
-print(f"Swapped: a={a}, b={b}")  # a=27, b=15</pre></div>
+print(f&quot;Swapped: a={a}, b={b}&quot;)  # a=27, b=15</pre></div>
               </div>
             </details>
           </li>
@@ -1230,24 +1249,28 @@ print(f"Swapped: a={a}, b={b}")  # a=27, b=15</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Truth table for boolean operators (evaluating all 4 boolean combinations):
-print(f"{'A':&lt;6} {'B':&lt;6} {'A and B':&lt;10} {'A or B':&lt;10} {'not A':&lt;6}")
-print("-" * 38)
+print(f&quot;{&#x27;A&#x27;:&lt;6} {&#x27;B&#x27;:&lt;6} {&#x27;A and B&#x27;:&lt;10} {&#x27;A or B&#x27;:&lt;10} {&#x27;not A&#x27;:&lt;6}&quot;)
+print(&quot;-&quot; * 38)
 
 # Combination 1 (True, True):
-a, b = True, True
-print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")
+a1: bool = True
+b1: bool = True
+print(f&quot;{str(a1):&lt;6} {str(b1):&lt;6} {str(a1 and b1):&lt;10} {str(a1 or b1):&lt;10} {str(not a1):&lt;6}&quot;)
 
 # Combination 2 (True, False):
-a, b = True, False
-print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")
+a2: bool = True
+b2: bool = False
+print(f&quot;{str(a2):&lt;6} {str(b2):&lt;6} {str(a2 and b2):&lt;10} {str(a2 or b2):&lt;10} {str(not a2):&lt;6}&quot;)
 
 # Combination 3 (False, True):
-a, b = False, True
-print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")
+a3: bool = False
+b3: bool = True
+print(f&quot;{str(a3):&lt;6} {str(b3):&lt;6} {str(a3 and b3):&lt;10} {str(a3 or b3):&lt;10} {str(not a3):&lt;6}&quot;)
 
 # Combination 4 (False, False):
-a, b = False, False
-print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")</pre></div>
+a4: bool = False
+b4: bool = False
+print(f&quot;{str(a4):&lt;6} {str(b4):&lt;6} {str(a4 and b4):&lt;10} {str(a4 or b4):&lt;10} {str(not a4):&lt;6}&quot;)</pre></div>
               </div>
             </details>
           </li>

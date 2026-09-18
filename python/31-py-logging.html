@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-why-logging-over-print">1.1. Why Logging Over print()?</a>
+            <a href="#1-2-logging-type-annotations">1.2. Logging Type Annotations</a>
           </div>
         </div>
         <div class="nav-section">
@@ -135,6 +136,22 @@
           <li><strong>No Exception Tracebacks:</strong> Capturing stack traces and diagnostics with <code>print()</code> during an outage requires messy manual traceback formatting.</li>
         </ul>
         <p>Python's built-in <strong><code>logging</code></strong> module provides a standardized, thread-safe, and highly configurable framework to track events, performance, and errors across applications.</p>
+
+        <h3 id="1-2-logging-type-annotations">1.2. Logging Type Annotations</h3>
+        <p>In modern typed Python, annotate logger instances, handlers, formatters, and custom log adapters explicitly:</p>
+        <div class="code"><pre>import logging
+import sys
+
+# Core logging type hints:
+logger: logging.Logger = logging.getLogger(__name__)
+handler: logging.Handler = logging.StreamHandler(sys.stdout)
+formatter: logging.Formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+logger.info("Typed logging pipeline initialized.")</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -241,7 +258,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d): %(message)s"
 )
 
-def divide_numbers(a, b):
+def divide_numbers(a: float, b: float) -> float | None:
     try:
         return a / b
     except ZeroDivisionError:
@@ -249,7 +266,7 @@ def divide_numbers(a, b):
         logging.exception("Failed to compute division ratio:")
         return None
 
-divide_numbers(10, 0)</pre></div>
+divide_numbers(10.0, 0.0)</pre></div>
       </section>
 
       <!-- SECTION 4 -->
@@ -304,19 +321,19 @@ divide_numbers(10, 0)</pre></div>
 import sys
 
 # 1. Create a custom logger:
-logger = logging.getLogger("service_logger")
+logger: logging.Logger = logging.getLogger("service_logger")
 logger.setLevel(logging.DEBUG)  # Lowest threshold for the logger itself
 
 # 2. Console Handler (WARNING and above to stderr):
-console_handler = logging.StreamHandler(sys.stderr)
+console_handler: logging.StreamHandler = logging.StreamHandler(sys.stderr)
 console_handler.setLevel(logging.WARNING)
-console_format = logging.Formatter("[CONSOLE %(levelname)s] %(message)s")
+console_format: logging.Formatter = logging.Formatter("[CONSOLE %(levelname)s] %(message)s")
 console_handler.setFormatter(console_format)
 
 # 3. File Handler (DEBUG and above to disk):
-file_handler = logging.FileHandler("service_debug.log", mode="a")
+file_handler: logging.FileHandler = logging.FileHandler("service_debug.log", mode="a")
 file_handler.setLevel(logging.DEBUG)
-file_format = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+file_format: logging.Formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 file_handler.setFormatter(file_format)
 
 # 4. Attach handlers to logger:
@@ -345,9 +362,9 @@ logger.warning("Warning message (written to BOTH file and console!)")</pre></div
         <div class="code"><pre># In auth/service.py:
 import logging
 
-logger = logging.getLogger(__name__)
+logger: logging.Logger = logging.getLogger(__name__)
 
-def authenticate(username):
+def authenticate(username: str) -> None:
     logger.info("Authenticating user: %s", username)
     # Output name will be "auth.service"</pre></div>
 
@@ -375,17 +392,17 @@ def authenticate(username):
 from logging.handlers import RotatingFileHandler
 
 # Rotate when file hits 5 MB, keeping at most 3 backups:
-rotating_handler = RotatingFileHandler(
+rotating_handler: RotatingFileHandler = RotatingFileHandler(
     "app_service.log",
     maxBytes=5 * 1024 * 1024,  # 5 MB
     backupCount=3,
     encoding="utf-8"
 )
 
-formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
+formatter: logging.Formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
 rotating_handler.setFormatter(formatter)
 
-app_logger = logging.getLogger("production_app")
+app_logger: logging.Logger = logging.getLogger("production_app")
 app_logger.setLevel(logging.INFO)
 app_logger.addHandler(rotating_handler)</pre></div>
 
@@ -393,9 +410,11 @@ app_logger.addHandler(rotating_handler)</pre></div>
         <h3 id="6-2-dictionary-based-configuration-dictconfig">6.2. Dictionary-Based Configuration: <code>dictConfig</code></h3>
         <p>In modern production Python (Django, FastAPI, Flask), logging is configured declaratively using <code>logging.config.dictConfig()</code> from a Python dictionary or YAML file.</p>
 
-        <div class="code"><pre>import logging.config
+        <div class="code"><pre>import logging
+import logging.config
+from typing import Any
 
-LOGGING_CONFIG = {
+LOGGING_CONFIG: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -430,7 +449,7 @@ LOGGING_CONFIG = {
 
 logging.config.dictConfig(LOGGING_CONFIG)
 
-prod_logger = logging.getLogger("api.orders")
+prod_logger: logging.Logger = logging.getLogger("api.orders")
 prod_logger.info("Order service initialized successfully.")</pre></div>
       </section>
 
@@ -579,8 +598,9 @@ prod_logger.info("Order service initialized successfully.")</pre></div>
                 <div class="code"><pre>import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logging.info("Worker node online")
-logging.warning("Memory utilization at 82%")</pre></div>
+logger: logging.Logger = logging.getLogger(__name__)
+logger.info("Worker node online")
+logger.warning("Memory utilization at 82%")</pre></div>
               </div>
             </details>
           </li>
@@ -613,10 +633,10 @@ hierarchical logger propagation, and declarative dictConfig setups.
                 <div class="code"><pre># Task 1: Exception logging with traceback
 import logging
 
-logger = logging.getLogger("task1_logger")
+logger: logging.Logger = logging.getLogger("task1_logger")
 
 try:
-    result = 100 / 0
+    result: float = 100 / 0
 except ZeroDivisionError:
     logger.exception("Computation failed catastrophically:")</pre></div>
               </div>
@@ -633,16 +653,16 @@ except ZeroDivisionError:
 import logging
 import sys
 
-logger = logging.getLogger("custom_app")
+logger: logging.Logger = logging.getLogger("custom_app")
 logger.setLevel(logging.DEBUG)
 
 # Console handler (INFO and above)
-c_handler = logging.StreamHandler(sys.stdout)
+c_handler: logging.StreamHandler = logging.StreamHandler(sys.stdout)
 c_handler.setLevel(logging.INFO)
 c_handler.setFormatter(logging.Formatter("[CONSOLE] %(message)s"))
 
 # File handler (DEBUG and above)
-f_handler = logging.FileHandler("app_audit.log", mode="a")
+f_handler: logging.FileHandler = logging.FileHandler("app_audit.log", mode="a")
 f_handler.setLevel(logging.DEBUG)
 f_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 
@@ -665,10 +685,10 @@ logger.info("Info event: in file AND console")</pre></div>
 from logging.handlers import RotatingFileHandler
 import logging
 
-rot_logger = logging.getLogger("rotator")
+rot_logger: logging.Logger = logging.getLogger("rotator")
 rot_logger.setLevel(logging.INFO)
 
-handler = RotatingFileHandler("rot_test.log", maxBytes=1024, backupCount=2)
+handler: RotatingFileHandler = RotatingFileHandler("rot_test.log", maxBytes=1024, backupCount=2)
 handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
 rot_logger.addHandler(handler)
 
@@ -690,9 +710,11 @@ for i in range(50):
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Enterprise dictConfig setup
+import logging
 import logging.config
+from typing import Any
 
-CONFIG = {
+CONFIG: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -717,7 +739,7 @@ CONFIG = {
 }
 
 logging.config.dictConfig(CONFIG)
-log = logging.getLogger("backend.api")
+log: logging.Logger = logging.getLogger("backend.api")
 log.info("Production API server running on port 8000")</pre></div>
               </div>
             </details>
@@ -732,13 +754,13 @@ log.info("Production API server running on port 8000")</pre></div>
                 <div class="code"><pre># Edge Case: Preventing duplicate log output
 import logging
 
-root = logging.getLogger()
+root: logging.Logger = logging.getLogger()
 root.setLevel(logging.INFO)
-root_h = logging.StreamHandler()
+root_h: logging.StreamHandler = logging.StreamHandler()
 root.addHandler(root_h)
 
-child = logging.getLogger("my_child")
-child_h = logging.StreamHandler()
+child: logging.Logger = logging.getLogger("my_child")
+child_h: logging.StreamHandler = logging.StreamHandler()
 child.addHandler(child_h)
 
 # By default, child.info("Test") would print TWICE!

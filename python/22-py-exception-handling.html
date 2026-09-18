@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview-errors-vs-exceptions">1.1. Overview: Errors vs Exceptions</a>
+            <a href="#1-2-typing-in-exception-handling">1.2. Typing in Exception Handling (NoReturn, Type[E])</a>
           </div>
         </div>
         <div class="nav-section">
@@ -146,6 +147,28 @@
         <div class="callout">
           <strong>Guiding Principle: EAFP vs LBYL:</strong> Python strongly favors <em>EAFP</em> ("Easier to Ask for Forgiveness than Permission") over <em>LBYL</em> ("Look Before You Leap"). Instead of writing deeply nested <code>if-else</code> checks verifying every condition beforehand, wrap the operation in a <code>try-except</code> block and handle the failure cleanly.
         </div>
+
+        <h3 id="1-2-typing-in-exception-handling">1.2. Typing in Exception Handling (NoReturn, Type[E])</h3>
+        <div class="callout tip">
+          <div class="callout-title">Static Analysis &amp; Exception Typing (PEP 484 &amp; PEP 654)</div>
+          <p>In Python type annotations:</p>
+          <ul>
+            <li><strong><code class="inline">NoReturn</code> / <code class="inline">Never</code>:</strong> Functions that unconditionally raise an exception or terminate without returning have return type <code class="inline">NoReturn</code>.</li>
+            <li><strong>Union return for recovery:</strong> Functions that return a value on success or <code class="inline">None</code> on caught exception use <code class="inline">float | None</code>.</li>
+            <li><strong>Typed catch blocks:</strong> Exception variables <code class="inline">except ValueError as err:</code> are strictly typed instances of the specified exception class.</li>
+          </ul>
+        </div>
+        <div class="code"><pre>from typing import NoReturn
+
+def raise_fatal_error(message: str) -> NoReturn:
+    """Function that unconditionally raises an exception."""
+    raise RuntimeError(f"FATAL: {message}")
+
+def parse_int_safe(val: str) -> int | None:
+    try:
+        return int(val)
+    except ValueError:
+        return None</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -168,23 +191,23 @@
         </ol>
 
         <div class="code"><pre># Unhandled Exception demonstration (crashes execution)
-def calculate_unit_price(total_cost, quantity):
+def calculate_unit_price(total_cost: float, quantity: int) -> float:
     print("[STEP 1] Starting unit price calculation...")
     # If quantity is 0, ZeroDivisionError is raised here:
-    unit_price = total_cost / quantity
+    unit_price: float = total_cost / quantity
     print(f"[STEP 2] Unit price computed: {unit_price}")
     return unit_price
 
-def process_order(order_id, cost, qty):
+def process_order(order_id: int, cost: float, qty: int) -> None:
     print(f"Processing order #{order_id}")
-    price = calculate_unit_price(cost, qty)
-    print("Order completed successfully!")
+    price: float = calculate_unit_price(cost, qty)
+    print(f"Order completed successfully! Unit price: {price}")
 
 # Calling with valid quantity:
-process_order(101, 500, 5)
+process_order(101, 500.0, 5)
 
 # Calling with 0 quantity:
-# process_order(102, 500, 0)
+# process_order(102, 500.0, 0)
 # Traceback (most recent call last):
 #   File "script.py", line 16, in &lt;module&gt;
 #   File "script.py", line 10, in process_order
@@ -195,17 +218,17 @@ process_order(101, 500, 5)
         <h3 id="2-2-graceful-recovery-with-try-except">2.2. Graceful Recovery with <code>try-except</code></h3>
         <p>By wrapping risky code in a <code>try</code> block, any matching exception raised inside is caught by the <code>except</code> block. Normal program flow resumes right after the <code>try-except</code> construct rather than crashing the script.</p>
 
-        <div class="code"><pre>def safe_divide(a, b):
+        <div class="code"><pre>def safe_divide(a: float, b: float) -> float | None:
     try:
-        result = a / b
+        result: float = a / b
         print(f"Calculation success: {a} / {b} = {result}")
         return result
     except ZeroDivisionError as e:
         print(f"[RECOVERED] Cannot divide by zero: {e}")
         return None
 
-print("Result 1:", safe_divide(20, 4))   # 5.0
-print("Result 2:", safe_divide(20, 0))   # None (handled gracefully, program continues!)
+print("Result 1:", safe_divide(20.0, 4.0))   # 5.0
+print("Result 2:", safe_divide(20.0, 0.0))   # None (handled gracefully, program continues!)
 print("Application continues running smoothly.")</pre></div>
       </section>
 
@@ -264,22 +287,28 @@ print("Application continues running smoothly.")</pre></div>
         <p>When multiple <code>except</code> blocks are provided, Python evaluates them in top-to-bottom order. The first matching block is executed. If a parent exception class is listed before a child exception class, the parent will catch the exception and the child block will never execute (dead code).</p>
 
         <div class="code"><pre># Handling multiple specific exceptions
-def parse_and_fetch(data_dict, key, divisor):
+from typing import Any
+
+def parse_and_fetch(data_dict: dict[str, str], key: str, divisor: int) -> float | None:
     try:
-        val = data_dict[key]
-        num = int(val)
+        val: str = data_dict[key]
+        num: int = int(val)
         return 100 / num
     except KeyError as e:
         print(f"[ERROR] Missing required dictionary key: {e}")
+        return None
     except ValueError as e:
         print(f"[ERROR] Value could not be parsed to integer: {e}")
+        return None
     except ZeroDivisionError as e:
         print(f"[ERROR] Divisor evaluation resolved to zero: {e}")
+        return None
     except Exception as e:
         # Fallback catch-all for any other unanticipated runtime error
         print(f"[UNEXPECTED ERROR] {type(e).__name__}: {e}")
+        return None
 
-data = {"score": "25", "zero": "0", "bad": "abc"}
+data: dict[str, str] = {"score": "25", "zero": "0", "bad": "abc"}
 
 print(parse_and_fetch(data, "score", 1))   # 4.0
 print(parse_and_fetch(data, "missing", 1)) # Caught by KeyError
@@ -287,7 +316,7 @@ print(parse_and_fetch(data, "bad", 1))     # Caught by ValueError
 print(parse_and_fetch(data, "zero", 1))    # Caught by ZeroDivisionError
 
 # Grouping multiple exceptions in a single tuple:
-def safe_cast(val):
+def safe_cast(val: Any) -> int:
     try:
         return int(val)
     except (TypeError, ValueError) as err:
@@ -309,15 +338,16 @@ def safe_cast(val):
         <h3 id="4-1-the-else-block">4.1. The <code>else</code> Block</h3>
         <p>The <code>else</code> block in a <code>try-except</code> statement executes <strong>only if NO exception was raised in the <code>try</code> block</strong>. Placing code in the <code>else</code> block is much better practice than keeping it inside the <code>try</code> block because it prevents accidentally catching unintended exceptions from subsequent operations.</p>
 
-        <div class="code"><pre>def read_user_age(user_input):
+        <div class="code"><pre>def read_user_age(user_input: str) -> int | None:
     try:
-        age = int(user_input)
+        age: int = int(user_input)
     except ValueError:
         print("Invalid input! Please enter digits only.")
+        return None
     else:
         # Executes ONLY if int(user_input) succeeded without raising ValueError!
         print(f"Age successfully validated: {age}")
-        category = "Adult" if age >= 18 else "Minor"
+        category: str = "Adult" if age >= 18 else "Minor"
         print(f"Category: {category}")
         return age
 
@@ -329,12 +359,14 @@ read_user_age("twenty") # try runs -> ValueError -> except runs -> else skipped!
         <p>The <code>finally</code> block executes <strong>unconditionally</strong> under every circumstance: whether an exception occurred or not, whether it was caught or uncaught, and even if an early <code>return</code>, <code>break</code>, or <code>continue</code> statement was executed inside <code>try</code>, <code>except</code>, or <code>else</code>.</p>
         <p>It is the designated place for releasing scarce system resources (e.g., closing file descriptors, releasing locks, terminating database connections, or tearing down network sockets).</p>
 
-        <div class="code"><pre>def process_file_with_cleanup(filepath):
-    f = None
+        <div class="code"><pre>from typing import TextIO
+
+def process_file_with_cleanup(filepath: str) -> int:
+    f: TextIO | None = None
     try:
         print(f"Opening file: {filepath}")
         f = open(filepath, "r")
-        content = f.read()
+        content: str = f.read()
         return len(content)
     except FileNotFoundError:
         print(f"[RECOVERY] File '{filepath}' not found!")
@@ -422,12 +454,12 @@ process_file_with_cleanup("non_existent_file.txt")</pre></div>
           <li>Finally, the outer <code>finally</code> runs.</li>
         </ol>
 
-        <div class="code"><pre>def complex_nested_flow(x, y, filename):
+        <div class="code"><pre>def complex_nested_flow(x: float, y: float, filename: str) -> None:
     try:
         print("1. Outer try starts")
         try:
             print("2. Inner try starts")
-            division_result = x / y
+            division_result: float = x / y
             print(f"3. Division success: {division_result}")
         except ZeroDivisionError:
             print("4. Caught ZeroDivisionError in INNER except")
@@ -437,7 +469,7 @@ process_file_with_cleanup("non_existent_file.txt")</pre></div>
         print("6. Continuing in outer try...")
         # Now trigger an error that the outer try handles:
         with open(filename, "r") as f:
-            data = f.read()
+            data: str = f.read()
 
     except FileNotFoundError:
         print("7. Caught FileNotFoundError in OUTER except")
@@ -445,7 +477,7 @@ process_file_with_cleanup("non_existent_file.txt")</pre></div>
         print("8. OUTER finally always executes")
 
 print("--- Scenario A: Division by zero (handled by inner) ---")
-complex_nested_flow(10, 0, "missing.txt")</pre></div>
+complex_nested_flow(10.0, 0.0, "missing.txt")</pre></div>
       </section>
 
       <!-- SECTION 6 -->
@@ -527,18 +559,20 @@ complex_nested_flow(10, 0, "missing.txt")</pre></div>
         <h3 id="7-1-creating-user-defined-exceptions">7.1. Creating User-Defined Exceptions</h3>
         <p>In production systems, built-in exceptions like <code>ValueError</code> or <code>KeyError</code> are too generic to represent specific business domain errors. Python allows defining custom exceptions by subclassing <code>Exception</code> (never <code>BaseException</code>).</p>
 
-        <div class="code"><pre># Base domain exception:
+        <div class="code"><pre>from typing import Any
+
+# Base domain exception:
 class BankApplicationError(Exception):
     """Base exception for all banking domain errors."""
     pass
 
 class InsufficientFundsError(BankApplicationError):
     """Raised when an account does not have enough balance for a withdrawal."""
-    def __init__(self, account_id, balance, requested_amount):
-        self.account_id = account_id
-        self.balance = balance
-        self.requested_amount = requested_amount
-        message = (f"Account '{account_id}' has insufficient funds. "
+    def __init__(self, account_id: str, balance: float, requested_amount: float) -> None:
+        self.account_id: str = account_id
+        self.balance: float = balance
+        self.requested_amount: float = requested_amount
+        message: str = (f"Account '{account_id}' has insufficient funds. "
                    f"Available: ${balance:.2f}, Requested: ${requested_amount:.2f}")
         super().__init__(message)
 
@@ -547,16 +581,16 @@ class AccountLockedError(BankApplicationError):
     pass
 
 # Using custom exceptions in business logic:
-def withdraw(account, amount):
+def withdraw(account: dict[str, Any], amount: float) -> float:
     if account["is_locked"]:
         raise AccountLockedError(f"Account {account['id']} is locked due to security flags!")
     if amount > account["balance"]:
         raise InsufficientFundsError(account["id"], account["balance"], amount)
     
     account["balance"] -= amount
-    return account["balance"]
+    return float(account["balance"])
 
-my_account = {"id": "ACC-9982", "balance": 150.0, "is_locked": False}
+my_account: dict[str, Any] = {"id": "ACC-9982", "balance": 150.0, "is_locked": False}
 
 try:
     withdraw(my_account, 500.0)
@@ -574,7 +608,7 @@ except BankApplicationError as err:
     """Raised when database query execution fails."""
     pass
 
-def execute_user_query(sql):
+def execute_user_query(sql: str) -> None:
     try:
         # Simulating low-level socket timeout
         raise ConnectionResetError("Remote server closed socket connection abruptly")
@@ -675,7 +709,7 @@ except DatabaseQueryError as query_err:
           </summary>
           <div class="qa-answer-body">
             <p>If a <code>finally</code> block executes a <code>return</code> statement, that return value silently discards and suppresses any exception that was currently being propagated from <code>try</code> or <code>except</code>, as well as overriding any previous <code>return</code> value from <code>try</code> or <code>else</code>.</p>
-            <div class="code"><pre>def dangerous():
+            <div class="code"><pre>def dangerous() -> str:
     try:
         raise ValueError("Critical error!")
     finally:
@@ -748,7 +782,7 @@ except DatabaseQueryError as query_err:
               <div class="qa-answer-body">
                 <div class="code"><pre># Complete try-except-else-finally lifecycle
 try:
-    num = int("42")
+    num: int = int("42")
 except ValueError:
     print("Parsing failed!")
 else:
@@ -785,15 +819,15 @@ nested exception propagation, and custom domain exceptions with raise ... from.
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 1: Handling runtime division gracefully
-def safe_calculate_ratio(a, b):
+def safe_calculate_ratio(a: float, b: float) -> float:
     try:
         return a / b
     except ZeroDivisionError as err:
         print(f"[RECOVERED] Division failed: {err}")
         return 0.0
 
-print("Valid ratio: ", safe_calculate_ratio(10, 2))  # 5.0
-print("Zero ratio:  ", safe_calculate_ratio(10, 0))  # 0.0</pre></div>
+print("Valid ratio: ", safe_calculate_ratio(10.0, 2.0))  # 5.0
+print("Zero ratio:  ", safe_calculate_ratio(10.0, 0.0))  # 0.0</pre></div>
               </div>
             </details>
           </li>
@@ -805,18 +839,23 @@ print("Zero ratio:  ", safe_calculate_ratio(10, 0))  # 0.0</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 2: Multiple specific exception handlers
-def extract_element(items, index, key):
+from typing import Any
+
+def extract_element(items: list[dict[str, Any]], index: int, key: str) -> Any:
     try:
-        container = items[index]
+        container: dict[str, Any] = items[index]
         return container[key]
     except IndexError:
         print(f"[ERROR] Index {index} is out of bounds!")
+        return None
     except KeyError:
         print(f"[ERROR] Key '{key}' not found in target dictionary!")
+        return None
     except (TypeError, ValueError) as e:
         print(f"[ERROR] Type or value conversion issue: {e}")
+        return None
 
-data = [{"id": 1, "name": "Alpha"}]
+data: list[dict[str, Any]] = [{"id": 1, "name": "Alpha"}]
 extract_element(data, 5, "name")     # Caught by IndexError
 extract_element(data, 0, "salary")   # Caught by KeyError</pre></div>
               </div>
@@ -830,15 +869,15 @@ extract_element(data, 0, "salary")   # Caught by KeyError</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 3: Nested try-except-finally
-def nested_demo(x, y):
+def nested_demo(x: float, y: float) -> None:
     try:
         print("Outer try begins")
         try:
             print("Inner try begins")
-            res = x / y
+            res: float = x / y
         except ZeroDivisionError:
             print("Inner except handled ZeroDivisionError")
-            res = 0
+            res = 0.0
         finally:
             print("Inner finally executed")
         
@@ -849,7 +888,7 @@ def nested_demo(x, y):
     finally:
         print("Outer finally executed")
 
-nested_demo(10, 0)</pre></div>
+nested_demo(10.0, 0.0)</pre></div>
               </div>
             </details>
           </li>
@@ -862,20 +901,20 @@ nested_demo(10, 0)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 4: Custom domain exception
 class InventoryDepletedError(Exception):
-    def __init__(self, sku, requested, available):
-        self.sku = sku
-        self.requested = requested
-        self.available = available
+    def __init__(self, sku: str, requested: int, available: int) -> None:
+        self.sku: str = sku
+        self.requested: int = requested
+        self.available: int = available
         super().__init__(f"SKU '{sku}' depleted: requested {requested}, but only {available} remain.")
 
-def order_stock(inventory, sku, quantity):
-    available = inventory.get(sku, 0)
+def order_stock(inventory: dict[str, int], sku: str, quantity: int) -> int:
+    available: int = inventory.get(sku, 0)
     if quantity > available:
         raise InventoryDepletedError(sku, quantity, available)
     inventory[sku] -= quantity
     return inventory[sku]
 
-stock = {"BOOK-01": 2}
+stock: dict[str, int] = {"BOOK-01": 2}
 try:
     order_stock(stock, "BOOK-01", 5)
 except InventoryDepletedError as e:
@@ -906,16 +945,16 @@ class InsufficientBalanceError(BankingError):
 class InvalidAccountError(BankingError):
     pass
 
-def transfer_money(accounts, from_acc, to_acc, amount):
+def transfer_money(accounts: dict[str, float], from_acc: str, to_acc: str, amount: float) -> None:
     if from_acc not in accounts:
         raise InvalidAccountError(f"Sender account '{from_acc}' not found!")
     if to_acc not in accounts:
         raise InvalidAccountError(f"Recipient account '{to_acc}' not found!")
     if accounts[from_acc] < amount:
-        raise InsufficientBalanceError(f"Account '{from_acc}' has ${accounts[from_acc]}, needed ${amount}")
+        raise InsufficientBalanceError(f"Account '{from_acc}' has ${accounts[from_acc]:.2f}, needed ${amount:.2f}")
 
     # Transaction execution with rollback safety
-    print(f"[TRANSACTION] Transferring ${amount} from {from_acc} to {to_acc}...")
+    print(f"[TRANSACTION] Transferring ${amount:.2f} from {from_acc} to {to_acc}...")
     accounts[from_acc] -= amount
     try:
         # Simulate network or recipient failure
@@ -929,11 +968,11 @@ def transfer_money(accounts, from_acc, to_acc, amount):
     else:
         print("[SUCCESS] Transaction confirmed.")
     finally:
-        print(f"[AUDIT] Sender balance: ${accounts[from_acc]}, Recipient: ${accounts[to_acc]}")
+        print(f"[AUDIT] Sender balance: ${accounts[from_acc]:.2f}, Recipient: ${accounts[to_acc]:.2f}")
 
-bank = {"Alice": 2000, "Bob": 500}
+bank: dict[str, float] = {"Alice": 2000.0, "Bob": 500.0}
 try:
-    transfer_money(bank, "Alice", "Bob", 1500)
+    transfer_money(bank, "Alice", "Bob", 1500.0)
 except BankingError as err:
     print("Caught:", err)</pre></div>
               </div>
@@ -947,13 +986,13 @@ except BankingError as err:
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Edge Case: Return in finally overrides and silences exceptions!
-def buggy_function():
+def buggy_function() -> str:
     try:
         raise RuntimeError("Something broke horribly!")
     finally:
         return "ALL_GOOD"  # OVERRIDES THE EXCEPTION!
 
-result = buggy_function()
+result: str = buggy_function()
 print("Result:", result)  # ALL_GOOD (RuntimeError was swallowed! Avoid this!)</pre></div>
               </div>
             </details>

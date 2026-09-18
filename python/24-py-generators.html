@@ -26,6 +26,7 @@
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
             <a href="#1-2-yield-vs-return">1.2. yield vs return</a>
+            <a href="#1-3-generator-type-annotations">1.3. Generator Type Annotations (Iterator, Generator)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -140,15 +141,17 @@
           </tbody>
         </table>
 
-        <div class="code"><pre># Comparing a standard function vs a generator function
-def normal_countdown(n):
-    result = []
+        <div class="code"><pre>from collections.abc import Iterator
+
+# Comparing a standard function vs a generator function
+def normal_countdown(n: int) -> list[int]:
+    result: list[int] = []
     while n > 0:
         result.append(n)
         n -= 1
     return result  # Returns entire list in memory
 
-def generator_countdown(n):
+def generator_countdown(n: int) -> Iterator[int]:
     while n > 0:
         yield n    # Produces one number, pauses execution
         n -= 1
@@ -157,7 +160,7 @@ def generator_countdown(n):
 print("Normal list:", normal_countdown(3))  # [3, 2, 1]
 
 # Generator function returns a generator object:
-gen = generator_countdown(3)
+gen: Iterator[int] = generator_countdown(3)
 print("Generator object:", gen)  # &lt;generator object generator_countdown at 0x...&gt;
 
 # Stepping through using next():
@@ -170,6 +173,31 @@ try:
     print(next(gen))
 except StopIteration:
     print("Generator exhausted (StopIteration raised)")</pre></div>
+
+        <h3 id="1-3-generator-type-annotations">1.3. Generator Type Annotations (Iterator, Generator, PEP 484)</h3>
+        <div class="callout tip">
+          <div class="callout-title">Typing Generators with <code class="inline">collections.abc</code> &amp; <code class="inline">typing</code></div>
+          <p>Python provides two standard ways to type generators:</p>
+          <ul>
+            <li><strong><code class="inline">collections.abc.Iterator[YieldType]</code>:</strong> Recommended for simple generators that only yield values.</li>
+            <li><strong><code class="inline">collections.abc.Generator[YieldType, SendType, ReturnType]</code>:</strong> For generators that receive values via <code class="inline">.send()</code> or return an explicit final value upon exhaustion.</li>
+          </ul>
+        </div>
+        <div class="code"><pre>from collections.abc import Iterator, Generator
+
+# 1. Simple generator yielding integers:
+def count_down(n: int) -> Iterator[int]:
+    while n > 0:
+        yield n
+        n -= 1
+
+# 2. Coroutine generator: yields float, receives float, returns str
+def accumulator() -> Generator[float, float, str]:
+    total: float = 0.0
+    while total < 100.0:
+        val: float = yield total
+        total += val
+    return f"Accumulation target met: {total}"</pre></div>
       </section>
 
       <!-- SECTION 2 -->
@@ -187,50 +215,56 @@ except StopIteration:
         <p>Consider generating the first 10,000,000 square numbers. A list comprehension allocates hundreds of megabytes of RAM. A generator expression allocates only a few bytes, computing each square strictly when iterated.</p>
 
         <div class="code"><pre>import sys
+from collections.abc import Iterator
 
 # List comprehension: All 1,000,000 numbers created upfront in memory
-list_squares = [x * x for x in range(1_000_000)]
+list_squares: list[int] = [x * x for x in range(1_000_000)]
 print(f"List memory size: {sys.getsizeof(list_squares):,} bytes")
 # ~8,448,728 bytes (~8.4 MB)
 
 # Generator expression: Only the generator object state stored
-gen_squares = (x * x for x in range(1_000_000))
+gen_squares: Iterator[int] = (x * x for x in range(1_000_000))
 print(f"Generator memory size: {sys.getsizeof(gen_squares):,} bytes")
 # ~104 bytes (constant O(1) memory regardless of range size!)</pre></div>
 
         <h3 id="2-2-generating-infinite-streams">2.2. Generating Infinite Streams</h3>
         <p>Because generators evaluate values on demand, they can model theoretically infinite sequences (e.g., timestamps, live sensor ticks, sequence IDs, Fibonacci numbers) without freezing the computer or running out of memory.</p>
 
-        <div class="code"><pre>def infinite_counter(start=1, step=1):
-    current = start
+        <div class="code"><pre>from collections.abc import Iterator
+
+def infinite_counter(start: int = 1, step: int = 1) -> Iterator[int]:
+    current: int = start
     while True:
         yield current
         current += step
 
 # Using an infinite generator with a termination condition in a for loop:
-counter = infinite_counter(start=100, step=5)
+counter: Iterator[int] = infinite_counter(start=100, step=5)
 
 for _ in range(5):
     print(next(counter), end=" ")  # 100 105 110 115 120
 print()
 
-def fibonacci():
+def fibonacci() -> Iterator[int]:
     """Generates infinite Fibonacci sequence."""
-    a, b = 0, 1
+    a: int = 0
+    b: int = 1
     while True:
         yield a
         a, b = b, a + b
 
-fib = fibonacci()
-first_10_fib = [next(fib) for _ in range(10)]
+fib: Iterator[int] = fibonacci()
+first_10_fib: list[int] = [next(fib) for _ in range(10)]
 print("First 10 Fibonacci:", first_10_fib)  # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</pre></div>
 
         <h3 id="2-importance-of-generators-and-demos-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3 id="2-3-data-pipelines-chaining-generators">2.3. Data Pipelines (Chaining Generators)</h3>
         <p>Generators can be chained together in an assembly-line architecture (similar to Unix pipes <code>cat | grep | awk</code>). Each step in the pipeline yields one item to the next stage without any intermediate list allocations.</p>
 
-        <div class="code"><pre># Simulating a streaming pipeline for log processing
-raw_logs = [
+        <div class="code"><pre>from collections.abc import Iterable, Iterator
+
+# Simulating a streaming pipeline for log processing
+raw_logs: list[str] = [
     "2026-09-14 10:00:01 [INFO] User 101 logged in",
     "2026-09-14 10:00:02 [ERROR] Database timeout in query: SELECT * FROM orders",
     "2026-09-14 10:00:03 [DEBUG] Cache hit for key 'user_profile_101'",
@@ -238,22 +272,22 @@ raw_logs = [
     "2026-09-14 10:00:05 [WARN] Disk space reaching 85%"
 ]
 
-def stream_logs(log_source):
+def stream_logs(log_source: Iterable[str]) -> Iterator[str]:
     for line in log_source:
         yield line
 
-def filter_errors(lines):
+def filter_errors(lines: Iterable[str]) -> Iterator[str]:
     for line in lines:
         if "[ERROR]" in line:
             yield line
 
-def format_alert(error_lines):
+def format_alert(error_lines: Iterable[str]) -> Iterator[str]:
     for line in error_lines:
         timestamp, message = line.split(" [ERROR] ")
         yield f"CRITICAL ALERT at {timestamp}: {message}"
 
 # Composing the pipeline:
-pipeline = format_alert(filter_errors(stream_logs(raw_logs)))
+pipeline: Iterator[str] = format_alert(filter_errors(stream_logs(raw_logs)))
 
 for alert in pipeline:
     print(alert)
@@ -263,33 +297,36 @@ for alert in pipeline:
         <h3 id="2-4-delegating-with-yield-from">2.4. Delegating with <code>yield from</code></h3>
         <p>Introduced in Python 3.3 (PEP 380), <code>yield from &lt;iterable&gt;</code> transparently delegates generation to a sub-generator or any iterable. It eliminates messy nested loops and establishes a direct two-way communication channel between caller and sub-generator.</p>
 
-        <div class="code"><pre># Old manual nesting approach:
-def old_chain(*iterables):
+        <div class="code"><pre>from collections.abc import Iterable, Iterator
+from typing import Any
+
+# Old manual nesting approach:
+def old_chain(*iterables: Iterable[Any]) -> Iterator[Any]:
     for it in iterables:
         for item in it:
             yield item
 
 # Modern yield from syntax:
-def modern_chain(*iterables):
+def modern_chain(*iterables: Iterable[Any]) -> Iterator[Any]:
     for it in iterables:
         yield from it  # Delegates directly to each iterable
 
-list1 = [1, 2, 3]
-tuple2 = ("a", "b")
-gen3 = (x * 10 for x in range(1, 3))
+list1: list[int] = [1, 2, 3]
+tuple2: tuple[str, str] = ("a", "b")
+gen3: Iterator[int] = (x * 10 for x in range(1, 3))
 
-combined = list(modern_chain(list1, tuple2, gen3))
+combined: list[Any] = list(modern_chain(list1, tuple2, gen3))
 print("Combined items:", combined)  # [1, 2, 3, 'a', 'b', 10, 20]
 
 # Flattening nested data structures:
-def flatten(nested_list):
+def flatten(nested_list: list[Any]) -> Iterator[Any]:
     for element in nested_list:
         if isinstance(element, list):
             yield from flatten(element)
         else:
             yield element
 
-nested = [1, [2, [3, 4], 5], [6, 7], 8]
+nested: list[Any] = [1, [2, [3, 4], 5], [6, 7], 8]
 print("Flattened list:", list(flatten(nested)))  # [1, 2, 3, 4, 5, 6, 7, 8]</pre></div>
       </section>
 
@@ -351,36 +388,38 @@ print("Flattened list:", list(flatten(nested)))  # [1, 2, 3, 4, 5, 6, 7, 8]</pre
           <li><code>gen.close()</code>: Terminates the generator by raising <code>GeneratorExit</code> inside it.</li>
         </ul>
 
-        <div class="code"><pre>def running_average():
+        <div class="code"><pre>from collections.abc import Generator
+
+def running_average() -> Generator[float | None, float | None, None]:
     """Generator acting as a coroutine calculating a running average."""
-    total = 0.0
-    count = 0
-    average = None
+    total: float = 0.0
+    count: int = 0
+    average: float | None = None
     while True:
         # yield produces current average AND receives new incoming value
-        value = yield average
+        value: float | None = yield average
         if value is None:
             break
         total += value
         count += 1
         average = total / count
 
-avg_gen = running_average()
+avg_gen: Generator[float | None, float | None, None] = running_average()
 
 # 1. Priming the generator: must advance to the first yield before sending data!
 next(avg_gen)  # or avg_gen.send(None)
 
 # 2. Sending values into the generator:
-print("Avg after 10:", avg_gen.send(10))  # 10.0
-print("Avg after 20:", avg_gen.send(20))  # 15.0
-print("Avg after 30:", avg_gen.send(30))  # 20.0
-print("Avg after 40:", avg_gen.send(40))  # 25.0
+print("Avg after 10:", avg_gen.send(10.0))  # 10.0
+print("Avg after 20:", avg_gen.send(20.0))  # 15.0
+print("Avg after 30:", avg_gen.send(30.0))  # 20.0
+print("Avg after 40:", avg_gen.send(40.0))  # 25.0
 
 # 3. Gracefully closing the generator:
 avg_gen.close()
 
 try:
-    avg_gen.send(50)
+    avg_gen.send(50.0)
 except StopIteration:
     print("Generator successfully closed and cannot accept more data.")</pre></div>
       </section>
@@ -450,8 +489,10 @@ except StopIteration:
           </summary>
           <div class="qa-answer-body">
             <p>The syntactic difference is brackets vs parentheses:</p>
-            <div class="code"><pre>list_comp = [x * 2 for x in range(1000)]    # Square brackets: List comprehension
-gen_exp   = (x * 2 for x in range(1000))    # Parentheses: Generator expression</pre></div>
+            <div class="code"><pre>from collections.abc import Iterator
+
+list_comp: list[int] = [x * 2 for x in range(1000)]    # Square brackets: List comprehension
+gen_exp: Iterator[int] = (x * 2 for x in range(1000))    # Parentheses: Generator expression</pre></div>
             <ul>
               <li><strong>List Comprehension:</strong> Eagerly evaluates all 1,000 items immediately and stores the full list in memory. Supports indexing, slicing, and multiple iterations.</li>
               <li><strong>Generator Expression:</strong> Lazily returns a generator iterator. Elements are evaluated one at a time on demand. Memory footprint is minimal and independent of sequence size.</li>
@@ -543,14 +584,15 @@ gen_exp   = (x * 2 for x in range(1000))    # Parentheses: Generator expression<
                 <div class="code"><pre># Advantages and limitations:
 # Advantage: Infinite streams and large datasets handled with O(1) memory.
 # Limitation: Generator items can only be consumed once; cannot index or slice directly.
+from collections.abc import Iterator
 
-def count_up(start=0):
-    n = start
+def count_up(start: int = 0) -> Iterator[int]:
+    n: int = start
     while True:
         yield n
         n += 1
 
-gen = count_up(1)
+gen: Iterator[int] = count_up(1)
 print(next(gen))  # 1
 print(next(gen))  # 2
 print(next(gen))  # 3</pre></div>
@@ -584,10 +626,13 @@ and pipeline architectures for streaming data.
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 1: Importance of generators and demos
-def fibonacci_generator(limit):
+from collections.abc import Iterator
+
+def fibonacci_generator(limit: int) -> Iterator[int]:
     """Generate Fibonacci numbers up to limit count."""
-    a, b = 0, 1
-    count = 0
+    a: int = 0
+    b: int = 1
+    count: int = 0
     while count &lt; limit:
         yield a
         a, b = b, a + b
@@ -609,13 +654,14 @@ print()</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre># Task 2: Advantages and limitations (Memory comparison demo)
 import sys
+from collections.abc import Iterator
 
 # List comprehension: builds all 1,000,000 items in memory immediately
-list_data = [x * 2 for x in range(1_000_000)]
+list_data: list[int] = [x * 2 for x in range(1_000_000)]
 print("List size in RAM:", sys.getsizeof(list_data), "bytes")
 
 # Generator expression: computes items lazily on the fly
-gen_data = (x * 2 for x in range(1_000_000))
+gen_data: Iterator[int] = (x * 2 for x in range(1_000_000))
 print("Generator size in RAM:", sys.getsizeof(gen_data), "bytes (O(1) memory!)")</pre></div>
               </div>
             </details>
@@ -649,8 +695,10 @@ print("Generator size in RAM:", sys.getsizeof(gen_data), "bytes (O(1) memory!)")
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Mini Project: Streaming CSV/Log Pipeline with Generator Functions
-def stream_log_lines():
-    logs = [
+from collections.abc import Iterable, Iterator
+
+def stream_log_lines() -> Iterator[str]:
+    logs: list[str] = [
         "2026-09-14 12:00:01 INFO Server startup",
         "2026-09-14 12:01:15 ERROR Database connection pool exhausted",
         "2026-09-14 12:02:00 WARN Disk space below 15%",
@@ -660,17 +708,17 @@ def stream_log_lines():
     for line in logs:
         yield line
 
-def filter_errors(lines):
+def filter_errors(lines: Iterable[str]) -> Iterator[str]:
     for line in lines:
         if "ERROR" in line:
             yield line
 
-def extract_message(error_lines):
+def extract_message(error_lines: Iterable[str]) -> Iterator[str]:
     for line in error_lines:
         yield line.split("ERROR", 1)[1].strip()
 
 # Chain generator pipeline:
-pipeline = extract_message(filter_errors(stream_log_lines()))
+pipeline: Iterator[str] = extract_message(filter_errors(stream_log_lines()))
 
 print("Filtered Error Messages:")
 for msg in pipeline:
@@ -687,12 +735,14 @@ for msg in pipeline:
               <div class="qa-answer-body">
                 <div class="code"><pre># Generator Pitfalls &amp; Edge Cases:
 # 1. Re-using exhausted generator:
-gen = (x for x in [1, 2, 3])
+from collections.abc import Iterator
+
+gen: Iterator[int] = (x for x in [1, 2, 3])
 print("First pass:", list(gen))   # [1, 2, 3]
 print("Second pass:", list(gen))  # [] (Empty! Already exhausted)
 
 # 2. Catching StopIteration safely:
-g = (x for x in [10])
+g: Iterator[int] = (x for x in [10])
 print(next(g))  # 10
 # next(g) would raise StopIteration!
 # Using the default value parameter avoids the exception:

@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-package-typing-pep-561">1.2. Package Typing & py.typed (PEP 561)</a>
           </div>
         </div>
         <div class="nav-section">
@@ -115,6 +116,23 @@
           <li>Packages use dot-notation for module paths (e.g. <code class="inline">import urllib.request</code>, <code class="inline">from sklearn.metrics import accuracy_score</code>).</li>
           <li>Packages prevent naming collisions across large software architectures and allow distribution on the <strong>Python Package Index (PyPI)</strong> via <code class="inline">pip</code>.</li>
         </ul>
+
+        <h3 id="1-2-package-typing-pep-561">1.2. Package Typing &amp; py.typed (PEP 561)</h3>
+        <div class="callout tip">
+          <div class="callout-title">PEP 561: Distributing Package Type Information</div>
+          <p>Python packages support static type checking by shipping an empty marker file named <code class="inline">py.typed</code> inside the package directory. Package variables and exported interfaces should have explicit PEP 8 type annotations:</p>
+        </div>
+        <div class="code"><pre># ecommerce/__init__.py
+"""Typed package interface."""
+__version__: str = "2.4.0"
+__author__: str = "Bharat Sonwane"
+__all__: list[str] = ["StripeGateway", "ShipmentTracker"]
+
+# Package directory structure:
+# ecommerce/
+# ├── py.typed        # PEP 561 marker: signals inline type annotations to Mypy/Pyright
+# ├── __init__.py
+# └── payments/</pre></div>
       </section>
 
       <!-- SECTION 2: WHAT IS A PACKAGE AND ADVANTAGES -->
@@ -202,18 +220,18 @@ from ..database import execute_query  # Parent directory</pre></div>
 from .payments.stripe import StripeGateway
 from .shipping.tracking import ShipmentTracker
 
-# Expose package metadata:
-__version__ = "2.4.0"
-__author__ = "Bharat Sonwane"
+# Expose package metadata with explicit type annotations:
+__version__: str = "2.4.0"
+__author__: str = "Bharat Sonwane"
 
 # Control wildcard import:
-__all__ = ["StripeGateway", "ShipmentTracker"]</pre></div>
+__all__: list[str] = ["StripeGateway", "ShipmentTracker"]</pre></div>
 
         <p>Now consumers can simply write:</p>
         <div class="code"><pre># Clean consumer code:
 import ecommerce
 
-gateway = ecommerce.StripeGateway()
+gateway: ecommerce.StripeGateway = ecommerce.StripeGateway()
 print(f"eCommerce version: {ecommerce.__version__}")</pre></div>
       </section>
 
@@ -447,8 +465,8 @@ print("Is urllib.parse in sys.modules:", "urllib.parse" in sys.modules)  # True<
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>deps = [("fastapi", "0.110.0"), ("uvicorn", "0.28.0"), ("pydantic", "2.6.4")]
-reqs = "\n".join(f"{name}=={ver}" for name, ver in deps)
+                <div class="code"><pre>deps: list[tuple[str, str]] = [("fastapi", "0.110.0"), ("uvicorn", "0.28.0"), ("pydantic", "2.6.4")]
+reqs: str = "\n".join(f"{name}=={ver}" for name, ver in deps)
 print("requirements.txt output:\n" + reqs)</pre></div>
               </div>
             </details>
@@ -466,8 +484,8 @@ print("requirements.txt output:\n" + reqs)</pre></div>
               <div class="qa-answer-body">
                 <div class="code"><pre>import os
 
-def create_package_scaffold(root_dir: str):
-    structure = [
+def create_package_scaffold(root_dir: str) -> None:
+    structure: list[str] = [
         os.path.join(root_dir, "mypackage", "__init__.py"),
         os.path.join(root_dir, "mypackage", "core.py"),
         os.path.join(root_dir, "mypackage", "utils", "__init__.py"),
@@ -491,17 +509,19 @@ def create_package_scaffold(root_dir: str):
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def check_dependency_conflicts(req1: dict, req2: dict):
-    conflicts = {}
+                <div class="code"><pre>def check_dependency_conflicts(
+    req1: dict[str, str], req2: dict[str, str]
+) -> dict[str, dict[str, str]]:
+    conflicts: dict[str, dict[str, str]] = {}
     for pkg, ver1 in req1.items():
         if pkg in req2 and req2[pkg] != ver1:
             conflicts[pkg] = {"env1": ver1, "env2": req2[pkg]}
     return conflicts
 
-service_a = {"requests": "2.31.0", "pydantic": "2.5.0", "click": "8.1.0"}
-service_b = {"requests": "2.28.0", "pydantic": "2.5.0", "click": "8.0.0"}
+service_a: dict[str, str] = {"requests": "2.31.0", "pydantic": "2.5.0", "click": "8.1.0"}
+service_b: dict[str, str] = {"requests": "2.28.0", "pydantic": "2.5.0", "click": "8.0.0"}
 
-conflicts = check_dependency_conflicts(service_a, service_b)
+conflicts: dict[str, dict[str, str]] = check_dependency_conflicts(service_a, service_b)
 print("Detected version conflicts:", conflicts)
 # Detected version conflicts: {'requests': {'env1': '2.31.0', 'env2': '2.28.0'}, 'click': {'env1': '8.1.0', 'env2': '8.0.0'}}</pre></div>
               </div>
@@ -515,12 +535,12 @@ print("Detected version conflicts:", conflicts)
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>def is_valid_semver(v_str: str) -> bool:
-    parts = v_str.split(".")
+    parts: list[str] = v_str.split(".")
     if len(parts) != 3:
         return False
     return all(part.isdigit() and (len(part) == 1 or part[0] != "0") for part in parts)
 
-test_versions = ["1.0.0", "2.14.3", "01.2.3", "3.4", "v1.2.3"]
+test_versions: list[str] = ["1.0.0", "2.14.3", "01.2.3", "3.4", "v1.2.3"]
 for v in test_versions:
     print(f"{v:10} -> Valid SemVer: {is_valid_semver(v)}")</pre></div>
               </div>
@@ -533,13 +553,13 @@ for v in test_versions:
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>init_code = """
+                <div class="code"><pre>init_code: str = """
 from .client import APIClient
 from .exceptions import APIError
 
-_internal_secret = "do_not_export"
+_internal_secret: str = "do_not_export"
 
-__all__ = ["APIClient", "APIError"]
+__all__: list[str] = ["APIClient", "APIError"]
 """
 print("Curated __init__.py code:\n" + init_code.strip())</pre></div>
               </div>
@@ -558,8 +578,8 @@ print("Curated __init__.py code:\n" + init_code.strip())</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def generate_pyproject(name: str, version: str, description: str, dependencies: list) -> str:
-    dep_lines = ",\n    ".join(f'"{d}"' for d in dependencies)
+                <div class="code"><pre>def generate_pyproject(name: str, version: str, description: str, dependencies: list[str]) -> str:
+    dep_lines: str = ",\n    ".join(f'"{d}"' for d in dependencies)
     return f"""[build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -590,7 +610,7 @@ print(generate_pyproject("cloud-tool", "1.0.0", "Automated DevOps Utility", ["cl
 
 # Simulating namespace package attributes with SimpleNamespace:
 # (Custom classes and OOP are introduced in Module 19)
-mock_ns = types.SimpleNamespace(
+mock_ns: types.SimpleNamespace = types.SimpleNamespace(
     __path__=["/site-packages-1/acme", "/site-packages-2/acme"],
     __package__="acme"
 )

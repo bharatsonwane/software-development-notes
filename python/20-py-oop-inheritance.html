@@ -25,6 +25,7 @@
           </div>
           <div class="nav-sub">
             <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-inheritance-typing-pep-484">1.2. Inheritance Typing &amp; Liskov Substitution</a>
           </div>
         </div>
         <div class="nav-section">
@@ -137,6 +138,27 @@
           </li>
           <li>Python provides native support for <strong>Multiple Inheritance</strong>, resolved gracefully using the <strong>C3 Linearization Algorithm (Method Resolution Order / MRO)</strong> and cooperative <code class="inline">super()</code>.</li>
         </ul>
+
+        <h3 id="1-2-inheritance-typing-pep-484">1.2. Inheritance Typing &amp; Liskov Substitution</h3>
+        <div class="callout tip">
+          <div class="callout-title">PEP 484 &amp; Subtyping Rules</div>
+          <p>When inheriting in typed Python, method overrides must conform to the <strong>Liskov Substitution Principle (LSP)</strong>: parameter types must be contravariant (or identical) and return types must be covariant (subtypes or identical). Always explicitly type <code class="inline">super().__init__()</code> arguments:</p>
+        </div>
+        <div class="code"><pre>class Vehicle:
+    def __init__(self, make: str, speed: float) -> None:
+        self.make: str = make
+        self.speed: float = speed
+
+    def description(self) -> str:
+        return f"{self.make} traveling at {self.speed} km/h"
+
+class ElectricCar(Vehicle):
+    def __init__(self, make: str, speed: float, battery_kwh: float) -> None:
+        super().__init__(make, speed)
+        self.battery_kwh: float = battery_kwh
+
+    def description(self) -> str:  # Covariant return type matches str
+        return f"{super().description()} with {self.battery_kwh} kWh battery"</pre></div>
       </section>
 
       <!-- SECTION 2: HAS-A RELATIONSHIP -->
@@ -175,21 +197,21 @@
 
         <div class="code"><pre># Composition Example (Car owns Engine lifecycle):
 class Engine:
-    def __init__(self, hp):
-        self.hp = hp
+    def __init__(self, hp: int) -> None:
+        self.hp: int = hp
 
-    def ignite(self):
+    def ignite(self) -> str:
         return f"{self.hp} HP engine running."
 
 class Car:
-    def __init__(self, brand, hp):
-        self.brand = brand
-        self.engine = Engine(hp)  # Engine created internally inside Car
+    def __init__(self, brand: str, hp: int) -> None:
+        self.brand: str = brand
+        self.engine: Engine = Engine(hp)  # Engine created internally inside Car
 
-    def start(self):
+    def start(self) -> None:
         print(f"{self.brand}: {self.engine.ignite()}")
 
-my_car = Car("Porsche", 450)
+my_car: Car = Car("Porsche", 450)
 my_car.start()  # Porsche: 450 HP engine running.</pre></div>
 
         <div class="callout">
@@ -212,18 +234,18 @@ my_car.start()  # Porsche: 450 HP engine running.</pre></div>
         <p>A child class inherits all accessible attributes and methods of its parent class:</p>
 
         <div class="code"><pre>class Animal:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, name: str) -> None:
+        self.name: str = name
 
-    def speak(self):
+    def speak(self) -> str:
         return "Some generic sound"
 
 # Dog IS-A Animal:
 class Dog(Animal):
-    def speak(self):
+    def speak(self) -> str:
         return f"{self.name} says Woof!"
 
-d = Dog("Buddy")
+d: Dog = Dog("Buddy")
 print(d.speak())  # Buddy says Woof!</pre></div>
 
         <h3 id="3-is-a-relationship-inheritance-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -261,19 +283,19 @@ print(issubclass(Animal, Dog))  # False</pre></div>
 
         <div class="code"><pre># Multiple Inheritance Example:
 class Flyer:
-    def fly(self):
+    def fly(self) -> str:
         return "Soaring in the sky"
 
 class Swimmer:
-    def swim(self):
+    def swim(self) -> str:
         return "Swimming in the water"
 
 # Duck inherits from BOTH Flyer and Swimmer:
 class Duck(Flyer, Swimmer):
-    def quack(self):
+    def quack(self) -> str:
         return "Quack quack!"
 
-d = Duck()
+d: Duck = Duck()
 print(d.fly())    # Soaring in the sky
 print(d.swim())   # Swimming in the water
 print(d.quack())  # Quack quack!</pre></div>
@@ -305,21 +327,21 @@ print(d.quack())  # Quack quack!</pre></div>
 
         <h3 id="5-2-inspecting-mro">5.2. Inspecting MRO</h3>
         <div class="code"><pre>class A:
-    def greet(self):
+    def greet(self) -> str:
         return "A"
 
 class B(A):
-    def greet(self):
+    def greet(self) -> str:
         return "B"
 
 class C(A):
-    def greet(self):
+    def greet(self) -> str:
         return "C"
 
 class D(B, C):
     pass
 
-d = D()
+d: D = D()
 print("Greets as:", d.greet())  # B (Because B appears before C in class D(B, C))
 
 # Inspecting MRO tuple:
@@ -367,18 +389,18 @@ for cls in D.__mro__:
         <p><code class="inline">super()</code> returns a proxy object delegating method calls to parent classes in the MRO:</p>
 
         <div class="code"><pre>class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+    def __init__(self, name: str, age: int) -> None:
+        self.name: str = name
+        self.age: int = age
 
 class Employee(Person):
-    def __init__(self, name, age, emp_id, salary):
+    def __init__(self, name: str, age: int, emp_id: int, salary: float) -> None:
         # Delegate name and age initialization to Person:
         super().__init__(name, age)
-        self.emp_id = emp_id
-        self.salary = salary
+        self.emp_id: int = emp_id
+        self.salary: float = salary
 
-emp = Employee("Bharat", 29, 1001, 95000.0)
+emp: Employee = Employee("Bharat", 29, 1001, 95000.0)
 print(f"{emp.name} (ID: {emp.emp_id}) is {emp.age} years old.")</pre></div>
 
         <h3 id="6-super-function-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
@@ -387,26 +409,26 @@ print(f"{emp.name} (ID: {emp.emp_id}) is {emp.age} years old.")</pre></div>
         <p>In multiple inheritance, <code class="inline">super()</code> does not simply call the parent class; it calls the <strong>next class in the MRO chain</strong>:</p>
 
         <div class="code"><pre>class Base:
-    def __init__(self):
+    def __init__(self) -> None:
         print("Base __init__")
 
 class MixinA(Base):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         print("MixinA __init__")
 
 class MixinB(Base):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         print("MixinB __init__")
 
 class Combined(MixinA, MixinB):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         print("Combined __init__")
 
 # MRO: Combined -> MixinA -> MixinB -> Base -> object
-c = Combined()
+c: Combined = Combined()
 # Output order:
 # Base __init__
 # MixinB __init__
@@ -566,7 +588,7 @@ print("MRO of C:", [cls.__name__ for cls in C.__mro__])
                 <div class="code"><pre>class Vehicle: pass
 class Car(Vehicle): pass
 
-c = Car()
+c: Car = Car()
 print("isinstance(c, Vehicle):", isinstance(c, Vehicle))  # True
 print("issubclass(Car, Vehicle):", issubclass(Car, Vehicle))# True</pre></div>
               </div>
@@ -584,22 +606,22 @@ print("issubclass(Car, Vehicle):", issubclass(Car, Vehicle))# True</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class Employee:
-    def __init__(self, name: str, base_salary: float):
-        self.name = name
-        self.base_salary = base_salary
+    def __init__(self, name: str, base_salary: float) -> None:
+        self.name: str = name
+        self.base_salary: float = base_salary
 
     def calculate_total_pay(self) -> float:
         return self.base_salary
 
 class Manager(Employee):
-    def __init__(self, name: str, base_salary: float, bonus: float):
+    def __init__(self, name: str, base_salary: float, bonus: float) -> None:
         super().__init__(name, base_salary)
-        self.bonus = bonus
+        self.bonus: float = bonus
 
     def calculate_total_pay(self) -> float:
         return super().calculate_total_pay() + self.bonus
 
-mgr = Manager("Bharat Sonwane", 120000.0, 30000.0)
+mgr: Manager = Manager("Bharat Sonwane", 120000.0, 30000.0)
 print(f"{mgr.name} Total Compensation: ${mgr.calculate_total_pay():,}")</pre></div>
               </div>
             </details>
@@ -612,20 +634,20 @@ print(f"{mgr.name} Total Compensation: ${mgr.calculate_total_pay():,}")</pre></d
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class PaymentProcessor:
-    def charge(self, amount: float):
+    def charge(self, amount: float) -> str:
         return f"Successfully charged ${amount:.2f} via Secure Gateway."
 
 class Order:
-    def __init__(self, order_id: str, amount: float, processor: PaymentProcessor):
-        self.order_id = order_id
-        self.amount = amount
-        self.processor = processor  # Composition / Aggregation
+    def __init__(self, order_id: str, amount: float, processor: PaymentProcessor) -> None:
+        self.order_id: str = order_id
+        self.amount: float = amount
+        self.processor: PaymentProcessor = processor  # Composition / Aggregation
 
-    def checkout(self):
+    def checkout(self) -> None:
         print(f"Order #{self.order_id}: {self.processor.charge(self.amount)}")
 
-gateway = PaymentProcessor()
-order = Order("ORD-9876", 450.0, gateway)
+gateway: PaymentProcessor = PaymentProcessor()
+order: Order = Order("ORD-9876", 450.0, gateway)
 order.checkout()</pre></div>
               </div>
             </details>
@@ -644,12 +666,12 @@ class JSONSerializableMixin:
         return json.dumps(self.__dict__, indent=2)
 
 class Product(JSONSerializableMixin):
-    def __init__(self, sku: str, price: float, tags: list):
-        self.sku = sku
-        self.price = price
-        self.tags = tags
+    def __init__(self, sku: str, price: float, tags: list[str]) -> None:
+        self.sku: str = sku
+        self.price: float = price
+        self.tags: list[str] = tags
 
-p = Product("SKU-100", 29.99, ["electronics", "gadget"])
+p: Product = Product("SKU-100", 29.99, ["electronics", "gadget"])
 print("JSON Output:\n" + p.to_json())</pre></div>
               </div>
             </details>
@@ -662,25 +684,25 @@ print("JSON Output:\n" + p.to_json())</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>class A:
-    def log(self):
+    def log(self) -> None:
         print("A log")
 
 class B(A):
-    def log(self):
+    def log(self) -> None:
         print("B log")
         super().log()
 
 class C(A):
-    def log(self):
+    def log(self) -> None:
         print("C log")
         super().log()
 
 class D(B, C):
-    def log(self):
+    def log(self) -> None:
         print("D log")
         super().log()
 
-d = D()
+d: D = D()
 d.log()
 # Output: D log -> B log -> C log -> A log</pre></div>
               </div>
@@ -699,23 +721,25 @@ d.log()
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>class TimestampMixin:
-    def __init__(self, *args, **kwargs):
+                <div class="code"><pre>from typing import Any
+
+class TimestampMixin:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         import time
-        self.created_at = time.time()
+        self.created_at: float = time.time()
         super().__init__(*args, **kwargs)
 
 class AuditableMixin:
-    def audit_log(self):
+    def audit_log(self) -> None:
         print(f"[AUDIT] Entity {self.__class__.__name__} state: {self.__dict__}")
 
 class UserAccount(TimestampMixin, AuditableMixin):
-    def __init__(self, username, email):
-        self.username = username
-        self.email = email
+    def __init__(self, username: str, email: str) -> None:
+        self.username: str = username
+        self.email: str = email
         super().__init__()
 
-user = UserAccount("bharat_dev", "bharat@example.com")
+user: UserAccount = UserAccount("bharat_dev", "bharat@example.com")
 user.audit_log()</pre></div>
               </div>
             </details>
@@ -727,10 +751,12 @@ user.audit_log()</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>class BaseExporter:
-    registry = {}
+                <div class="code"><pre>from typing import Any
 
-    def __init_subclass__(cls, format_name, **kwargs):
+class BaseExporter:
+    registry: dict[str, type["BaseExporter"]] = {}
+
+    def __init_subclass__(cls, format_name: str, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         cls.registry[format_name] = cls
 
@@ -767,7 +793,7 @@ class Employee(BaseEmployee):
     def format_badge(self) -> str:
         return f"[{self.emp_id}] {self.name.upper()} - Annual: ${self.annual_salary:,.2f}"
 
-emp = Employee("EMP-401", "Bharat Sonwane", 8500.0)
+emp: Employee = Employee("EMP-401", "Bharat Sonwane", 8500.0)
 print(emp.format_badge())
 print("Is tuple instance:", isinstance(emp, tuple))  # True (Inherits IS-A relationship from tuple)</pre></div>
               </div>
