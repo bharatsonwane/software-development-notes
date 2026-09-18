@@ -13,15 +13,52 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> JavaScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-arraybuffer">2. ArrayBuffer</a>
-        <a href="#3-typed-arrays">3. TypedArrays</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-arraybuffer">2. ArrayBuffer</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-detach-transfer">2.1. Detach / transfer</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-typed-arrays">3. TypedArrays</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-common-uses">3.1. Common uses</a>
+            <a href="#3-2-multiple-views-one-buffer">3.2. Multiple views, one buffer</a>
+          </div>
+        </div>
         <a href="#4-dataview">4. DataView</a>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -49,25 +86,14 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>JavaScript arrays hold mixed values. <strong>Binary data</strong> (network packets, images, audio, WASM) uses a fixed byte buffer plus typed views.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> use a TypedArray (<code class="inline">Uint8Array</code>, etc.) for homogeneous numeric buffers; use <code class="inline">DataView</code> when endianness or mixed field sizes matter; pass buffers with <code class="inline">structuredClone</code> / Worker transfer (File 02, 24).</li>
           <li>After reading sections 2–4, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">26-practice.js</code> before File 27. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>ArrayBuffer</strong></li>
-          <li><strong>TypedArrays</strong></li>
-          <li><strong>DataView</strong></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
@@ -86,7 +112,7 @@
         <div class="code"><pre>const buf = new ArrayBuffer(8);  // 8 bytes
 buf.byteLength;                  // 8</pre></div>
         <h3 id="2-arraybuffer-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Detach / transfer</h3>
+        <h3 id="2-1-detach-transfer">2.1. Detach / transfer</h3>
         <ul>
           <li>Transferring a buffer (Workers, <code class="inline">structuredClone(..., { transfer })</code>) <strong>detaches</strong> the original — <code class="inline">byteLength</code> becomes 0.</li>
         </ul>
@@ -135,7 +161,7 @@ bytes.buffer;       // ArrayBuffer</pre></div>
           <li>Many array methods work (<code class="inline">map</code>, <code class="inline">slice</code>, <code class="inline">set</code>) but TypedArrays are not normal Arrays (<code class="inline">Array.isArray</code> is false).</li>
         </ul>
         <h3 id="3-typed-arrays-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Common uses</h3>
+        <h3 id="3-1-common-uses">3.1. Common uses</h3>
         <div class="code"><pre>// Fetch binary
 const res = await fetch(&quot;/file.bin&quot;);
 const buf = await res.arrayBuffer();
@@ -145,7 +171,7 @@ const view = new Uint8Array(buf);
 const enc = new TextEncoder().encode(&quot;hi&quot;);  // Uint8Array
 const text = new TextDecoder().decode(enc);</pre></div>
         <h3 id="3-typed-arrays-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Multiple views, one buffer</h3>
+        <h3 id="3-2-multiple-views-one-buffer">3.2. Multiple views, one buffer</h3>
         <div class="code"><pre>const buf = new ArrayBuffer(4);
 const u8 = new Uint8Array(buf);
 const u16 = new Uint16Array(buf);
@@ -230,7 +256,7 @@ dv.getUint16(0, false);         // 0x1234</pre></div>
         <div class="callout">Work with ArrayBuffer / TypedArrays carefully — endianness matters for DataView.</div>
 
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -295,7 +321,7 @@ console.log(&quot;Big-endian bytes    (index 2,3):&quot;, [bytes[2].toString(16)
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -377,7 +403,7 @@ console.log(&quot;u8[1]:&quot;, u8[1]); // 5</pre></div>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -430,7 +456,7 @@ console.log(&quot;Decoded string:     &quot;, decoded);</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know TypedArrays are views on ArrayBuffer.</li>
           <li>I set endianness explicitly with DataView.</li>

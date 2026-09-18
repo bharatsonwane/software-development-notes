@@ -15,17 +15,85 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-dict-properties-creation-access">2. dict properties, creation, access</a>
-        <a href="#3-update-delete-and-important-methods">3. Update, delete, and important methods</a>
-        <a href="#4-dict-programs-and-comprehension">4. Dict programs and comprehension</a>
-        <a href="#5-merging-and-nested-collections">5. Merging and nested collections</a>
-        <a href="#6-mini-apps-dict-supermarket-outline">6. Mini apps (supermarket billing)</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-cpython-internals-the-compact-hash-table">1.2. CPython Internals: The Compact Hash Table</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-dict-properties-creation-access">2. dict properties, creation, access</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-key-and-value-rules">2.1. Key and Value Rules</a>
+            <a href="#2-2-creation-patterns">2.2. Creation Patterns</a>
+            <a href="#2-3-safe-vs-unsafe-key-access-d-key-vs-d-get">2.3. Safe vs Unsafe Key Access: d[key] vs d.get()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-update-delete-and-important-methods">3. Update, delete, and important methods</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-mutating-and-adding-key-value-pairs">3.1. Mutating &amp; Adding Key-Value Pairs</a>
+            <a href="#3-2-dynamic-default-initialization-setdefault">3.2. Dynamic Default Initialization: setdefault()</a>
+            <a href="#3-3-deleting-elements-pop-popitem-del-clear">3.3. Deleting Elements: pop(), popitem(), del, clear()</a>
+            <a href="#3-4-dictionary-view-objects-keys-values-items">3.4. Dictionary View Objects: keys(), values(), items()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-dict-programs-and-comprehension">4. Dict programs and comprehension</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-dict-comprehension-syntax">4.1. Dict Comprehension Syntax</a>
+            <a href="#4-2-inverting-a-dictionary-key-value-swap">4.2. Inverting a Dictionary (Key-Value Swap)</a>
+            <a href="#4-3-character-and-word-frequency-counters">4.3. Character &amp; Word Frequency Counters</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-merging-and-nested-collections">5. Merging and nested collections</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-dictionary-merging-in-python-3-9-pep-584">5.1. Dictionary Merging in Python 3.9+ (PEP 584)</a>
+            <a href="#5-2-deep-merging-and-nested-dictionaries">5.2. Deep Merging &amp; Nested Dictionaries</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#6-mini-apps-dict-supermarket-outline">6. Mini apps (supermarket billing)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#6-1-supermarket-inventory-and-invoice-generation-system">6.1. Supermarket Inventory &amp; Invoice Generation System</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core Tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -65,14 +133,14 @@
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>A <strong>Dictionary</strong> (<code class="inline">dict</code>) is Python's built-in associative mapping type that associates unique <strong>keys</strong> with arbitrary <strong>values</strong> (<code class="inline">{key: value}</code>).</li>
           <li>Unlike sequences (strings, lists, tuples) which are indexed by sequential numeric positions, dictionary items are accessed via their keys.</li>
           <li>Since Python 3.7 (language specification guarantee), dictionaries maintain <strong>insertion order</strong>: iterating through a dictionary yields items in the exact order they were inserted.</li>
         </ul>
 
-        <h3>1.2. CPython Internals: The Compact Hash Table</h3>
+        <h3 id="1-2-cpython-internals-the-compact-hash-table">1.2. CPython Internals: The Compact Hash Table</h3>
         <div class="callout">
           <strong>Under the Hood (PEP 468 &amp; Python 3.6+):</strong>
           CPython uses an ingenious <strong>compact hash table design</strong>:
@@ -87,20 +155,6 @@
             <li>This saves 20% to 25% RAM and provides guaranteed <strong>insertion-ordered iteration</strong> for free.</li>
           </ul>
         </div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>dict properties, creation, access</strong> — key rules, hashing, <code class="inline">[]</code> vs <code class="inline">get()</code></li>
-          <li><strong>Update, delete, and important methods</strong> — <code class="inline">keys()</code>, <code class="inline">values()</code>, <code class="inline">items()</code>, <code class="inline">setdefault()</code>, <code class="inline">pop()</code></li>
-          <li><strong>Dict programs and comprehension</strong> — syntax, inversion, frequency mapping</li>
-          <li><strong>Merging and nested collections</strong> — Python 3.9+ <code class="inline">|</code> operator, unpacking, nested navigation</li>
-          <li><strong>Mini apps (supermarket billing)</strong> — complete working inventory and invoice system</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
 
       <!-- SECTION 2: DICT PROPERTIES, CREATION, ACCESS -->
@@ -114,7 +168,7 @@
         </div>
         <h3 id="2-dict-properties-creation-access-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>2.1. Key and Value Rules</h3>
+        <h3 id="2-1-key-and-value-rules">2.1. Key and Value Rules</h3>
         <table>
           <thead>
             <tr><th>Component</th><th>Mutability</th><th>Uniqueness</th><th>Allowed Data Types</th></tr>
@@ -135,7 +189,7 @@
           </tbody>
         </table>
 
-        <h3>2.2. Creation Patterns</h3>
+        <h3 id="2-2-creation-patterns">2.2. Creation Patterns</h3>
         <div class="code"><pre># 1. Empty dictionary:
 d1 = {}
 d2 = dict()
@@ -162,7 +216,7 @@ print("Metrics:", metrics)  # {'cpu': 0, 'memory': 0, 'disk': 0}</pre></div>
 
         <h3 id="2-dict-properties-creation-access-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>2.3. Safe vs Unsafe Key Access: <code class="inline">d[key]</code> vs <code class="inline">d.get()</code></h3>
+        <h3 id="2-3-safe-vs-unsafe-key-access-d-key-vs-d-get">2.3. Safe vs Unsafe Key Access: <code class="inline">d[key]</code> vs <code class="inline">d.get()</code></h3>
         <div class="callout">
           <strong>Key Access Best Practice:</strong>
           <ul>
@@ -197,7 +251,7 @@ if "tier" in profile:
         </div>
         <h3 id="3-update-delete-and-important-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>3.1. Mutating &amp; Adding Key-Value Pairs</h3>
+        <h3 id="3-1-mutating-and-adding-key-value-pairs">3.1. Mutating &amp; Adding Key-Value Pairs</h3>
         <div class="code"><pre>inventory = {"apples": 50, "bananas": 100}
 
 # 1. Direct assignment (Updates existing key or inserts new key):
@@ -209,7 +263,7 @@ print("Inventory:", inventory)
 inventory.update({"grapes": 40, "bananas": 120})
 print("After update:", inventory)</pre></div>
 
-        <h3>3.2. Dynamic Default Initialization: <code class="inline">setdefault()</code></h3>
+        <h3 id="3-2-dynamic-default-initialization-setdefault">3.2. Dynamic Default Initialization: <code class="inline">setdefault()</code></h3>
         <p><code class="inline">d.setdefault(key, default)</code> checks if <code class="inline">key</code> exists. If present, it returns its current value. If missing, it inserts <code class="inline">key</code> with value <code class="inline">default</code> and returns that default:</p>
 
         <div class="code"><pre># Grouping words by their first letter using setdefault:
@@ -224,7 +278,7 @@ print("Grouped words:", grouped)
 
         <h3 id="3-update-delete-and-important-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>3.3. Deleting Elements: <code class="inline">pop()</code>, <code class="inline">popitem()</code>, <code class="inline">del</code>, <code class="inline">clear()</code></h3>
+        <h3 id="3-3-deleting-elements-pop-popitem-del-clear">3.3. Deleting Elements: <code class="inline">pop()</code>, <code class="inline">popitem()</code>, <code class="inline">del</code>, <code class="inline">clear()</code></h3>
         <table>
           <thead>
             <tr><th>Method</th><th>Behavior</th><th>Missing Key Handling</th></tr>
@@ -267,7 +321,7 @@ print("Missing key pop:", missing)  # 'NOT_FOUND'
 last_pair = cache.popitem()
 print("Popped item:", last_pair)   # ('req_3', 'TIMEOUT')</pre></div>
 
-        <h3>3.4. Dictionary View Objects: <code class="inline">keys()</code>, <code class="inline">values()</code>, <code class="inline">items()</code></h3>
+        <h3 id="3-4-dictionary-view-objects-keys-values-items">3.4. Dictionary View Objects: <code class="inline">keys()</code>, <code class="inline">values()</code>, <code class="inline">items()</code></h3>
         <p>These methods return <strong>dynamic view objects</strong> that reflect changes in the underlying dictionary in real time:</p>
 
         <div class="code"><pre>prices = {"pen": 10, "notebook": 50, "marker": 25}
@@ -299,7 +353,7 @@ for item, price in prices.items():
         </div>
         <h3 id="4-dict-programs-and-comprehension-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>4.1. Dict Comprehension Syntax</h3>
+        <h3 id="4-1-dict-comprehension-syntax">4.1. Dict Comprehension Syntax</h3>
         <p>Constructs a new dictionary concisely from any iterable:</p>
         <div class="code"><pre># Syntax: { key_expr: value_expr for item in iterable if condition }
 
@@ -314,14 +368,14 @@ print("High earners:", high_earners)  # {'Alice': 85000, 'Charlie': 95000}</pre>
 
         <h3 id="4-dict-programs-and-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>4.2. Inverting a Dictionary (Key-Value Swap)</h3>
+        <h3 id="4-2-inverting-a-dictionary-key-value-swap">4.2. Inverting a Dictionary (Key-Value Swap)</h3>
         <div class="code"><pre># Inverting key-value pairs:
 code_to_country = {"US": "United States", "IN": "India", "DE": "Germany"}
 country_to_code = {country: code for code, country in code_to_country.items()}
 print("Inverted:", country_to_code)
 # {'United States': 'US', 'India': 'IN', 'Germany': 'DE'}</pre></div>
 
-        <h3>4.3. Character &amp; Word Frequency Counters</h3>
+        <h3 id="4-3-character-and-word-frequency-counters">4.3. Character &amp; Word Frequency Counters</h3>
         <div class="code"><pre># Character frequency map:
 msg = "mississippi"
 freq = {ch: msg.count(ch) for ch in set(msg)}
@@ -346,7 +400,7 @@ print("Word Counts:", word_counts)  # {'code': 3, 'clean': 1, 'fast': 1, 'debug'
         </div>
         <h3 id="5-merging-and-nested-collections-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>5.1. Dictionary Merging in Python 3.9+ (PEP 584)</h3>
+        <h3 id="5-1-dictionary-merging-in-python-3-9-pep-584">5.1. Dictionary Merging in Python 3.9+ (PEP 584)</h3>
         <p>Python 3.9 introduced the union operator (<code class="inline">|</code>) and in-place update operator (<code class="inline">|=</code>) for dictionaries. The right-hand operand takes precedence on duplicate keys:</p>
 
         <div class="code"><pre>default_cfg = {"host": "localhost", "port": 8080, "timeout": 30}
@@ -366,7 +420,7 @@ unpacked = {**default_cfg, **user_cfg}</pre></div>
 
         <h3 id="5-merging-and-nested-collections-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>5.2. Deep Merging &amp; Nested Dictionaries</h3>
+        <h3 id="5-2-deep-merging-and-nested-dictionaries">5.2. Deep Merging &amp; Nested Dictionaries</h3>
         <div class="code"><pre># Nested JSON-like record:
 company = {
     "org": "TechCorp",
@@ -400,7 +454,7 @@ print("Merged Configuration:", merged_config)
         </div>
         <h3 id="6-mini-apps-dict-supermarket-outline-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>6.1. Supermarket Inventory &amp; Invoice Generation System</h3>
+        <h3 id="6-1-supermarket-inventory-and-invoice-generation-system">6.1. Supermarket Inventory &amp; Invoice Generation System</h3>
         <p>A complete, modular Python application using nested dictionaries for catalog lookup, stock tracking, and invoice generation:</p>
 
         <div class="code"><pre># Supermarket catalog: Item -> {price, stock, unit}
@@ -578,7 +632,7 @@ print("=" * 48)</pre></div>
         <div class="callout">Write and verify all tasks in <code class="inline">13-practice.py</code>. Run with <code class="inline">python3 13-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -622,7 +676,7 @@ print("Inverted:", inverted)  # {1: 'A', 2: 'B', 3: 'C'}</pre></div>
           </li>
         </ol>
 
-        <h3>P.2. Core Tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -708,7 +762,7 @@ print("Employees by Dept:", dept_map)
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -789,7 +843,7 @@ else:
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can explain how CPython compact hash tables preserve insertion order and save memory.</li>
           <li>I know when to use <code class="inline">d[key]</code> vs <code class="inline">d.get()</code> and <code class="inline">d.setdefault()</code>.</li>

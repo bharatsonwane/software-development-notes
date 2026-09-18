@@ -13,16 +13,58 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> TypeScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#1-introduction">1. Introduction</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
         <a href="#2-typed-parameters-and-return-types">2. Typed parameters and return types</a>
-        <a href="#3-optional-and-default-parameters">3. Optional and default parameters</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-optional-and-default-parameters">3. Optional and default parameters</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-rest-parameters">3.1. Rest parameters</a>
+          </div>
+        </div>
         <a href="#4-function-overloads">4. Function overloads</a>
-        <a href="#5-generic-functions-and-constraints">5. Generic functions and constraints</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-generic-functions-and-constraints">5. Generic functions and constraints</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-basic-generic-function">5.1. Basic generic function</a>
+            <a href="#5-2-multiple-type-parameters">5.2. Multiple type parameters</a>
+            <a href="#5-3-generic-interfaces-and-classes">5.3. Generic interfaces and classes</a>
+            <a href="#5-4-defaults-on-generics">5.4. Defaults on generics</a>
+            <a href="#5-5-constraints-with-extends">5.5. Constraints with extends</a>
+            <a href="#5-6-const-type-parameters-ts-5-0">5.6. const Type Parameters (TS 5.0+)</a>
+            <a href="#5-7-function-subtyping-and-variance-covariance-vs-contravariance">5.7. Function Subtyping &amp; Variance (Covariance vs Contravariance)</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -50,27 +92,15 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>Functions are first-class in TypeScript. Annotate <strong>inputs and outputs</strong> so callers and implementers stay in sync.</li>
         </ul>
 
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
           <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">04-practice.ts</code> before File 05. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Typed parameters and return types</strong></li>
-          <li><strong>Optional and default parameters</strong></li>
-          <li><strong>Function overloads</strong></li>
-          <li><strong>Generic functions and constraints</strong></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-typed-parameters-and-return-types">
@@ -122,7 +152,7 @@ function createUser(name: string, role: string = &quot;member&quot;): User {
 greet(&quot;Bharat&quot;, &quot;Hi&quot;);     // &quot;Hi, Bharat!&quot;
 createUser(&quot;Alex&quot;);        // role = &quot;member&quot;</pre></div>
         <h3 id="3-optional-and-default-parameters-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Rest parameters</h3>
+        <h3 id="3-1-rest-parameters">3.1. Rest parameters</h3>
         <div class="code"><pre>function sum(...nums: number[]): number {
   return nums.reduce((a, b) =&gt; a + b, 0);
 }
@@ -177,7 +207,7 @@ format(3.14159);  // &quot;3.14&quot;</pre></div>
         <ul>
           <li><strong>Generics</strong> let you write reusable code while preserving type relationships.</li>
         </ul>
-        <h3>5.1. Basic generic function</h3>
+        <h3 id="5-1-basic-generic-function">5.1. Basic generic function</h3>
         <div class="code"><pre>function first&lt;T&gt;(items: T[]): T | undefined {
   return items[0];
 }
@@ -185,13 +215,13 @@ format(3.14159);  // &quot;3.14&quot;</pre></div>
 first([1, 2, 3]);     // number | undefined
 first([&quot;a&quot;, &quot;b&quot;]);    // string | undefined</pre></div>
         <h3 id="5-generic-functions-and-constraints-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.2. Multiple type parameters</h3>
+        <h3 id="5-2-multiple-type-parameters">5.2. Multiple type parameters</h3>
         <div class="code"><pre>function pair&lt;A, B&gt;(a: A, b: B): [A, B] {
   return [a, b];
 }
 
 pair(&quot;id&quot;, 42); // [string, number]</pre></div>
-        <h3>5.3. Generic interfaces and classes</h3>
+        <h3 id="5-3-generic-interfaces-and-classes">5.3. Generic interfaces and classes</h3>
         <div class="code"><pre>interface ApiResult&lt;T&gt; {
   data: T;
   status: number;
@@ -206,12 +236,12 @@ class Stack&lt;T&gt; {
     return this.items.pop();
   }
 }</pre></div>
-        <h3>5.4. Defaults on generics</h3>
+        <h3 id="5-4-defaults-on-generics">5.4. Defaults on generics</h3>
         <div class="code"><pre>function createState&lt;T = string&gt;(initial: T): { value: T } {
   return { value: initial };
 }</pre></div>
         <h3 id="5-generic-functions-and-constraints-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.5. Constraints with <code class="inline">extends</code></h3>
+        <h3 id="5-5-constraints-with-extends">5.5. Constraints with <code class="inline">extends</code></h3>
         <ul>
           <li>Limit what <code class="inline">T</code> can be:</li>
         </ul>
@@ -222,7 +252,7 @@ class Stack&lt;T&gt; {
 const user = { name: &quot;Bharat&quot;, age: 30 };
 getProperty(user, &quot;name&quot;); // string
 // getProperty(user, &quot;email&quot;); // Error — &quot;email&quot; not in user</pre></div>
-        <h3>5.6. <code class="inline">const</code> Type Parameters (TS 5.0+)</h3>
+        <h3 id="5-6-const-type-parameters-ts-5-0">5.6. <code class="inline">const</code> Type Parameters (TS 5.0+)</h3>
         <ul>
           <li>In TypeScript 5.0+, adding <code class="inline">const</code> before a generic parameter automatically infers literal and readonly tuple types without requiring the caller to append <code class="inline">as const</code> at the call site:</li>
         </ul>
@@ -234,7 +264,7 @@ function getRoutes&lt;const T extends readonly string[]&gt;(routes: T): T {
 // Automatically infers readonly ["/home", "/dashboard"], not string[]!
 const routes = getRoutes(["/home", "/dashboard"]);</pre></div>
         <h3 id="5-generic-functions-and-constraints-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>5.7. Function Subtyping &amp; Variance (Covariance vs Contravariance)</h3>
+        <h3 id="5-7-function-subtyping-and-variance-covariance-vs-contravariance">5.7. Function Subtyping &amp; Variance (Covariance vs Contravariance)</h3>
         <ul>
           <li><strong>Return Types are Covariant:</strong> A function returning a narrower (subtype) is assignable to one returning a broader type:</li>
         </ul>
@@ -362,7 +392,7 @@ handleDog = handleAnimal; // OK: handleAnimal can safely accept any Dog!
         </div>
         <div class="callout">Annotate params/returns; write one generic.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -413,7 +443,7 @@ console.log({ num, str });</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -491,7 +521,7 @@ performTask((status) =&gt; {
           </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -530,7 +560,7 @@ console.log(&quot;Found user:&quot;, findById(users, 1)); // { id: 1, name: &quo
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I annotate functions.</li>
           <li>I know optional/default params.</li>

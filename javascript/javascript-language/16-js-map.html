@@ -13,14 +13,45 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> JavaScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-map">2. Map</a>
-        <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./22-js-es6-plus-animation.html">Animation visualizer</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-map">2. Map</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-iterate">2.1. Iterate</a>
+            <a href="#2-1-1-samevaluezero-keys-nan-and-0">2.1.1. SameValueZero keys (NaN and ±0)</a>
+            <a href="#2-1-2-map-groupby">2.1.2. Map.groupBy</a>
+            <a href="#2-2-weakmap">2.2. WeakMap</a>
+          </div>
+        </div>
+        <a href="#c-common-questions">C. Common questions</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -49,23 +80,14 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>A <strong><code class="inline">Map</code></strong> is a key/value collection. Unlike objects (File 13), keys can be <strong>any value</strong> (objects, functions, numbers), not only strings/symbols.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li>Interactive visualizer: <a href="./22-js-es6-plus-animation.html">22-js-es6-plus-animation.html</a> (Map/Set scenarios).</li>
           <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">16-practice.js</code> before File 17. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Map</strong></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-map">
@@ -93,7 +115,7 @@ map.size;            // 3
 map.delete(42);
 map.clear();         // remove all</pre></div>
         <h3 id="2-map-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Iterate</h3>
+        <h3 id="2-1-iterate">2.1. Iterate</h3>
         <div class="code"><pre>const userMap = new Map([["a", 1], ["b", 2]]);
 
 for (const [key, value] of userMap) {
@@ -118,7 +140,7 @@ userMap.entries();</pre></div>
         </ul>
         <div class="code"><pre>const obj = Object.fromEntries(map);
 const map2 = new Map(Object.entries(obj));</pre></div>
-        <h3>2.1.1. SameValueZero keys (NaN and ±0)</h3>
+        <h3 id="2-1-1-samevaluezero-keys-nan-and-0">2.1.1. SameValueZero keys (NaN and ±0)</h3>
         <ul>
           <li>Map key equality matches Set: <strong>SameValueZero</strong> — one <code class="inline">NaN</code> key; <code class="inline">+0</code> and <code class="inline">-0</code> are the same key (File 15).</li>
         </ul>
@@ -129,7 +151,7 @@ m.get(NaN);             // &quot;b&quot; — same key
 m.set(+0, 1);
 m.set(-0, 2);
 m.get(0);               // 2</pre></div>
-        <h3>2.1.2. <code class="inline">Map.groupBy</code></h3>
+        <h3 id="2-1-2-map-groupby">2.1.2. <code class="inline">Map.groupBy</code></h3>
         <ul>
           <li>Group items into a <strong>Map</strong> keyed by any value (objects, numbers, etc.). <code class="inline">Object.groupBy</code> is the same idea with string keys (File 14).</li>
         </ul>
@@ -145,7 +167,7 @@ byType.get(&quot;a&quot;);  // [{ type: &quot;a&quot;, n: 1 }, { type: &quot;a&q
 const oddEven = Map.groupBy([1, 2, 3, 4], (n) =&gt; n % 2 === 0);
 oddEven.get(true);  // [2, 4]</pre></div>
         <h3 id="2-map-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. WeakMap</h3>
+        <h3 id="2-2-weakmap">2.2. WeakMap</h3>
         <ul>
           <li>Keys must be <strong>objects</strong>. Entries can be <strong>garbage-collected</strong> when no other references exist. Not iterable; no <code class="inline">size</code>.</li>
         </ul>
@@ -235,7 +257,7 @@ wm.get(obj);  // "metadata"
         <div class="callout">Prefer <code class="inline">Map</code> when keys are not only strings or order/key types matter.</div>
 
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -296,7 +318,7 @@ console.log(&quot;Array of pairs:&quot;, pairs);
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -392,7 +414,7 @@ for (const [letter, list] of grouped) {
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -444,7 +466,7 @@ session = null;</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know Map allows any key type.</li>
           <li>I iterate with <code class="inline">for...of</code> or <code class="inline">map.entries()</code>.</li>

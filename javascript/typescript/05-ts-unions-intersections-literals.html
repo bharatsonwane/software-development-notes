@@ -13,16 +13,64 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> TypeScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-union-types">2. Union types</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-union-types">2. Union types</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-common-union-patterns">2.1. Common union patterns</a>
+          </div>
+        </div>
         <a href="#3-intersection-types">3. Intersection types</a>
-        <a href="#4-literal-and-discriminated-unions">4. Literal and discriminated unions</a>
-        <a href="#5-exhaustiveness-checking">5. Exhaustiveness checking</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-literal-and-discriminated-unions">4. Literal and discriminated unions</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-literal-types">4.1. Literal types</a>
+            <a href="#4-2-real-world-example-api-states">4.2. Real-world example — API states</a>
+            <a href="#4-3-discriminated-unions-tagged-unions">4.3. Discriminated unions (tagged unions)</a>
+            <a href="#4-4-the-satisfies-operator-ts-4-9-vs-type-annotations">4.4. The satisfies Operator (TS 4.9+) vs Type Annotations</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-exhaustiveness-checking">5. Exhaustiveness checking</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-helper-assertnever">5.1. Helper: assertNever</a>
+            <a href="#5-2-union-narrowing-with-in">5.2. Union narrowing with in</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -50,27 +98,15 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>TypeScript combines types to express <strong>either/or</strong> (unions), <strong>and</strong> (intersections), and <strong>exact values</strong> (literals).</li>
         </ul>
 
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
           <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">05-practice.ts</code> before File 06. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Union types</strong></li>
-          <li><strong>Intersection types</strong></li>
-          <li><strong>Literal and discriminated unions</strong></li>
-          <li><strong>Exhaustiveness checking</strong></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-union-types">
@@ -94,7 +130,7 @@ function printId(id: Id) {
 printId(101);
 printId(&quot;abc-101&quot;);</pre></div>
         <h3 id="2-union-types-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Common union patterns</h3>
+        <h3 id="2-1-common-union-patterns">2.1. Common union patterns</h3>
         <div class="code"><pre>type Status = &quot;pending&quot; | &quot;active&quot; | &quot;done&quot;;
 type Maybe&lt;T&gt; = T | null | undefined;
 type Result&lt;T&gt; = { ok: true; value: T } | { ok: false; error: string };</pre></div>
@@ -147,7 +183,7 @@ const person: Person = { name: &quot;Bharat&quot;, age: 30 };</pre></div>
           </div>
         </div>
         <h3 id="4-literal-and-discriminated-unions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Literal types</h3>
+        <h3 id="4-1-literal-types">4.1. Literal types</h3>
         <ul>
           <li>A <strong>literal type</strong> is an exact value:</li>
         </ul>
@@ -156,7 +192,7 @@ type Answer = 42 | true | &quot;yes&quot;;</pre></div>
         <div class="code"><pre>let dir: Direction = &quot;north&quot;;
 // dir = &quot;up&quot;; // Error</pre></div>
         <h3 id="4-literal-and-discriminated-unions-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.2. Real-world example — API states</h3>
+        <h3 id="4-2-real-world-example-api-states">4.2. Real-world example — API states</h3>
         <div class="code"><pre>type RequestState&lt;T&gt; =
   | { status: &quot;idle&quot; }
   | { status: &quot;loading&quot; }
@@ -176,7 +212,7 @@ function render&lt;T&gt;(state: RequestState&lt;T&gt;) {
   }
 }</pre></div>
         <h3 id="4-literal-and-discriminated-unions-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.3. Discriminated unions (tagged unions)</h3>
+        <h3 id="4-3-discriminated-unions-tagged-unions">4.3. Discriminated unions (tagged unions)</h3>
         <ul>
           <li>Add a common <strong>discriminant</strong> field so TypeScript narrows safely:</li>
         </ul>
@@ -196,7 +232,7 @@ function area(shape: Shape): number {
           <li>After checking <code class="inline">shape.kind</code>, TS knows which fields exist.</li>
         </ul>
         <h3 id="4-literal-and-discriminated-unions-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>4.4. The <code class="inline">satisfies</code> Operator (TS 4.9+) vs Type Annotations</h3>
+        <h3 id="4-4-the-satisfies-operator-ts-4-9-vs-type-annotations">4.4. The <code class="inline">satisfies</code> Operator (TS 4.9+) vs Type Annotations</h3>
         <ul>
           <li><strong>The Type Annotation Problem:</strong> When you annotate an object with a type (<code class="inline">const x: T = ...</code>), TypeScript widens property types to match <code class="inline">T</code>, throwing away specific literal knowledge and autocompletion:</li>
         </ul>
@@ -236,7 +272,7 @@ palette2.red.map(x =&gt; x * 2);  // OK: red is known to be [number, number, num
           </div>
         </div>
         <h3 id="5-exhaustiveness-checking-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Helper: <code class="inline">assertNever</code></h3>
+        <h3 id="5-1-helper-assertnever">5.1. Helper: <code class="inline">assertNever</code></h3>
         <div class="code"><pre>function assertNever(x: never): never {
   throw new Error(`Unexpected value: ${JSON.stringify(x)}`);
 }
@@ -251,7 +287,7 @@ function area(shape: Shape): number {
       return assertNever(shape);
   }
 }</pre></div>
-        <h3>5.2. Union narrowing with <code class="inline">in</code></h3>
+        <h3 id="5-2-union-narrowing-with-in">5.2. Union narrowing with <code class="inline">in</code></h3>
         <div class="code"><pre>type Cat = { meow: () =&gt; void };
 type Dog = { bark: () =&gt; void };
 type Pet = Cat | Dog;
@@ -395,7 +431,7 @@ function area(shape: Shape): number {
         </div>
         <div class="callout">Unions for alternatives; discriminants for branching.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -456,7 +492,7 @@ console.log(user);</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -539,7 +575,7 @@ Intersections work best when combining separate object interfaces.
           </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -591,7 +627,7 @@ console.log(&quot;Rectangle area:&quot;, calculateExtendedArea({ kind: &quot;rec
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I use unions/intersections.</li>
           <li>I build discriminated unions.</li>

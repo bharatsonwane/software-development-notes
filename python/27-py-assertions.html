@@ -15,14 +15,52 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-debugging-with-assertions">2. Debugging with assertions</a>
-        <a href="#3-assert-forms-and-when-to-use">3. assert forms and when to use</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview-what-is-an-assertion">1.1. Overview: What is an Assertion?</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-debugging-with-assertions">2. Debugging with assertions</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-the-two-forms-of-the-assert-statement">2.1. The Two Forms of the assert Statement</a>
+            <a href="#2-2-assertions-for-internal-invariants">2.2. Assertions for Internal Invariants</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-assert-forms-and-when-to-use">3. assert forms and when to use</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-when-to-use-vs-when-not-to-use-assertions">3.1. When to Use vs When NOT to Use Assertions</a>
+            <a href="#3-2-the-o-optimize-production-caveat">3.2. The -O (Optimize) Production Caveat</a>
+            <a href="#3-3-the-parentheses-tuple-gotcha">3.3. The Parentheses Tuple Gotcha</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -58,22 +96,13 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview: What is an Assertion?</h3>
+        <h3 id="1-1-overview-what-is-an-assertion">1.1. Overview: What is an Assertion?</h3>
         <p>An <strong>assertion</strong> is a debugging aid that tests a boolean condition that developer assumptions dictate <em>must always be true</em> at that specific point in code. If the condition evaluates to <code>True</code>, program execution continues unimpeded.</p>
         <p>If the condition evaluates to <code>False</code>, the Python runtime immediately raises an <code>AssertionError</code>, halting execution and pointing directly to the invalid internal state.</p>
 
         <div class="callout">
           <strong>Key Mental Model:</strong> Assertions are internal guard rails for the developer, not error-handling mechanisms for end users. An assertion failure represents a <strong>bug in the software itself</strong>, indicating that an internal invariant or assumption was violated.
         </div>
-
-        <h3>1.2. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — Concepts and developer guard rails</li>
-          <li><strong>Debugging with assertions</strong> — Syntax forms, custom messages, and failure lifecycles</li>
-          <li><strong>assert forms and when to use</strong> — Invariants vs validation, the critical <code>-O</code> flag, and tuple syntax pitfalls</li>
-          <li><strong>C. Common questions</strong> — Core interview questions with in-depth explanations</li>
-          <li><strong>P. Practical Assignment</strong> — Validation exercises, invariant matrix mini-project, and edge cases</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -87,7 +116,7 @@
         </div>
 
         <h3 id="2-debugging-with-assertions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. The Two Forms of the <code>assert</code> Statement</h3>
+        <h3 id="2-1-the-two-forms-of-the-assert-statement">2.1. The Two Forms of the <code>assert</code> Statement</h3>
         <p>Python provides two syntactic forms for assertions:</p>
         <ul>
           <li><strong>Simple Form:</strong> <code>assert &lt;condition&gt;</code></li>
@@ -114,7 +143,7 @@ except AssertionError as err:
     print("Assertion caught:", err)</pre></div>
 
         <h3 id="2-debugging-with-assertions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. Assertions for Internal Invariants</h3>
+        <h3 id="2-2-assertions-for-internal-invariants">2.2. Assertions for Internal Invariants</h3>
         <p>Invariants are conditions that must hold true at specific points in program execution (e.g. loop invariants, state machine transitions, unreachable default cases).</p>
 
         <div class="code"><pre>def process_transaction_state(state):
@@ -140,7 +169,7 @@ except AssertionError as err:
         </div>
 
         <h3 id="3-assert-forms-and-when-to-use-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. When to Use vs When NOT to Use Assertions</h3>
+        <h3 id="3-1-when-to-use-vs-when-not-to-use-assertions">3.1. When to Use vs When NOT to Use Assertions</h3>
         <table class="table">
           <thead>
             <tr>
@@ -169,14 +198,14 @@ except AssertionError as err:
         </table>
 
         <h3 id="3-assert-forms-and-when-to-use-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. The <code>-O</code> (Optimize) Production Caveat</h3>
+        <h3 id="3-2-the-o-optimize-production-caveat">3.2. The <code>-O</code> (Optimize) Production Caveat</h3>
         <p>When Python is run with the <code>-O</code> (optimize) or <code>-OO</code> flag (e.g., <code>python -O script.py</code>), the bytecode compiler sets the built-in constant <code>__debug__</code> to <code>False</code> and <strong>completely removes and strips all <code>assert</code> statements</strong> from the compiled <code>.pyc</code> bytecode files!</p>
 
         <div class="callout">
           <strong>CRITICAL SECURITY HAZARD:</strong> If you use <code>assert is_admin(user)</code> to guard sensitive operations, running your application with <code>python -O</code> will strip the check completely, allowing ANY unauthorized user full administrative access! Always use standard <code>if not is_admin(user): raise PermissionError()</code> for runtime logic and security checks.
         </div>
 
-        <h3>3.3. The Parentheses Tuple Gotcha</h3>
+        <h3 id="3-3-the-parentheses-tuple-gotcha">3.3. The Parentheses Tuple Gotcha</h3>
         <p>In Python, <code>assert</code> is a statement, not a function. If you write parentheses around the condition and message like a function call (<code>assert (condition, "message")</code>), Python parses it as asserting the truthiness of a 2-element tuple!</p>
         <p>Because any non-empty tuple evaluates to <code>True</code> in Python boolean logic, <strong>the assertion will NEVER fail</strong>, even if the condition is <code>False</code>!</p>
 
@@ -311,7 +340,7 @@ except AssertionError as e:
         </div>
         <div class="callout">Write <code class="inline">27-practice.py</code>. Run with <code class="inline">python3 27-practice.py</code>. Test assert forms, postconditions, and invariants.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -361,7 +390,7 @@ and distinguishing assertions from runtime validation exceptions.
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -406,7 +435,7 @@ except AssertionError as err:
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -465,7 +494,7 @@ assert item == "job2"</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can explain why assertions are for internal bugs rather than user input validation.</li>
           <li>I know what the <code>-O</code> flag does to assertions in production.</li>

@@ -13,15 +13,56 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> JavaScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-timeout">2. setTimeout / clearTimeout</a>
-        <a href="#3-interval">3. setInterval / clearInterval</a>
-        <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./07-js-timers-animation.html">Animation visualizer</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-what-are-timers">1.1. What are timers?</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-timeout">2. setTimeout / clearTimeout</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-run-once-after-a-delay">2.1. Run once after a delay</a>
+            <a href="#2-2-extra-arguments">2.2. Extra arguments</a>
+            <a href="#2-3-delay-0-is-not-immediate">2.3. Delay 0 is not immediate</a>
+            <a href="#2-4-html5-timer-clamping-4ms-and-background-tab-throttling">2.4. HTML5 Timer Clamping (4ms) &amp; Background Tab Throttling</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-interval">3. setInterval / clearInterval</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-run-repeatedly">3.1. Run repeatedly</a>
+            <a href="#3-2-requestanimationframe">3.2. requestAnimationFrame</a>
+            <a href="#3-3-recursive-settimeout-vs-setinterval">3.3. Recursive setTimeout vs setInterval</a>
+          </div>
+        </div>
+        <a href="#c-common-questions">C. Common questions</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -54,7 +95,7 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. What are timers?</h3>
+        <h3 id="1-1-what-are-timers">1.1. What are timers?</h3>
         <ul>
           <li>Timers schedule a <strong>function</strong> (File 05) to run later. They do not pause the rest of the program — other code keeps running until the delay finishes.</li>
         </ul>
@@ -69,21 +110,11 @@
             <tr><td><code class="inline">clearInterval()</code></td><td>Stops an interval.</td></tr>
           </tbody>
         </table>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> save the id that <code class="inline">setTimeout</code>/<code class="inline">setInterval</code> returns, and always <code class="inline">clearTimeout</code>/<code class="inline">clearInterval</code> when you no longer need the callback.</div>
         <ul>
           <li>Interactive visualizer: open <a href="./07-js-timers-animation.html">07-js-timers-animation.html</a> in a browser — setTimeout, setInterval, clearTimeout (Run / Step).</li>
           <li>After reading sections 2–3, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">07-practice.js</code> (browser console or Node) before File 08. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>setTimeout / clearTimeout</strong> — run once after a delay</li>
-          <li><strong>setInterval / clearInterval</strong> — repeat, rAF, recursive timeout</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-timeout">
@@ -95,7 +126,7 @@
           </div>
         </div>
         <h3 id="2-timeout-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Run once after a delay</h3>
+        <h3 id="2-1-run-once-after-a-delay">2.1. Run once after a delay</h3>
         <div class="code"><pre>const id = setTimeout(() =&gt; {
   console.log(&quot;After 1 second&quot;);
 }, 1000);
@@ -106,17 +137,17 @@ clearTimeout(id);  // cancel before it runs</pre></div>
           <li><code class="inline">setTimeout</code> returns an <strong>id</strong>. Pass that id to <code class="inline">clearTimeout</code> to cancel.</li>
         </ul>
         <h3 id="2-timeout-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.2. Extra arguments</h3>
+        <h3 id="2-2-extra-arguments">2.2. Extra arguments</h3>
         <div class="code"><pre>setTimeout((name) =&gt; {
   console.log(`Hello, ${name}`);
 }, 500, &quot;Bharat&quot;);</pre></div>
         <h3 id="2-timeout-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.3. Delay 0 is not immediate</h3>
+        <h3 id="2-3-delay-0-is-not-immediate">2.3. Delay 0 is not immediate</h3>
         <ul>
           <li><code class="inline">setTimeout(fn, 0)</code> still runs <strong>after</strong> the current call stack and microtask queue drain. File 21 (event loop) explains why.</li>
         </ul>
         <h3 id="2-timeout-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>2.4. HTML5 Timer Clamping (4ms) &amp; Background Tab Throttling</h3>
+        <h3 id="2-4-html5-timer-clamping-4ms-and-background-tab-throttling">2.4. HTML5 Timer Clamping (4ms) &amp; Background Tab Throttling</h3>
         <ul>
           <li><strong>4ms Minimum Clamping:</strong> Under the WHATWG / HTML5 specification, once timer nesting levels reach 5 or greater, browsers enforce a minimum delay floor of <strong>4ms</strong>, even if <code class="inline">0ms</code> was passed.</li>
           <li><strong>Background Tab Throttling:</strong> To preserve laptop battery and mobile CPU cycles, browsers throttle background/unfocused tabs to a minimum timer interval of <strong>1,000ms (1 second)</strong> or coarser. Never rely on <code class="inline">setInterval</code> for game loops or audio timing—use <code class="inline">requestAnimationFrame</code> or Web Workers for precision.</li>
@@ -137,7 +168,7 @@ timer.unref(); // Node process will exit if this is the only remaining scheduled
           </div>
         </div>
         <h3 id="3-interval-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Run repeatedly</h3>
+        <h3 id="3-1-run-repeatedly">3.1. Run repeatedly</h3>
         <div class="code"><pre>let count = 0;
 const id = setInterval(() =&gt; {
   count++;
@@ -152,7 +183,7 @@ const id = setInterval(() =&gt; {
           <li>Always <strong><code class="inline">clearInterval</code></strong> when done — leftover intervals keep running and can leak memory (File 23).</li>
         </ul>
         <h3 id="3-interval-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. requestAnimationFrame</h3>
+        <h3 id="3-2-requestanimationframe">3.2. requestAnimationFrame</h3>
         <ul>
           <li>For <strong>smooth animation</strong> synced to display refresh (~60fps), prefer rAF over <code class="inline">setInterval</code>:</li>
         </ul>
@@ -163,7 +194,7 @@ const id = setInterval(() =&gt; {
 requestAnimationFrame(animate);
 
 // cancel: cancelAnimationFrame(id);</pre></div>
-        <h3>3.3. Recursive setTimeout vs setInterval</h3>
+        <h3 id="3-3-recursive-settimeout-vs-setinterval">3.3. Recursive setTimeout vs setInterval</h3>
         <ul>
           <li><strong><code class="inline">setInterval</code></strong> schedules the next tick on a fixed clock — if the callback is slow, calls can <strong>overlap</strong> or pile up.</li>
           <li><strong>Recursive <code class="inline">setTimeout</code></strong> schedules the next run only after the current callback finishes — better when work length varies:</li>
@@ -241,7 +272,7 @@ setTimeout(tick, 1000);</pre></div>
         <div class="callout">Run these in a browser console or Node. Always store timer ids and clear them so scripts do not leak callbacks.</div>
 
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -286,7 +317,7 @@ clearTimeout(timerId); // Immediately cancelled</pre></div>
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -371,7 +402,7 @@ console.log(&quot;C&quot;);
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -430,7 +461,7 @@ if (typeof requestAnimationFrame !== &quot;undefined&quot;) {
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I always save and clear timer ids.</li>
           <li>I know <code class="inline">setTimeout(..., 0)</code> is not instantaneous.</li>

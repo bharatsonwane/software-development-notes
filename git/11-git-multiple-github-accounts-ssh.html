@@ -13,13 +13,48 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Git Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./git.html">← Git</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-multiple-github-accounts-ssh">2. Multiple GitHub accounts (SSH)</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-multiple-github-accounts-ssh">2. Multiple GitHub accounts (SSH)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-steps">2.1. Steps</a>
+            <a href="#2-2-create-ssh-keys-for-all-accounts">2.2. Create SSH keys for all accounts</a>
+            <a href="#2-3-create-a-config-file-and-make-host-entries">2.3. Create a config file and make host entries</a>
+            <a href="#2-4-add-ssh-keys-to-ssh-agent">2.4. Add SSH keys to SSH agent</a>
+            <a href="#2-5-add-ssh-public-key-to-github">2.5. Add SSH public key to GitHub</a>
+            <a href="#2-6-cloning-github-repositories-using-different-accounts">2.6. Cloning GitHub repositories using different accounts</a>
+            <a href="#2-7-change-remote-url-for-cloned-repositories-optional">2.7. Change remote URL for cloned repositories (optional)</a>
+            <a href="#2-8-per-repo-user-name-and-user-email">2.8. Per-repo user.name and user.email</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -51,24 +86,15 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>Use <strong>separate SSH keys</strong> and <strong>Host aliases</strong> in <code class="inline">~/.ssh/config</code> so one machine can push to multiple GitHub accounts without mixing credentials.</li>
           <li>Also set <strong>per-repo</strong> <code class="inline">user.name</code> / <code class="inline">user.email</code> so commits are attributed to the right identity.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> back up existing keys before generating new ones. Prefer <code class="inline">ed25519</code>. Test with <code class="inline">ssh -T</code> before pushing.</div>
         <ul>
           <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a>. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Multiple GitHub accounts (SSH)</strong> — keys, config, agent, clone, remotes, per-repo identity</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
@@ -89,9 +115,9 @@
           <li>The setup can be done in 5 easy steps:</li>
         </ul>
         <h3 id="content-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Steps</h3>
+        <h3 id="2-1-steps">2.1. Steps</h3>
         <ul><li><a href="#step-1">Step 1</a> : Create SSH keys for all accounts</li><li><a href="#step-2">Step 2</a> : Create a Config File and Make Host Entries</li><li><a href="#step-3">Step 3</a> : Add SSH keys to SSH Agent</li><li><a href="#step-4">Step 4</a> : Add SSH public key to the Github</li><li><a href="#step-5">Step 5</a> : Cloning GitHub repositories using different accounts</li></ul>
-        <h3 id="step-1">2.2. Create SSH keys for all accounts</h3>
+        <h3 id="2-2-create-ssh-keys-for-all-accounts">2.2. Create SSH keys for all accounts</h3>
         <ul>
           <li>First make sure your current directory is your <strong>.ssh</strong> folder (navigate to the .ssh directory).</li>
           <li><strong>Mac / Linux:</strong></li>
@@ -145,7 +171,7 @@
         <ul>
           <li>&gt;The public key will have an extension __.pub__ and private key will be there without any extension both having same name which you have passed after __-f__ option in the above command. (in my case *bitbucket_bharatOffice* and *github_bharatPersonal*)</li>
         </ul>
-        <h3 id="step-2">2.3. Create a config file and make host entries</h3>
+        <h3 id="2-3-create-a-config-file-and-make-host-entries">2.3. Create a config file and make host entries</h3>
         <ul>
           <li>The <strong>~/.ssh/config</strong> file allows us specify many config options for SSH.</li>
           <li>If <strong>config</strong> file does not already exist, create one (make sure you are in the <strong>.ssh</strong> directory).</li>
@@ -188,7 +214,7 @@
           User git
           IdentityFile ~/.ssh/github_bharatPersonal</pre></div>
         <div class="callout"><strong>Windows note:</strong> If <code class="inline">~</code> is not resolved in your SSH config, use the full path for <code class="inline">IdentityFile</code>, e.g. <code class="inline">C:\Users\sonwanebr\.ssh\github_bharatPersonal</code>.</div>
-        <h3 id="step-3">2.4. Add SSH keys to SSH agent</h3>
+        <h3 id="2-4-add-ssh-keys-to-ssh-agent">2.4. Add SSH keys to SSH agent</h3>
         <ul>
           <li>#### Start SSH Agent</li>
           <li><strong>Windows:</strong> Run PowerShell as Administrator and execute:</li>
@@ -229,7 +255,7 @@
         <ul>
           <li>You can read more about adding keys to SSH Agent <a href="https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent">here.</a></li>
         </ul>
-        <h3 id="step-4">2.5. Add SSH public key to GitHub</h3>
+        <h3 id="2-5-add-ssh-public-key-to-github">2.5. Add SSH public key to GitHub</h3>
         <ul>
           <li>For the next step we need to add our public key (that we have generated in our previous step) and add it to corresponding github accounts.</li>
           <li>For doing this we need to:</li>
@@ -261,7 +287,7 @@
           <li>Sign in to Github Account</li><li>Goto <strong>Settings</strong> &gt; <strong>SSH and GPG keys</strong> &gt; <strong>New SSH Key</strong></li><li>Paste your copied public key and give it a Title of your choice.</li>
           <li>___OR___</li>
           <li>Sign in to Github</li><li>Paste this link in your browser (https://github.com/settings/keys) or click <a href="https://github.com/settings/keys">here</a></li><li>Click on <strong>New SSH Key</strong> and paste your copied key.</li></ul>
-        <h3 id="step-5">2.6. Cloning GitHub repositories using different accounts</h3>
+        <h3 id="2-6-cloning-github-repositories-using-different-accounts">2.6. Cloning GitHub repositories using different accounts</h3>
         <ul>
           <li>So we are done with our setups and now its time to see it in action. We will clone a repository using one of the account we have added.</li>
           <li>Make a new project folder where you want to clone your repository and go to that directory from your terminal.</li>
@@ -271,7 +297,7 @@
 
      [e.g.] git clone git@github.com-bharatPersonal:bharatPersonal/TestRepo.git</pre></div>
         <h3 id="content-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3 id="step-6">2.7. Change remote URL for cloned repositories (optional)</h3>
+        <h3 id="2-7-change-remote-url-for-cloned-repositories-optional">2.7. Change remote URL for cloned repositories (optional)</h3>
         <ul>
           <li>If you have already cloned repositories using HTTPS, you can change the remote URL to use SSH for a smoother experience. First, navigate to the repository directory, then run the following commands to update the remote URL:</li>
         </ul>
@@ -284,7 +310,7 @@
         <div class="code"><pre>     git remote add origin git@github.com-bharatPersonal:bharatPersonal
      
      git remote add origin git@github.com-bharatOffice:bharatOffice</pre></div>
-        <h3 id="step-7">2.8. Per-repo user.name and user.email</h3>
+        <h3 id="2-8-per-repo-user-name-and-user-email">2.8. Per-repo user.name and user.email</h3>
         <ul>
           <li>From now on, to ensure that our commits and pushes from each repository on the system uses the correct GitHub user — we will have to configure <strong>user.email</strong> and <strong>user.name</strong> in every repository freshly cloned or existing before.</li>
           <li>To do this use the following commands.</li>
@@ -367,7 +393,7 @@
         </div>
         <div class="callout">Use two throwaway GitHub users or carefully labeled keys. Do not overwrite production keys without backup.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -420,7 +446,7 @@ EOF</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -487,7 +513,7 @@ git config --local user.email</pre></div>
           </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -537,7 +563,7 @@ Note: &#x27;IdentitiesOnly yes&#x27; prevents ssh-agent from offering other keys
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can use SSH config Host aliases.</li>
           <li>I keep commit author identity correct per repo.</li>

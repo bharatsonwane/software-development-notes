@@ -13,14 +13,48 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> JavaScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-strings">2. Strings</a>
-        <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./09-js-strings-animation.html">Animation visualizer</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-what-are-strings-in-javascript">1.1. What are strings in JavaScript?</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-strings">2. Strings</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-template-literals">2.1. Template literals</a>
+            <a href="#2-2-common-string-methods">2.2. Common string methods</a>
+            <a href="#2-3-tagged-templates">2.3. Tagged templates</a>
+            <a href="#2-3-1-string-raw">2.3.1. String.raw</a>
+            <a href="#2-4-unicode-utf-16-surrogates-and-grapheme-clusters">2.4. Unicode, UTF-16 Surrogates &amp; Grapheme Clusters</a>
+            <a href="#2-5-string-immutability">2.5. String immutability</a>
+            <a href="#2-6-locale-normalize-well-formed">2.6. Locale, normalize, well-formed</a>
+          </div>
+        </div>
+        <a href="#c-common-questions">C. Common questions</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -48,24 +82,15 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. What are strings in JavaScript?</h3>
+        <h3 id="1-1-what-are-strings-in-javascript">1.1. What are strings in JavaScript?</h3>
         <ul>
           <li>A <strong>string</strong> is primitive text (File 02). Strings are <strong>immutable</strong> — methods return a new string. File 03 covers <code class="inline">+</code> concatenation vs number addition.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> prefer <strong>template literals</strong> for interpolation, <code class="inline">slice</code> over <code class="inline">substring</code>, and remember <code class="inline">.length</code> counts UTF-16 code units (not always “characters”).</li>
           <li>Interactive visualizer: open <a href="./09-js-strings-animation.html">09-js-strings-animation.html</a> in a browser — string index/length, slice vs substring, includes/indexOf, padStart (Run / Step). The same visualizer also has Number and Date scenarios (Files 11, 17).</li>
           <li>After reading section 2, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">09-practice.js</code> before File 10. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Strings</strong> — templates, methods, Unicode, immutability</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-strings">
@@ -78,7 +103,7 @@
         </div>
 
         <h3 id="2-strings-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Template literals</h3>
+        <h3 id="2-1-template-literals">2.1. Template literals</h3>
         <div class="code"><pre>const name = &quot;Ada&quot;;
 const msg = `Hello, ${name}!`;
 const multiline = `
@@ -87,7 +112,7 @@ const multiline = `
 `;</pre></div>
 
         <h3 id="2-strings-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.2. Common string methods</h3>
+        <h3 id="2-2-common-string-methods">2.2. Common string methods</h3>
         <div class="code"><pre>const s = &quot;  Hello, World  &quot;;
 
 s.length;                    // 17
@@ -107,7 +132,7 @@ s.split(&quot;, &quot;);               // [&quot;  Hello&quot;, &quot;World  &qu
 s.concat(&quot;!&quot;);               // prefer + or template literals
 &quot;abc&quot;.repeat(3);             // &quot;abcabcabc&quot;
 &quot;5&quot;.padStart(3, &quot;0&quot;);        // &quot;005&quot;</pre></div>
-        <h3>2.3. Tagged templates</h3>
+        <h3 id="2-3-tagged-templates">2.3. Tagged templates</h3>
         <div class="code"><pre>function highlight(strings, ...values) {
   return strings.reduce((acc, str, i) =&gt; {
     return acc + str + (values[i] ? `&lt;b&gt;${values[i]}&lt;/b&gt;` : &quot;&quot;);
@@ -119,7 +144,7 @@ highlight`User: ${user}`;  // &quot;User: &lt;b&gt;Ada&lt;/b&gt;&quot;</pre></di
         <ul>
           <li>File 22 covers tagged templates in ES6+ context.</li>
         </ul>
-        <h3>2.3.1. <code class="inline">String.raw</code></h3>
+        <h3 id="2-3-1-string-raw">2.3.1. <code class="inline">String.raw</code></h3>
         <ul>
           <li><code class="inline">String.raw</code> is a built-in tag that keeps backslashes <strong>raw</strong> (no escape processing) — handy for paths and regex text:</li>
         </ul>
@@ -130,7 +155,7 @@ String.raw`line1\nline2`;          // backslash-n stays two chars, not a newline
 const path = String.raw`\d+`;      // useful when building RegExp strings</pre></div>
 
         <h3 id="2-strings-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.4. Unicode, UTF-16 Surrogates &amp; Grapheme Clusters</h3>
+        <h3 id="2-4-unicode-utf-16-surrogates-and-grapheme-clusters">2.4. Unicode, UTF-16 Surrogates &amp; Grapheme Clusters</h3>
         <ul>
           <li>JavaScript strings are internally sequences of <strong>16-bit code units (UTF-16)</strong>. Characters in the Basic Multilingual Plane (BMP, code points &le; <code class="inline">0xFFFF</code>) occupy 1 code unit. Supplementary characters (emojis, rare ideographs &gt; <code class="inline">0xFFFF</code>) require a <strong>surrogate pair</strong> (two 16-bit code units: high surrogate + low surrogate).</li>
         </ul>
@@ -152,14 +177,14 @@ console.log(graphemes.length);   // 1 (1 visible grapheme cluster!)</pre></div>
         <ul>
           <li>Always use <strong><code class="inline">for...of</code></strong> or <code class="inline">[...str]</code> for code points, and <strong><code class="inline">Intl.Segmenter</code></strong> when splitting user-visible international text.</li>
         </ul>
-        <h3>2.5. String immutability</h3>
+        <h3 id="2-5-string-immutability">2.5. String immutability</h3>
         <ul>
           <li>Strings are <strong>immutable</strong> — methods return <strong>new</strong> strings:</li>
         </ul>
         <div class="code"><pre>let s = &quot;hello&quot;;
 s.toUpperCase();  // &quot;HELLO&quot;
 console.log(s);     // still &quot;hello&quot;</pre></div>
-        <h3>2.6. Locale, normalize, well-formed</h3>
+        <h3 id="2-6-locale-normalize-well-formed">2.6. Locale, normalize, well-formed</h3>
         <div class="code"><pre>&quot;a&quot;.localeCompare(&quot;b&quot;);           // negative — a before b
 &quot;ä&quot;.localeCompare(&quot;z&quot;, &quot;de&quot;);
 
@@ -253,7 +278,7 @@ isPalindrome(&quot;A man, a plan, a canal: Panama&quot;);  // true</pre></div>
         <div class="callout">Type every example. Prefer template literals. Log intermediate results so you see immutability.</div>
 
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -299,7 +324,7 @@ console.log(message.includes(&quot;python&quot;)); // false</pre></div>
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -388,7 +413,7 @@ console.log(formatReceiptItem(&quot;Chocolate Cake&quot;, 6.0));
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -431,7 +456,7 @@ console.log(&quot;Spread length:&quot;, [...emoji].length);            // 1</pre
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know strings are immutable and methods return new strings.</li>
           <li>I prefer <code class="inline">slice</code> when I need negative indices.</li>

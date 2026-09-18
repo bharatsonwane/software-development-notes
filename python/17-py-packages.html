@@ -15,15 +15,62 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-what-is-a-package-and-advantages">2. What is a package and advantages</a>
-        <a href="#3-importance-of-init-py">3. Importance of __init__.py</a>
-        <a href="#4-installing-packages-with-pip">4. Installing packages with pip</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-what-is-a-package-and-advantages">2. What is a package and advantages</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-anatomy-of-a-python-package">2.1. Anatomy of a Python Package</a>
+            <a href="#2-2-absolute-vs-relative-imports">2.2. Absolute vs Relative Imports</a>
+            <a href="#2-3-regular-packages-vs-namespace-packages-pep-420">2.3. Regular Packages vs Namespace Packages (PEP 420)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-importance-of-init-py">3. Importance of __init__.py</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-what-happens-when-a-package-is-imported">3.1. What Happens When a Package is Imported?</a>
+            <a href="#3-2-curating-a-clean-public-api-via-init-py">3.2. Curating a Clean Public API via __init__.py</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-installing-packages-with-pip">4. Installing packages with pip</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-pip-and-the-python-package-index-pypi">4.1. Pip and the Python Package Index (PyPI)</a>
+            <a href="#4-2-virtual-environments-venv">4.2. Virtual Environments (venv)</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core Tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -62,23 +109,11 @@
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>While a <strong>Module</strong> is a single file (<code class="inline">.py</code>), a <strong>Package</strong> is a hierarchical folder structure that organizes multiple related modules and sub-packages under a common namespace.</li>
           <li>Packages use dot-notation for module paths (e.g. <code class="inline">import urllib.request</code>, <code class="inline">from sklearn.metrics import accuracy_score</code>).</li>
           <li>Packages prevent naming collisions across large software architectures and allow distribution on the <strong>Python Package Index (PyPI)</strong> via <code class="inline">pip</code>.</li>
-        </ul>
-
-        <h3>1.2. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>What is a package and advantages</strong> — folder architecture, sub-packages, relative vs absolute imports, and PEP 420</li>
-          <li><strong>Importance of __init__.py</strong> — package initialization, API surface exposure, and <code class="inline">__all__</code></li>
-          <li><strong>Installing packages with pip</strong> — PyPI, requirements files, virtual environments, and modern build tooling</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
@@ -93,7 +128,7 @@
         </div>
         <h3 id="2-what-is-a-package-and-advantages-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>2.1. Anatomy of a Python Package</h3>
+        <h3 id="2-1-anatomy-of-a-python-package">2.1. Anatomy of a Python Package</h3>
         <p>A package is structured as a directory tree containing modules and an <code class="inline">__init__.py</code> file:</p>
 
         <div class="code"><pre>ecommerce/                     # Root Package
@@ -110,7 +145,7 @@
 
         <h3 id="2-what-is-a-package-and-advantages-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>2.2. Absolute vs Relative Imports</h3>
+        <h3 id="2-2-absolute-vs-relative-imports">2.2. Absolute vs Relative Imports</h3>
         <ul>
           <li><strong>Absolute Imports:</strong> Specify the full path from the project root or <code class="inline">sys.path</code>. Highly readable and recommended by PEP 8:
             <div class="code"><pre>from ecommerce.payments.stripe import process_payment
@@ -131,7 +166,7 @@ from ..database import execute_query  # Parent directory</pre></div>
           <strong>Rule on Relative Imports:</strong> Relative imports rely on the module's <code class="inline">__name__</code> attribute. If you run a file containing relative imports directly as the top-level script (<code class="inline">python3 stripe.py</code>), Python raises <code class="inline">ImportError: attempted relative import with no known parent package</code>. Run it from the root using module syntax: <code class="inline">python3 -m ecommerce.payments.stripe</code>.
         </div>
 
-        <h3>2.3. Regular Packages vs Namespace Packages (PEP 420)</h3>
+        <h3 id="2-3-regular-packages-vs-namespace-packages-pep-420">2.3. Regular Packages vs Namespace Packages (PEP 420)</h3>
         <ul>
           <li><strong>Regular Packages (Classic):</strong> Any directory containing an <code class="inline">__init__.py</code> file.</li>
           <li><strong>Namespace Packages (Python 3.3+, PEP 420):</strong> Directories <em>without</em> an <code class="inline">__init__.py</code> file. Allows splitting portions of a single logical package across different directories, virtual environments, or independent repositories (e.g. <code class="inline">company.auth</code> and <code class="inline">company.billing</code>).</li>
@@ -149,7 +184,7 @@ from ..database import execute_query  # Parent directory</pre></div>
         </div>
         <h3 id="3-importance-of-init-py-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>3.1. What Happens When a Package is Imported?</h3>
+        <h3 id="3-1-what-happens-when-a-package-is-imported">3.1. What Happens When a Package is Imported?</h3>
         <ul>
           <li>When someone executes <code class="inline">import ecommerce</code>, Python implicitly executes the code inside <code class="inline">ecommerce/__init__.py</code>.</li>
           <li>It can be an empty file (used merely as a package marker), but in professional libraries, it serves as the package's <strong>public API gatekeeper</strong>.</li>
@@ -157,7 +192,7 @@ from ..database import execute_query  # Parent directory</pre></div>
 
         <h3 id="3-importance-of-init-py-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>3.2. Curating a Clean Public API via <code class="inline">__init__.py</code></h3>
+        <h3 id="3-2-curating-a-clean-public-api-via-init-py">3.2. Curating a Clean Public API via <code class="inline">__init__.py</code></h3>
         <p>Without an export in <code class="inline">__init__.py</code>, consumers must navigate deep nested module paths. By importing classes into <code class="inline">__init__.py</code>, you provide a clean, convenient interface:</p>
 
         <div class="code"><pre># ecommerce/__init__.py
@@ -193,7 +228,7 @@ print(f"eCommerce version: {ecommerce.__version__}")</pre></div>
         </div>
         <h3 id="4-installing-packages-with-pip-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>4.1. Pip and the Python Package Index (PyPI)</h3>
+        <h3 id="4-1-pip-and-the-python-package-index-pypi">4.1. Pip and the Python Package Index (PyPI)</h3>
         <ul>
           <li><strong>PyPI (Python Package Index):</strong> The official third-party repository hosting hundreds of thousands of open-source packages (<code class="inline">requests</code>, <code class="inline">numpy</code>, <code class="inline">flask</code>, <code class="inline">fastapi</code>).</li>
           <li><strong><code class="inline">pip</code>:</strong> The standard package installer for Python.</li>
@@ -239,7 +274,7 @@ print(f"eCommerce version: {ecommerce.__version__}")</pre></div>
 
         <h3 id="4-installing-packages-with-pip-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>4.2. Virtual Environments (<code class="inline">venv</code>)</h3>
+        <h3 id="4-2-virtual-environments-venv">4.2. Virtual Environments (<code class="inline">venv</code>)</h3>
         <div class="callout">
           <strong>Best Practice:</strong> Never install third-party packages into your global operating system Python environment! Doing so causes version conflicts between different projects and can corrupt OS tools. Always isolate dependencies inside a virtual environment:
         </div>
@@ -375,7 +410,7 @@ deactivate</pre></div>
         <div class="callout">Write and verify all tasks in <code class="inline">17-practice.py</code>. Run with <code class="inline">python3 17-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -420,7 +455,7 @@ print("requirements.txt output:\n" + reqs)</pre></div>
           </li>
         </ol>
 
-        <h3>P.2. Core Tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -514,7 +549,7 @@ print("Curated __init__.py code:\n" + init_code.strip())</pre></div>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -566,7 +601,7 @@ print("Namespace package searching multiple paths:", mock_ns.__path__)</pre></di
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can explain the difference between a module and a package.</li>
           <li>I know how <code class="inline">__init__.py</code> controls the package API.</li>

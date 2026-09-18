@@ -15,16 +15,75 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-to-python-database-programming">2. Introduction to Python database programming</a>
-        <a href="#3-create-drop-insert-sample">3. Create/drop/insert (sample)</a>
-        <a href="#4-crud-operations">4. CRUD operations</a>
-        <a href="#5-working-with-postgresql">5. Working with PostgreSQL (psycopg &amp; DB-API)</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview-what-is-pdbc-and-pep-249">1.1. Overview: What is PDBC &amp; PEP 249?</a>
+            <a href="#1-2-the-cardinal-rule-prevent-sql-injection">1.2. The Cardinal Rule: Prevent SQL Injection</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-introduction-to-python-database-programming">2. Introduction to Python database programming</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-built-in-sqlite3-the-zero-configuration-database">2.1. Built-in sqlite3: The Zero-Configuration Database</a>
+            <a href="#2-2-connection-and-cursor-core-objects">2.2. Connection and Cursor Core Objects</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-create-drop-insert-sample">3. Create/drop/insert (sample)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-ddl-creating-and-dropping-tables">3.1. DDL: Creating and Dropping Tables</a>
+            <a href="#3-2-single-inserts-vs-bulk-executemany">3.2. Single Inserts vs Bulk executemany()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-crud-operations">4. CRUD operations</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-reading-data-fetchone-fetchall-and-direct-iteration">4.1. Reading Data: fetchone(), fetchall(), and Direct Iteration</a>
+            <a href="#4-2-updating-and-deleting-records-with-transactions">4.2. Updating and Deleting Records with Transactions</a>
+            <a href="#4-3-row-factories-returning-dictionaries-instead-of-tuples">4.3. Row Factories (Returning Dictionaries Instead of Tuples)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-working-with-postgresql">5. Working with PostgreSQL (psycopg &amp; DB-API)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-why-postgresql-in-enterprise-python">5.1. Why PostgreSQL in Enterprise Python?</a>
+            <a href="#5-2-postgresql-python-drivers-psycopg2-vs-psycopg-v3">5.2. PostgreSQL Python Drivers: psycopg2 vs psycopg (v3)</a>
+            <a href="#5-3-postgresql-connection-pooling">5.3. PostgreSQL Connection Pooling</a>
+            <a href="#5-4-working-with-postgresql-jsonb-and-transactions">5.4. Working with PostgreSQL JSONB and Transactions</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -61,7 +120,7 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview: What is PDBC &amp; PEP 249?</h3>
+        <h3 id="1-1-overview-what-is-pdbc-and-pep-249">1.1. Overview: What is PDBC &amp; PEP 249?</h3>
         <p><strong>Python Database Connectivity (PDBC)</strong> refers to interacting with relational database management systems (RDBMS) directly from Python code. To ensure that developers do not have to learn a completely different API for every vendor (PostgreSQL, SQLite, MySQL, Oracle), Python defined <strong>PEP 249 (Python Database API Specification v2.0)</strong>.</p>
         <p>PEP 249 establishes standard interfaces, method signatures, parameter formatting rules, and exception hierarchies across all compliant Python database drivers. Whether using <code>sqlite3</code>, <code>psycopg2</code> / <code>psycopg</code> (for PostgreSQL), or other drivers, the fundamental workflow is identical:</p>
 
@@ -76,7 +135,7 @@
           </ol>
         </div>
 
-        <h3>1.2. The Cardinal Rule: Prevent SQL Injection</h3>
+        <h3 id="1-2-the-cardinal-rule-prevent-sql-injection">1.2. The Cardinal Rule: Prevent SQL Injection</h3>
         <p>Never format or concatenate user input into SQL query strings using Python f-strings or string concatenation. Doing so leaves your application vulnerable to <strong>SQL Injection (SQLi)</strong> attacks, where malicious actors can bypass authentication, exfiltrate private data, or wipe database tables.</p>
 
         <div class="code"><pre># DANGEROUS VULNERABILITY (SQL Injection):
@@ -91,17 +150,6 @@ cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
 
 # In PostgreSQL (psycopg):
 cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))</pre></div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — PDBC concepts, PEP 249 specification, and SQL injection prevention</li>
-          <li><strong>Introduction to Python database programming</strong> — Connections, cursors, and the built-in <code>sqlite3</code> engine</li>
-          <li><strong>Create/drop/insert (sample)</strong> — DDL, table constraints, batch inserts, and auto-generated IDs</li>
-          <li><strong>CRUD operations</strong> — Create, Read (fetch variants, row factories), Update, Delete, and ACID transactions</li>
-          <li><strong>Working with PostgreSQL (psycopg &amp; DB-API)</strong> — PostgreSQL drivers, connection pooling, and enterprise patterns</li>
-          <li><strong>C. Common questions</strong> — High-yield interview questions with comprehensive answers</li>
-          <li><strong>P. Practical Assignment</strong> — Complete coding drills, transactional banking ledger, and edge cases</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -115,7 +163,7 @@ cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))</pre></div>
         </div>
 
         <h3 id="2-introduction-to-python-database-programming-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Built-in <code>sqlite3</code>: The Zero-Configuration Database</h3>
+        <h3 id="2-1-built-in-sqlite3-the-zero-configuration-database">2.1. Built-in <code>sqlite3</code>: The Zero-Configuration Database</h3>
         <p>Python includes the <code>sqlite3</code> module in the standard library. SQLite runs embedded in-process without requiring a separate database server process, making it ideal for testing, local data storage, and prototyping.</p>
         <p>Special database target: passing <code>":memory:"</code> to <code>sqlite3.connect()</code> creates a lightning-fast, volatile in-RAM database that disappears when the process exits.</p>
 
@@ -135,7 +183,7 @@ cursor.close()
 conn.close()</pre></div>
 
         <h3 id="2-introduction-to-python-database-programming-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. Connection and Cursor Core Objects</h3>
+        <h3 id="2-2-connection-and-cursor-core-objects">2.2. Connection and Cursor Core Objects</h3>
         <table class="table">
           <thead>
             <tr>
@@ -170,7 +218,7 @@ conn.close()</pre></div>
         </div>
 
         <h3 id="3-create-drop-insert-sample-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. DDL: Creating and Dropping Tables</h3>
+        <h3 id="3-1-ddl-creating-and-dropping-tables">3.1. DDL: Creating and Dropping Tables</h3>
         <p>Data Definition Language (DDL) statements like <code>CREATE TABLE</code> and <code>DROP TABLE</code> define the schema structure. Always use <code>IF NOT EXISTS</code> and <code>IF EXISTS</code> to prevent fatal runtime errors on repeat runs.</p>
 
         <div class="code"><pre>import sqlite3
@@ -194,7 +242,7 @@ cur.execute("""
 print("Table 'employees' created successfully.")</pre></div>
 
         <h3 id="3-create-drop-insert-sample-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Single Inserts vs Bulk <code>executemany()</code></h3>
+        <h3 id="3-2-single-inserts-vs-bulk-executemany">3.2. Single Inserts vs Bulk <code>executemany()</code></h3>
         <p>Executing individual <code>INSERT</code> statements inside a Python loop causes heavy round-trip overhead. PEP 249 provides <code>cursor.executemany()</code>, which executes a prepared statement against an iterable sequence of tuples efficiently.</p>
 
         <div class="code"><pre># Single insert:
@@ -233,7 +281,7 @@ print(f"Bulk insert complete. Rows affected: {cur.rowcount}")</pre></div>
         </div>
 
         <h3 id="4-crud-operations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Reading Data: <code>fetchone()</code>, <code>fetchall()</code>, and Direct Iteration</h3>
+        <h3 id="4-1-reading-data-fetchone-fetchall-and-direct-iteration">4.1. Reading Data: <code>fetchone()</code>, <code>fetchall()</code>, and Direct Iteration</h3>
         <p>After running a <code>SELECT</code> query, several methods exist to retrieve the results:</p>
         <ul>
           <li><code>cursor.fetchone()</code>: Returns the next single row as a tuple (or <code>None</code> if no more rows).</li>
@@ -260,7 +308,7 @@ for (emp_name,) in cur:
     print(f"Engineer: {emp_name}")</pre></div>
 
         <h3 id="4-crud-operations-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.2. Updating and Deleting Records with Transactions</h3>
+        <h3 id="4-2-updating-and-deleting-records-with-transactions">4.2. Updating and Deleting Records with Transactions</h3>
         <p>Transactions satisfy the <strong>ACID</strong> guarantees (Atomicity, Consistency, Isolation, Durability). In PEP 249, transactions are managed at the connection level. If an error occurs during an update or delete, call <code>conn.rollback()</code> to revert the database to its pre-transaction state.</p>
 
         <div class="code"><pre>def update_employee_salary(conn, emp_id, new_salary):
@@ -290,7 +338,7 @@ def delete_employee(conn, emp_id):
 
 delete_employee(conn, 2)</pre></div>
 
-        <h3>4.3. Row Factories (Returning Dictionaries Instead of Tuples)</h3>
+        <h3 id="4-3-row-factories-returning-dictionaries-instead-of-tuples">4.3. Row Factories (Returning Dictionaries Instead of Tuples)</h3>
         <p>By default, DB-API returns rows as plain numeric tuples (e.g. <code>row[0]</code>, <code>row[1]</code>). Using <code>sqlite3.Row</code> allows accessing columns by name (<code>row["name"]</code>) or index, making code cleaner and resilient against column reordering.</p>
 
         <div class="code"><pre>conn.row_factory = sqlite3.Row  # Configure row factory
@@ -315,10 +363,10 @@ print("Convert to dict:      ", dict(row))</pre></div>
         </div>
 
         <h3 id="5-working-with-postgresql-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Why PostgreSQL in Enterprise Python?</h3>
+        <h3 id="5-1-why-postgresql-in-enterprise-python">5.1. Why PostgreSQL in Enterprise Python?</h3>
         <p><strong>PostgreSQL</strong> is widely regarded as the world's most advanced open-source object-relational database. Unlike SQLite, PostgreSQL is a client-server RDBMS designed for multi-user concurrency, high write throughput, enterprise ACID compliance, complex window functions, and rich native data types (such as <code>JSONB</code>, <code>UUID</code>, and geometric arrays).</p>
 
-        <h3>5.2. PostgreSQL Python Drivers: <code>psycopg2</code> vs <code>psycopg</code> (v3)</h3>
+        <h3 id="5-2-postgresql-python-drivers-psycopg2-vs-psycopg-v3">5.2. PostgreSQL Python Drivers: <code>psycopg2</code> vs <code>psycopg</code> (v3)</h3>
         <p>The standard, battle-tested Python driver for PostgreSQL is <strong><code>psycopg2</code></strong> (or the pure-C binary distribution <code>psycopg2-binary</code>). The next-generation driver is <strong><code>psycopg</code> (version 3)</strong>, which adds full native Python <code>asyncio</code> support and faster binary copying.</p>
 
         <div class="code"><pre># Installing PostgreSQL drivers via pip:
@@ -362,7 +410,7 @@ except psycopg2.Error as err:
     print(f"PostgreSQL database error: {err}")</pre></div>
 
         <h3 id="5-working-with-postgresql-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.3. PostgreSQL Connection Pooling</h3>
+        <h3 id="5-3-postgresql-connection-pooling">5.3. PostgreSQL Connection Pooling</h3>
         <p>In PostgreSQL, each client connection spawns a new server-side process on the database host. Repeatedly opening and closing TCP connections on every HTTP request introduces severe latency and can overwhelm server resources. Production applications use a <strong>Connection Pool</strong> to reuse pre-warmed connection instances.</p>
 
         <div class="code"><pre>from psycopg2 import pool
@@ -392,7 +440,7 @@ def fetch_user_by_id(user_id):
 # Graceful application shutdown:
 # db_pool.closeall()</pre></div>
 
-        <h3>5.4. Working with PostgreSQL JSONB and Transactions</h3>
+        <h3 id="5-4-working-with-postgresql-jsonb-and-transactions">5.4. Working with PostgreSQL JSONB and Transactions</h3>
         <p>PostgreSQL allows storing and querying structured JSON data with indexable <code>JSONB</code> columns. <code>psycopg2</code> automatically serializes Python dictionaries into JSONB and deserializes them back into Python dictionaries.</p>
 
         <div class="code"><pre>import psycopg2
@@ -537,7 +585,7 @@ def insert_user_settings(conn, user_id, settings_dict):
         </div>
         <div class="callout">Write <code class="inline">29-practice.py</code>. Run with <code class="inline">python3 29-practice.py</code>. Test connections, CRUD operations, transactions, and PostgreSQL patterns.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -592,7 +640,7 @@ full CRUD operations, ACID transaction rollbacks, and PostgreSQL (psycopg) enter
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -695,7 +743,7 @@ print("Demonstrated psycopg2 PostgreSQL connection and parameterized query patte
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -766,7 +814,7 @@ conn.close()</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can explain the PEP 249 DB-API 2.0 specification and workflow.</li>
           <li>I know how to write parameterized queries to prevent SQL injection.</li>

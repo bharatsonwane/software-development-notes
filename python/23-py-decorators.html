@@ -15,16 +15,78 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-function-aliasing-and-nested-functions">2. Function aliasing and nested functions</a>
-        <a href="#3-introduction-to-decorators">3. Introduction to decorators</a>
-        <a href="#4-decorator-demo-patterns">4. Decorator demo patterns</a>
-        <a href="#5-calling-with-without-decorator-chaining">5. Calling with/without decorator; chaining</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-first-class-functions-in-action">1.2. First-Class Functions in Action</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-function-aliasing-and-nested-functions">2. Function aliasing and nested functions</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-function-aliasing">2.1. Function Aliasing</a>
+            <a href="#2-2-nested-inner-functions">2.2. Nested (Inner) Functions</a>
+            <a href="#2-3-closures-the-heart-of-decorators">2.3. Closures: The Heart of Decorators</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-introduction-to-decorators">3. Introduction to decorators</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-decorator-anatomy-and-syntax">3.1. Decorator Anatomy and Syntax</a>
+            <a href="#3-2-supporting-arbitrary-arguments-with-args-and-kwargs">3.2. Supporting Arbitrary Arguments with *args and **kwargs</a>
+            <a href="#3-3-preserving-metadata-with-functools-wraps">3.3. Preserving Metadata with functools.wraps</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-decorator-demo-patterns">4. Decorator demo patterns</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-pattern-1-performance-execution-timing">4.1. Pattern 1: Performance Execution Timing</a>
+            <a href="#4-2-pattern-2-access-control-and-authentication">4.2. Pattern 2: Access Control and Authentication</a>
+            <a href="#4-3-pattern-3-automatic-retry-mechanism-with-exception-handling">4.3. Pattern 3: Automatic Retry Mechanism with Exception Handling</a>
+            <a href="#4-4-pattern-4-memoization-in-memory-caching">4.4. Pattern 4: Memoization / In-Memory Caching</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-calling-with-without-decorator-chaining">5. Calling with/without decorator; chaining</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-calling-with-vs-without-decorator">5.1. Calling With vs Without Decorator</a>
+            <a href="#5-2-decorator-chaining-stacking">5.2. Decorator Chaining (Stacking)</a>
+            <a href="#5-3-decorators-with-arguments-3-layer-closures">5.3. Decorators with Arguments (3-Layer Closures)</a>
+            <a href="#5-4-class-based-decorators-via-call">5.4. Class-Based Decorators (via __call__)</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -60,7 +122,7 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <p>In Python, functions are <strong>first-class citizens</strong> (also known as first-class objects). This means functions can be treated just like integers, strings, or lists: they can be assigned to variables, passed as arguments to other functions, defined inside another function, and returned as values from functions.</p>
         <p>A <strong>decorator</strong> is a design pattern and language feature that allows developers to dynamically modify or extend the behavior of a function, method, or class <em>without directly altering its source code</em>. Decorators represent a cornerstone of idiomatic, clean Python code, widely employed in web frameworks (e.g., Flask routing <code>@app.route</code>, Django authentication <code>@login_required</code>), logging, caching, and rate limiting.</p>
 
@@ -68,7 +130,7 @@
           <strong>Key Mental Model:</strong> A decorator is a callable that takes a function as input, wraps it with additional pre-processing or post-processing logic, and returns the modified wrapper function (or an entirely replacement callable).
         </div>
 
-        <h3>1.2. First-Class Functions in Action</h3>
+        <h3 id="1-2-first-class-functions-in-action">1.2. First-Class Functions in Action</h3>
         <p>To truly understand decorators, you must understand three core properties of first-class functions:</p>
         <ul>
           <li><strong>Assignment:</strong> A function can be assigned to another variable (function aliasing).</li>
@@ -103,17 +165,6 @@ def get_speaker(volume):
 
 speaker = get_speaker(8)
 print(speaker("testing microphone"))   # TESTING MICROPHONE</pre></div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — First-class citizen fundamentals and conceptual overview</li>
-          <li><strong>Function aliasing and nested functions</strong> — Aliasing, scopes, and closure mechanics</li>
-          <li><strong>Introduction to decorators</strong> — <code>@decorator</code> syntax, wrapper functions, and <code>functools.wraps</code></li>
-          <li><strong>Decorator demo patterns</strong> — Performance timing, logging, authentication, retry logic, and memoization</li>
-          <li><strong>Calling with/without decorator; chaining</strong> — Manual wrapping vs syntax sugar, bottom-up chaining, decorators with arguments, and class decorators</li>
-          <li><strong>C. Common questions</strong> — Core interview questions with comprehensive architectural answers</li>
-          <li><strong>P. Practical Assignment</strong> — Complete coding challenges from warm-up to production mini-project</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -127,7 +178,7 @@ print(speaker("testing microphone"))   # TESTING MICROPHONE</pre></div>
         </div>
 
         <h3 id="2-function-aliasing-and-nested-functions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Function Aliasing</h3>
+        <h3 id="2-1-function-aliasing">2.1. Function Aliasing</h3>
         <p>When you define a function in Python using <code>def func(): ...</code>, Python creates a function object in memory and binds the identifier <code>func</code> to that object. Assigning that function identifier to another variable name creates an <strong>alias</strong>. Both names now reference the exact same underlying function object in memory (sharing the same <code>id()</code>).</p>
 
         <div class="code"><pre>def calculate_tax(income):
@@ -153,7 +204,7 @@ print(compute_tax(100000))      # 18000.0
 print("'calculate_tax' in globals():", "calculate_tax" in globals())  # False</pre></div>
 
         <h3 id="2-function-aliasing-and-nested-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. Nested (Inner) Functions</h3>
+        <h3 id="2-2-nested-inner-functions">2.2. Nested (Inner) Functions</h3>
         <p>A <strong>nested function</strong> is a function defined inside the body of another enclosing function. Inner functions are not accessible directly from outside the enclosing function unless explicitly returned.</p>
 
         <div class="code"><pre>def outer_function(message):
@@ -173,7 +224,7 @@ outer_function("Hello from enclosing scope!")
 # inner_function()  # NameError: name 'inner_function' is not defined
 print("'inner_function' in globals():", "inner_function" in globals())  # False</pre></div>
 
-        <h3>2.3. Closures: The Heart of Decorators</h3>
+        <h3 id="2-3-closures-the-heart-of-decorators">2.3. Closures: The Heart of Decorators</h3>
         <p>A <strong>closure</strong> is a nested function that remembers and retains access to variables in its enclosing lexical scope even after the outer function has finished executing and its stack frame has been dismantled.</p>
         <p>For a closure to exist, three conditions must be met:</p>
         <ol>
@@ -217,7 +268,7 @@ print("triple captured value:", triple.__closure__[0].cell_contents)  # 3</pre><
         </div>
 
         <h3 id="3-introduction-to-decorators-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Decorator Anatomy and Syntax</h3>
+        <h3 id="3-1-decorator-anatomy-and-syntax">3.1. Decorator Anatomy and Syntax</h3>
         <p>A decorator is a function that takes another function as an argument, defines a wrapper function that adds behavior before and/or after calling the original function, and returns that wrapper function.</p>
         <p>Python provides the <code>@decorator_name</code> syntax sugar, introduced in PEP 318. Writing <code>@my_dec</code> right above a function definition is syntactically equivalent to <code>func = my_dec(func)</code>.</p>
 
@@ -244,7 +295,7 @@ say_bye = announce(say_bye)
 say_bye()</pre></div>
 
         <h3 id="3-introduction-to-decorators-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Supporting Arbitrary Arguments with <code>*args</code> and <code>**kwargs</code></h3>
+        <h3 id="3-2-supporting-arbitrary-arguments-with-args-and-kwargs">3.2. Supporting Arbitrary Arguments with <code>*args</code> and <code>**kwargs</code></h3>
         <p>In real-world applications, functions accept various numbers of positional and keyword arguments, and return values. If the wrapper function does not accept <code>*args, **kwargs</code> or forgets to <code>return</code> the result of <code>func(*args, **kwargs)</code>, the decorated function will either crash with a <code>TypeError</code> or return <code>None</code>.</p>
 
         <div class="code"><pre>def debug_decorator(func):
@@ -263,7 +314,7 @@ def multiply_and_offset(x, y, offset=0):
 output = multiply_and_offset(5, 4, offset=10)
 print("Final result:", output)  # 30</pre></div>
 
-        <h3>3.3. Preserving Metadata with <code>functools.wraps</code></h3>
+        <h3 id="3-3-preserving-metadata-with-functools-wraps">3.3. Preserving Metadata with <code>functools.wraps</code></h3>
         <p>When a function is wrapped by a decorator, its identity (like <code>__name__</code>, <code>__doc__</code>, and function signature) is replaced by the wrapper's identity. This can break debugging tools, linters, documentation generators, and introspective frameworks.</p>
         <p>The standard library provides <code>@functools.wraps</code> to automatically copy the original function's metadata to the wrapper function.</p>
 
@@ -316,7 +367,7 @@ print("Original func:", calculate_perimeter.__wrapped__) # Access original un-wr
         </div>
 
         <h3 id="4-decorator-demo-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Pattern 1: Performance Execution Timing</h3>
+        <h3 id="4-1-pattern-1-performance-execution-timing">4.1. Pattern 1: Performance Execution Timing</h3>
         <p>Measuring the runtime of critical operations without polluting the business logic is one of the most common applications of decorators.</p>
 
         <div class="code"><pre>import time
@@ -341,7 +392,7 @@ def heavy_computation(iterations):
 val = heavy_computation(1_000_000)</pre></div>
 
         <h3 id="4-decorator-demo-patterns-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.2. Pattern 2: Access Control and Authentication</h3>
+        <h3 id="4-2-pattern-2-access-control-and-authentication">4.2. Pattern 2: Access Control and Authentication</h3>
         <p>Verifying permissions or active session states before permitting function execution.</p>
 
         <div class="code"><pre>import functools
@@ -371,7 +422,7 @@ try:
 except PermissionError as err:
     print("[AUTH FAILED]:", err)</pre></div>
 
-        <h3>4.3. Pattern 3: Automatic Retry Mechanism with Exception Handling</h3>
+        <h3 id="4-3-pattern-3-automatic-retry-mechanism-with-exception-handling">4.3. Pattern 3: Automatic Retry Mechanism with Exception Handling</h3>
         <p>In network calls or database operations, transient errors occur. A retry decorator gracefully retries failed operations before giving up. <em>(Note: As mastered in Module 22: Exception Handling, handling specific exception hierarchies ensures robust failure recovery).</em></p>
 
         <div class="code"><pre>import time
@@ -407,7 +458,7 @@ def fetch_cloud_metrics():
 
 print("Result:", fetch_cloud_metrics())</pre></div>
 
-        <h3>4.4. Pattern 4: Memoization / In-Memory Caching</h3>
+        <h3 id="4-4-pattern-4-memoization-in-memory-caching">4.4. Pattern 4: Memoization / In-Memory Caching</h3>
         <p>Caching expensive function results based on immutable argument tuples to eliminate redundant calculations.</p>
 
         <div class="code"><pre>import functools
@@ -469,7 +520,7 @@ print("Cache info:     ", fib_lru.cache_info())</pre></div>
         </div>
 
         <h3 id="5-calling-with-without-decorator-chaining-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Calling With vs Without Decorator</h3>
+        <h3 id="5-1-calling-with-vs-without-decorator">5.1. Calling With vs Without Decorator</h3>
         <p>The <code>@decorator</code> syntax is applied at function <em>definition time</em>. However, in certain testing or dynamic scenarios, you may want to apply a decorator conditionally or call the underlying function without its decorator.</p>
 
         <div class="code"><pre>import functools
@@ -499,7 +550,7 @@ print("Decorated total:", compute_total(10, 5))            # 30
 print("Unwrapped bypass total:", compute_total.__wrapped__(10, 5))  # 15</pre></div>
 
         <h3 id="5-calling-with-without-decorator-chaining-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.2. Decorator Chaining (Stacking)</h3>
+        <h3 id="5-2-decorator-chaining-stacking">5.2. Decorator Chaining (Stacking)</h3>
         <p>Multiple decorators can be applied to a single function by stacking them one above the other. The decorators are applied <strong>bottom-to-top</strong> (from the closest to the function outward), but the resulting wrappers execute from <strong>top-to-bottom</strong>.</p>
 
         <div class="code"><pre>def make_bold(func):
@@ -541,7 +592,7 @@ print(render_heading("Decorator Chaining"))
           </ul>
         </div>
 
-        <h3>5.3. Decorators with Arguments (3-Layer Closures)</h3>
+        <h3 id="5-3-decorators-with-arguments-3-layer-closures">5.3. Decorators with Arguments (3-Layer Closures)</h3>
         <p>When a decorator accepts configuration arguments (e.g., <code>@repeat(num_times=3)</code>), an additional outer enclosing function is required to accept those arguments and return the actual decorator.</p>
 
         <div class="code"><pre>import functools
@@ -568,7 +619,7 @@ def send_ping(host):
 
 status = send_ping("192.168.1.1")</pre></div>
 
-        <h3>5.4. Class-Based Decorators (via <code>__call__</code>)</h3>
+        <h3 id="5-4-class-based-decorators-via-call">5.4. Class-Based Decorators (via <code>__call__</code>)</h3>
         <p>Decorators can also be implemented using Python classes. A class becomes a decorator when it implements <code>__init__</code> (to receive the function) and <code>__call__</code> (to act as the callable wrapper). Class-based decorators are ideal for maintaining state across calls.</p>
 
         <div class="code"><pre>class CallCounter:
@@ -759,7 +810,7 @@ class Account:
         </div>
         <div class="callout">Write <code class="inline">23-practice.py</code>. Run with <code class="inline">python3 23-practice.py</code>. Practice the warm-up, core tasks, and challenges.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -816,7 +867,7 @@ functools.wraps metadata preservation, and decorator chaining.
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -949,7 +1000,7 @@ print("Manual output: ", manual_decorated("Python Decorators"))</pre></div>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -1029,7 +1080,7 @@ print("Stats after cache hit:  ", fib.stats())</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can explain how first-class functions and closures power decorators.</li>
           <li>I know why <code>@functools.wraps</code> is essential for preserving metadata.</li>

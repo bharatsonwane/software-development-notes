@@ -15,14 +15,53 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-aliasing-vs-cloning">2. Aliasing vs cloning</a>
-        <a href="#3-shallow-copy-vs-deep-copy">3. Shallow copy vs deep copy</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview-how-python-manages-variables-and-memory">1.1. Overview: How Python Manages Variables and Memory</a>
+            <a href="#1-2-identity-is-vs-equality">1.2. Identity (is) vs Equality (==)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-aliasing-vs-cloning">2. Aliasing vs cloning</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-aliasing-multiple-names-for-one-object">2.1. Aliasing: Multiple Names for One Object</a>
+            <a href="#2-2-cloning-independent-top-level-containers">2.2. Cloning: Independent Top-Level Containers</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-shallow-copy-vs-deep-copy">3. Shallow copy vs deep copy</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-the-limitation-of-shallow-copy">3.1. The Limitation of Shallow Copy</a>
+            <a href="#3-2-deep-copy-true-recursive-duplication">3.2. Deep Copy: True Recursive Duplication</a>
+            <a href="#3-3-cyclic-references-and-memoization">3.3. Cyclic References and Memoization</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -58,11 +97,11 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview: How Python Manages Variables and Memory</h3>
+        <h3 id="1-1-overview-how-python-manages-variables-and-memory">1.1. Overview: How Python Manages Variables and Memory</h3>
         <p>In Python, variables are not direct memory "boxes" that store raw values. Instead, a variable is a <strong>name tag (reference pointer)</strong> bound to an object in heap memory. Multiple variables can point to the exact same object simultaneously.</p>
         <p>When working with mutable compound objects (like lists, dictionaries, sets, or custom class instances), misunderstanding the distinction between <strong>aliasing</strong>, <strong>shallow copying</strong>, and <strong>deep copying</strong> is one of the most frequent causes of silent data corruption bugs.</p>
 
-        <h3>1.2. Identity (<code>is</code>) vs Equality (<code>==</code>)</h3>
+        <h3 id="1-2-identity-is-vs-equality">1.2. Identity (<code>is</code>) vs Equality (<code>==</code>)</h3>
         <ul>
           <li><strong>Equality (<code>==</code>):</strong> Evaluates whether two objects contain the same values or state (invokes <code>__eq__</code>).</li>
           <li><strong>Identity (<code>is</code>):</strong> Evaluates whether two variables point to the exact same memory address (compares <code>id(a) == id(b)</code>).</li>
@@ -75,15 +114,6 @@ list_c = list_a  # Aliasing
 print("list_a == list_b:", list_a == list_b)  # True (equal content)
 print("list_a is list_b:", list_a is list_b)  # False (distinct objects in RAM)
 print("list_a is list_c:", list_a is list_c)  # True (same memory location!)</pre></div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — Memory references, variable name tags, and <code>is</code> vs <code>==</code></li>
-          <li><strong>Aliasing vs cloning</strong> — Pointer sharing vs top-level container cloning</li>
-          <li><strong>Shallow copy vs deep copy</strong> — Nested mutable objects, <code>copy.copy</code> vs <code>copy.deepcopy</code>, cyclic reference safety, and custom <code>__copy__</code></li>
-          <li><strong>C. Common questions</strong> — Key interview questions and memory model diagrams</li>
-          <li><strong>P. Practical Assignment</strong> — Hands-on drills, config manager mini-project, and edge cases</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -97,7 +127,7 @@ print("list_a is list_c:", list_a is list_c)  # True (same memory location!)</pr
         </div>
 
         <h3 id="2-aliasing-vs-cloning-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Aliasing: Multiple Names for One Object</h3>
+        <h3 id="2-1-aliasing-multiple-names-for-one-object">2.1. Aliasing: Multiple Names for One Object</h3>
         <p><strong>Aliasing</strong> happens when you assign one variable to another using the assignment operator <code>=</code> (e.g., <code>b = a</code>). This creates a second reference to the exact same object; no new object is allocated in memory.</p>
         <p>If the underlying object is mutable, modifying it through any alias immediately affects all other references to it.</p>
 
@@ -113,7 +143,7 @@ print("id(original):", id(original_users))
 print("id(alias):   ", id(alias_users))   # Identical IDs</pre></div>
 
         <h3 id="2-aliasing-vs-cloning-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. Cloning: Independent Top-Level Containers</h3>
+        <h3 id="2-2-cloning-independent-top-level-containers">2.2. Cloning: Independent Top-Level Containers</h3>
         <p><strong>Cloning</strong> creates a brand new top-level container object with its own distinct memory address. Common ways to clone a list include:</p>
         <ul>
           <li>Slice notation: <code>clone = original[:]</code></li>
@@ -142,7 +172,7 @@ print("original is cloned:", original_nums is cloned_nums)  # False</pre></div>
         </div>
 
         <h3 id="3-shallow-copy-vs-deep-copy-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. The Limitation of Shallow Copy</h3>
+        <h3 id="3-1-the-limitation-of-shallow-copy">3.1. The Limitation of Shallow Copy</h3>
         <p>Both slicing (<code>[:]</code>) and <code>copy.copy()</code> produce a <strong>shallow copy</strong>. A shallow copy constructs a new compound object and then inserts <em>references</em> into it to the objects found in the original.</p>
         <p>If the original object contains <strong>nested mutable objects</strong> (e.g. a list of lists, or a dictionary containing lists), the outer container is duplicated, but the nested inner objects are <strong>shared by reference</strong>!</p>
 
@@ -167,7 +197,7 @@ print("Shallow matrix[0]: ", shallow_matrix[0]) # [999, 2]
 print("Inner list identity:", matrix[0] is shallow_matrix[0])  # True!</pre></div>
 
         <h3 id="3-shallow-copy-vs-deep-copy-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Deep Copy: True Recursive Duplication</h3>
+        <h3 id="3-2-deep-copy-true-recursive-duplication">3.2. Deep Copy: True Recursive Duplication</h3>
         <p>A <strong>deep copy</strong> constructed via <code>copy.deepcopy()</code> creates a new compound object and then <strong>recursively</strong> copies all nested objects found within it, creating completely independent duplicate copies at every level of depth.</p>
 
         <div class="code"><pre>import copy
@@ -191,7 +221,7 @@ print("Deep copy teams:", deep_data["teams"])      # ['Engineering', 'DevOps', '
 print("Original version:", original_data["meta"]["version"])  # 1.0
 print("Deep copy version:", deep_data["meta"]["version"])      # 2.0</pre></div>
 
-        <h3>3.3. Cyclic References and Memoization</h3>
+        <h3 id="3-3-cyclic-references-and-memoization">3.3. Cyclic References and Memoization</h3>
         <p>In complex data structures, an object may reference itself (circular reference). If <code>copy.deepcopy()</code> simply used naive recursion, it would crash with a <code>RecursionError</code>. Instead, <code>deepcopy()</code> maintains an internal <code>memo</code> dictionary tracking already-copied objects to safely handle self-referencing and cyclic graphs.</p>
 
         <div class="code"><pre># Self-referencing list:
@@ -328,7 +358,7 @@ print(copy.deepcopy(s) is s)  # True</pre></div>
         </div>
         <div class="callout">Write <code class="inline">26-practice.py</code>. Run with <code class="inline">python3 26-practice.py</code>. Test aliasing, shallow copying, and deep copying.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -380,7 +410,7 @@ shallow copy vulnerabilities with nested mutables, and deep copy isolation.
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -443,7 +473,7 @@ print("Clone ports:   ", config_clone["ports"])  # [80, 443, 8080]</pre></div>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -514,7 +544,7 @@ print("Cycle preserved?", deep_nodes["neighbor"]["neighbor"] is deep_nodes)  # T
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I can explain the difference between <code>==</code> and <code>is</code>.</li>
           <li>I know why aliasing mutable objects can cause bugs.</li>

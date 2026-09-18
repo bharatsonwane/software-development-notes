@@ -15,16 +15,48 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
         <a href="#2-overview">2. Data types overview</a>
-        <a href="#3-immutability">3. Immutability concepts and the id() function</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-immutability">3. Immutability concepts and the id() function</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-what-is-the-id-function">3.1. What is the id() function?</a>
+            <a href="#3-2-relationship-between-id-the-is-operator-and">3.2. Relationship between id(), the 'is' operator, and '=='</a>
+            <a href="#3-3-proving-mutability-vs-immutability-with-id">3.3. Proving Mutability vs. Immutability with id()</a>
+            <a href="#3-4-cpython-memory-optimization-interning-and-singletons">3.4. CPython Memory Optimization: Interning &amp; Singletons</a>
+            <a href="#3-5-the-id-recycling-gotcha-temporary-objects">3.5. The ID Recycling Gotcha (Temporary Objects)</a>
+          </div>
+        </div>
         <a href="#4-range">4. range and sequence forms</a>
         <a href="#5-bytes">5. Bytes / bytearray (intro)</a>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -59,27 +91,15 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>Every value in Python has a <strong>type</strong>. Types are checked dynamically at runtime. This file provides an <strong>overview of Python data types</strong> and focuses in-depth on <strong>immutability</strong>, <strong>memory identity (<code class="inline">id()</code>)</strong>, <strong><code class="inline">range</code></strong>, and <strong>binary sequences</strong>.</li>
           <li>For an in-depth breakdown of individual scalar types (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">complex</code>, <code class="inline">bool</code>, <code class="inline">None</code>), see <a href="./04-py-basic-data-type.html"><strong>04. Basic Data Types</strong></a>.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> use <code class="inline">type(x)</code> / <code class="inline">isinstance</code> when debugging; treat <code class="inline">int</code>/<code class="inline">str</code>/<code class="inline">tuple</code> as immutable — “change” means create a new object.</div>
         <ul>
           <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">03-practice.py</code> before File 04. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Data types overview</strong> — high-level categorization and mutability matrix</li>
-          <li><strong>Immutability concepts and the id() function</strong> — identity, memory addresses, and interning</li>
-          <li><strong>range and sequence forms</strong> — lazy sequence generation</li>
-          <li><strong>Bytes / bytearray (intro)</strong> — binary sequences</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
@@ -212,7 +232,7 @@ isinstance(x, int)   # True</pre></div>
         </div>
         <h3 id="3-immutability-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>3.1. What is the id() function?</h3>
+        <h3 id="3-1-what-is-the-id-function">3.1. What is the id() function?</h3>
         <ul>
           <li><code class="inline">id(object)</code> is a built-in Python function that returns the <strong>unique identity</strong> of an object as an integer.</li>
           <li><strong>Unique &amp; Constant:</strong> An object's ID is guaranteed to be unique and remain completely constant for that object throughout its entire lifetime in memory.</li>
@@ -227,7 +247,7 @@ print("Decimal ID:    ", id(name))        # e.g., 4376483504
 print("Hex Memory Addr:", hex(id(name)))  # e.g., 0x104dd2eb0
 print("Number ID:      ", hex(id(num)))   # e.g., 0x104b50d50</pre></div>
 
-        <h3>3.2. Relationship between id(), the 'is' operator, and '=='</h3>
+        <h3 id="3-2-relationship-between-id-the-is-operator-and">3.2. Relationship between id(), the 'is' operator, and '=='</h3>
         <p>Understanding <code class="inline">id()</code> is essential for grasping the difference between <strong>equality</strong> and <strong>identity</strong>:</p>
         <table>
           <thead>
@@ -265,7 +285,7 @@ print("id(list1) == id(list2):", id(list1) == id(list2))  # False
 print("list1 is list3:", list1 is list3)  # True  (same object)
 print("id(list1) == id(list3):", id(list1) == id(list3))  # True</pre></div>
 
-        <h3>3.3. Proving Mutability vs. Immutability with id()</h3>
+        <h3 id="3-3-proving-mutability-vs-immutability-with-id">3.3. Proving Mutability vs. Immutability with id()</h3>
         <ul>
           <li><strong>Immutable Types</strong> (<code class="inline">int</code>, <code class="inline">float</code>, <code class="inline">bool</code>, <code class="inline">str</code>, <code class="inline">tuple</code>, <code class="inline">frozenset</code>, <code class="inline">bytes</code>):
             Any operation that appears to "modify" the value actually constructs a <strong>brand new object</strong> in memory with a <strong>new <code class="inline">id()</code></strong>.
@@ -295,7 +315,7 @@ print("After append ID:  ", hex(id(nums)))  # EXACT SAME memory address!</pre></
 
         <h3 id="3-immutability-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>3.4. CPython Memory Optimization: Interning &amp; Singletons</h3>
+        <h3 id="3-4-cpython-memory-optimization-interning-and-singletons">3.4. CPython Memory Optimization: Interning &amp; Singletons</h3>
         <p>Because creating millions of tiny immutable objects would be slow and waste RAM, CPython employs <strong>memory interning</strong> and pre-allocated singleton pools:</p>
         <ul>
           <li><strong>Small Integer Caching (-5 to 256):</strong> CPython pre-allocates an array of integer objects for values between <code class="inline">-5</code> and <code class="inline">256</code> at startup. Any variable holding a value in this range shares the <em>exact same object and ID</em>.</li>
@@ -320,7 +340,7 @@ print("c == d (values equal):", c == d)      # True
 val = None
 print("val is None:", val is None)            # True (checks id(val) == id(None))</pre></div>
 
-        <h3>3.5. The ID Recycling Gotcha (Temporary Objects)</h3>
+        <h3 id="3-5-the-id-recycling-gotcha-temporary-objects">3.5. The ID Recycling Gotcha (Temporary Objects)</h3>
         <div class="callout">
           <strong>Crucial Pitfall — Lifetime and ID Reuse:</strong>
           An object's ID is only guaranteed unique <em>while the object is alive</em>. Once an object has no remaining references, Python's garbage collector deallocates it. The memory allocator can then immediately reuse that same memory address for a new object!
@@ -587,7 +607,7 @@ print("Decoded text: ", decoded)         # Python 🐍</pre></div>
         </div>
         <div class="callout">Use <code class="inline">type()</code> and <code class="inline">id()</code> to explore values. Prefer clarity over clever casts.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -642,7 +662,7 @@ print(&quot;list from range:&quot;, lst)  # [0, 1, 2, 3, 4]</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -726,7 +746,7 @@ print(&quot;bytearray after:&quot;, ba)  # bytearray(b&#x27;Hi&#x27;)</pre></div
           </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -780,7 +800,7 @@ print("v5 type:", type(v5).__name__, "| Mutable:", isinstance(v5, mutable_types)
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know fundamental types and None.</li>
           <li>I understand immutability vs rebinding.</li>

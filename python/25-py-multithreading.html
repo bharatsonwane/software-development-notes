@@ -15,19 +15,101 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-to-multithreading">2. Introduction to multithreading</a>
-        <a href="#3-creating-and-starting-threads">3. Creating and starting threads</a>
-        <a href="#4-thread-names-and-related-methods">4. Thread names and related methods</a>
-        <a href="#5-daemon-threads">5. Daemon threads</a>
-        <a href="#6-synchronization-lock-rlock-semaphore">6. Synchronization (Lock, RLock, Semaphore)</a>
-        <a href="#7-inter-thread-communication-event-condition-queue">7. Inter-thread communication (Event, Condition, Queue)</a>
-        <a href="#8-good-practices-and-summary">8. Good practices and summary</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-concurrency-vs-parallelism">1.1. Concurrency vs Parallelism</a>
+            <a href="#1-2-the-global-interpreter-lock-gil">1.2. The Global Interpreter Lock (GIL)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-introduction-to-multithreading">2. Introduction to multithreading</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-processes-vs-threads">2.1. Processes vs Threads</a>
+            <a href="#2-2-the-main-thread">2.2. The Main Thread</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-creating-and-starting-threads">3. Creating and starting threads</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-approach-1-passing-a-target-function">3.1. Approach 1: Passing a Target Function</a>
+            <a href="#3-2-approach-2-subclassing-threading-thread">3.2. Approach 2: Subclassing threading.Thread</a>
+            <a href="#3-3-approach-3-creating-a-thread-without-extending-thread-class">3.3. Approach 3: Creating a Thread without Extending Thread Class</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-thread-names-and-related-methods">4. Thread names and related methods</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-thread-inspection-utilities">4.1. Thread Inspection Utilities</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-daemon-threads">5. Daemon threads</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-daemon-vs-non-daemon-threads">5.1. Daemon vs Non-Daemon Threads</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#6-synchronization-lock-rlock-semaphore">6. Synchronization (Lock, RLock, Semaphore)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#6-1-race-conditions-and-threading-lock">6.1. Race Conditions &amp; threading.Lock</a>
+            <a href="#6-2-threading-rlock-reentrant-lock">6.2. threading.RLock (Reentrant Lock)</a>
+            <a href="#6-3-threading-semaphore">6.3. threading.Semaphore</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#7-inter-thread-communication-event-condition-queue">7. Inter-thread communication (Event, Condition, Queue)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#7-1-threading-event">7.1. threading.Event</a>
+            <a href="#7-2-queue-queue-the-gold-standard-for-thread-communication">7.2. queue.Queue: The Gold Standard for Thread Communication</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#8-good-practices-and-summary">8. Good practices and summary</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#8-1-summary-checklist">8.1. Summary Checklist</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -64,32 +146,18 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Concurrency vs Parallelism</h3>
+        <h3 id="1-1-concurrency-vs-parallelism">1.1. Concurrency vs Parallelism</h3>
         <ul>
           <li><strong>Concurrency:</strong> The ability of a system to manage multiple tasks by interleaving their execution over overlapping time periods. Even on a single-core CPU, concurrency creates the illusion of simultaneous execution via rapid context switching.</li>
           <li><strong>Parallelism:</strong> The ability of a system to execute multiple computational tasks literally at the exact same physical instant across multiple CPU cores.</li>
         </ul>
 
-        <h3>1.2. The Global Interpreter Lock (GIL)</h3>
+        <h3 id="1-2-the-global-interpreter-lock-gil">1.2. The Global Interpreter Lock (GIL)</h3>
         <p>In standard CPython (the reference implementation of Python), multithreading is governed by the <strong>Global Interpreter Lock (GIL)</strong>. The GIL is a mutual exclusion lock that prevents multiple native threads from executing Python bytecodes at once.</p>
         <ul>
           <li><strong>CPU-Bound Tasks (Math, Image Processing, Compression):</strong> Threads spend their time executing Python bytecode. Due to the GIL, multithreading does NOT achieve true multi-core speedup for CPU-bound tasks in CPython (and can even run slower due to lock contention). Use the <code>multiprocessing</code> module instead!</li>
           <li><strong>I/O-Bound Tasks (Network Requests, File I/O, Database Queries):</strong> When a thread waits for disk I/O or network responses, Python releases the GIL. Another thread can immediately execute. Multithreading provides massive throughput and responsiveness gains for I/O-bound tasks.</li>
         </ul>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — Concurrency, parallelism, and the CPython GIL</li>
-          <li><strong>Introduction to multithreading</strong> — Threads, processes, and memory sharing</li>
-          <li><strong>Creating and starting threads</strong> — <code>target</code> callable vs class inheritance, <code>start()</code> vs <code>run()</code>, and <code>join()</code></li>
-          <li><strong>Thread names and related methods</strong> — Identification, active thread counts, and enumeration</li>
-          <li><strong>Daemon threads</strong> — Background workers, lifecycle termination rules, and caveats</li>
-          <li><strong>Synchronization (Lock, RLock, Semaphore)</strong> — Race conditions, deadlocks, reentrant locks, and resource pools</li>
-          <li><strong>Inter-thread communication (Event, Condition, Queue)</strong> — Signalling, monitor conditions, and thread-safe queues</li>
-          <li><strong>Good practices and summary</strong> — Threading guidelines and architectural decision matrix</li>
-          <li><strong>C. Common questions</strong> — Core interview questions with in-depth explanations</li>
-          <li><strong>P. Practical Assignment</strong> — Producer-consumer pipeline mini-project and edge case drills</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -103,7 +171,7 @@
         </div>
 
         <h3 id="2-introduction-to-multithreading-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Processes vs Threads</h3>
+        <h3 id="2-1-processes-vs-threads">2.1. Processes vs Threads</h3>
         <table class="table">
           <thead>
             <tr>
@@ -136,7 +204,7 @@
           </tbody>
         </table>
 
-        <h3>2.2. The Main Thread</h3>
+        <h3 id="2-2-the-main-thread">2.2. The Main Thread</h3>
         <p>When any Python program starts, the Python runtime creates a single execution thread known as the <strong>MainThread</strong>. Any additional threads spawned by the code are child threads.</p>
 
         <div class="code"><pre>import threading
@@ -159,7 +227,7 @@ print("Is thread alive?    ", current.is_alive())  # True</pre></div>
         </div>
 
         <h3 id="3-creating-and-starting-threads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Approach 1: Passing a Target Function</h3>
+        <h3 id="3-1-approach-1-passing-a-target-function">3.1. Approach 1: Passing a Target Function</h3>
         <p>The simplest way to create a thread is by instantiating <code>threading.Thread</code> with a target callable and a tuple of positional arguments via <code>args</code> (or a dictionary via <code>kwargs</code>).</p>
 
         <div class="code"><pre>import threading
@@ -189,7 +257,7 @@ print("Both worker threads have completed. Main continues.")</pre></div>
         </div>
 
         <h3 id="3-creating-and-starting-threads-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Approach 2: Subclassing <code>threading.Thread</code></h3>
+        <h3 id="3-2-approach-2-subclassing-threading-thread">3.2. Approach 2: Subclassing <code>threading.Thread</code></h3>
         <p>For complex thread workers requiring internal state, subclass <code>threading.Thread</code>, call <code>super().__init__()</code> in <code>__init__</code>, and override the <code>run()</code> method.</p>
 
         <div class="code"><pre>import threading
@@ -223,7 +291,7 @@ worker2.join()
 print("Worker 1 processed:", worker1.processed_count)
 print("Worker 2 processed:", worker2.processed_count)</pre></div>
 
-        <h3>3.3. Approach 3: Creating a Thread without Extending Thread Class</h3>
+        <h3 id="3-3-approach-3-creating-a-thread-without-extending-thread-class">3.3. Approach 3: Creating a Thread without Extending Thread Class</h3>
         <p>You can define an independent class with business methods, and pass an instance method as the <code class="inline">target</code> without coupling your class to <code class="inline">threading.Thread</code>:</p>
         <div class="code"><pre>import threading
 
@@ -249,7 +317,7 @@ t.join()</pre></div>
         </div>
 
         <h3 id="4-thread-names-and-related-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. Thread Inspection Utilities</h3>
+        <h3 id="4-1-thread-inspection-utilities">4.1. Thread Inspection Utilities</h3>
         <ul>
           <li><code>threading.current_thread()</code>: Returns the <code>Thread</code> object corresponding to the caller's thread of control.</li>
           <li><code>threading.active_count()</code>: Returns the number of currently alive <code>Thread</code> objects.</li>
@@ -288,7 +356,7 @@ for t in threads:
         </div>
 
         <h3 id="5-daemon-threads-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Daemon vs Non-Daemon Threads</h3>
+        <h3 id="5-1-daemon-vs-non-daemon-threads">5.1. Daemon vs Non-Daemon Threads</h3>
         <p>By default, threads created in Python are <strong>non-daemon threads</strong>. The Python interpreter process will remain alive and running until <em>every non-daemon thread</em> has finished executing its code.</p>
         <p>A <strong>daemon thread</strong> is a low-priority background support thread (e.g., garbage collectors, periodic healthcheck pingers, telemetry senders). When only daemon threads remain alive, the Python runtime exits immediately, abruptly killing all daemon threads.</p>
 
@@ -325,7 +393,7 @@ print("Main thread exiting now.")
         </div>
 
         <h3 id="6-synchronization-lock-rlock-semaphore-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Race Conditions &amp; <code>threading.Lock</code></h3>
+        <h3 id="6-1-race-conditions-and-threading-lock">6.1. Race Conditions &amp; <code>threading.Lock</code></h3>
         <p>A <strong>race condition</strong> occurs when multiple threads concurrently read and modify shared mutable state without proper coordination, leading to data corruption. In Python, an operation like <code>counter += 1</code> translates to multiple underlying bytecode instructions (read, increment, write). If context switches happen between these bytecodes, updates are lost.</p>
 
         <div class="code"><pre>import threading
@@ -349,7 +417,7 @@ for t in threads:
 print("Expected: 500,000 | Actual counter:", counter)  # 500,000 (Guaranteed!)</pre></div>
 
         <h3 id="6-synchronization-lock-rlock-semaphore-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>6.2. <code>threading.RLock</code> (Reentrant Lock)</h3>
+        <h3 id="6-2-threading-rlock-reentrant-lock">6.2. <code>threading.RLock</code> (Reentrant Lock)</h3>
         <p>A standard <code>Lock</code> cannot be acquired twice by the same thread; attempting to do so causes a self-deadlock. An <code>RLock</code> (Reentrant Lock) keeps track of the owning thread and recursion depth, allowing the owner to acquire it multiple times. It is released only when the release count equals the acquire count.</p>
 
         <div class="code"><pre>import threading
@@ -375,7 +443,7 @@ acc1.transfer(acc2, 200)
 print("Acc 1 balance:", acc1.balance)  # 800
 print("Acc 2 balance:", acc2.balance)  # 700</pre></div>
 
-        <h3>6.3. <code>threading.Semaphore</code></h3>
+        <h3 id="6-3-threading-semaphore">6.3. <code>threading.Semaphore</code></h3>
         <p>A <code>Semaphore</code> manages an internal counter that decreases on <code>acquire()</code> and increases on <code>release()</code>. It allows up to $N$ concurrent threads to access a shared pool of resources (e.g., maximum 3 simultaneous database connections).</p>
 
         <div class="code"><pre>import threading
@@ -409,7 +477,7 @@ for t in threads:
         </div>
 
         <h3 id="7-inter-thread-communication-event-condition-queue-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>7.1. <code>threading.Event</code></h3>
+        <h3 id="7-1-threading-event">7.1. <code>threading.Event</code></h3>
         <p>An <code>Event</code> is one of the simplest communication mechanisms between threads: one thread signals an event, and other threads wait for it. It manages an internal boolean flag initialized to <code>False</code>.</p>
         <ul>
           <li><code>event.set()</code>: Sets flag to <code>True</code>, awakening all waiting threads.</li>
@@ -443,7 +511,7 @@ t_server.join()
 for c in t_clients: c.join()</pre></div>
 
         <h3 id="7-inter-thread-communication-event-condition-queue-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>7.2. <code>queue.Queue</code>: The Gold Standard for Thread Communication</h3>
+        <h3 id="7-2-queue-queue-the-gold-standard-for-thread-communication">7.2. <code>queue.Queue</code>: The Gold Standard for Thread Communication</h3>
         <p>Instead of manually coordinating locks and events, idiomatic Python multithreading uses <code>queue.Queue</code>. A <code>Queue</code> is internally thread-safe; all locking, notification, and bounds-checking are handled automatically.</p>
 
         <div class="code"><pre>import threading
@@ -495,7 +563,7 @@ print("All tasks processed safely!")</pre></div>
         </div>
 
         <h3 id="8-good-practices-and-summary-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>8.1. Summary Checklist</h3>
+        <h3 id="8-1-summary-checklist">8.1. Summary Checklist</h3>
         <ul>
           <li><strong>Prefer Queues:</strong> Avoid shared mutable variables protected by manual locks wherever possible; pass messages through <code>queue.Queue</code>.</li>
           <li><strong>Always Use Context Managers:</strong> Use <code>with lock:</code> instead of manual <code>lock.acquire()</code> and <code>lock.release()</code> to prevent deadlocks caused by unhandled exceptions.</li>
@@ -624,7 +692,7 @@ print("All tasks processed safely!")</pre></div>
         </div>
         <div class="callout">Write <code class="inline">25-practice.py</code>. Run with <code class="inline">python3 25-practice.py</code>. Practice threads, locks, semaphores, and queues.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -679,7 +747,7 @@ and inter-thread communication with Event and thread-safe Queues.
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -769,7 +837,7 @@ for t in threads: t.join()</pre></div>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -838,7 +906,7 @@ with rlock:
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I understand the GIL and why multithreading is optimal for I/O tasks.</li>
           <li>I can explain the difference between <code>start()</code> and <code>run()</code>.</li>

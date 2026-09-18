@@ -15,17 +15,82 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-to-regular-expressions">2. Introduction to regular expressions</a>
-        <a href="#3-character-classes-predefined-classes-quantifiers">3. Character classes, predefined classes, quantifiers</a>
-        <a href="#4-important-functions-of-re-module">4. Important functions of re module</a>
-        <a href="#5-practice-applications">5. Practice applications</a>
-        <a href="#6-web-scraping-with-regex-intro">6. Web scraping with regex (intro)</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview-why-regular-expressions">1.1. Overview: Why Regular Expressions?</a>
+            <a href="#1-2-the-crucial-role-of-raw-strings-r">1.2. The Crucial Role of Raw Strings: r"..."</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-introduction-to-regular-expressions">2. Introduction to regular expressions</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-compiling-patterns-with-re-compile">2.1. Compiling Patterns with re.compile()</a>
+            <a href="#2-2-the-match-object">2.2. The Match Object</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-character-classes-predefined-classes-quantifiers">3. Character classes, predefined classes, quantifiers</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-character-classes">3.1. Character Classes [...]</a>
+            <a href="#3-2-predefined-character-classes">3.2. Predefined Character Classes</a>
+            <a href="#3-3-quantifiers">3.3. Quantifiers</a>
+            <a href="#3-4-greedy-vs-lazy-non-greedy-matching">3.4. Greedy vs Lazy (Non-Greedy) Matching</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-important-functions-of-re-module">4. Important functions of re module</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-the-primary-re-functions">4.1. The Primary re Functions</a>
+            <a href="#4-2-regex-compilation-flags">4.2. Regex Compilation Flags</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-practice-applications">5. Practice applications</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-real-world-validation-patterns">5.1. Real-World Validation Patterns</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#6-web-scraping-with-regex-intro">6. Web scraping with regex (intro)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#6-1-html-scraping-with-regex">6.1. HTML Scraping with Regex</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -62,7 +127,7 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview: Why Regular Expressions?</h3>
+        <h3 id="1-1-overview-why-regular-expressions">1.1. Overview: Why Regular Expressions?</h3>
         <p>A <strong>regular expression (regex / regexp)</strong> is a powerful declarative sequence of characters that forms a search pattern. Instead of writing verbose procedural loops and string slicing to find, validate, or substitute text, regular expressions allow you to define patterns concisely.</p>
         <p>Common real-world uses of regular expressions include:</p>
         <ul>
@@ -72,7 +137,7 @@
           <li><strong>Lexical Analysis:</strong> Building tokenizers, compilers, and text scrapers.</li>
         </ul>
 
-        <h3>1.2. The Crucial Role of Raw Strings: <code>r"..."</code></h3>
+        <h3 id="1-2-the-crucial-role-of-raw-strings-r">1.2. The Crucial Role of Raw Strings: <code>r"..."</code></h3>
         <p>In standard Python string literals, the backslash <code>\</code> is an escape character (e.g., <code>\n</code> is newline, <code>\t</code> is tab, <code>\b</code> is backspace). In regular expressions, backslash also has special meaning (e.g., <code>\b</code> means a word boundary, <code>\d</code> means a digit).</p>
         <p>Without raw strings, to match a literal backslash in regex, you would need four backslashes: <code>"\\\\"</code>! Always prefix regular expression patterns with <code>r</code> (raw string literal) to disable Python's string-level escape sequence interpretation.</p>
 
@@ -86,18 +151,6 @@ good_pattern = r"\bword\b"
 
 text = "a word in a sentence"
 print("Match found:", bool(re.search(good_pattern, text)))  # True</pre></div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — Concepts, use cases, and raw string prefixes</li>
-          <li><strong>Introduction to regular expressions</strong> — Compilation, Match objects, and pattern mechanics</li>
-          <li><strong>Character classes, predefined classes, quantifiers</strong> — Meta-characters, ranges, boundaries, and greedy vs lazy</li>
-          <li><strong>Important functions of re module</strong> — <code>match</code>, <code>search</code>, <code>findall</code>, <code>finditer</code>, <code>sub</code>, and flags</li>
-          <li><strong>Practice applications</strong> — Phone, email, and IP validation and masking</li>
-          <li><strong>Web scraping with regex (intro)</strong> — Extracting HTML tags, links, and text content</li>
-          <li><strong>C. Common questions</strong> — Key interview questions with in-depth answers</li>
-          <li><strong>P. Practical Assignment</strong> — Log sanitizer mini-project and edge case drills</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -111,7 +164,7 @@ print("Match found:", bool(re.search(good_pattern, text)))  # True</pre></div>
         </div>
 
         <h3 id="2-introduction-to-regular-expressions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Compiling Patterns with <code>re.compile()</code></h3>
+        <h3 id="2-1-compiling-patterns-with-re-compile">2.1. Compiling Patterns with <code>re.compile()</code></h3>
         <p>Python provides the built-in <code>re</code> module. You can either use module-level functions directly (<code>re.search(pattern, text)</code>) or compile the pattern first into a <strong>Pattern object</strong> via <code>re.compile()</code>.</p>
         <p>If a regex pattern is used repeatedly in a loop or across requests, compiling it once caches the internal DFA/NFA state machine, offering significant performance improvements.</p>
 
@@ -128,7 +181,7 @@ if match:
     print("Found date:", match.group())  # 2026-09-14</pre></div>
 
         <h3 id="2-introduction-to-regular-expressions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. The <code>Match</code> Object</h3>
+        <h3 id="2-2-the-match-object">2.2. The <code>Match</code> Object</h3>
         <p>When a search or match succeeds, Python returns a <code>re.Match</code> object (if no match is found, it returns <code>None</code>). A Match object provides several methods to inspect the matched substring:</p>
         <ul>
           <li><code>match.group()</code> or <code>match.group(0)</code>: Returns the entire matched substring.</li>
@@ -162,7 +215,7 @@ if match:
         </div>
 
         <h3 id="3-character-classes-predefined-classes-quantifiers-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Character Classes <code>[...]</code></h3>
+        <h3 id="3-1-character-classes">3.1. Character Classes <code>[...]</code></h3>
         <table class="table">
           <thead>
             <tr>
@@ -205,7 +258,7 @@ if match:
           </tbody>
         </table>
 
-        <h3>3.2. Predefined Character Classes</h3>
+        <h3 id="3-2-predefined-character-classes">3.2. Predefined Character Classes</h3>
         <ul>
           <li><code>\d</code>: Any digit, equivalent to <code>[0-9]</code>.</li>
           <li><code>\D</code>: Any non-digit character, equivalent to <code>[^0-9]</code>.</li>
@@ -217,7 +270,7 @@ if match:
         </ul>
 
         <h3 id="3-character-classes-predefined-classes-quantifiers-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.3. Quantifiers</h3>
+        <h3 id="3-3-quantifiers">3.3. Quantifiers</h3>
         <table class="table">
           <thead>
             <tr>
@@ -260,7 +313,7 @@ if match:
           </tbody>
         </table>
 
-        <h3>3.4. Greedy vs Lazy (Non-Greedy) Matching</h3>
+        <h3 id="3-4-greedy-vs-lazy-non-greedy-matching">3.4. Greedy vs Lazy (Non-Greedy) Matching</h3>
         <p>By default, quantifiers (<code>*</code>, <code>+</code>, <code>{n,m}</code>) are <strong>greedy</strong>: they match as much text as possible. Adding a <code>?</code> suffix (<code>*?</code>, <code>+?</code>, <code>{n,m}?</code>) makes them <strong>lazy (non-greedy)</strong>: they match the minimal text required.</p>
 
         <div class="code"><pre>html_snippet = "&lt;b&gt;First&lt;/b&gt; and &lt;b&gt;Second&lt;/b&gt;"
@@ -287,7 +340,7 @@ print("Lazy:  ", re.findall(lazy_pattern, html_snippet))
         </div>
 
         <h3 id="4-important-functions-of-re-module-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. The Primary <code>re</code> Functions</h3>
+        <h3 id="4-1-the-primary-re-functions">4.1. The Primary <code>re</code> Functions</h3>
         <table class="table">
           <thead>
             <tr>
@@ -371,7 +424,7 @@ tokens = re.split(r"[,;|]\s*", data_row)
 print("Split tokens:", tokens)  # ['item1', 'item2', 'item3', 'item4']</pre></div>
 
         <h3 id="4-important-functions-of-re-module-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.2. Regex Compilation Flags</h3>
+        <h3 id="4-2-regex-compilation-flags">4.2. Regex Compilation Flags</h3>
         <ul>
           <li><code>re.IGNORECASE</code> (or <code>re.I</code>): Performs case-insensitive matching.</li>
           <li><code>re.MULTILINE</code> (or <code>re.M</code>): Allows <code>^</code> and <code>$</code> to match at the beginning/end of each individual line (not just the entire string).</li>
@@ -402,7 +455,7 @@ print(bool(phone_regex.match("+1-555-019-2834")))  # True</pre></div>
         </div>
 
         <h3 id="5-practice-applications-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. Real-World Validation Patterns</h3>
+        <h3 id="5-1-real-world-validation-patterns">5.1. Real-World Validation Patterns</h3>
 
         <div class="code"><pre>import re
 
@@ -440,7 +493,7 @@ print("Extracted IPs:", extracted_ips)  # ['192.168.1.45', '10.0.0.1']</pre></di
         </div>
 
         <h3 id="6-web-scraping-with-regex-intro-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. HTML Scraping with Regex</h3>
+        <h3 id="6-1-html-scraping-with-regex">6.1. HTML Scraping with Regex</h3>
         <p>While dedicated HTML parsers (like BeautifulSoup, lxml, or selectolax) are recommended for complex DOM hierarchies, regular expressions are very effective for quick, lightweight scraping of targeted tokens, URLs, titles, and metadata tags from raw HTML responses.</p>
 
         <div class="code"><pre>import re
@@ -599,7 +652,7 @@ print(re.sub(r"\d+", double_num, "Scores: 10, 25"))  # Scores: 20, 50</pre></div
         </div>
         <div class="callout">Write <code class="inline">28-practice.py</code>. Run with <code class="inline">python3 28-practice.py</code>. Test regex matching, extraction, substitution, and flags.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -649,7 +702,7 @@ regex compilation flags, and practical data extraction and sanitization pipeline
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -708,7 +761,7 @@ print("Masked notes:", masked)</pre></div>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -765,7 +818,7 @@ print("Escaped matches:", m)  # ['3.50', '+']</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I always use raw strings <code>r"..."</code> for regular expression patterns.</li>
           <li>I can explain the difference between <code>match()</code>, <code>search()</code>, and <code>findall()</code>.</li>

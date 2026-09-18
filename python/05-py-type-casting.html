@@ -15,15 +15,56 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
         <a href="#2-casting">2. Casting between fundamental types</a>
-        <a href="#3-constructors">3. int / float / complex / bool / str</a>
-        <a href="#4-bases-pitfalls">4. Base conversions and pitfalls</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-constructors">3. int / float / complex / bool / str</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-int-casting-rules">3.1. int() Casting Rules</a>
+            <a href="#3-2-float-casting-rules">3.2. float() Casting Rules</a>
+            <a href="#3-3-complex-casting-rules-and-whitespace-pitfall">3.3. complex() Casting Rules &amp; Whitespace Pitfall</a>
+            <a href="#3-4-bool-truthiness-rules">3.4. bool() Truthiness Rules</a>
+            <a href="#3-5-str-casting">3.5. str() Casting</a>
+            <a href="#3-6-collection-type-casting">3.6. Collection Type Casting</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-bases-pitfalls">4. Base conversions and pitfalls</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-pitfalls">4.1. Pitfalls</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -57,25 +98,14 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li><strong>Type casting</strong> (type conversion) creates a value of another type using constructors like <code class="inline">int()</code>, <code class="inline">float()</code>, <code class="inline">str()</code>, <code class="inline">bool()</code>, <code class="inline">complex()</code>.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <div class="callout"><strong>Default rule today:</strong> cast explicitly when reading input (<code class="inline">int(input(...))</code>). Watch for <code class="inline">ValueError</code> on bad strings and float→int truncation.</div>
         <ul>
           <li>After reading sections 2–4, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">05-practice.py</code> before File 06. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Casting between fundamental types</strong></li>
-          <li><strong>int / float / complex / bool / str</strong></li>
-          <li><strong>Base conversions and pitfalls</strong></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
@@ -106,7 +136,7 @@ int("5") + 1    # 6</pre></div>
         <h3 id="3-constructors-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <p>Python provides 5 built-in constructor functions to perform explicit type casting between scalar types: <code class="inline">int()</code>, <code class="inline">float()</code>, <code class="inline">complex()</code>, <code class="inline">bool()</code>, and <code class="inline">str()</code>.</p>
 
-        <h3>3.1. int() Casting Rules</h3>
+        <h3 id="3-1-int-casting-rules">3.1. int() Casting Rules</h3>
         <ul>
           <li><strong>From float:</strong> Truncates the fractional digits toward zero (<code class="inline">int(10.99) -&gt; 10</code>, <code class="inline">int(-10.99) -&gt; -10</code>). It does <em>not</em> perform mathematical rounding.</li>
           <li><strong>From complex:</strong> <strong>CANNOT</strong> be converted to <code class="inline">int</code>. Raises <code class="inline">TypeError: can't convert complex to int</code>. (To extract the real integer, use <code class="inline">int(z.real)</code>).</li>
@@ -132,7 +162,7 @@ print(int("100"))      # 100
 # Fix for float string:
 print(int(float("10.5")))  # 10</pre></div>
 
-        <h3>3.2. float() Casting Rules</h3>
+        <h3 id="3-2-float-casting-rules">3.2. float() Casting Rules</h3>
         <ul>
           <li><strong>From int:</strong> Converts integer to float with <code class="inline">.0</code> (<code class="inline">float(10) -&gt; 10.0</code>).</li>
           <li><strong>From complex:</strong> <strong>CANNOT</strong> be converted to <code class="inline">float</code>. Raises <code class="inline">TypeError: can't convert complex to float</code>.</li>
@@ -155,7 +185,7 @@ print(float("inf"))      # inf
 # float("abc")           # ValueError: could not convert string to float: 'abc'</pre></div>
 
         <h3 id="3-constructors-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.3. complex() Casting Rules &amp; Whitespace Pitfall</h3>
+        <h3 id="3-3-complex-casting-rules-and-whitespace-pitfall">3.3. complex() Casting Rules &amp; Whitespace Pitfall</h3>
         <p>The <code class="inline">complex()</code> constructor has two primary call forms:</p>
         <ol>
           <li><strong>Form 1 — <code class="inline">complex(real)</code>:</strong> Returns <code class="inline">real + 0j</code>. Can take int, float, or bool (<code class="inline">complex(10) -&gt; (10+0j)</code>, <code class="inline">complex(True) -&gt; (1+0j)</code>).</li>
@@ -187,7 +217,7 @@ print(complex("5.5-3.2j"))# (5.5-3.2j)
 # complex(10, "20")       # TypeError: complex() second arg can't be string
 # complex("10", "20")     # TypeError: complex() can't take second arg if first is a string</pre></div>
 
-        <h3>3.4. bool() Truthiness Rules</h3>
+        <h3 id="3-4-bool-truthiness-rules">3.4. bool() Truthiness Rules</h3>
         <p>Any object in Python can be evaluated by <code class="inline">bool(x)</code>. The rules are absolute:</p>
         <table>
           <thead>
@@ -221,7 +251,7 @@ print(complex("5.5-3.2j"))# (5.5-3.2j)
           </tbody>
         </table>
 
-        <h3>3.5. str() Casting</h3>
+        <h3 id="3-5-str-casting">3.5. str() Casting</h3>
         <ul>
           <li>The <code class="inline">str()</code> constructor converts <strong>any Python object</strong> into its human-readable string representation by invoking the object's <code class="inline">__str__()</code> dunder method.</li>
         </ul>
@@ -233,7 +263,7 @@ print(str(10 + 5j))    # "(10+5j)"
 print(str([1, 2, 3]))  # "[1, 2, 3]"
 print(str(None))       # "None"</pre></div>
 
-        <h3>3.6. Collection Type Casting</h3>
+        <h3 id="3-6-collection-type-casting">3.6. Collection Type Casting</h3>
         <p>Python provides constructors to convert between sequence and collection types seamlessly:</p>
         <table>
           <thead>
@@ -310,7 +340,7 @@ oct(10)   # '0o12'
 hex(10)   # '0xa'
 format(10, "b")  # '1010' without prefix</pre></div>
         <h3 id="4-bases-pitfalls-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.1. Pitfalls</h3>
+        <h3 id="4-1-pitfalls">4.1. Pitfalls</h3>
         <ul>
           <li><code class="inline">int(" 42 ")</code> works (whitespace stripped); <code class="inline">int("42abc")</code> raises <code class="inline">ValueError</code>.</li>
           <li>Float→int truncates; use <code class="inline">round()</code> if you need rounding.</li>
@@ -402,7 +432,7 @@ format(10, "b")  # '1010' without prefix</pre></div>
         </div>
         <div class="callout">Practice explicit casts. Handle ValueError for bad input.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -458,7 +488,7 @@ print(&quot;hex:&quot;, hex(num))  # &#x27;0x2a&#x27;</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -548,7 +578,7 @@ for i in range(16):
           </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -593,7 +623,7 @@ print(&quot;Matches original:&quot;, text == decoded_str)</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I cast explicitly when needed.</li>
           <li>I handle conversion errors.</li>

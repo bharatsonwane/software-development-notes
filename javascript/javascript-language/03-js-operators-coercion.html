@@ -13,17 +13,85 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> JavaScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./javascript-language.html">← JS Language</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-operators">2. Operators</a>
-        <a href="#3-equality">3. Equality</a>
-        <a href="#4-type-coercion">4. Type coercion</a>
-        <a href="#5-truthy-falsy">5. Truthy &amp; falsy</a>
-        <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
         <a href="./03-js-operators-coercion-animation.html">Animation visualizer</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-what-are-operators-and-coercion">1.1. What are operators and coercion?</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-operators">2. Operators</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-arithmetic-operators">2.1. Arithmetic operators</a>
+            <a href="#2-2-assignment-operators">2.2. Assignment operators</a>
+            <a href="#2-3-comparison-operators-relational">2.3. Comparison operators (relational)</a>
+            <a href="#2-4-logical-operators">2.4. Logical operators</a>
+            <a href="#2-5-bitwise-operators">2.5. Bitwise operators</a>
+            <a href="#2-6-unary-and-other-operators">2.6. Unary and other operators</a>
+            <a href="#2-7-operator-precedence-brief">2.7. Operator precedence (brief)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-equality">3. Equality</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-vs">3.1. == vs ===</a>
+            <a href="#3-1-1-the-10-step-abstract-equality-algorithm-ecma-262-7-2-14">3.1.1. The 10-Step Abstract Equality (==) Algorithm (ECMA-262 §7.2.14)</a>
+            <a href="#3-2-object-is">3.2. Object.is</a>
+            <a href="#3-3-special-equality-cases">3.3. Special equality cases</a>
+            <a href="#3-4-deep-equality">3.4. Deep equality</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-type-coercion">4. Type coercion</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-implicit-vs-explicit-coercion">4.1. Implicit vs explicit coercion</a>
+            <a href="#4-2-explicit-conversion-functions">4.2. Explicit conversion functions</a>
+            <a href="#4-3-abstract-operations-tonumber-tostring-toboolean">4.3. Abstract operations (ToNumber, ToString, ToBoolean)</a>
+            <a href="#4-3-1-toprimitive-objects-primitives">4.3.1. ToPrimitive (objects → primitives)</a>
+            <a href="#4-4-common-coercion-pitfalls">4.4. Common coercion pitfalls</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-truthy-falsy">5. Truthy &amp; falsy</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-falsy-values-only-8">5.1. Falsy values (only 8)</a>
+            <a href="#5-2-vs-vs-andand">5.2. ?? vs || vs &amp;&amp;</a>
+            <a href="#5-3-truthy-gotchas">5.3. Truthy gotchas</a>
+          </div>
+        </div>
+        <a href="#c-common-questions">C. Common questions</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -51,28 +119,16 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. What are operators and coercion?</h3>
+        <h3 id="1-1-what-are-operators-and-coercion">1.1. What are operators and coercion?</h3>
         <ul>
           <li><strong>Operators</strong> act on values and produce a result. <strong>Coercion</strong> is when JavaScript converts a value from one type to another — sometimes automatically (implicit), sometimes because you asked (explicit).</li>
           <li>These two ideas are tightly linked: many operators trigger coercion before comparing or combining values. Knowing which operators coerce and how helps you avoid bugs like <code class="inline">&quot;5&quot; + 1</code> vs <code class="inline">&quot;5&quot; - 1</code>.</li>
         </ul>
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> use <strong><code class="inline">===</code></strong> for equality, prefer <strong>explicit</strong> conversions when you need them, and learn the small list of <strong>falsy</strong> values by heart.</li>
           <li>Interactive visualizer: open <a href="./03-js-operators-coercion-animation.html">03-js-operators-coercion-animation.html</a> in a browser — <code class="inline">+</code> vs <code class="inline">-</code>, <code class="inline">==</code>/<code class="inline">===</code>, <code class="inline">Object.is</code>, <code class="inline">&amp;&amp;</code>/<code class="inline">||</code>/<code class="inline">??</code>, truthy/falsy (Run / Step).</li>
           <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">03-practice.js</code> before File 04. Review <a href="#c-common-questions">C. Common questions</a> for interview-style checks.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Operators</strong> — arithmetic, assignment, comparison, logical, bitwise, unary</li>
-          <li><strong>Equality</strong> — <code class="inline">==</code>, <code class="inline">===</code>, <code class="inline">Object.is</code></li>
-          <li><strong>Type coercion</strong> — implicit vs explicit, abstract operations</li>
-          <li><strong>Truthy &amp; falsy</strong> — falsy list, <code class="inline">??</code> vs <code class="inline">||</code></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-operators">
@@ -84,7 +140,7 @@
           </div>
         </div>
         <h3 id="2-operators-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Arithmetic operators</h3>
+        <h3 id="2-1-arithmetic-operators">2.1. Arithmetic operators</h3>
         <table>
         <thead>
         <tr><th>Operator</th><th>Name</th><th>Example</th><th>Notes</th></tr>
@@ -108,7 +164,7 @@
 let n = 5;
 n++;        // n is 6; expression evaluates to 5 (postfix)
 ++n;        // n is 7; expression evaluates to 7 (prefix)</pre></div>
-        <h3>2.2. Assignment operators</h3>
+        <h3 id="2-2-assignment-operators">2.2. Assignment operators</h3>
         <ul>
           <li>Assign a value to a variable. Compound forms combine an operation with assignment:</li>
         </ul>
@@ -130,7 +186,7 @@ a ??= 20;   // no change → still 10
 let b = 0;
 b ||= 5;    // assign if falsy → b is 5
 b &amp;&amp;= 0;    // assign if truthy → b is 0</pre></div>
-        <h3>2.3. Comparison operators (relational)</h3>
+        <h3 id="2-3-comparison-operators-relational">2.3. Comparison operators (relational)</h3>
         <ul>
           <li>Compare two values; return a <strong>boolean</strong>. Operands are coerced to numbers when comparing numbers/strings (except with <code class="inline">===</code> / <code class="inline">!==</code>).</li>
         </ul>
@@ -151,7 +207,7 @@ null &gt;= 0;    // true — null coerces to 0 (0 &gt;= 0 is true)
 null == 0;    // false — null only loosely equals undefined!
 null === 0;   // false</pre></div>
         <h3 id="2-operators-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.4. Logical operators</h3>
+        <h3 id="2-4-logical-operators">2.4. Logical operators</h3>
         <ul>
           <li>Work with <strong>boolean</strong> logic. Operands are coerced to boolean unless using <code class="inline">&amp;&amp;</code> / <code class="inline">||</code> for short-circuit <strong>value</strong> return.</li>
         </ul>
@@ -181,7 +237,7 @@ const name = user &amp;&amp; user.name;   // null — no error, user.name not ac
 
 false &amp;&amp; doSomething();  // doSomething never called
 true || doSomething();   // doSomething never called</pre></div>
-        <h3>2.5. Bitwise operators</h3>
+        <h3 id="2-5-bitwise-operators">2.5. Bitwise operators</h3>
         <ul>
           <li>Operate on <strong>32-bit integers</strong> (operands are converted with ToInt32). Useful for flags and masks; rare in app UI code.</li>
         </ul>
@@ -206,7 +262,7 @@ const EXEC = 4;   // 100
 let flags = READ | WRITE;  // 011 → 3
 flags &amp; READ;              // 1 — has READ
 flags &amp;= ~WRITE;           // clear WRITE → 1</pre></div>
-        <h3>2.6. Unary and other operators</h3>
+        <h3 id="2-6-unary-and-other-operators">2.6. Unary and other operators</h3>
         <table>
         <thead>
         <tr><th>Operator</th><th>Example</th><th>Notes</th></tr>
@@ -237,7 +293,7 @@ let x, y;
 x = (y = 3, y + 1);  // y = 3, then x = 4
 for (let i = 0, j = 10; i &lt; j; i++, j--) { /* ... */ }</pre></div>
         <h3 id="2-operators-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.7. Operator precedence (brief)</h3>
+        <h3 id="2-7-operator-precedence-brief">2.7. Operator precedence (brief)</h3>
         <ul>
           <li>When multiple operators appear in one expression, <strong>precedence</strong> decides evaluation order. Use parentheses when in doubt.</li>
           <li>High → low (partial list):</li>
@@ -257,7 +313,7 @@ for (let i = 0, j = 10; i &lt; j; i++, j--) { /* ... */ }</pre></div>
           </div>
         </div>
         <h3 id="3-equality-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. <code class="inline">==</code> vs <code class="inline">===</code></h3>
+        <h3 id="3-1-vs">3.1. <code class="inline">==</code> vs <code class="inline">===</code></h3>
         <table>
         <thead>
         <tr><th>Operator</th><th>Name</th><th>Coercion?</th></tr>
@@ -280,7 +336,7 @@ for (let i = 0, j = 10; i &lt; j; i++, j--) { /* ... */ }</pre></div>
 &quot;&quot; == false;   // true
 null == undefined;  // true (special case)
 null === undefined; // false</pre></div>
-        <h3>3.1.1. The 10-Step Abstract Equality (==) Algorithm (ECMA-262 §7.2.14)</h3>
+        <h3 id="3-1-1-the-10-step-abstract-equality-algorithm-ecma-262-7-2-14">3.1.1. The 10-Step Abstract Equality (==) Algorithm (ECMA-262 §7.2.14)</h3>
         <p>When the JavaScript runtime evaluates <code class="inline">x == y</code>, it applies the following exact sequence of rules:</p>
         <ol>
           <li><strong>Same Type:</strong> If <code class="inline">Type(x) === Type(y)</code>, return <code class="inline">x === y</code>.</li>
@@ -303,7 +359,7 @@ null === undefined; // false</pre></div>
 // 5. Rule 1 (Same Type): 0 === 0 -> TRUE!
 console.log([] == ![]); // true</pre></div>
         <h3 id="3-equality-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.2. <code class="inline">Object.is</code></h3>
+        <h3 id="3-2-object-is">3.2. <code class="inline">Object.is</code></h3>
         <ul>
           <li>ES6 added <strong><code class="inline">Object.is</code></strong> for cases where <code class="inline">===</code> is not enough:</li>
         </ul>
@@ -314,7 +370,7 @@ Object.is(5, 5);       // true — same as === for normal values</pre></div>
           <li>Use <code class="inline">Object.is</code> when you explicitly care about <code class="inline">NaN</code> equality or signed zero. For everyday checks, <code class="inline">===</code> is fine.</li>
         </ul>
         <h3 id="3-equality-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.3. Special equality cases</h3>
+        <h3 id="3-3-special-equality-cases">3.3. Special equality cases</h3>
         <div class="code"><pre>// NaN
 NaN == NaN;            // false
 NaN === NaN;           // false
@@ -336,7 +392,7 @@ a === b;               // true — same reference
 // Empty string and false
 &quot;&quot; == false;           // true
 &quot;&quot; === false;          // false</pre></div>
-        <h3>3.4. Deep equality</h3>
+        <h3 id="3-4-deep-equality">3.4. Deep equality</h3>
         <ul>
           <li><strong><code class="inline">===</code></strong> compares <strong>references</strong> for objects — not structure.</li>
         </ul>
@@ -379,7 +435,7 @@ a === b;               // true — same reference
         <ul>
           <li><strong>Coercion</strong> is automatic or manual conversion between types. JavaScript is <strong>weakly typed</strong> — it will convert values when operators or contexts require it.</li>
         </ul>
-        <h3>4.1. Implicit vs explicit coercion</h3>
+        <h3 id="4-1-implicit-vs-explicit-coercion">4.1. Implicit vs explicit coercion</h3>
         <table>
         <thead>
         <tr><th>Kind</th><th>Who triggers it</th><th>Example</th></tr>
@@ -401,7 +457,7 @@ Boolean(&quot;&quot;);    // false</pre></div>
           <li>Prefer <strong>explicit</strong> conversion in application code — it documents intent and avoids surprises.</li>
         </ul>
         <h3 id="4-type-coercion-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.2. Explicit conversion functions</h3>
+        <h3 id="4-2-explicit-conversion-functions">4.2. Explicit conversion functions</h3>
         <table>
         <thead>
         <tr><th>Goal</th><th>Use</th><th>Avoid</th></tr>
@@ -429,7 +485,7 @@ Boolean({});         // true</pre></div>
 String(value);           // &quot;null&quot;
 // value.toString();     // TypeError</pre></div>
         <h3 id="4-type-coercion-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.3. Abstract operations (ToNumber, ToString, ToBoolean)</h3>
+        <h3 id="4-3-abstract-operations-tonumber-tostring-toboolean">4.3. Abstract operations (ToNumber, ToString, ToBoolean)</h3>
         <ul>
           <li>The spec defines internal conversion rules. Practical summary:</li>
           <li><strong>ToNumber:</strong></li>
@@ -486,7 +542,7 @@ String(undefined);   // &quot;undefined&quot;
 
 Boolean(0);          // false
 Boolean(&quot;hello&quot;);    // true</pre></div>
-        <h3>4.3.1. ToPrimitive (objects → primitives)</h3>
+        <h3 id="4-3-1-toprimitive-objects-primitives">4.3.1. ToPrimitive (objects → primitives)</h3>
         <ul>
           <li>Objects are first converted with <strong>ToPrimitive</strong> (File 02): prefer <code class="inline">Symbol.toPrimitive</code>, else <code class="inline">valueOf</code>/<code class="inline">toString</code> depending on hint.</li>
           <li>Then the resulting primitive goes through ToNumber / ToString / ToBoolean as needed.</li>
@@ -499,7 +555,7 @@ Boolean(&quot;hello&quot;);    // true</pre></div>
 box + 1;            // 11 — prefer valueOf for +
 String(box);        // &quot;ten&quot; — string hint prefers toString
 Number(box);        // 10</pre></div>
-        <h3>4.4. Common coercion pitfalls</h3>
+        <h3 id="4-4-common-coercion-pitfalls">4.4. Common coercion pitfalls</h3>
         <div class="code"><pre>// Classic interview outputs
 &quot;5&quot; + 1;             // &quot;51&quot; — + concatenates when either side is string
 &quot;5&quot; - 1;             // 4 — - forces numbers
@@ -546,7 +602,7 @@ if (value === null || value === undefined) { }</pre></div>
         <ul>
           <li>In <strong>boolean contexts</strong> (<code class="inline">if</code>, <code class="inline">while</code>, <code class="inline">&amp;&amp;</code>, <code class="inline">||</code>, <code class="inline">!</code>, ternary), values are coerced to <code class="inline">true</code> or <code class="inline">false</code>.</li>
         </ul>
-        <h3>5.1. Falsy values (only 8)</h3>
+        <h3 id="5-1-falsy-values-only-8">5.1. Falsy values (only 8)</h3>
         <ul>
           <li>There are exactly <strong>8 falsy</strong> values in JavaScript:</li>
         </ul>
@@ -572,7 +628,7 @@ if (value === null || value === undefined) { }</pre></div>
   console.log(&quot;empty array is truthy&quot;);  // runs!
 }</pre></div>
         <h3 id="5-truthy-falsy-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.2. <code class="inline">??</code> vs <code class="inline">||</code> vs <code class="inline">&amp;&amp;</code></h3>
+        <h3 id="5-2-vs-vs-andand">5.2. <code class="inline">??</code> vs <code class="inline">||</code> vs <code class="inline">&amp;&amp;</code></h3>
         <table>
         <thead>
         <tr><th>Operator</th><th>Picks / returns when</th></tr>
@@ -599,7 +655,7 @@ null ?? undefined ?? &quot;fallback&quot;;  // &quot;fallback&quot;</pre></div>
   // actually 0 || 0 is 0, but if count could be explicitly passed as 0, ?? is safer
 }</pre></div>
         <h3 id="5-truthy-falsy-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.3. Truthy gotchas</h3>
+        <h3 id="5-3-truthy-gotchas">5.3. Truthy gotchas</h3>
         <div class="code"><pre>// Strings that look &quot;false&quot;
 Boolean(&quot;false&quot;);    // true — non-empty string
 Boolean(&quot;0&quot;);        // true
@@ -745,7 +801,7 @@ if (arr.length === 0) { /* actually empty */ }</pre></div>
         <div class="callout">Predict each result on paper first, then run the code. Prefer <code class="inline">===</code> in your own programs.</div>
 
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -791,7 +847,7 @@ console.log(&quot;0 === false:&quot;, 0 === false); // false
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -891,7 +947,7 @@ console.log(&#x27;true + true =&#x27;, true + true); // 2</pre></div>
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -939,7 +995,7 @@ console.log(&quot;City:&quot;, city); // undefined (does not throw TypeError!)</
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I default to <code class="inline">===</code> and know when <code class="inline">??</code> beats <code class="inline">||</code>.</li>
           <li>I can list the falsy values from memory.</li>

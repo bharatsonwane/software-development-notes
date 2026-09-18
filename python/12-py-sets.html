@@ -15,16 +15,76 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-set-properties-and-creation">2. Set properties and creation</a>
-        <a href="#3-important-set-methods">3. Important set methods</a>
-        <a href="#4-mathematical-and-membership-operators">4. Mathematical and membership operators</a>
-        <a href="#5-set-comprehension">5. Set comprehension</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-internal-implementation-in-cpython">1.2. Internal Implementation in CPython</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-set-properties-and-creation">2. Set properties and creation</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-core-characteristics-of-python-sets">2.1. Core Characteristics of Python Sets</a>
+            <a href="#2-2-ways-to-create-a-set-and-the-empty-set-trap">2.2. Ways to Create a Set &amp; The Empty Set Trap</a>
+            <a href="#2-3-the-unhashable-type-error">2.3. The Unhashable Type Error</a>
+            <a href="#2-4-the-frozenset-immutable-set">2.4. The frozenset (Immutable Set)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-important-set-methods">3. Important set methods</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-adding-elements-add-vs-update">3.1. Adding Elements: add() vs update()</a>
+            <a href="#3-2-removing-elements-remove-vs-discard">3.2. Removing Elements: remove() vs discard()</a>
+            <a href="#3-3-pop-and-clear">3.3. pop() and clear()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-mathematical-and-membership-operators">4. Mathematical and membership operators</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-set-algebraic-operations-table">4.1. Set Algebraic Operations Table</a>
+            <a href="#4-2-in-place-set-mutation-operations">4.2. In-Place Set Mutation Operations</a>
+            <a href="#4-3-subset-superset-and-disjoint-relations">4.3. Subset, Superset &amp; Disjoint Relations</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-set-comprehension">5. Set comprehension</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-syntax-and-mental-model">5.1. Syntax &amp; Mental Model</a>
+            <a href="#5-2-practical-sanitization-and-file-extensions">5.2. Practical Sanitization &amp; File Extensions</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core Tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -63,14 +123,14 @@
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>A <strong>Set</strong> in Python is an <strong>unordered, mutable, unindexed collection of unique, hashable objects</strong>. It is represented by the built-in <code class="inline">set</code> type.</li>
           <li>Sets mirror mathematical set theory: duplicates are strictly impossible, order is not guaranteed, and elements cannot be accessed using numeric indices or slices (<code class="inline">s[0]</code> raises a <code class="inline">TypeError</code>).</li>
           <li>The primary superpowers of sets in Python are <strong>instantaneous $O(1)$ average-time membership testing</strong> (<code class="inline">x in s</code>), automatic duplicate elimination, and highly optimized mathematical set algebra (unions, intersections, differences).</li>
         </ul>
 
-        <h3>1.2. Internal Implementation in CPython</h3>
+        <h3 id="1-2-internal-implementation-in-cpython">1.2. Internal Implementation in CPython</h3>
         <div class="callout">
           <strong>Under the Hood (PySetObject):</strong>
           In CPython, a set is implemented as a <strong>hash table</strong> with open addressing and quadratic probing, very similar to dictionary keys:
@@ -80,19 +140,6 @@
             <li><strong>Requirement:</strong> Because sets rely on hashing, every element inserted into a set <strong>must be hashable</strong> (immutable objects whose hash value never changes).</li>
           </ul>
         </div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Set properties and creation</strong> — uniqueness, empty set trap, constructors, and <code class="inline">frozenset</code></li>
-          <li><strong>Important set methods</strong> — <code class="inline">add</code>, <code class="inline">update</code>, <code class="inline">remove</code> vs <code class="inline">discard</code>, <code class="inline">pop</code>, and <code class="inline">clear</code></li>
-          <li><strong>Mathematical and membership operators</strong> — union, intersection, difference, symmetric difference, and subset predicates</li>
-          <li><strong>Set comprehension</strong> — syntax, automatic deduplication, and conditional filtering</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
-          <li><strong>P.</strong> Practical Assignment</li>
-        </ul>
       </section>
 
       <!-- SECTION 2: SET PROPERTIES AND CREATION -->
@@ -106,7 +153,7 @@
         </div>
         <h3 id="2-set-properties-and-creation-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>2.1. Core Characteristics of Python Sets</h3>
+        <h3 id="2-1-core-characteristics-of-python-sets">2.1. Core Characteristics of Python Sets</h3>
         <table>
           <thead>
             <tr><th>Property</th><th>Behavior</th><th>Details</th></tr>
@@ -140,7 +187,7 @@
           </tbody>
         </table>
 
-        <h3>2.2. Ways to Create a Set &amp; The Empty Set Trap</h3>
+        <h3 id="2-2-ways-to-create-a-set-and-the-empty-set-trap">2.2. Ways to Create a Set &amp; The Empty Set Trap</h3>
         <div class="callout">
           <strong>The Empty Set Trap:</strong> Writing <code class="inline">s = {}</code> does <strong>NOT</strong> create an empty set; it creates an empty <strong>Dictionary</strong> (<code class="inline">dict</code>) for historical reasons. To create an empty set, you <strong>must use the <code class="inline">set()</code> constructor</strong>.
         </div>
@@ -169,7 +216,7 @@ print("List deduplication:", list_dedup)  # {1, 2, 3, 4, 5}</pre></div>
 
         <h3 id="2-set-properties-and-creation-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>2.3. The Unhashable Type Error</h3>
+        <h3 id="2-3-the-unhashable-type-error">2.3. The Unhashable Type Error</h3>
         <p>A set can only contain objects that possess a lifetime-constant hash value. Attempting to insert a mutable container raises a <code class="inline">TypeError</code>:</p>
 
         <div class="code"><pre># Valid elements (Immutable / Hashable):
@@ -181,7 +228,7 @@ print("Valid set:", valid_set)
 # bad2 = {{1, 2}, {3, 4}}  # TypeError: unhashable type: 'set'
 # bad3 = {{"a": 1}}        # TypeError: unhashable type: 'dict'</pre></div>
 
-        <h3>2.4. The <code class="inline">frozenset</code> (Immutable Set)</h3>
+        <h3 id="2-4-the-frozenset-immutable-set">2.4. The <code class="inline">frozenset</code> (Immutable Set)</h3>
         <ul>
           <li>A <strong><code class="inline">frozenset</code></strong> is an immutable, read-only version of a Python set.</li>
           <li>Because it is immutable, a <code class="inline">frozenset</code> is <strong>hashable</strong>: it can be used as a <strong>dictionary key</strong> or stored as an element inside another set.</li>
@@ -213,7 +260,7 @@ print("Role:", role_permissions[user_perms])  # Editor (Order-independent lookup
         </div>
         <h3 id="3-important-set-methods-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>3.1. Adding Elements: <code class="inline">add()</code> vs <code class="inline">update()</code></h3>
+        <h3 id="3-1-adding-elements-add-vs-update">3.1. Adding Elements: <code class="inline">add()</code> vs <code class="inline">update()</code></h3>
         <table>
           <thead>
             <tr><th>Method</th><th>Argument</th><th>Behavior</th></tr>
@@ -242,7 +289,7 @@ print(s)  # {10, 20, 30}
 s.update([40, 50], (60, 70), "AB")
 print("After update:", s)  # {10, 20, 30, 40, 50, 60, 70, 'A', 'B'}</pre></div>
 
-        <h3>3.2. Removing Elements: <code class="inline">remove()</code> vs <code class="inline">discard()</code></h3>
+        <h3 id="3-2-removing-elements-remove-vs-discard">3.2. Removing Elements: <code class="inline">remove()</code> vs <code class="inline">discard()</code></h3>
         <div class="callout">
           <strong>Key Interview Difference:</strong>
           <ul>
@@ -265,7 +312,7 @@ print("After remove:", fruits)   # {'cherry'}
 
         <h3 id="3-important-set-methods-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>3.3. <code class="inline">pop()</code> and <code class="inline">clear()</code></h3>
+        <h3 id="3-3-pop-and-clear">3.3. <code class="inline">pop()</code> and <code class="inline">clear()</code></h3>
         <ul>
           <li><strong><code class="inline">s.pop()</code>:</strong> Removes and returns an <strong>arbitrary</strong> element from the set. Raises <code class="inline">KeyError</code> if the set is empty. (Note: "arbitrary" does not mean cryptographically random; it depends on internal hash bucket placement).</li>
           <li><strong><code class="inline">s.clear()</code>:</strong> Removes all elements, leaving an empty set (<code class="inline">set()</code>).</li>
@@ -291,7 +338,7 @@ print("After clear:", tags)  # set()</pre></div>
         </div>
         <h3 id="4-mathematical-and-membership-operators-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>4.1. Set Algebraic Operations Table</h3>
+        <h3 id="4-1-set-algebraic-operations-table">4.1. Set Algebraic Operations Table</h3>
         <table>
           <thead>
             <tr><th>Operation</th><th>Operator</th><th>Method</th><th>Definition</th></tr>
@@ -343,7 +390,7 @@ print("Union with list:          ", a.union([99, 100]))     # {1, 2, 3, 4, 5, 99
 
         <h3 id="4-mathematical-and-membership-operators-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>4.2. In-Place Set Mutation Operations</h3>
+        <h3 id="4-2-in-place-set-mutation-operations">4.2. In-Place Set Mutation Operations</h3>
         <p>You can update a set in-place using augmented assignment operators:</p>
         <ul>
           <li><code class="inline">a |= b</code>: <code class="inline">a.update(b)</code> (Union in-place)</li>
@@ -352,7 +399,7 @@ print("Union with list:          ", a.union([99, 100]))     # {1, 2, 3, 4, 5, 99
           <li><code class="inline">a ^= b</code>: <code class="inline">a.symmetric_difference_update(b)</code> (Symmetric diff in-place)</li>
         </ul>
 
-        <h3>4.3. Subset, Superset &amp; Disjoint Relations</h3>
+        <h3 id="4-3-subset-superset-and-disjoint-relations">4.3. Subset, Superset &amp; Disjoint Relations</h3>
         <div class="code"><pre>small = {1, 2}
 large = {1, 2, 3, 4}
 disjoint = {5, 6}
@@ -380,7 +427,7 @@ print("small isdisjoint disjoint: ", small.isdisjoint(disjoint)) # True</pre></d
         </div>
         <h3 id="5-set-comprehension-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>5.1. Syntax &amp; Mental Model</h3>
+        <h3 id="5-1-syntax-and-mental-model">5.1. Syntax &amp; Mental Model</h3>
         <p>Set comprehension uses curly braces <code class="inline">{}</code> with an expression and iteration clause. It dynamically builds a set while automatically deduplicating values:</p>
 
         <div class="code"><pre># General Syntax:
@@ -398,7 +445,7 @@ print("Unique vowels:", vowels)  # {'E', 'U', 'I', 'O', 'A'}</pre></div>
 
         <h3 id="5-set-comprehension-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>5.2. Practical Sanitization &amp; File Extensions</h3>
+        <h3 id="5-2-practical-sanitization-and-file-extensions">5.2. Practical Sanitization &amp; File Extensions</h3>
         <div class="code"><pre># Extract unique file extensions from a list of filenames:
 files = ["main.py", "test.py", "index.html", "style.css", "script.PY", "notes.txt", "app.js"]
 extensions = {f.rsplit(".", 1)[-1].lower() for f in files if "." in f}
@@ -535,7 +582,7 @@ print("Unique extensions:", extensions)
         <div class="callout">Write and verify all tasks in <code class="inline">12-practice.py</code>. Run with <code class="inline">python3 12-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -581,7 +628,7 @@ print("Colors after safe discard:", colors)  # {'red', 'blue'}</pre></div>
           </li>
         </ol>
 
-        <h3>P.2. Core Tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -660,7 +707,7 @@ print("Cleaned unique tags:", clean_tags)
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -711,7 +758,7 @@ print("Has admin access:   ", has_admin_access)     # False</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know why <code class="inline">{}</code> creates a dict and <code class="inline">set()</code> creates an empty set.</li>
           <li>I understand why membership testing <code class="inline">x in s</code> is $O(1)$ constant time.</li>

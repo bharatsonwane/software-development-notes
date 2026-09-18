@@ -15,14 +15,54 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-importance-of-generators-and-demos">2. Importance of generators and demos</a>
-        <a href="#3-advantages-and-limitations">3. Advantages and limitations</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-yield-vs-return">1.2. yield vs return</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-importance-of-generators-and-demos">2. Importance of generators and demos</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-memory-optimization-at-scale">2.1. Memory Optimization at Scale</a>
+            <a href="#2-2-generating-infinite-streams">2.2. Generating Infinite Streams</a>
+            <a href="#2-3-data-pipelines-chaining-generators">2.3. Data Pipelines (Chaining Generators)</a>
+            <a href="#2-4-delegating-with-yield-from">2.4. Delegating with yield from</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-advantages-and-limitations">3. Advantages and limitations</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-comparison-generators-vs-lists">3.1. Comparison: Generators vs Lists</a>
+            <a href="#3-2-advanced-coroutine-methods-send-throw-and-close">3.2. Advanced Coroutine Methods: send(), throw(), and close()</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -58,7 +98,7 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <p>In Python, traditional functions compute their entire output in advance, allocate memory for the result (such as a large list or dictionary), and return it all at once. If you are processing millions of records, large CSV logs, or streaming network packets, loading all items into memory simultaneously can easily exhaust system RAM and cause <code>MemoryError</code> crashes.</p>
         <p>A <strong>generator</strong> is a special kind of iterator that produces items lazily, on demand. Instead of calculating all values upfront and storing them in memory, a generator calculates each value only when requested, yielding control back to the caller while freezing its own execution state until the next item is asked for.</p>
 
@@ -66,7 +106,7 @@
           <strong>Key Mental Model:</strong> A normal function with <code>return</code> is like a bakery that bakes 10,000 loaves of bread upfront and stacks them on shelves. A generator with <code>yield</code> is a live oven that bakes a single loaf only when a customer walks up to buy one, keeping zero unsold loaves taking up shelf space.
         </div>
 
-        <h3>1.2. <code>yield</code> vs <code>return</code></h3>
+        <h3 id="1-2-yield-vs-return">1.2. <code>yield</code> vs <code>return</code></h3>
         <p>The core syntactic differentiator of a generator function is the <code>yield</code> keyword:</p>
         <table class="table">
           <thead>
@@ -130,15 +170,6 @@ try:
     print(next(gen))
 except StopIteration:
     print("Generator exhausted (StopIteration raised)")</pre></div>
-
-        <h3>1.3. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — Concepts, <code>yield</code> mechanics, and the iterator protocol</li>
-          <li><strong>Importance of generators and demos</strong> — Memory optimization, infinite sequences, streaming pipelines, and <code>yield from</code></li>
-          <li><strong>Advantages and limitations</strong> — O(1) memory footprint vs single-pass consumption, coroutine methods (<code>send()</code>, <code>throw()</code>, <code>close()</code>)</li>
-          <li><strong>C. Common questions</strong> — Practical interview questions and internal state machine answers</li>
-          <li><strong>P. Practical Assignment</strong> — Real-world generator coding exercises and pipeline mini-projects</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -152,7 +183,7 @@ except StopIteration:
         </div>
 
         <h3 id="2-importance-of-generators-and-demos-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. Memory Optimization at Scale</h3>
+        <h3 id="2-1-memory-optimization-at-scale">2.1. Memory Optimization at Scale</h3>
         <p>Consider generating the first 10,000,000 square numbers. A list comprehension allocates hundreds of megabytes of RAM. A generator expression allocates only a few bytes, computing each square strictly when iterated.</p>
 
         <div class="code"><pre>import sys
@@ -167,7 +198,7 @@ gen_squares = (x * x for x in range(1_000_000))
 print(f"Generator memory size: {sys.getsizeof(gen_squares):,} bytes")
 # ~104 bytes (constant O(1) memory regardless of range size!)</pre></div>
 
-        <h3>2.2. Generating Infinite Streams</h3>
+        <h3 id="2-2-generating-infinite-streams">2.2. Generating Infinite Streams</h3>
         <p>Because generators evaluate values on demand, they can model theoretically infinite sequences (e.g., timestamps, live sensor ticks, sequence IDs, Fibonacci numbers) without freezing the computer or running out of memory.</p>
 
         <div class="code"><pre>def infinite_counter(start=1, step=1):
@@ -195,7 +226,7 @@ first_10_fib = [next(fib) for _ in range(10)]
 print("First 10 Fibonacci:", first_10_fib)  # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</pre></div>
 
         <h3 id="2-importance-of-generators-and-demos-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.3. Data Pipelines (Chaining Generators)</h3>
+        <h3 id="2-3-data-pipelines-chaining-generators">2.3. Data Pipelines (Chaining Generators)</h3>
         <p>Generators can be chained together in an assembly-line architecture (similar to Unix pipes <code>cat | grep | awk</code>). Each step in the pipeline yields one item to the next stage without any intermediate list allocations.</p>
 
         <div class="code"><pre># Simulating a streaming pipeline for log processing
@@ -229,7 +260,7 @@ for alert in pipeline:
 # CRITICAL ALERT at 2026-09-14 10:00:02: Database timeout in query: SELECT * FROM orders
 # CRITICAL ALERT at 2026-09-14 10:00:04: Out of memory in worker pod 3</pre></div>
 
-        <h3>2.4. Delegating with <code>yield from</code></h3>
+        <h3 id="2-4-delegating-with-yield-from">2.4. Delegating with <code>yield from</code></h3>
         <p>Introduced in Python 3.3 (PEP 380), <code>yield from &lt;iterable&gt;</code> transparently delegates generation to a sub-generator or any iterable. It eliminates messy nested loops and establishes a direct two-way communication channel between caller and sub-generator.</p>
 
         <div class="code"><pre># Old manual nesting approach:
@@ -273,7 +304,7 @@ print("Flattened list:", list(flatten(nested)))  # [1, 2, 3, 4, 5, 6, 7, 8]</pre
         </div>
 
         <h3 id="3-advantages-and-limitations-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Comparison: Generators vs Lists</h3>
+        <h3 id="3-1-comparison-generators-vs-lists">3.1. Comparison: Generators vs Lists</h3>
         <table class="table">
           <thead>
             <tr>
@@ -312,7 +343,7 @@ print("Flattened list:", list(flatten(nested)))  # [1, 2, 3, 4, 5, 6, 7, 8]</pre
         </table>
 
         <h3 id="3-advantages-and-limitations-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Advanced Coroutine Methods: <code>send()</code>, <code>throw()</code>, and <code>close()</code></h3>
+        <h3 id="3-2-advanced-coroutine-methods-send-throw-and-close">3.2. Advanced Coroutine Methods: <code>send()</code>, <code>throw()</code>, and <code>close()</code></h3>
         <p>Generators can also act as consumers (coroutines) by receiving data dynamically during execution:</p>
         <ul>
           <li><code>gen.send(value)</code>: Resumes the generator and sends a value into the <code>yield</code> expression.</li>
@@ -486,7 +517,7 @@ gen_exp   = (x * 2 for x in range(1000))    # Parentheses: Generator expression<
         </div>
         <div class="callout">Write <code class="inline">24-practice.py</code>. Run with <code class="inline">python3 24-practice.py</code>. Test warm-ups, pipelines, and coroutines.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -543,7 +574,7 @@ and pipeline architectures for streaming data.
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -608,7 +639,7 @@ print("Generator size in RAM:", sys.getsizeof(gen_data), "bytes (O(1) memory!)")
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -671,7 +702,7 @@ print(next(g, "DEFAULT_VALUE"))   # DEFAULT_VALUE</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I understand how <code>yield</code> suspends execution without losing local state.</li>
           <li>I can explain why generators use $O(1)$ memory compared to lists.</li>

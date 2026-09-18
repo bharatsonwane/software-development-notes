@@ -15,17 +15,83 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-to-modules">2. Introduction to modules</a>
-        <a href="#3-import-forms-naming-conflicts-reloading">3. import forms, naming conflicts, reloading</a>
-        <a href="#4-dir-help-doc-file-name">4. dir(), help(), __doc__, __file__, __name__</a>
-        <a href="#5-random-module-and-applications">5. random module and applications</a>
-        <a href="#6-math-module">6. math module</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-introduction-to-modules">2. Introduction to modules</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-creating-a-module">2.1. Creating a Module</a>
+            <a href="#2-2-the-module-search-path-sys-path">2.2. The Module Search Path: sys.path</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-import-forms-naming-conflicts-reloading">3. import forms, naming conflicts, reloading</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-the-5-forms-of-import-statements">3.1. The 5 Forms of Import Statements</a>
+            <a href="#3-2-module-caching-in-sys-modules">3.2. Module Caching in sys.modules</a>
+            <a href="#3-3-dynamic-reloading-with-importlib-reload">3.3. Dynamic Reloading with importlib.reload()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-dir-help-doc-file-name">4. dir(), help(), __doc__, __file__, __name__</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-introspection-built-ins-dir-and-help">4.1. Introspection Built-ins: dir() and help()</a>
+            <a href="#4-2-special-module-attributes">4.2. Special Module Attributes</a>
+            <a href="#4-3-the-execution-guard-if-name-main">4.3. The Execution Guard: if __name__ == "__main__":</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-random-module-and-applications">5. random module and applications</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-core-functions-in-the-random-module">5.1. Core Functions in the random Module</a>
+            <a href="#5-2-sequence-operations-choice-choices-sample-shuffle">5.2. Sequence Operations: choice(), choices(), sample(), shuffle()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#6-math-module">6. math module</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#6-1-mathematical-constants-and-rounding-functions">6.1. Mathematical Constants &amp; Rounding Functions</a>
+            <a href="#6-2-number-theory-powers-and-logarithms">6.2. Number Theory, Powers &amp; Logarithms</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core Tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -64,25 +130,11 @@
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>A <strong>Module</strong> in Python is simply a file containing Python definitions, functions, classes, and executable statements with a <code class="inline">.py</code> extension.</li>
           <li>As programs grow in size, putting all code in a single file becomes unmaintainable. Modules allow dividing large applications into self-contained, logically cohesive units that can be reused across different projects.</li>
           <li>Modules provide <strong>namespace isolation</strong>: functions or variables defined in one module do not automatically clash with identical names in other modules.</li>
-        </ul>
-
-        <h3>1.2. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong>Introduction to modules</strong> — file structure, benefits, and <code class="inline">sys.path</code> lookup order</li>
-          <li><strong>import forms, naming conflicts, reloading</strong> — 5 import syntaxes, <code class="inline">sys.modules</code> caching, and <code class="inline">importlib.reload()</code></li>
-          <li><strong>dir(), help(), __doc__, __file__, __name__</strong> — introspection tools and the <code class="inline">__main__</code> execution guard</li>
-          <li><strong>random module and applications</strong> — pseudo-random generation, shuffling, sampling, and OTP generation</li>
-          <li><strong>math module</strong> — constants, rounding, number theory, powers, and trigonometry</li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions &amp; interview pitfalls</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
 
@@ -97,7 +149,7 @@
         </div>
         <h3 id="2-introduction-to-modules-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>2.1. Creating a Module</h3>
+        <h3 id="2-1-creating-a-module">2.1. Creating a Module</h3>
         <p>Any valid Python file is automatically an importable module. Suppose we save a file named <code class="inline">calc.py</code>:</p>
 
         <div class="code"><pre># calc.py
@@ -122,7 +174,7 @@ print(calc.multiply(5, 6))   # 30</pre></div>
 
         <h3 id="2-introduction-to-modules-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>2.2. The Module Search Path: <code class="inline">sys.path</code></h3>
+        <h3 id="2-2-the-module-search-path-sys-path">2.2. The Module Search Path: <code class="inline">sys.path</code></h3>
         <div class="callout">
           <strong>How Python Finds Modules:</strong> When executing an <code class="inline">import foo</code> statement, Python searches for <code class="inline">foo.py</code> sequentially through the list of directory strings stored in <code class="inline">sys.path</code>:
           <ol>
@@ -155,7 +207,7 @@ for path in sys.path[:3]:
         </div>
         <h3 id="3-import-forms-naming-conflicts-reloading-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>3.1. The 5 Forms of Import Statements</h3>
+        <h3 id="3-1-the-5-forms-of-import-statements">3.1. The 5 Forms of Import Statements</h3>
         <table>
           <thead>
             <tr><th>Syntax Form</th><th>Example</th><th>Access Pattern</th><th>Pros &amp; Cons</th></tr>
@@ -196,13 +248,13 @@ for path in sys.path[:3]:
 
         <h3 id="3-import-forms-naming-conflicts-reloading-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>3.2. Module Caching in <code class="inline">sys.modules</code></h3>
+        <h3 id="3-2-module-caching-in-sys-modules">3.2. Module Caching in <code class="inline">sys.modules</code></h3>
         <ul>
           <li>When a module is imported for the first time, Python executes its top-level code and caches the resulting module object in the <code class="inline">sys.modules</code> dictionary.</li>
           <li>Subsequent <code class="inline">import</code> statements referencing that module anywhere in the program simply retrieve the cached instance from <code class="inline">sys.modules</code> without re-executing the file.</li>
         </ul>
 
-        <h3>3.3. Dynamic Reloading with <code class="inline">importlib.reload()</code></h3>
+        <h3 id="3-3-dynamic-reloading-with-importlib-reload">3.3. Dynamic Reloading with <code class="inline">importlib.reload()</code></h3>
         <p>If you modify a module file on disk while a long-running process (like an interactive shell or server) is running, executing <code class="inline">import calc</code> again will NOT re-read the file. You must explicitly reload it using <code class="inline">importlib.reload()</code>:</p>
 
         <div class="code"><pre>import importlib
@@ -223,7 +275,7 @@ importlib.reload(math)</pre></div>
         </div>
         <h3 id="4-dir-help-doc-file-name-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>4.1. Introspection Built-ins: <code class="inline">dir()</code> and <code class="inline">help()</code></h3>
+        <h3 id="4-1-introspection-built-ins-dir-and-help">4.1. Introspection Built-ins: <code class="inline">dir()</code> and <code class="inline">help()</code></h3>
         <ul>
           <li><strong><code class="inline">dir(module)</code>:</strong> Returns an alphabetical list of all valid attribute and function names defined inside the module.</li>
           <li><strong><code class="inline">help(module)</code>:</strong> Launches the interactive help documentation viewer generated from the module's docstrings.</li>
@@ -238,7 +290,7 @@ print("First 10 symbols:", symbols[:10])</pre></div>
 
         <h3 id="4-dir-help-doc-file-name-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>4.2. Special Module Attributes</h3>
+        <h3 id="4-2-special-module-attributes">4.2. Special Module Attributes</h3>
         <table>
           <thead>
             <tr><th>Attribute</th><th>Type</th><th>Purpose</th></tr>
@@ -267,7 +319,7 @@ print("First 10 symbols:", symbols[:10])</pre></div>
           </tbody>
         </table>
 
-        <h3>4.3. The Execution Guard: <code class="inline">if __name__ == "__main__":</code></h3>
+        <h3 id="4-3-the-execution-guard-if-name-main">4.3. The Execution Guard: <code class="inline">if __name__ == "__main__":</code></h3>
         <div class="callout">
           <strong>How <code class="inline">__name__</code> Works:</strong>
           <ul>
@@ -299,7 +351,7 @@ if __name__ == "__main__":
         </div>
         <h3 id="5-random-module-and-applications-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>5.1. Core Functions in the <code class="inline">random</code> Module</h3>
+        <h3 id="5-1-core-functions-in-the-random-module">5.1. Core Functions in the <code class="inline">random</code> Module</h3>
         <table>
           <thead>
             <tr><th>Function</th><th>Range / Description</th><th>Example</th></tr>
@@ -330,7 +382,7 @@ if __name__ == "__main__":
 
         <h3 id="5-random-module-and-applications-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>5.2. Sequence Operations: <code class="inline">choice()</code>, <code class="inline">choices()</code>, <code class="inline">sample()</code>, <code class="inline">shuffle()</code></h3>
+        <h3 id="5-2-sequence-operations-choice-choices-sample-shuffle">5.2. Sequence Operations: <code class="inline">choice()</code>, <code class="inline">choices()</code>, <code class="inline">sample()</code>, <code class="inline">shuffle()</code></h3>
         <ul>
           <li><code class="inline">random.choice(seq)</code>: Picks 1 random item from a non-empty sequence.</li>
           <li><code class="inline">random.choices(seq, k=N)</code>: Picks $N$ items <strong>with replacement</strong> (duplicates possible).</li>
@@ -376,7 +428,7 @@ print("Generated 6-digit OTP:", generate_otp())</pre></div>
         </div>
         <h3 id="6-math-module-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>6.1. Mathematical Constants &amp; Rounding Functions</h3>
+        <h3 id="6-1-mathematical-constants-and-rounding-functions">6.1. Mathematical Constants &amp; Rounding Functions</h3>
         <table>
           <thead>
             <tr><th>Function / Constant</th><th>Return Value</th><th>Example</th></tr>
@@ -407,7 +459,7 @@ print("Generated 6-digit OTP:", generate_otp())</pre></div>
 
         <h3 id="6-math-module-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>6.2. Number Theory, Powers &amp; Logarithms</h3>
+        <h3 id="6-2-number-theory-powers-and-logarithms">6.2. Number Theory, Powers &amp; Logarithms</h3>
         <div class="code"><pre>import math
 
 # Number theory:
@@ -562,7 +614,7 @@ print("sin(90 deg):       ", math.sin(angle_rad))    # 1.0</pre></div>
         <div class="callout">Write and verify all tasks in <code class="inline">16-practice.py</code>. Run with <code class="inline">python3 16-practice.py</code>.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -609,7 +661,7 @@ print("Random 4-digit PIN:", pin)</pre></div>
           </li>
         </ol>
 
-        <h3>P.2. Core Tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core Tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -706,7 +758,7 @@ for fn_name in sorted(list(math_docs.keys()))[:5]:
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -765,7 +817,7 @@ print("Registry contains:", list(plugin_registry.keys()))</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know how Python searches for modules through <code class="inline">sys.path</code>.</li>
           <li>I can explain the role of <code class="inline">if __name__ == '__main__':</code>.</li>

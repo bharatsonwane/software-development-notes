@@ -13,16 +13,77 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> TypeScript Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../../index.html">← Home</a>
         <a href="./typescript.html">← TypeScript</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-partial-required-pick-omit">2. Partial, Required, Pick, Omit</a>
-        <a href="#3-record-and-returntype">3. Record and ReturnType</a>
-        <a href="#4-mapped-types">4. Mapped types</a>
-        <a href="#5-conditional-types-intro">5. Conditional types (intro)</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-overview">1.1. Overview</a>
+            <a href="#1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-partial-required-pick-omit">2. Partial, Required, Pick, Omit</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-partialandlt-tandgt">2.1. Partial&lt;T&gt;</a>
+            <a href="#2-2-pickandlt-t-kandgt-and-omitandlt-t-kandgt">2.2. Pick&lt;T, K&gt; and Omit&lt;T, K&gt;</a>
+            <a href="#2-3-requiredandlt-tandgt">2.3. Required&lt;T&gt;</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-record-and-returntype">3. Record and ReturnType</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-recordandlt-k-vandgt">3.1. Record&lt;K, V&gt;</a>
+            <a href="#3-2-returntypeandlt-tandgt">3.2. ReturnType&lt;T&gt;</a>
+            <a href="#3-3-deconstructing-standard-utility-types-how-they-work-internally">3.3. Deconstructing Standard Utility Types (How They Work Internally)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-mapped-types">4. Mapped types</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-as-const-and-keyof-patterns">4.1. as const and keyof patterns</a>
+            <a href="#4-2-key-remapping-as">4.2. Key remapping (as)</a>
+            <a href="#4-3-filtering-keys">4.3. Filtering keys</a>
+            <a href="#4-4-mapped-type-modifiers-readonly-and">4.4. Mapped Type Modifiers (-readonly and -?)</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-conditional-types-intro">5. Conditional types (intro)</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-practical-example-nullable-unwrap">5.1. Practical example — nullable unwrap</a>
+            <a href="#5-2-distributive-conditionals">5.2. Distributive conditionals</a>
+            <a href="#5-3-infer-preview-file-11">5.3. infer preview (File 11)</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -50,27 +111,15 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Overview</h3>
+        <h3 id="1-1-overview">1.1. Overview</h3>
         <ul>
           <li>TypeScript ships <strong>built-in utility types</strong> and lets you build your own with <strong>mapped</strong> and <strong>conditional</strong> types.</li>
         </ul>
 
-        <h3>1.2. Default rules and how to study this file</h3>
+        <h3 id="1-2-default-rules-and-how-to-study-this-file">1.2. Default rules and how to study this file</h3>
         <ul>
           <li><strong>Default rule today:</strong> enable <code class="inline">strict</code> when you can; prefer precise types over <code class="inline">any</code>.</li>
           <li>After reading sections 2–5, complete <a href="#p-practice">P. Practical Assignment</a> in <code class="inline">08-practice.ts</code> before File 09. Review <a href="#c-common-questions">C. Common questions</a>.</li>
-        </ul>
-        <h3>1.3. Section map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — this section</li>
-          <li><strong><code class="inline">Partial</code>, <code class="inline">Required</code>, <code class="inline">Pick</code>, <code class="inline">Omit</code></strong></li>
-          <li><strong><code class="inline">Record</code> and <code class="inline">ReturnType</code></strong></li>
-          <li><strong>Mapped types</strong></li>
-          <li><strong>Conditional types (intro)</strong></li>
-        </ol>
-        <ul>
-          <li><strong>C.</strong> Common questions</li>
-          <li><strong>P.</strong> Practical Assignment</li>
         </ul>
       </section>
       <section id="2-partial-required-pick-omit">
@@ -82,7 +131,7 @@
           </div>
         </div>
         <h3 id="2-partial-required-pick-omit-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. <code class="inline">Partial&lt;T&gt;</code></h3>
+        <h3 id="2-1-partialandlt-tandgt">2.1. <code class="inline">Partial&lt;T&gt;</code></h3>
         <ul>
           <li>Makes all properties optional — useful for update payloads:</li>
         </ul>
@@ -97,7 +146,7 @@ function updateUser(id: number, changes: Partial&lt;User&gt;) {
 }
 
 updateUser(1, { name: &quot;Alex&quot; }); // OK — only name required</pre></div>
-        <h3>2.2. <code class="inline">Pick&lt;T, K&gt;</code> and <code class="inline">Omit&lt;T, K&gt;</code></h3>
+        <h3 id="2-2-pickandlt-t-kandgt-and-omitandlt-t-kandgt">2.2. <code class="inline">Pick&lt;T, K&gt;</code> and <code class="inline">Omit&lt;T, K&gt;</code></h3>
         <ul>
           <li>Select or remove properties:</li>
         </ul>
@@ -112,7 +161,7 @@ type UserWithoutEmail = Omit&lt;User, &quot;email&quot;&gt;;
         <div class="code"><pre>type CreateUserInput = Omit&lt;User, &quot;id&quot;&gt;;
 type UserListItem = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;</pre></div>
         <h3 id="2-partial-required-pick-omit-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.3. <code class="inline">Required&lt;T&gt;</code></h3>
+        <h3 id="2-3-requiredandlt-tandgt">2.3. <code class="inline">Required&lt;T&gt;</code></h3>
         <ul>
           <li>Opposite of <code class="inline">Partial</code> — all properties required:</li>
         </ul>
@@ -127,7 +176,7 @@ type UserListItem = Pick&lt;User, &quot;id&quot; | &quot;name&quot;&gt;;</pre></
           </div>
         </div>
         <h3 id="3-record-and-returntype-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. <code class="inline">Record&lt;K, V&gt;</code></h3>
+        <h3 id="3-1-recordandlt-k-vandgt">3.1. <code class="inline">Record&lt;K, V&gt;</code></h3>
         <ul>
           <li>Object type with keys <code class="inline">K</code> and values <code class="inline">V</code>:</li>
         </ul>
@@ -144,7 +193,7 @@ const perms: Permissions = {
         </ul>
         <div class="code"><pre>type StringMap = Record&lt;string, number&gt;;</pre></div>
         <h3 id="3-record-and-returntype-l3"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. <code class="inline">ReturnType&lt;T&gt;</code></h3>
+        <h3 id="3-2-returntypeandlt-tandgt">3.2. <code class="inline">ReturnType&lt;T&gt;</code></h3>
         <ul>
           <li>Extract function return type:</li>
         </ul>
@@ -160,7 +209,7 @@ type User = ReturnType&lt;typeof createUser&gt;;
         <div class="code"><pre>type Params = Parameters&lt;typeof createUser&gt;; // tuple of arg types
 type Constructor = ConstructorParameters&lt;typeof Date&gt;;</pre></div>
         <h3 id="3-record-and-returntype-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>3.3. Deconstructing Standard Utility Types (How They Work Internally)</h3>
+        <h3 id="3-3-deconstructing-standard-utility-types-how-they-work-internally">3.3. Deconstructing Standard Utility Types (How They Work Internally)</h3>
         <ul>
           <li>Understanding how TypeScript defines utility types in its standard library (<code class="inline">lib.es5.d.ts</code>) demystifies the type system:</li>
         </ul>
@@ -192,7 +241,7 @@ type P = Awaited&lt;Promise&lt;Promise&lt;number&gt;&gt;&gt;; // number</pre></d
           </div>
         </div>
         <h3 id="4-mapped-types-l2"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. <code class="inline">as const</code> and keyof patterns</h3>
+        <h3 id="4-1-as-const-and-keyof-patterns">4.1. <code class="inline">as const</code> and keyof patterns</h3>
         <div class="code"><pre>const CONFIG = {
   apiUrl: &quot;https://api.example.com&quot;,
   timeout: 5000,
@@ -212,19 +261,19 @@ type Optional&lt;T&gt; = {
   [K in keyof T]?: T[K];
 };</pre></div>
         <h3 id="4-mapped-types-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>4.2. Key remapping (<code class="inline">as</code>)</h3>
+        <h3 id="4-2-key-remapping-as">4.2. Key remapping (<code class="inline">as</code>)</h3>
         <div class="code"><pre>type Getters&lt;T&gt; = {
   [K in keyof T as `get${Capitalize&lt;string &amp; K&gt;}`]: () =&gt; T[K];
 };
 
 type UserGetters = Getters&lt;{ name: string; age: number }&gt;;
 // { getName: () =&gt; string; getAge: () =&gt; number }</pre></div>
-        <h3>4.3. Filtering keys</h3>
+        <h3 id="4-3-filtering-keys">4.3. Filtering keys</h3>
         <div class="code"><pre>type RemoveId&lt;T&gt; = {
   [K in keyof T as K extends &quot;id&quot; ? never : K]: T[K];
 };</pre></div>
         <h3 id="4-mapped-types-l5"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>4.4. Mapped Type Modifiers (<code class="inline">-readonly</code> and <code class="inline">-?</code>)</h3>
+        <h3 id="4-4-mapped-type-modifiers-readonly-and">4.4. Mapped Type Modifiers (<code class="inline">-readonly</code> and <code class="inline">-?</code>)</h3>
         <ul>
           <li>You can add modifiers using <code class="inline">+</code> (default) or strip them using <code class="inline">-</code>:</li>
         </ul>
@@ -262,12 +311,12 @@ type CompleteUser = Concrete&lt;LockedUser&gt;; // name is now required (not opt
 
 type A = IsString&lt;string&gt;;  // true
 type B = IsString&lt;number&gt;;  // false</pre></div>
-        <h3>5.1. Practical example — nullable unwrap</h3>
+        <h3 id="5-1-practical-example-nullable-unwrap">5.1. Practical example — nullable unwrap</h3>
         <div class="code"><pre>type NonNullable&lt;T&gt; = T extends null | undefined ? never : T;
 
 type Safe = NonNullable&lt;string | null&gt;; // string</pre></div>
         <h3 id="5-conditional-types-intro-l4"><span class="chip tier-l3">L3 Advanced</span></h3>
-        <h3>5.2. Distributive conditionals</h3>
+        <h3 id="5-2-distributive-conditionals">5.2. Distributive conditionals</h3>
         <ul>
           <li>When <code class="inline">T</code> is a union, conditionals distribute:</li>
         </ul>
@@ -275,7 +324,7 @@ type Safe = NonNullable&lt;string | null&gt;; // string</pre></div>
 
 type R = ToArray&lt;string | number&gt;;
 // string[] | number[]</pre></div>
-        <h3>5.3. <code class="inline">infer</code> preview (File 11)</h3>
+        <h3 id="5-3-infer-preview-file-11">5.3. <code class="inline">infer</code> preview (File 11)</h3>
         <ul>
           <li>Extract types inside conditionals:</li>
         </ul>
@@ -392,7 +441,7 @@ type Item = ElementType&lt;string[]&gt;; // string</pre></div>
         </div>
         <div class="callout">Prefer built-in utilities.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -463,7 +512,7 @@ console.log(&quot;Leaderboard:&quot;, leaderboard);</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -547,7 +596,7 @@ console.log(&quot;Conditional types evaluated at compile time.&quot;);</pre></di
           </li>
         </ol>
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -593,7 +642,7 @@ console.log(&quot;Exclude &amp; Extract computed.&quot;);</pre></div>
             </details>
           </li>
         </ol>
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know Partial/Required/Pick/Omit/Record.</li>
           <li>I read simple mapped types.</li>

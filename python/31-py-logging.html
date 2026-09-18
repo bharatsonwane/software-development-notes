@@ -15,17 +15,81 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="brand"><span class="dot"></span> Python Notes</div>
-      <nav class="nav">
+            <nav class="nav">
         <a href="../index.html">← Home</a>
         <a href="./python.html">← Python</a>
-        <a href="#1-introduction">1. Introduction</a>
-        <a href="#2-introduction-levels-and-basic-demo">2. Introduction, levels, and basic demo</a>
-        <a href="#3-formatting-messages-logging-exceptions">3. Formatting messages; logging exceptions</a>
-        <a href="#4-custom-logger-patterns">4. Custom logger patterns</a>
-        <a href="#5-per-module-logs-and-inspect">5. Per-module logs and inspect</a>
-        <a href="#6-generic-logger-and-config-file">6. Generic logger and config file</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#1-introduction">1. Introduction</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#1-1-why-logging-over-print">1.1. Why Logging Over print()?</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#2-introduction-levels-and-basic-demo">2. Introduction, levels, and basic demo</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#2-1-the-5-standard-logging-levels">2.1. The 5 Standard Logging Levels</a>
+            <a href="#2-2-basic-logging-with-basicconfig">2.2. Basic Logging with basicConfig()</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#3-formatting-messages-logging-exceptions">3. Formatting messages; logging exceptions</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#3-1-standard-logrecord-attributes">3.1. Standard LogRecord Attributes</a>
+            <a href="#3-2-logging-exceptions-with-full-tracebacks">3.2. Logging Exceptions with Full Tracebacks</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#4-custom-logger-patterns">4. Custom logger patterns</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#4-1-the-4-pillars-of-python-logging-architecture">4.1. The 4 Pillars of Python Logging Architecture</a>
+            <a href="#4-2-building-a-custom-multi-destination-logger">4.2. Building a Custom Multi-Destination Logger</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#5-per-module-logs-and-inspect">5. Per-module logs and inspect</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#5-1-the-idiomatic-pattern-getlogger-name">5.1. The Idiomatic Pattern: getLogger(__name__)</a>
+            <a href="#5-2-logger-propagation-and-preventing-duplicate-messages">5.2. Logger Propagation and Preventing Duplicate Messages</a>
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#6-generic-logger-and-config-file">6. Generic logger and config file</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#6-1-production-log-rotation-rotatingfilehandler">6.1. Production Log Rotation: RotatingFileHandler</a>
+            <a href="#6-2-dictionary-based-configuration-dictconfig">6.2. Dictionary-Based Configuration: dictConfig</a>
+          </div>
+        </div>
         <a href="#c-common-questions">C. Common questions</a>
-        <a href="#p-practice">P. Practical Assignment</a>
+        <div class="nav-section">
+          <div class="nav-section-header">
+            <a href="#p-practice">P. Practical Assignment</a>
+            <button class="nav-toggle" aria-label="Toggle subsections" type="button">▾</button>
+          </div>
+          <div class="nav-sub">
+            <a href="#p-1-warm-up">P.1. Warm-up</a>
+            <a href="#p-2-core-tasks">P.2. Core tasks</a>
+            <a href="#p-3-challenge">P.3. Challenge</a>
+            <a href="#p-4-self-check">P.4. Self-check</a>
+          </div>
+        </div>
       </nav>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <span class="icon" id="theme-icon">🌙</span>
@@ -62,7 +126,7 @@
           </div>
         </div>
         <h3 id="1-introduction-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>1.1. Why Logging Over <code>print()</code>?</h3>
+        <h3 id="1-1-why-logging-over-print">1.1. Why Logging Over <code>print()</code>?</h3>
         <p>In hobby scripts, developers frequently rely on <code>print()</code> to see what the code is doing. However, in production applications, microservices, and libraries, <code>print()</code> is completely inadequate because:</p>
         <ul>
           <li><strong>No Granular Levels:</strong> You cannot disable debug prints in production without manually deleting or commenting out code lines.</li>
@@ -71,18 +135,6 @@
           <li><strong>No Exception Tracebacks:</strong> Capturing stack traces and diagnostics with <code>print()</code> during an outage requires messy manual traceback formatting.</li>
         </ul>
         <p>Python's built-in <strong><code>logging</code></strong> module provides a standardized, thread-safe, and highly configurable framework to track events, performance, and errors across applications.</p>
-
-        <h3>1.2. Section Map</h3>
-        <ol>
-          <li><strong>Introduction</strong> — Why logging is essential and limitations of <code>print()</code></li>
-          <li><strong>Introduction, levels, and basic demo</strong> — The 5 severity levels, numeric values, and <code>basicConfig</code></li>
-          <li><strong>Formatting messages; logging exceptions</strong> — LogRecord attributes and <code>logger.exception()</code></li>
-          <li><strong>Custom logger patterns</strong> — The four pillars: Loggers, Handlers, Formatters, and Filters</li>
-          <li><strong>Per-module logs and inspect</strong> — Hierarchical dot-notation and <code>getLogger(__name__)</code></li>
-          <li><strong>Generic logger and config file</strong> — Production log rotation and dictionary configuration (<code>dictConfig</code>)</li>
-          <li><strong>C. Common questions</strong> — High-yield interview questions with comprehensive answers</li>
-          <li><strong>P. Practical Assignment</strong> — Complete coding drills, multi-handler production logger, and edge cases</li>
-        </ol>
       </section>
 
       <!-- SECTION 2 -->
@@ -96,7 +148,7 @@
         </div>
 
         <h3 id="2-introduction-levels-and-basic-demo-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>2.1. The 5 Standard Logging Levels</h3>
+        <h3 id="2-1-the-5-standard-logging-levels">2.1. The 5 Standard Logging Levels</h3>
         <p>Events are categorized by severity. Each level corresponds to an integer value in the <code>logging</code> module:</p>
         <table class="table">
           <thead>
@@ -136,7 +188,7 @@
         </table>
 
         <h3 id="2-introduction-levels-and-basic-demo-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>2.2. Basic Logging with <code>basicConfig()</code></h3>
+        <h3 id="2-2-basic-logging-with-basicconfig">2.2. Basic Logging with <code>basicConfig()</code></h3>
         <p><code>logging.basicConfig()</code> configures the root logger with basic defaults (destination, format, and minimum severity threshold). Any log event with severity <em>greater than or equal to</em> the configured threshold will be emitted.</p>
 
         <div class="code"><pre>import logging
@@ -165,7 +217,7 @@ logging.critical("Payment gateway returned 503 Service Unavailable!")</pre></div
         </div>
 
         <h3 id="3-formatting-messages-logging-exceptions-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>3.1. Standard LogRecord Attributes</h3>
+        <h3 id="3-1-standard-logrecord-attributes">3.1. Standard LogRecord Attributes</h3>
         <p>When an event is logged, Python creates a <code>LogRecord</code> object containing rich contextual attributes that can be injected into the format string:</p>
         <ul>
           <li><code>%(asctime)s</code>: Human-readable timestamp when the LogRecord was created.</li>
@@ -179,7 +231,7 @@ logging.critical("Payment gateway returned 503 Service Unavailable!")</pre></div
         </ul>
 
         <h3 id="3-formatting-messages-logging-exceptions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>3.2. Logging Exceptions with Full Tracebacks</h3>
+        <h3 id="3-2-logging-exceptions-with-full-tracebacks">3.2. Logging Exceptions with Full Tracebacks</h3>
         <p>Inside an <code>except</code> block, calling <code>logger.exception("message")</code> automatically captures the active exception traceback and appends it to the log message (equivalent to <code>logger.error("message", exc_info=True)</code>).</p>
 
         <div class="code"><pre>import logging
@@ -211,7 +263,7 @@ divide_numbers(10, 0)</pre></div>
         </div>
 
         <h3 id="4-custom-logger-patterns-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>4.1. The 4 Pillars of Python Logging Architecture</h3>
+        <h3 id="4-1-the-4-pillars-of-python-logging-architecture">4.1. The 4 Pillars of Python Logging Architecture</h3>
         <table class="table">
           <thead>
             <tr>
@@ -245,7 +297,7 @@ divide_numbers(10, 0)</pre></div>
         </table>
 
         <h3 id="4-custom-logger-patterns-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>4.2. Building a Custom Multi-Destination Logger</h3>
+        <h3 id="4-2-building-a-custom-multi-destination-logger">4.2. Building a Custom Multi-Destination Logger</h3>
         <p>In production applications, you often want <code>DEBUG</code> messages to be saved to a file, while only <code>WARNING</code> and above appear on the console.</p>
 
         <div class="code"><pre>import logging
@@ -287,7 +339,7 @@ logger.warning("Warning message (written to BOTH file and console!)")</pre></div
         </div>
 
         <h3 id="5-per-module-logs-and-inspect-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>5.1. The Idiomatic Pattern: <code>getLogger(__name__)</code></h3>
+        <h3 id="5-1-the-idiomatic-pattern-getlogger-name">5.1. The Idiomatic Pattern: <code>getLogger(__name__)</code></h3>
         <p>Always create loggers using <code>logger = logging.getLogger(__name__)</code> at the top of every module. Because <code>__name__</code> reflects the module's hierarchical package path (e.g. <code>auth.jwt.validator</code>), Python automatically establishes a parent-child relationship between loggers.</p>
 
         <div class="code"><pre># In auth/service.py:
@@ -300,7 +352,7 @@ def authenticate(username):
     # Output name will be "auth.service"</pre></div>
 
         <h3 id="5-per-module-logs-and-inspect-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>5.2. Logger Propagation and Preventing Duplicate Messages</h3>
+        <h3 id="5-2-logger-propagation-and-preventing-duplicate-messages">5.2. Logger Propagation and Preventing Duplicate Messages</h3>
         <p>By default, child loggers pass their LogRecords up to their parent loggers (all the way to root) via <strong>propagation</strong> (<code>logger.propagate = True</code>). If a child logger has its own handler attached AND propagates to a root logger that also has a handler, <strong>every message will be logged twice!</strong></p>
         <p>To avoid duplicate logs, either configure handlers exclusively on the root logger, or set <code>logger.propagate = False</code> on child loggers that manage their own handlers.</p>
       </section>
@@ -316,7 +368,7 @@ def authenticate(username):
         </div>
 
         <h3 id="6-generic-logger-and-config-file-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>6.1. Production Log Rotation: <code>RotatingFileHandler</code></h3>
+        <h3 id="6-1-production-log-rotation-rotatingfilehandler">6.1. Production Log Rotation: <code>RotatingFileHandler</code></h3>
         <p>If an application runs continuously, a single log file will grow indefinitely, eventually consuming all disk space. <code>RotatingFileHandler</code> automatically rotates log files when they reach a maximum size limit (<code>maxBytes</code>), maintaining a fixed number of backup archives (<code>backupCount</code>).</p>
 
         <div class="code"><pre>import logging
@@ -338,7 +390,7 @@ app_logger.setLevel(logging.INFO)
 app_logger.addHandler(rotating_handler)</pre></div>
 
         <h3 id="6-generic-logger-and-config-file-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>6.2. Dictionary-Based Configuration: <code>dictConfig</code></h3>
+        <h3 id="6-2-dictionary-based-configuration-dictconfig">6.2. Dictionary-Based Configuration: <code>dictConfig</code></h3>
         <p>In modern production Python (Django, FastAPI, Flask), logging is configured declaratively using <code>logging.config.dictConfig()</code> from a Python dictionary or YAML file.</p>
 
         <div class="code"><pre>import logging.config
@@ -501,7 +553,7 @@ prod_logger.info("Order service initialized successfully.")</pre></div>
         </div>
         <div class="callout">Write <code class="inline">31-practice.py</code>. Run with <code class="inline">python3 31-practice.py</code>. Test severity levels, formatters, and rotating handlers.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
-        <h3>P.1. Warm-up</h3>
+        <h3 id="p-1-warm-up">P.1. Warm-up</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -549,7 +601,7 @@ hierarchical logger propagation, and declarative dictConfig setups.
           </li>
         </ol>
 
-        <h3>P.2. Core tasks</h3>
+        <h3 id="p-2-core-tasks">P.2. Core tasks</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -628,7 +680,7 @@ for i in range(50):
         </ol>
 
         <h3 id="p-practice-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h3>P.3. Challenge</h3>
+        <h3 id="p-3-challenge">P.3. Challenge</h3>
         <ol>
           <li>
             <details class="qa-block practice-block">
@@ -697,7 +749,7 @@ child.info("This message prints exactly once.")</pre></div>
           </li>
         </ol>
 
-        <h3>P.4. Self-check</h3>
+        <h3 id="p-4-self-check">P.4. Self-check</h3>
         <ul>
           <li>I know why <code>print()</code> should not be used in production applications.</li>
           <li>I can explain the numeric hierarchy of Python's 5 standard log levels.</li>

@@ -217,6 +217,8 @@ function applyLevelFilter(levels) {
     if (sec.id) {
       document.querySelectorAll('.sidebar .nav a[href="#' + sec.id + '"]').forEach(function (link) {
         link.hidden = !anyVisible;
+        const parentSec = link.closest(".nav-section");
+        if (parentSec) parentSec.hidden = !anyVisible;
       });
     }
   });
@@ -450,6 +452,33 @@ function initSidebar() {
       }
     });
   });
+
+  // 6. Initialize collapsible navigation sections & subsections
+  sidebar.querySelectorAll(".nav-section").forEach(function (sec) {
+    const toggle = sec.querySelector(".nav-toggle");
+    if (toggle) {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        sec.classList.toggle("open");
+      });
+    }
+    const headerLink = sec.querySelector(".nav-section-header a");
+    if (headerLink) {
+      headerLink.addEventListener("click", function () {
+        sec.classList.add("open");
+      });
+    }
+  });
+
+  // Auto-expand nav-section matching initial URL hash
+  if (window.location.hash) {
+    const active = sidebar.querySelector('.nav a[href="' + window.location.hash + '"]');
+    if (active) {
+      const parent = active.closest(".nav-section");
+      if (parent) parent.classList.add("open");
+    }
+  }
 
   // Keyboard shortcuts: Ctrl+B / Cmd+B toggles sidebar, Escape closes mobile sidebar
   window.addEventListener("keydown", function (e) {
