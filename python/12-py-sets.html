@@ -630,13 +630,15 @@ print("Exclusive vocabulary:", exclusive_words)  # {'fast', 'simple', 'powerful'
               <div class="qa-answer-body">
                 <div class="code"><pre>import string
 
-def is_pangram(sentence: str) -> bool:
-    alphabet_set = set(string.ascii_lowercase)
-    sentence_set = {ch.lower() for ch in sentence if ch.isalpha()}
-    return alphabet_set <= sentence_set
+alphabet_set = set(string.ascii_lowercase)
 
-print("Pangram 1:", is_pangram("The quick brown fox jumps over the lazy dog"))  # True
-print("Pangram 2:", is_pangram("Hello world, python is awesome"))              # False</pre></div>
+sentence1 = "The quick brown fox jumps over the lazy dog"
+is_pangram1 = alphabet_set &lt;= {ch.lower() for ch in sentence1 if ch.isalpha()}
+print(f"Pangram 1 ({sentence1!r}):", is_pangram1)  # True
+
+sentence2 = "Hello world, python is awesome"
+is_pangram2 = alphabet_set &lt;= {ch.lower() for ch in sentence2 if ch.isalpha()}
+print(f"Pangram 2 ({sentence2!r}):", is_pangram2)  # False</pre></div>
               </div>
             </details>
           </li>
@@ -667,16 +669,18 @@ print("Cleaned unique tags:", clean_tags)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def jaccard_similarity(text1: str, text2: str) -> float:
-    set1 = set(text1.lower().split())
-    set2 = set(text2.lower().split())
-    intersection_len = len(set1 & set2)
-    union_len = len(set1 | set2)
-    return round(intersection_len / union_len, 4) if union_len > 0 else 1.0
-
-s1 = "data science with python and machine learning algorithms"
+                <div class="code"><pre>s1 = "data science with python and machine learning algorithms"
 s2 = "machine learning and deep learning with python algorithms"
-similarity = jaccard_similarity(s1, s2)
+
+set1 = set(s1.lower().split())
+set2 = set(s2.lower().split())
+
+# Jaccard index: size of intersection divided by size of union
+common_words = set1 &amp; set2
+all_words = set1 | set2
+similarity = len(common_words) / len(all_words)
+
+print("Common vocabulary:", common_words)
 print(f"Jaccard Similarity: {similarity * 100:.2f}%")
 # Jaccard Similarity: 55.56%</pre></div>
               </div>
@@ -692,16 +696,16 @@ print(f"Jaccard Similarity: {similarity * 100:.2f}%")
                 <div class="code"><pre># User has assigned permissions:
 user_permissions = {"read:posts", "write:posts", "read:profile"}
 
-# Endpoint requires specific permissions:
-required_permissions = {"read:posts", "write:posts"}
-admin_permissions = {"read:posts", "write:posts", "delete:posts"}
+# Endpoint requirements:
+required_standard = {"read:posts", "write:posts"}
+required_admin = {"read:posts", "write:posts", "delete:posts"}
 
-def has_access(granted: set, required: set) -> bool:
-    # All required permissions must be a subset of granted permissions:
-    return required <= granted
+# All required permissions must be a subset of granted permissions:
+has_standard_access = required_standard &lt;= user_permissions
+has_admin_access = required_admin &lt;= user_permissions
 
-print("Has standard access:", has_access(user_permissions, required_permissions))  # True
-print("Has admin access:   ", has_access(user_permissions, admin_permissions))     # False</pre></div>
+print("Has standard access:", has_standard_access)  # True
+print("Has admin access:   ", has_admin_access)     # False</pre></div>
               </div>
             </details>
           </li>

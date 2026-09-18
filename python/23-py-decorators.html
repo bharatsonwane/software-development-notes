@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/material-darker.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/xq-light.min.css" />
   <link rel="stylesheet" href="../public/vendor/codemirror/theme/monokai.min.css" />
-  <title>22. Decorators - Python Notes</title>
+  <title>23. Decorators - Python Notes</title>
 </head>
 <body>
   <div class="layout">
@@ -37,10 +37,10 @@
         <span class="sep" aria-hidden="true">/</span>
         <a href="./python.html">Python</a>
         <span class="sep" aria-hidden="true">/</span>
-        <span aria-current="page">22. Decorators</span>
+        <span aria-current="page">23. Decorators</span>
       </nav>
       <header class="hero" id="intro">
-        <h1>22. Decorators</h1>
+        <h1>23. Decorators</h1>
         <p class="subtitle">Higher-order functions, closures, metadata preservation, chaining, and metaprogramming patterns.</p>
         <div class="chip-row">
           <span class="chip">First-Class Functions</span>
@@ -148,10 +148,9 @@ del calculate_tax
 # The function object is NOT garbage collected because compute_tax still references it!
 print(compute_tax(100000))      # 18000.0
 
-try:
-    calculate_tax(100000)
-except NameError as e:
-    print("Error:", e)          # name 'calculate_tax' is not defined</pre></div>
+# Calling calculate_tax now fails because the name was unbound:
+# calculate_tax(100000)  # NameError: name 'calculate_tax' is not defined
+print("'calculate_tax' in globals():", "calculate_tax" in globals())  # False</pre></div>
 
         <h3 id="2-function-aliasing-and-nested-functions-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
         <h3>2.2. Nested (Inner) Functions</h3>
@@ -170,11 +169,9 @@ except NameError as e:
 
 outer_function("Hello from enclosing scope!")
 
-# Attempting to access inner_function directly results in NameError:
-try:
-    inner_function()
-except NameError as e:
-    print("Outside access failed:", e)  # name 'inner_function' is not defined</pre></div>
+# Attempting to access inner_function directly from outside fails:
+# inner_function()  # NameError: name 'inner_function' is not defined
+print("'inner_function' in globals():", "inner_function" in globals())  # False</pre></div>
 
         <h3>2.3. Closures: The Heart of Decorators</h3>
         <p>A <strong>closure</strong> is a nested function that remembers and retains access to variables in its enclosing lexical scope even after the outer function has finished executing and its stack frame has been dismantled.</p>
@@ -375,7 +372,7 @@ except PermissionError as err:
     print("[AUTH FAILED]:", err)</pre></div>
 
         <h3>4.3. Pattern 3: Automatic Retry Mechanism with Exception Handling</h3>
-        <p>In network calls or database operations, transient errors occur. A retry decorator gracefully retries failed operations before giving up.</p>
+        <p>In network calls or database operations, transient errors occur. A retry decorator gracefully retries failed operations before giving up. <em>(Note: As mastered in Module 22: Exception Handling, handling specific exception hierarchies ensures robust failure recovery).</em></p>
 
         <div class="code"><pre>import time
 import functools
@@ -435,6 +432,30 @@ def fibonacci(n):
 
 print("fib(35) computed instantly:", fibonacci(35))
 print("Total cache entries:", len(fibonacci.cache))</pre></div>
+
+        <p>The standard library provides optimized C-level memoization decorators in the <code class="inline">functools</code> module:</p>
+        <div class="code"><pre>from functools import lru_cache, cache
+
+# Python 3.9+ @cache (unbounded memoization)
+@cache
+def ackermann(m: int, n: int) -> int:
+    if m == 0:
+        return n + 1
+    elif m > 0 and n == 0:
+        return ackermann(m - 1, 1)
+    else:
+        return ackermann(m - 1, ackermann(m, n - 1))
+
+# @lru_cache with capacity limit and LRU eviction
+@lru_cache(maxsize=128)
+def fib_lru(n: int) -> int:
+    if n <= 1:
+        return n
+    return fib_lru(n - 1) + fib_lru(n - 2)
+
+print("Ackermann(3, 4):", ackermann(3, 4))
+print("fib_lru(50):    ", fib_lru(50))
+print("Cache info:     ", fib_lru.cache_info())</pre></div>
       </section>
 
       <!-- SECTION 5 -->
@@ -736,7 +757,7 @@ class Account:
             <span class="tier l2">L2</span>
           </div>
         </div>
-        <div class="callout">Write <code class="inline">22-practice.py</code>. Run with <code class="inline">python3 22-practice.py</code>. Practice the warm-up, core tasks, and challenges.</div>
+        <div class="callout">Write <code class="inline">23-practice.py</code>. Run with <code class="inline">python3 23-practice.py</code>. Practice the warm-up, core tasks, and challenges.</div>
         <h3 id="p-practice-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>P.1. Warm-up</h3>
         <ol>
@@ -1016,7 +1037,7 @@ print("Stats after cache hit:  ", fib.stats())</pre></div>
           <li>I can write decorators with arguments using a 3-layer nested structure.</li>
         </ul>
       </section>
-      <footer>HTML note for Python File 22. Open from the Python index.</footer>
+      <footer>HTML note for Python File 23. Open from the Python index.</footer>
     </main>
   </div>
   <script src="../public/vendor/codemirror/lib/codemirror.min.js"></script>

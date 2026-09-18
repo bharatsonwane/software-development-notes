@@ -215,6 +215,27 @@ l.color = "Space Grey"              # Created outside class via reference
 print("Instance namespace dictionary:")
 print(l.__dict__)
 # {'brand': 'Apple', 'ram': 16, 'color': 'Space Grey'}</pre></div>
+
+        <h3>5.2. Private Instance Variables &amp; Name Mangling (<code class="inline">__var</code>)</h3>
+        <p>In Python, prefixing an instance attribute with two leading underscores (e.g. <code class="inline">self.__balance</code>) triggers <strong>Name Mangling</strong> by the CPython compiler. The attribute is textually rewritten to <code class="inline">_ClassName__attributeName</code> in the instance dictionary to prevent accidental attribute overrides in subclasses:</p>
+
+        <div class="code"><pre>class Account:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.__balance = balance  # Double leading underscore triggers name mangling
+
+acc = Account("Alice", 5000)
+print("Public owner:", acc.owner)  # Alice
+
+# Attempting direct access to __balance raises AttributeError:
+# print(acc.__balance)  # AttributeError: 'Account' object has no attribute '__balance'
+
+# Inspecting the instance dictionary reveals the mangled identifier:
+print("Mangled name in object __dict__:", [k for k in acc.__dict__ if "balance" in k])
+# Output: ['_Account__balance']
+
+# The value can still be accessed via its mangled name (proves it is not cryptographically private):
+print("Access via mangled name:", acc._Account__balance)  # 5000</pre></div>
       </section>
 
       <!-- SECTION 6: STATIC / CLASS VARIABLES -->
@@ -797,6 +818,41 @@ p_slot = SlottedPoint(10, 20)
 # Standard has __dict__, slotted does not:
 print("Standard size (bytes):", sys.getsizeof(p_std) + sys.getsizeof(p_std.__dict__))
 print("Slotted size (bytes): ", sys.getsizeof(p_slot))</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Challenge 3: In-Memory Key-Value Store with TTL Expiration — Design a production-style custom container class with automatic key eviction.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>import time
+
+class TTLDict:
+    """In-Memory key-value store where keys expire after a specified TTL (seconds)."""
+    def __init__(self):
+        self._store = {}
+
+    def set(self, key, value, ttl_seconds: float):
+        expires_at = time.time() + ttl_seconds
+        self._store[key] = (value, expires_at)
+
+    def get(self, key, default=None):
+        if key not in self._store:
+            return default
+        value, expires_at = self._store[key]
+        if time.time() > expires_at:
+            del self._store[key]  # Evict expired entry
+            return default
+        return value
+
+cache = TTLDict()
+cache.set("session_123", "user_active", ttl_seconds=0.1)
+print("Immediate get: ", cache.get("session_123"))  # 'user_active'
+time.sleep(0.15)
+print("After 150ms get:", cache.get("session_123"))  # None (expired and evicted!)</pre></div>
               </div>
             </details>
           </li>

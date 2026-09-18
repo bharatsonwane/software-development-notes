@@ -202,8 +202,8 @@ print("Notifications active:", is_enabled)</pre></div>
               <td>Fixed count of numbers to separate variables</td>
             </tr>
             <tr>
-              <td><strong>List Comprehension</strong></td>
-              <td><code class="inline">[int(x) for x in input().split()]</code></td>
+              <td><strong><code class="inline">list(map())</code> Conversion</strong></td>
+              <td><code class="inline">list(map(int, input().split()))</code></td>
               <td>Arbitrary count of numbers into a single list</td>
             </tr>
             <tr>
@@ -223,12 +223,11 @@ a, b = map(int, input("Enter two integers separated by space: ").split())
 print(f"{a} + {b} = {a + b}")
 
 # 3. Reading arbitrary number of integers into a list:
-numbers = [int(x) for x in input("Enter integers: ").split()]
+numbers = list(map(int, input("Enter space-separated integers: ").split()))
 print("Count:", len(numbers), "| Sum:", sum(numbers), "| Max:", max(numbers))
 
-# 4. Custom comma delimiter:
-items = [item.strip() for item in input("Enter tags (comma-separated): ").split(",")]
-print("Cleaned tags list:", items)</pre></div>
+# Note: In Module 10 (Lists), we will also learn List Comprehensions:
+# [int(x) for x in input().split()] as a powerful alternative syntax!</pre></div>
 
         <h3>2.4. Dynamic Evaluation: eval()</h3>
         <ul>
@@ -345,17 +344,15 @@ for i, arg in enumerate(sys.argv):
         <div class="code"><pre>import sys
 
 # Safe command-line argument processing pattern:
-if len(sys.argv) &lt; 3:
+if len(sys.argv) < 3:
     print(f"Usage: python3 {sys.argv[0]} &lt;num1&gt; &lt;num2&gt;")
     sys.exit(1)
 
-try:
-    num1 = float(sys.argv[1])
-    num2 = float(sys.argv[2])
-    print(f"Result: {num1} + {num2} = {num1 + num2}")
-except ValueError:
-    print("Error: Both arguments must be valid numbers.")
-    sys.exit(1)</pre></div>
+num1 = float(sys.argv[1])
+num2 = float(sys.argv[2])
+print(f"Result: {num1} + {num2} = {num1 + num2}")
+# Note: In Module 24 (Exception Handling), we will learn how to catch
+# ValueError if the user enters non-numeric text!</pre></div>
 
         <h3>3.4. Calculating the Sum of Arbitrary Command-Line Arguments</h3>
         <p>A classic interview and practical scripting pattern is computing aggregations over an unknown number of command-line inputs:</p>
@@ -440,19 +437,17 @@ for i in range(1, 6):
 print()  # Newline flush
 
 # 3. Output Redirection &amp; Flushing:
-import sys, time
+import sys
+print("Standard info message", file=sys.stdout)
 print("Critical Error Alert!", file=sys.stderr)
 
-# Redirecting print() to a physical disk file:
-with open("output.log", "w") as f:
-    print("Writing directly into output.log using print(..., file=f)", file=f)
-    print(f"Timestamped log entry: {time.ctime()}", file=f)
+# Note: Python can also redirect print() output directly into disk files:
+# print("Writing into log file...", file=open("log.txt", "w"))
+# (Physical file I/O is covered comprehensively in Module 18 File Handling).
 
-# Real-time counter with flush=True:
-for count in range(3, 0, -1):
-    print(count, end=" ", flush=True)
-    # time.sleep(1)
-print("Go!")</pre></div>
+# Demonstrating flush=True for immediate buffer emission:
+print("Processing data...", end=" ", flush=True)
+print("Done!")</pre></div>
 
         <h3>4.2. Escape Characters in String Literals and Output Formatting</h3>
         <ul>
@@ -845,53 +840,45 @@ if len(sys.argv) &lt; 2:
     print(f"Usage: python3 {sys.argv[0]} &lt;num1&gt; &lt;num2&gt; ...")
     sys.exit(1)
 
-try:
-    numbers = [float(arg) for arg in sys.argv[1:]]
-    print(f"Arguments passed: {numbers}")
-    print(f"Total sum:        {sum(numbers):.2f}")
-    print(f"Average:          {sum(numbers)/len(numbers):.2f}")
-except ValueError as e:
-    print(f"Error: All arguments must be valid numbers! ({e})")
-    sys.exit(1)</pre></div>
+# Read arguments using map():
+numbers = list(map(float, sys.argv[1:]))
+print(f"Arguments passed: {numbers}")
+print(f"Total sum:        {sum(numbers):.2f}")
+print(f"Average:          {sum(numbers)/len(numbers):.2f}")</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 2: Tabular Invoice Formatter with f-strings</strong> — Format a professional receipt with left/center/right alignment, decimal precision, and thousands commas.</span>
+                <span class="qa-question-title"><strong>Task 2: Tabular Receipt Formatter with f-strings</strong> — Format a professional receipt with left/center/right alignment, decimal precision, and thousands commas.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>items = [
-    ("Laptop Pro", 1, 1299.99),
-    ("Wireless Mouse", 2, 29.50),
-    ("USB-C Hub", 1, 45.00),
-    ("4K Monitor", 2, 499.00)
-]
+                <div class="code"><pre># Formatting receipt rows using f-strings alignment specifiers:
+# Specifiers: &lt; (left), ^ (center), &gt; (right), , (comma), .2f (2 decimals)
 
-print("=" * 50)
-print(f"{'INVOICE RECEIPT':^50}")
-print("=" * 50)
-print(f"{'Item Name':&lt;20} | {'Qty':^6} | {'Unit Price':&gt;10} | {'Total':&gt;10}")
-print("-" * 50)
+item_name = "Pro Mechanical Keyboard"
+quantity = 2
+unit_price = 149.99
+line_total = quantity * unit_price
 
-grand_total = 0
-for name, qty, price in items:
-    line_total = qty * price
-    grand_total += line_total
-    print(f"{name:&lt;20} | {qty:^6} | ${price:&gt;9.2f} | ${line_total:&gt;9.2f}")
-
-print("=" * 50)
-print(f"{'GRAND TOTAL:':&lt;30} ${grand_total:&gt;17,.2f}")
-print("=" * 50)</pre></div>
+print("=" * 60)
+print(f"{'INVOICE RECEIPT':^60}")
+print("=" * 60)
+print(f"{'Item Name':&lt;30} | {'Qty':^6} | {'Unit Price':&gt;10} | {'Total':&gt;10}")
+print("-" * 60)
+print(f"{item_name:&lt;30} | {quantity:^6} | ${unit_price:&gt;9.2f} | ${line_total:&gt;9.2f}")
+print("=" * 60)
+print(f"{'TOTAL DUE:':&lt;40} ${line_total:&gt;17,.2f}")
+print("=" * 60)</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Task 3: Safe Evaluator with ast.literal_eval</strong> — Demonstrate safe parsing of complex data structures from user strings without using unsafe <code class="inline">eval()</code>.</span>
+                <span class="qa-question-title"><strong>Task 3: Safe Evaluator with ast.literal_eval</strong> — Safely parse complex data structures from user strings without using unsafe <code class="inline">eval()</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
@@ -899,14 +886,11 @@ print("=" * 50)</pre></div>
 
 user_data = '{"name": "Bharat", "scores": [95, 88, 92], "active": True}'
 
-try:
-    # ast.literal_eval safely parses Python literals only:
-    parsed_obj = ast.literal_eval(user_data)
-    print("Successfully parsed object:", type(parsed_obj))
-    print("User name:   ", parsed_obj["name"])
-    print("Score average:", sum(parsed_obj["scores"]) / len(parsed_obj["scores"]))
-except (ValueError, SyntaxError) as err:
-    print(f"Failed to safely parse literal: {err}")</pre></div>
+# ast.literal_eval parses Python literals safely without running arbitrary shell code:
+parsed_obj = ast.literal_eval(user_data)
+print("Successfully parsed object:", type(parsed_obj))
+print("User name:    ", parsed_obj["name"])
+print("Score average:", sum(parsed_obj["scores"]) / len(parsed_obj["scores"]))</pre></div>
               </div>
             </details>
           </li>

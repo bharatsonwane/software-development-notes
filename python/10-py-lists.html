@@ -821,17 +821,17 @@ print("Even squares (1-25):", even_squares)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def deduplicate_preserve_order(lst: list) -> list:
-    seen = set()
-    result = []
-    for item in lst:
-        if item not in seen:
-            seen.add(item)
-            result.append(item)
-    return result
+                <div class="code"><pre>sample = [10, 20, 30, 20, 40, 10, 50, 30]
 
-sample = [10, 20, 30, 20, 40, 10, 50, 30]
-print("Deduplicated:", deduplicate_preserve_order(sample))
+seen = set()
+deduplicated = []
+for item in sample:
+    if item not in seen:
+        seen.add(item)
+        deduplicated.append(item)
+
+print("Original:    ", sample)
+print("Deduplicated:", deduplicated)
 # [10, 20, 30, 40, 50]</pre></div>
               </div>
             </details>
@@ -843,15 +843,15 @@ print("Deduplicated:", deduplicate_preserve_order(sample))
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def move_zeros_to_end(nums: list) -> None:
-    non_zero_pos = 0
-    for i in range(len(nums)):
-        if nums[i] != 0:
-            nums[non_zero_pos], nums[i] = nums[i], nums[non_zero_pos]
-            non_zero_pos += 1
+                <div class="code"><pre>data = [0, 1, 0, 3, 12, 0, 9]
+print("Before:            ", data)
 
-data = [0, 1, 0, 3, 12, 0, 9]
-move_zeros_to_end(data)
+non_zero_pos = 0
+for i in range(len(data)):
+    if data[i] != 0:
+        data[non_zero_pos], data[i] = data[i], data[non_zero_pos]
+        non_zero_pos += 1
+
 print("Zeros moved to end:", data)
 # [1, 3, 12, 9, 0, 0, 0]</pre></div>
               </div>
@@ -864,7 +864,12 @@ print("Zeros moved to end:", data)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def second_largest(nums: list):
+                <div class="code"><pre>test_lists = [
+    [12, 35, 1, 10, 35, 34],
+    [10, 10, 10]
+]
+
+for nums in test_lists:
     first = second = float("-inf")
     for n in nums:
         if n > first:
@@ -872,10 +877,9 @@ print("Zeros moved to end:", data)
             first = n
         elif first > n > second:
             second = n
-    return second if second != float("-inf") else None
-
-print("Second largest [12, 35, 1, 10, 35, 34]:", second_largest([12, 35, 1, 10, 35, 34]))  # 34
-print("Second largest [10, 10, 10]:", second_largest([10, 10, 10]))                          # None</pre></div>
+    second_val = second if second != float("-inf") else None
+    print(f"List: {nums} -> Second largest: {second_val}")
+# Second largest: 34, None</pre></div>
               </div>
             </details>
           </li>
@@ -914,21 +918,24 @@ print(f"Main Diagonal Sum: {main_diag}, Anti Diagonal Sum: {anti_diag}")
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Challenge 1: Flatten Arbitrarily Deeply Nested List — Recursively flatten a list with irregular nested sublists into a 1D list.</span>
+                <span class="qa-question-title">Challenge 1: Flatten Arbitrarily Deeply Nested List — Flatten a list with irregular nested sublists into a 1D list using an iterative stack.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def deep_flatten(nested: list) -> list:
-    flat = []
-    for item in nested:
-        if isinstance(item, list):
-            flat.extend(deep_flatten(item))
-        else:
-            flat.append(item)
-    return flat
+                <div class="code"><pre>irregular = [1, [2, [3, 4], 5], [[6, 7], 8], [9, [10, [11]]]]
 
-irregular = [1, [2, [3, 4], 5], [[6, 7], 8], [9, [10, [11]]]]
-print("Deep flattened:", deep_flatten(irregular))
+# Iterative stack-based flattening preserving element order
+# (Recursive function definitions are covered in Module 14: Functions)
+stack = list(reversed(irregular))
+flat = []
+while stack:
+    curr = stack.pop()
+    if isinstance(curr, list):
+        stack.extend(reversed(curr))
+    else:
+        flat.append(curr)
+
+print("Deep flattened:", flat)
 # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]</pre></div>
               </div>
             </details>
@@ -940,22 +947,25 @@ print("Deep flattened:", deep_flatten(irregular))
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def find_subarray_sum(nums: list, target: int):
-    prefix_map = {0: -1}  # prefix_sum: index
-    current_sum = 0
-    for i, num in enumerate(nums):
-        current_sum += num
-        diff = current_sum - target
-        if diff in prefix_map:
-            start_idx = prefix_map[diff] + 1
-            return nums[start_idx : i + 1]
-        prefix_map[current_sum] = i
-    return None
-
-arr = [10, 2, -2, -20, 10]
+                <div class="code"><pre>arr = [10, 2, -2, -20, 10]
 target_val = -10
-print("Subarray summing to -10:", find_subarray_sum(arr, target_val))
-# [10, 2, -2, -20] or [-20, 10]</pre></div>
+
+prefix_map = {0: -1}  # prefix_sum: index
+current_sum = 0
+found_subarray = None
+
+for i, num in enumerate(arr):
+    current_sum += num
+    diff = current_sum - target_val
+    if diff in prefix_map:
+        start_idx = prefix_map[diff] + 1
+        found_subarray = arr[start_idx : i + 1]
+        break
+    prefix_map[current_sum] = i
+
+print(f"Array: {arr}, Target: {target_val}")
+print(f"Subarray summing to {target_val}: {found_subarray}")
+# [10, 2, -2, -20]</pre></div>
               </div>
             </details>
           </li>

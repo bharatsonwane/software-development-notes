@@ -474,10 +474,10 @@ print("Modified bytearray:", ba)  # bytearray(b'Jello')</pre></div>
         </ul>
 
         <div class="code"><pre># Out of bounds value demonstration:
-try:
-    bad_bytes = bytes([100, 200, 256])  # 256 exceeds 8-bit limit!
-except ValueError as err:
-    print("ValueError caught:", err)     # bytes must be in range(0, 256)
+# Attempting to pass values >= 256 raises ValueError (bytes only hold 0..255):
+# bad_bytes = bytes([100, 200, 256])  # ValueError: bytes must be in range(0, 256)
+valid_bytes = bytes([100, 200, 255])  # Valid 8-bit bytes (0 to 255)
+print("Valid bytes created:", valid_bytes)
 
 # Encoding and Decoding:
 text = "Python 🐍"
@@ -672,14 +672,20 @@ print(&quot;After append nums id:&quot;, id(nums))  # Exactly the same id!</pre>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Testing truthiness of common values:
-falsy_values = [0, 0.0, &quot;&quot;, [], None, set(), {}]
-for val in falsy_values:
-    print(f&quot;bool({repr(val)}):&quot;, bool(val))  # All are False
+                <div class="code"><pre># Testing truthiness of falsy values:
+print("bool(0):   ", bool(0))      # False (numeric zero)
+print("bool(0.0): ", bool(0.0))    # False (float zero)
+print("bool(''):  ", bool(""))     # False (empty string)
+print("bool([]):  ", bool([]))     # False (empty list)
+print("bool(None):", bool(None))   # False (NoneType)
+print("bool(set()):", bool(set())) # False (empty set)
+print("bool({}):  ", bool({}))     # False (empty dict)
 
-truthy_values = [1, -1, &quot;hello&quot;, [0], (None,)]
-for val in truthy_values:
-    print(f&quot;bool({repr(val)}):&quot;, bool(val))  # All are True</pre></div>
+# Testing truthiness of truthy values:
+print("bool(1):       ", bool(1))            # True (non-zero integer)
+print("bool('hello'): ", bool('hello'))      # True (non-empty string)
+print("bool([0]):     ", bool([0]))          # True (list containing an item)
+print("bool((None,)): ", bool((None,)))      # True (tuple containing an item)</pre></div>
               </div>
             </details>
           </li>
@@ -744,22 +750,32 @@ print(&quot;c == d (equality check):&quot;, c == d)  # Always True</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Write a function <code class="inline">describe(x)</code> that returns type name and whether the value is mutable (for the types you know).</span>
+                <span class="qa-question-title">Check type names and whether values are mutable for various objects (e.g. int, str, list, dict, tuple).</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def describe(x):
-    &quot;&quot;&quot;Return type name and whether the value is mutable.&quot;&quot;&quot;
-    type_name = type(x).__name__
-    mutable_types = (list, dict, set, bytearray)
-    is_mutable = isinstance(x, mutable_types)
-    return {&quot;type&quot;: type_name, &quot;mutable&quot;: is_mutable}
+                <div class="code"><pre># Inspecting type and mutability directly using type() and isinstance():
+mutable_types = (list, dict, set, bytearray)
 
-print(describe(42))            # {&#x27;type&#x27;: &#x27;int&#x27;, &#x27;mutable&#x27;: False}
-print(describe(&quot;hello&quot;))       # {&#x27;type&#x27;: &#x27;str&#x27;, &#x27;mutable&#x27;: False}
-print(describe([1, 2, 3]))     # {&#x27;type&#x27;: &#x27;list&#x27;, &#x27;mutable&#x27;: True}
-print(describe({&quot;a&quot;: 1}))      # {&#x27;type&#x27;: &#x27;dict&#x27;, &#x27;mutable&#x27;: True}
-print(describe((1, 2)))        # {&#x27;type&#x27;: &#x27;tuple&#x27;, &#x27;mutable&#x27;: False}</pre></div>
+# 1. Integer (Immutable):
+v1 = 42
+print("v1 type:", type(v1).__name__, "| Mutable:", isinstance(v1, mutable_types))
+
+# 2. String (Immutable):
+v2 = "hello"
+print("v2 type:", type(v2).__name__, "| Mutable:", isinstance(v2, mutable_types))
+
+# 3. List (Mutable):
+v3 = [1, 2, 3]
+print("v3 type:", type(v3).__name__, "| Mutable:", isinstance(v3, mutable_types))
+
+# 4. Dictionary (Mutable):
+v4 = {"a": 1}
+print("v4 type:", type(v4).__name__, "| Mutable:", isinstance(v4, mutable_types))
+
+# 5. Tuple (Immutable):
+v5 = (1, 2)
+print("v5 type:", type(v5).__name__, "| Mutable:", isinstance(v5, mutable_types))</pre></div>
               </div>
             </details>
           </li>

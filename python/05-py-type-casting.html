@@ -463,45 +463,51 @@ print(&quot;hex:&quot;, hex(num))  # &#x27;0x2a&#x27;</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>safe_int(s)</strong> — Return int or None if conversion fails.</span>
+                <span class="qa-question-title"><strong>safe int conversion checks</strong> — Check and convert strings to int, handling non-digits and float strings safely.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def safe_int(s):
-    &quot;&quot;&quot;Safely convert string to int; return None on failure.&quot;&quot;&quot;
-    try:
-        return int(s)
-    except (ValueError, TypeError):
-        return None
+                <div class="code"><pre># Demonstrating safe string-to-int conversion:
+# Case 1: Pure digits (succeeds directly)
+s1 = "123"
+num1 = int(s1) if s1.isdigit() else None
+print(f"s1={s1!r} -> {num1}")  # 123
 
-print(safe_int(&quot;123&quot;))    # 123
-print(safe_int(&quot;abc&quot;))    # None
-print(safe_int(&quot;12.5&quot;))   # None (float string cannot be directly cast with int())
-print(safe_int(None))     # None</pre></div>
+# Case 2: Alphabetic text (rejected safely)
+s2 = "abc"
+num2 = int(s2) if s2.isdigit() else None
+print(f"s2={s2!r} -> {num2}")  # None
+
+# Case 3: Float string (requires two-step float-then-int conversion)
+s3 = "12.5"
+# Direct int("12.5") raises ValueError; two-step conversion truncates cleanly:
+num3 = int(float(s3))
+print(f"s3={s3!r} -> {num3}")  # 12</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>to_bool</strong> — Convert common strings "yes"/"no"/"1"/"0" to bool.</span>
+                <span class="qa-question-title"><strong>to_bool mapping</strong> — Convert common user inputs ("yes", "no", "1", "0") to bool using membership checks.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def to_bool(val):
-    &quot;&quot;&quot;Convert common user inputs (&#x27;yes&#x27;, &#x27;no&#x27;, &#x27;1&#x27;, &#x27;0&#x27;) to bool.&quot;&quot;&quot;
-    if isinstance(val, bool):
-        return val
-    s = str(val).strip().lower()
-    if s in (&quot;1&quot;, &quot;true&quot;, &quot;yes&quot;, &quot;y&quot;, &quot;t&quot;, &quot;on&quot;):
-        return True
-    if s in (&quot;0&quot;, &quot;false&quot;, &quot;no&quot;, &quot;n&quot;, &quot;f&quot;, &quot;off&quot;):
-        return False
-    raise ValueError(f&quot;Cannot convert {val} to boolean&quot;)
+                <div class="code"><pre># Mapping user string inputs to booleans using membership checks:
+true_inputs = ("1", "true", "yes", "y", "on")
+false_inputs = ("0", "false", "no", "n", "off")
 
-print(to_bool(&quot;yes&quot;))  # True
-print(to_bool(&quot;0&quot;))    # False
-print(to_bool(&quot;TRUE&quot;)) # True</pre></div>
+val1 = "yes"
+is_active1 = val1.strip().lower() in true_inputs
+print(f"Input: {val1!r} -> Boolean: {is_active1}")  # True
+
+val2 = "0"
+is_active2 = val2.strip().lower() in true_inputs
+print(f"Input: {val2!r} -> Boolean: {is_active2}")  # False
+
+val3 = "TRUE"
+is_active3 = val3.strip().lower() in true_inputs
+print(f"Input: {val3!r} -> Boolean: {is_active3}")  # True</pre></div>
               </div>
             </details>
           </li>

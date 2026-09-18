@@ -198,27 +198,31 @@
           </tbody>
         </table>
 
-        <div class="code"><pre># Demonstrating Name Mangling in Action:
-class Account:
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self.__balance = balance  # Double leading underscore triggers name mangling
+        <div class="code"><pre># Demonstrating the 5 Underscore Conventions with Basic Variables:
 
-acc = Account("Alice", 5000)
-print(acc.owner)  # Alice
+# 1. Single Leading Underscore (_var): Conventional indicator for internal variables
+_internal_db_port = 5432
+print("Internal config port:", _internal_db_port)
 
-# Attempting direct access to __balance raises AttributeError:
-try:
-    print(acc.__balance)
-except AttributeError as err:
-    print("AttributeError raised:", err)
+# 2. Double Leading Underscore (__var): Triggers Name Mangling in OOP classes
+# Note: Name mangling is a class feature covered in Module 19 (OOP Fundamentals).
+# In a class, Python internally rewrites __balance to _ClassName__balance.
+# For regular script variables, stick to standard names or single leading underscore!
 
-# Inspecting the object's __dict__ reveals the mangled identifier:
-print("Mangled name in object dict:", [k for k in acc.__dict__ if "balance" in k])
-# Output: ['_Account__balance']
+# 3. Trailing Underscore (var_): Prevents collisions with reserved keywords
+class_ = "Physics 101"   # 'class' is a reserved keyword, so we append '_'
+def_ = "Definition of terms"
+print(f"Course: {class_}, Topic: {def_}")
 
-# The value can still be accessed via its mangled name (proves it is not cryptographically private):
-print("Mangled access:", acc._Account__balance)  # 5000</pre></div>
+# 4. System-defined / Dunder (__var__): Reserved by Python runtime
+print("Current module name (__name__):", __name__)  # Prints '__main__'
+
+# 5. Single Underscore (_): In Python's interactive REPL shell,
+# '_' automatically stores the result of the last evaluated expression:
+# >>> 25 * 4
+# 100
+# >>> _ + 50
+# 150</pre></div>
       </section>
 
       <section id="3-reserved">
@@ -434,16 +438,15 @@ print(f"Variables outside match: match='{match}', case={case}, type='{type}'")</
         </div>
         <h3 id="4-comments-indent-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
         <h3>4.1. Comments</h3>
-        <div class="code"><pre># Single-line comment
+        <div class="code"><pre># Single-line comment explaining variable assignment
+app_title = "Student Grade Calculator"
 
 """
-Multi-line string — often used as a docstring
-(not a special comment type).
+Multi-line string literal:
+Often placed at the top of a script or module as documentation
+(docstrings are also used inside functions, covered in Module 14).
 """
-
-def greet(name):
-    """Return a greeting. This is a docstring."""
-    return f"Hello, {name}"</pre></div>
+print("Running application:", app_title)</pre></div>
         <h3>4.2. Indentation</h3>
         <ul>
           <li>Python uses <strong>indentation</strong> (not braces) to define blocks. Standard is <strong>4 spaces</strong>. Mixing tabs and spaces causes errors.</li>
@@ -679,24 +682,24 @@ print(f&quot;Clean snake_case variables: {item_name}, {item_count}, {loop_count}
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>comment styles</strong> — Use # comments and a short docstring on a tiny function.</span>
+                <span class="qa-question-title"><strong>comment styles</strong> — Use single-line # comments and a multi-line descriptive block for calculations.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Single-line comment explaining the utility function
-def calculate_area(length, width):
-    &quot;&quot;&quot;Calculate and return the rectangle area.
-    
-    Parameters:
-        length (float): Length of the rectangle
-        width (float): Width of the rectangle
-    Returns:
-        float: Area (length * width)
-    &quot;&quot;&quot;
-    return length * width
+                <div class="code"><pre># Single-line comment explaining the variable initialization:
+rect_length = 5.0  # Length in meters
+rect_width = 3.0   # Width in meters
 
-print(&quot;Area:&quot;, calculate_area(5.0, 3.0))
-print(&quot;Docstring:&quot;, calculate_area.__doc__)</pre></div>
+&quot;&quot;&quot;
+Multi-line comment block:
+Computing the area of a rectangle by multiplying length by width.
+No complex functions needed at this early stage!
+&quot;&quot;&quot;
+rect_area = rect_length * rect_width
+
+print(&quot;Rectangle Length:&quot;, rect_length)
+print(&quot;Rectangle Width: &quot;, rect_width)
+print(&quot;Calculated Area: &quot;, rect_area)</pre></div>
               </div>
             </details>
           </li>
@@ -777,18 +780,19 @@ print(&quot;Style guide loaded.&quot;)</pre></div>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre># Demonstrating how mixing tabs and spaces causes TabError in Python 3:
-# In Python 3, mixing tabs and spaces in indentation is strictly prohibited.
-# The following will fail if one line uses spaces and the other uses a tab:
+# In Python 3, mixing tabs and spaces within the same block is strictly prohibited.
 
-def demonstrate_indent():
-    # 4 spaces indentation
-    status = &quot;ready&quot;
-    if status == &quot;ready&quot;:
-        # TabError: inconsistent use of tabs and spaces in indentation
-        # &lt;TAB&gt;print(status)  &lt;-- Never mix tabs with spaces!
-        print(&quot;Use 4 spaces per indentation level throughout.&quot;)
+system_status = "ready"
 
-demonstrate_indent()</pre></div>
+# Consistent 4-space indentation block:
+if system_status == "ready":
+    # 4 spaces indentation:
+    print("System status is verified.")
+    print("All checks passed.")
+    # If the next line used a physical &lt;TAB&gt; character instead of 4 spaces:
+    # &lt;TAB&gt;print("Error!")  # TabError: inconsistent use of tabs and spaces in indentation
+
+print("Indentation block complete.")</pre></div>
               </div>
             </details>
           </li>

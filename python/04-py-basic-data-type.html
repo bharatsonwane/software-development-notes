@@ -500,19 +500,19 @@ print(bool(-10))      # True  (non-zero number!)</pre></div>
           <li><code class="inline">is</code> compares memory pointer addresses and cannot be overridden by user classes; <code class="inline">==</code> calls <code class="inline">__eq__</code>, which can be modified or slow.</li>
         </ul>
 
-        <div class="code"><pre>x = None
+        <div class="code"><pre># NoneType represents the intentional absence of a value:
+x = None
+print("Value:", x)
+print("Type: ", type(x))  # <class 'NoneType'>
 
-# Best Practice:
+# Best Practice checking for None (always use 'is'):
 if x is None:
-    print("x has no value")
+    print("x has no value (unassigned/empty)")
 
-# Return value of void function:
-def greet():
-    print("Hello!")
-
-result = greet()
-print("Return value:", result)       # None
-print("Is None?     ", result is None)  # True</pre></div>
+# In Python, operations or functions that produce side effects (like print()) return None:
+result = print("Displaying a message...")
+print("print() return value:", result)          # None
+print("Is result None?      ", result is None)  # True</pre></div>
       </section>
 
       <section id="c-common-questions">
@@ -661,13 +661,20 @@ print("hex:", hex(n))  # '0xa0'</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Truthiness Loop</strong> — Iterate over a list containing <code class="inline">[0, 1, 0.0, "", "hello", [], [0], None, set()]</code> and print each element's truth value.</span>
+                <span class="qa-question-title"><strong>Truthiness Evaluation</strong> — Check the truth values for common Python primitives: <code class="inline">0, 1, 0.0, "", "hello", [], [0], None, set()</code>.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>items = [0, 1, 0.0, "", "hello", [], [0], None, set()]
-for item in items:
-    print(f"bool({repr(item):10}) -&gt; {bool(item)}")</pre></div>
+                <div class="code"><pre># Evaluating truthiness directly without loops:
+print("bool(0):       ", bool(0))        # False (numeric zero)
+print("bool(1):       ", bool(1))        # True (non-zero int)
+print("bool(0.0):     ", bool(0.0))      # False (float zero)
+print("bool(''):      ", bool(""))       # False (empty str)
+print("bool('hello'): ", bool("hello"))  # True (non-empty str)
+print("bool([]):      ", bool([]))       # False (empty list)
+print("bool([0]):     ", bool([0]))      # True (non-empty list)
+print("bool(None):    ", bool(None))     # False (NoneType)
+print("bool(set()):   ", bool(set()))    # False (empty set)</pre></div>
               </div>
             </details>
           </li>

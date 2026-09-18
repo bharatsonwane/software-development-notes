@@ -355,14 +355,14 @@ print("5! =", factorial(5))  # 120</pre></div>
         <div class="code"><pre>import sys
 print("Current recursion limit:", sys.getrecursionlimit())  # Typically 1000
 
-# Memoization: Transforming O(2^N) exponential recursion into O(N) linear time:
-from functools import lru_cache
+# Memoization: Transforming O(2^N) exponential recursion into O(N) linear time
+# using a dictionary cache (Dedicated decorator syntax @lru_cache is covered in Module 23):
+fib_cache = {0: 0, 1: 1}
 
-@lru_cache(maxsize=None)
 def fibonacci(n: int) -> int:
-    if n < 2:
-        return n
-    return fibonacci(n - 1) + fibonacci(n - 2)
+    if n not in fib_cache:
+        fib_cache[n] = fibonacci(n - 1) + fibonacci(n - 2)
+    return fib_cache[n]
 
 print("Fibonacci(50):", fibonacci(50))  # 12586269025 (Instantaneous with cache!)</pre></div>
       </section>
@@ -653,25 +653,22 @@ print("GCD(101, 10):", gcd(101, 10))  # 1</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Challenge 1: Manual Memoization Decorator — Build a caching wrapper for recursive functions without using functools.lru_cache.</span>
+                <span class="qa-question-title">Challenge 1: Function Closure Memoization — Build a caching closure factory for recursive functions without decorator syntax.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def memoize(fn):
-    cache = {}
-    def wrapper(*args):
-        if args not in cache:
-            cache[args] = fn(*args)
-        return cache[args]
-    return wrapper
+                <div class="code"><pre>def make_memoized_fib():
+    cache = {0: 0, 1: 1}
+    def fib(n: int) -> int:
+        if n not in cache:
+            cache[n] = fib(n - 1) + fib(n - 2)
+        return cache[n]
+    return fib
 
-@memoize
-def fib(n: int) -> int:
-    if n < 2:
-        return n
-    return fib(n - 1) + fib(n - 2)
-
-print("Fibonacci(40):", fib(40))  # 102334155 (Instantaneous with manual memoize)</pre></div>
+# Instantiate the closure with its encapsulated private cache dictionary:
+fib = make_memoized_fib()
+print("Fibonacci(40):", fib(40))  # 102334155 (Instantaneous with closure cache)
+# (Note: Syntactic sugar using the '@' decorator symbol is mastered in Module 23)</pre></div>
               </div>
             </details>
           </li>
@@ -700,6 +697,57 @@ cleanse = compose_pipeline(
 
 print(cleanse("   Python Best Practices   "))
 # https://example.com/tags/python-best-practices</pre></div>
+              </div>
+            </details>
+          </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Challenge 3: Modular Decomposition (Number-to-Words Converter) — Decompose a complex numerical formatting problem into nested helper functions.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>def number_to_words(num: int) -> str:
+    """Convert integer between 0 and 99,999 into English words using modular helper."""
+    if num == 0:
+        return "Zero"
+
+    units = [
+        "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+        "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+        "Seventeen", "Eighteen", "Nineteen"
+    ]
+    tens = [
+        "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    ]
+
+    def convert_hundred(n: int) -> str:
+        """Helper to convert 1 to 999."""
+        words = []
+        if n >= 100:
+            words.append(units[n // 100] + " Hundred")
+            n %= 100
+        if 1 <= n <= 19:
+            words.append(units[n])
+        elif n >= 20:
+            ten_part = tens[n // 10]
+            unit_part = units[n % 10]
+            words.append(f"{ten_part} {unit_part}".strip())
+        return " ".join(words)
+
+    result = []
+    thousands_val = num // 1000
+    if thousands_val > 0:
+        result.append(convert_hundred(thousands_val) + " Thousand")
+        num %= 1000
+
+    if num > 0:
+        result.append(convert_hundred(num))
+
+    return " ".join(result)
+
+print("4520  ->", number_to_words(4520))
+print("99999 ->", number_to_words(99999))</pre></div>
               </div>
             </details>
           </li>

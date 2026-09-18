@@ -695,6 +695,35 @@ print("Auto-registered Exporters:", BaseExporter.registry)</pre></div>
               </div>
             </details>
           </li>
+          <li>
+            <details class="qa-block practice-block">
+              <summary class="qa-question-summary">
+                <span class="qa-question-title">Challenge 3: Subclassing Built-in Types (namedtuple Extension) — Subclass collections.namedtuple to build an immutable model with custom methods and computed properties.</span>
+                <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
+              </summary>
+              <div class="qa-answer-body">
+                <div class="code"><pre>from collections import namedtuple
+
+# Base named tuple structure
+BaseEmployee = namedtuple("BaseEmployee", ["emp_id", "name", "monthly_salary"])
+
+# Subclassing namedtuple to add domain logic and computed properties
+class Employee(BaseEmployee):
+    __slots__ = ()  # Preserve lightweight memory footprint and immutability
+
+    @property
+    def annual_salary(self) -> float:
+        return self.monthly_salary * 12.0
+
+    def format_badge(self) -> str:
+        return f"[{self.emp_id}] {self.name.upper()} - Annual: ${self.annual_salary:,.2f}"
+
+emp = Employee("EMP-401", "Bharat Sonwane", 8500.0)
+print(emp.format_badge())
+print("Is tuple instance:", isinstance(emp, tuple))  # True (Inherits IS-A relationship from tuple)</pre></div>
+              </div>
+            </details>
+          </li>
         </ol>
 
         <h3>P.4. Self-check</h3>

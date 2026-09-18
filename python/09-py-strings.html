@@ -511,162 +511,174 @@ print(clean_text)  # 'Wait Are you sure really sure'</pre></div>
         </div>
         <h3 id="5-string-practice-programs-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <div>
+            <strong>Pedagogical Note:</strong> In this module, algorithmic techniques (two-pointer scanning, frequency tables, run-length compression) are demonstrated as sequential and procedural scripts using variables and loops (introduced in Modules 1–8). Modular functions using <code>def</code> and return type annotations will be comprehensively mastered in Module 14.
+          </div>
+        </div>
+
         <h3>5.1. Program 1: String Reversal (3 Approaches)</h3>
         <p>Comparison of slice reversal, built-in sequence inversion, and two-pointer manual traversal:</p>
-        <div class="code"><pre># Approach 1: Slicing (Fastest, C-level implementation)
-def reverse_slice(s: str) -> str:
-    return s[::-1]
+        <div class="code"><pre>sample = "PythonMastery"
+
+# Approach 1: Slicing (Fastest, C-level implementation)
+reversed_slice = sample[::-1]
 
 # Approach 2: reversed() generator joined
-def reverse_builtin(s: str) -> str:
-    return "".join(reversed(s))
+reversed_builtin = "".join(reversed(sample))
 
 # Approach 3: Two-pointer in-place on list representation (Classic algorithm)
-def reverse_twopointer(s: str) -> str:
-    chars = list(s)
-    left, right = 0, len(chars) - 1
-    while left < right:
-        chars[left], chars[right] = chars[right], chars[left]
-        left += 1
-        right -= 1
-    return "".join(chars)
+chars = list(sample)
+left, right = 0, len(chars) - 1
+while left < right:
+    chars[left], chars[right] = chars[right], chars[left]
+    left += 1
+    right -= 1
+reversed_twopointer = "".join(chars)
 
-sample = "PythonMastery"
-print("Slice:      ", reverse_slice(sample))
-print("Builtin:    ", reverse_builtin(sample))
-print("Two-pointer:", reverse_twopointer(sample))</pre></div>
+print("Slice:      ", reversed_slice)
+print("Builtin:    ", reversed_builtin)
+print("Two-pointer:", reversed_twopointer)</pre></div>
 
         <h3>5.2. Program 2: Advanced Palindrome Verification</h3>
         <p>Checks whether a sentence reads identically forwards and backwards, ignoring casing, punctuation, and whitespaces:</p>
-        <div class="code"><pre>def is_palindrome(text: str) -> bool:
+        <div class="code"><pre>test_cases = [
+    "A man, a plan, a canal: Panama",
+    "race a car",
+    "Was it a car or a cat I saw?"
+]
+
+for text in test_cases:
     # Filter only alphanumeric characters and normalize to lowercase
     filtered = [c.lower() for c in text if c.isalnum()]
-    return filtered == filtered[::-1]
-
-print(is_palindrome("A man, a plan, a canal: Panama"))  # True
-print(is_palindrome("race a car"))                      # False
-print(is_palindrome("Was it a car or a cat I saw?"))    # True</pre></div>
+    is_palindrome = (filtered == filtered[::-1])
+    print(f"{text!r:35} -> Palindrome: {is_palindrome}")</pre></div>
 
         <h3 id="5-string-practice-programs-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3>5.3. Program 3: Anagram Detection</h3>
         <p>Two strings are anagrams if they contain identical character frequencies:</p>
-        <div class="code"><pre>def are_anagrams_sort(s1: str, s2: str) -> bool:
-    # O(N log N) approach using sorted()
-    return sorted(s1.replace(" ", "").lower()) == sorted(s2.replace(" ", "").lower())
+        <div class="code"><pre>pairs = [
+    ("listen", "silent"),
+    ("Astronomer", "Moon starer"),
+    ("hello", "world")
+]
 
-def are_anagrams_count(s1: str, s2: str) -> bool:
-    # O(N) linear time approach using dictionary frequency map
+for s1, s2 in pairs:
+    # Approach 1: O(N log N) using sorted()
+    is_anagram_sort = sorted(s1.replace(" ", "").lower()) == sorted(s2.replace(" ", "").lower())
+
+    # Approach 2: O(N) linear time using dictionary frequency map
     clean1 = [c.lower() for c in s1 if c.isalnum()]
     clean2 = [c.lower() for c in s2 if c.isalnum()]
     if len(clean1) != len(clean2):
-        return False
-    freq = {}
-    for c in clean1:
-        freq[c] = freq.get(c, 0) + 1
-    for c in clean2:
-        if c not in freq or freq[c] == 0:
-            return False
-        freq[c] -= 1
-    return True
+        is_anagram_count = False
+    else:
+        freq = {}
+        for c in clean1:
+            freq[c] = freq.get(c, 0) + 1
+        is_anagram_count = True
+        for c in clean2:
+            if c not in freq or freq[c] == 0:
+                is_anagram_count = False
+                break
+            freq[c] -= 1
 
-print(are_anagrams_count("listen", "silent"))          # True
-print(are_anagrams_count("Astronomer", "Moon starer")) # True
-print(are_anagrams_count("hello", "world"))            # False</pre></div>
+    print(f"{s1!r:15} vs {s2!r:15} -> Sort: {is_anagram_sort}, Count: {is_anagram_count}")</pre></div>
 
         <h3>5.4. Program 4: Run-Length String Compression</h3>
         <p>Compresses consecutive repeated characters into character + count (e.g. <code class="inline">"a4b3c2"</code>):</p>
-        <div class="code"><pre>def compress_string(s: str) -> str:
-    if not s:
-        return ""
-    result = []
-    current_char = s[0]
-    count = 1
-    for i in range(1, len(s)):
-        if s[i] == current_char:
-            count += 1
-        else:
-            result.append(f"{current_char}{count}")
-            current_char = s[i]
-            count = 1
-    result.append(f"{current_char}{count}")
-    compressed = "".join(result)
-    return compressed if len(compressed) < len(s) else s
+        <div class="code"><pre>samples = ["aaaabbbcc", "aabcccccaaa", "abcdef"]
 
-print(compress_string("aaaabbbcc"))      # 'a4b3c2'
-print(compress_string("aabcccccaaa"))    # 'a2b1c5a3'
-print(compress_string("abcdef"))         # 'abcdef' (Returns original if no compression gained)</pre></div>
+for s in samples:
+    if not s:
+        compressed = ""
+    else:
+        result = []
+        current_char = s[0]
+        count = 1
+        for i in range(1, len(s)):
+            if s[i] == current_char:
+                count += 1
+            else:
+                result.append(f"{current_char}{count}")
+                current_char = s[i]
+                count = 1
+        result.append(f"{current_char}{count}")
+        rle = "".join(result)
+        compressed = rle if len(rle) < len(s) else s
+
+    print(f"Original: {s:12} -> Compressed: {compressed}")</pre></div>
 
         <h3>5.5. Program 5: Character Classifier &amp; Segregation</h3>
         <p>Separates a mixed string into distinct alphabet, digit, and special symbol components:</p>
-        <div class="code"><pre>def segregate_characters(s: str) -> dict:
-    alphas = []
-    digits = []
-    specials = []
-    for char in s:
-        if char.isalpha():
-            alphas.append(char)
-        elif char.isdigit():
-            digits.append(char)
-        else:
-            specials.append(char)
-    return {
-        "alphabets": "".join(alphas),
-        "digits": "".join(digits),
-        "specials": "".join(specials)
-    }
+        <div class="code"><pre>raw_data = "PY10@thon_2026!#Code"
 
-raw_data = "PY10@thon_2026!#Code"
-classified = segregate_characters(raw_data)
+alphas = []
+digits = []
+specials = []
+for char in raw_data:
+    if char.isalpha():
+        alphas.append(char)
+    elif char.isdigit():
+        digits.append(char)
+    else:
+        specials.append(char)
+
+classified = {
+    "alphabets": "".join(alphas),
+    "digits": "".join(digits),
+    "specials": "".join(specials)
+}
+
 print("Alphabets:", classified["alphabets"])  # PYthonCode
 print("Digits:   ", classified["digits"])     # 102026
 print("Specials: ", classified["specials"])   # @!#</pre></div>
 
         <h3>5.6. Program 6: Reverse Order of Words &amp; Reverse Each Word</h3>
         <p>Two classic interview variations for word processing in sentences:</p>
-        <div class="code"><pre># Task A: Reverse order of words in sentence
-# "Learning Python is very easy" -&gt; "easy very is Python Learning"
-def reverse_words_order(sentence: str) -&gt; str:
-    words = sentence.split()
-    return " ".join(words[::-1])
+        <div class="code"><pre>text = "Learning Python is very easy"
+
+# Task A: Reverse order of words in sentence
+# "Learning Python is very easy" -> "easy very is Python Learning"
+words = text.split()
+reversed_words_order = " ".join(words[::-1])
 
 # Task B: Reverse internal characters of each individual word
-# "Learning Python is very easy" -&gt; "gninraeL nohtyP si yrev ysae"
-def reverse_each_word(sentence: str) -&gt; str:
-    return " ".join(word[::-1] for word in sentence.split())
+# "Learning Python is very easy" -> "gninraeL nohtyP si yrev ysae"
+reversed_each_word = " ".join(word[::-1] for word in text.split())
 
-text = "Learning Python is very easy"
 print("Original:            ", text)
-print("Reversed words order:", reverse_words_order(text))
-print("Reversed each word:  ", reverse_each_word(text))</pre></div>
+print("Reversed words order:", reversed_words_order)
+print("Reversed each word:  ", reversed_each_word)</pre></div>
 
         <h3>5.7. Program 7: Merge Characters of Two Strings Alternately</h3>
         <p>Merges two strings character-by-character into a single string, appending any remaining characters from the longer string:</p>
-        <div class="code"><pre>def merge_alternately(s1: str, s2: str) -&gt; str:
+        <div class="code"><pre>pairs = [("RAVI", "TEJA"), ("BHARAT", "12"), ("XY", "12345")]
+
+for s1, s2 in pairs:
     result = []
     i, j = 0, 0
-    while i &lt; len(s1) or j &lt; len(s2):
-        if i &lt; len(s1):
+    while i < len(s1) or j < len(s2):
+        if i < len(s1):
             result.append(s1[i])
             i += 1
-        if j &lt; len(s2):
+        if j < len(s2):
             result.append(s2[j])
             j += 1
-    return "".join(result)
-
-print(merge_alternately("RAVI", "TEJA"))      # 'RTAEVJIA'
-print(merge_alternately("BHARAT", "12"))      # 'B1H2ARAT'
-print(merge_alternately("XY", "12345"))       # 'X1Y2345'</pre></div>
+    merged = "".join(result)
+    print(f"Merge {s1:8} + {s2:8} -> {merged}")</pre></div>
 
         <h3>5.8. Program 8: Sort Characters (Alphabets Followed by Digits)</h3>
         <p>Sorts characters of a mixed string so all alphabetical characters appear first in ascending alphabetical order, followed by all numerical digits in ascending numerical order (e.g. <code class="inline">"B4A1D3" -&gt; "ABD134"</code>):</p>
-        <div class="code"><pre>def sort_alphabets_then_digits(s: str) -&gt; str:
+        <div class="code"><pre>samples = ["B4A1D3", "Z9A2C1"]
+
+for s in samples:
     alphas = sorted(c for c in s if c.isalpha())
     digits = sorted(c for c in s if c.isdigit())
-    return "".join(alphas + digits)
-
-print(sort_alphabets_then_digits("B4A1D3"))  # 'ABD134'
-print(sort_alphabets_then_digits("Z9A2C1"))  # 'ACZ129'</pre></div>
+    sorted_str = "".join(alphas + digits)
+    print(f"Input: {s} -> Output: {sorted_str}")</pre></div>
       </section>
 
       <!-- SECTION C: COMMON QUESTIONS -->
@@ -948,14 +960,15 @@ print("Reversed:", reversed_words)</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Task 4: Substring Counter without count() — Implement a function that returns all overlapping occurrences of a pattern.</span>
+                <span class="qa-question-title">Task 4: Substring Counter without count() — Write a procedural script that counts all overlapping occurrences of a pattern.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def count_overlapping(text: str, pattern: str) -> int:
-    if not pattern:
-        return 0
-    count = 0
+                <div class="code"><pre>text = "BANANA"
+pattern = "ANA"
+
+count = 0
+if pattern:
     start = 0
     while True:
         idx = text.find(pattern, start)
@@ -963,9 +976,8 @@ print("Reversed:", reversed_words)</pre></div>
             break
         count += 1
         start = idx + 1  # Advance by 1 for overlapping matches
-    return count
 
-print("Occurrences of 'ANA' in 'BANANA':", count_overlapping("BANANA", "ANA"))  # 2</pre></div>
+print(f"Occurrences of {pattern!r} in {text!r}: {count}")  # 2</pre></div>
               </div>
             </details>
           </li>
@@ -1002,24 +1014,27 @@ print("Anagram Groups:", list(anagram_groups.values()))
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def is_valid_ipv4(ip: str) -> bool:
-    octets = ip.split(".")
-    if len(octets) != 4:
-        return False
-    for octet in octets:
-        if not octet.isdigit():
-            return False
-        # Leading zero check: "01" is invalid, but "0" is valid
-        if len(octet) > 1 and octet[0] == "0":
-            return False
-        val = int(octet)
-        if not (0 <= val <= 255):
-            return False
-    return True
+                <div class="code"><pre>test_ips = ["192.168.1.1", "256.100.0.1", "192.168.01.1", "10.0.0.0", "abc.def.gha.xyz"]
 
-test_ips = ["192.168.1.1", "256.100.0.1", "192.168.01.1", "10.0.0.0", "abc.def.gha.xyz"]
 for ip in test_ips:
-    print(f"{ip:18} -> Valid: {is_valid_ipv4(ip)}")</pre></div>
+    octets = ip.split(".")
+    is_valid = True
+    if len(octets) != 4:
+        is_valid = False
+    else:
+        for octet in octets:
+            if not octet.isdigit():
+                is_valid = False
+                break
+            # Leading zero check: "01" is invalid, but "0" is valid
+            if len(octet) > 1 and octet[0] == "0":
+                is_valid = False
+                break
+            val = int(octet)
+            if not (0 <= val <= 255):
+                is_valid = False
+                break
+    print(f"{ip:18} -> Valid: {is_valid}")</pre></div>
               </div>
             </details>
           </li>

@@ -158,16 +158,18 @@ else:
           <li>Python historically lacked a <code class="inline">switch-case</code> statement, relying instead on <code class="inline">if-elif-else</code> or dictionary lookups.</li>
           <li>Python 3.10 introduced <strong>Structural Pattern Matching</strong> via <code class="inline">match</code> and <code class="inline">case</code>, supporting value matching, wildcard defaults (<code class="inline">case _</code>), and sequence destructuring.</li>
         </ul>
-        <div class="code"><pre>def handle_command(cmd):
-    match cmd.split():
-        case ["quit"]:
-            return "Exiting system"
-        case ["load", filename]:
-            return f"Loading file: {filename}"
-        case ["save", filename, "force"]:
-            return f"Force saving to {filename}"
-        case _:
-            return "Unknown command"</pre></div>
+        <div class="code"><pre># Demonstrating Structural Pattern Matching on a command variable:
+cmd = "load data.csv"
+
+match cmd.split():
+    case ["quit"]:
+        print("Exiting system")
+    case ["load", filename]:
+        print(f"Loading file: {filename}")
+    case ["save", filename, "force"]:
+        print(f"Force saving to {filename}")
+    case _:
+        print("Unknown command")</pre></div>
 
         <h3>2.6. Common Conditional Pitfalls</h3>
         <ul>
@@ -336,12 +338,13 @@ for x in data:
           <li>Python requires non-empty code blocks under headers like <code class="inline">if</code>, <code class="inline">for</code>, <code class="inline">def</code>, and <code class="inline">class</code>. <code class="inline">pass</code> satisfies the parser when logic is intentionally stubbed for future implementation.</li>
         </ul>
 
-        <div class="code"><pre># Empty class or function stub:
-class NetworkManager:
-    pass
+        <div class="code"><pre># 'pass' satisfies Python's mandatory block indentation syntax without doing anything:
+status = "maintenance"
+if status == "maintenance":
+    pass  # Placeholder: business logic to be added in future release
 
-def handle_timeout():
-    pass  # To be implemented</pre></div>
+for item in [10, 20, 30]:
+    pass  # Loop stub</pre></div>
 
         <h3 id="4-transfer-statements-break-continue-pass-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
@@ -351,19 +354,25 @@ def handle_timeout():
         </div>
 
         <div class="code"><pre># Flag-free prime number check using for-else:
-def is_prime(n):
-    if n &lt; 2:
-        return False
-    for d in range(2, int(n ** 0.5) + 1):
-        if n % d == 0:
-            print(f"{n} is divisible by {d} -&gt; Not Prime")
-            break  # Break bypasses the else block!
-    else:
-        # Executes ONLY if no divisor was found (loop completed without break)
-        print(f"{n} is a PRIME number!")
+# The else block executes ONLY if the loop completes without hitting 'break'!
 
-is_prime(17)  # Prints: 17 is a PRIME number!
-is_prime(15)  # Prints: 15 is divisible by 3 -&gt; Not Prime</pre></div>
+# Test 1: n = 17 (Prime number)
+n = 17
+for d in range(2, int(n ** 0.5) + 1):
+    if n % d == 0:
+        print(f"{n} is divisible by {d} -> Not Prime")
+        break
+else:
+    print(f"{n} is a PRIME number!")  # Executes because no break occurred!
+
+# Test 2: n = 15 (Composite number)
+n = 15
+for d in range(2, int(n ** 0.5) + 1):
+    if n % d == 0:
+        print(f"{n} is divisible by {d} -> Not Prime")
+        break  # Bypasses the else block!
+else:
+    print(f"{n} is a PRIME number!")</pre></div>
       </section>
 
       <section id="5-pattern-programs">
@@ -466,75 +475,83 @@ for i in range(1, 5):
         <h3>6.1. Prime Number Verification</h3>
         <p>A prime number is a positive integer greater than 1 with no positive divisors other than 1 and itself. In optimized loop execution, divisors need only be checked up to $\lfloor\sqrt{n}\rfloor$.</p>
 
-        <div class="code"><pre>def is_prime(n: int) -&gt; bool:
-    if n &lt; 2:
-        return False
-    for i in range(2, int(n ** 0.5) + 1):
-        if n % i == 0:
-            return False
-    return True
+        <div class="code"><pre># Prime Number Verification using while / for and break:
+num = 29
+is_prime = True
 
-print("is_prime(29):", is_prime(29))  # True
-print("is_prime(49):", is_prime(49))  # False</pre></div>
+if num &lt; 2:
+    is_prime = False
+else:
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            is_prime = False
+            break
+
+print(f"{num} is prime:", is_prime)  # True</pre></div>
 
         <h3>6.2. Armstrong (Narcissistic) Number</h3>
         <p>An Armstrong number of $k$ digits is an integer such that the sum of each digit raised to the power of $k$ equals the number itself (e.g. $153 = 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153$).</p>
 
-        <div class="code"><pre>def is_armstrong(n: int) -&gt; bool:
-    s = str(n)
-    power = len(s)
-    total = sum(int(digit) ** power for digit in s)
-    return total == n
+        <div class="code"><pre># Armstrong Number Verification using a while loop:
+num = 153
+temp = num
+num_digits = len(str(num))
+armstrong_sum = 0
 
-print("153 is Armstrong:", is_armstrong(153))    # True (1^3 + 5^3 + 3^3 = 153)
-print("370 is Armstrong:", is_armstrong(370))    # True
-print("1634 is Armstrong:", is_armstrong(1634))  # True (1^4 + 6^4 + 3^4 + 4^4 = 1634)
-print("120 is Armstrong:", is_armstrong(120))    # False</pre></div>
+while temp &gt; 0:
+    digit = temp % 10
+    armstrong_sum += digit ** num_digits
+    temp //= 10
+
+if armstrong_sum == num:
+    print(f"{num} is an Armstrong number!")  # True
+else:
+    print(f"{num} is NOT an Armstrong number.")</pre></div>
 
         <h3 id="6-numerical-algorithms-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3>6.3. Fibonacci Series Generation</h3>
         <p>Generates the sequence where each number is the sum of the two preceding numbers: $0, 1, 1, 2, 3, 5, 8, 13, \dots$</p>
 
-        <div class="code"><pre>def generate_fibonacci(terms: int) -&gt; list[int]:
-    if terms &lt;= 0:
-        return []
-    if terms == 1:
-        return [0]
-    fib = [0, 1]
-    while len(fib) &lt; terms:
-        fib.append(fib[-1] + fib[-2])
-    return fib
+        <div class="code"><pre># Fibonacci Series Generation using a while loop:
+terms = 10
+fib = [0, 1]
 
-print("First 10 Fibonacci numbers:", generate_fibonacci(10))
+while len(fib) &lt; terms:
+    fib.append(fib[-1] + fib[-2])
+
+print(f"First {terms} Fibonacci numbers:", fib)
 # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</pre></div>
 
         <h3>6.4. Palindrome Number Check</h3>
         <p>A palindrome number reads identically forward and backward (e.g. 12321). We can verify it arithmetically without string conversion:</p>
 
-        <div class="code"><pre>def is_palindrome_number(n: int) -&gt; bool:
-    if n &lt; 0:
-        return False  # Negative numbers like -121 are not palindromes
-    original, reversed_num = n, 0
-    while n &gt; 0:
-        reversed_num = (reversed_num * 10) + (n % 10)
-        n //= 10
-    return original == reversed_num
+        <div class="code"><pre># Palindrome Number Check without string conversion (arithmetic digit reversal):
+num = 12321
+original = num
+reversed_num = 0
 
-print("12321 is palindrome:", is_palindrome_number(12321))  # True
-print("12345 is palindrome:", is_palindrome_number(12345))  # False</pre></div>
+while num &gt; 0:
+    last_digit = num % 10
+    reversed_num = (reversed_num * 10) + last_digit
+    num //= 10
+
+if original == reversed_num:
+    print(f"{original} is a PALINDROME number!")  # True
+else:
+    print(f"{original} is NOT a palindrome.")</pre></div>
 
         <h3>6.5. Factorial Calculation (Iterative)</h3>
-        <div class="code"><pre>def factorial(n: int) -&gt; int:
-    if n &lt; 0:
-        raise ValueError("Factorial not defined for negative numbers")
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
-    return result
+        <div class="code"><pre># Iterative Factorial Calculation using a for loop:
+n = 5
+factorial_result = 1
+for i in range(2, n + 1):
+    factorial_result *= i
 
-print("5! =", factorial(5))   # 120
-print("10! =", factorial(10)) # 3628800</pre></div>
+print(f"{n}! =", factorial_result)   # 120
+
+# Note: In Module 14 (Functions), we will learn how to encapsulate these
+# exact algorithmic loops into reusable functions (def is_prime(n): ...).</pre></div>
       </section>
 
       <section id="7-number-to-word-mini-project">
@@ -545,6 +562,7 @@ print("10! =", factorial(10)) # 3628800</pre></div>
             <span class="tier l2">L2</span>
           </div>
         </div>
+        <div class="callout"><strong>Pedagogical Note:</strong> This mini-project demonstrates how branching (<code class="inline">if-elif-else</code>) and loops (<code class="inline">for</code>) combine to solve complex domain rules. In Module 14, we will encapsulate this algorithm into reusable modular functions!</div>
         <h3 id="7-number-to-word-mini-project-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <h3>7.1. Problem Statement &amp; Design</h3>
@@ -553,51 +571,57 @@ print("10! =", factorial(10)) # 3628800</pre></div>
         <h3 id="7-number-to-word-mini-project-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3>7.2. Complete Python Implementation</h3>
-        <div class="code"><pre>def number_to_words(num: int) -&gt; str:
-    """Convert integer between 0 and 99,999 into English words."""
+        <div class="code"><pre>test_cases = [0, 7, 19, 42, 105, 512, 1000, 4520, 24050, 99999]
+
+units = [
+    "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+    "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+    "Seventeen", "Eighteen", "Nineteen"
+]
+tens = [
+    "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+]
+
+for num in test_cases:
+    original = num
     if num == 0:
-        return "Zero"
+        words_repr = "Zero"
+    else:
+        parts = []
 
-    units = [
-        "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
-        "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
-        "Seventeen", "Eighteen", "Nineteen"
-    ]
-    tens = [
-        "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
-    ]
+        # 1. Process Thousands (1 to 99)
+        thousands = num // 1000
+        if thousands > 0:
+            t_words = []
+            if thousands >= 100:
+                t_words.append(units[thousands // 100] + " Hundred")
+                thousands %= 100
+            if 1 <= thousands <= 19:
+                t_words.append(units[thousands])
+            elif thousands >= 20:
+                t_words.append(tens[thousands // 10])
+                if thousands % 10 != 0:
+                    t_words.append(units[thousands % 10])
+            parts.append(" ".join(t_words) + " Thousand")
+            num %= 1000
 
-    def convert_hundred(n: int) -&gt; str:
-        """Helper to convert 1 to 999."""
-        words = []
-        if n &gt;= 100:
-            words.append(units[n // 100] + " Hundred")
-            n %= 100
-        if 1 &lt;= n &lt;= 19:
-            words.append(units[n])
-        elif n &gt;= 20:
-            ten_part = tens[n // 10]
-            unit_part = units[n % 10]
-            words.append(f"{ten_part} {unit_part}".strip())
-        return " ".join(words)
+        # 2. Process Remaining Hundreds and below (1 to 999)
+        if num > 0:
+            h_words = []
+            if num >= 100:
+                h_words.append(units[num // 100] + " Hundred")
+                num %= 100
+            if 1 <= num <= 19:
+                h_words.append(units[num])
+            elif num >= 20:
+                h_words.append(tens[num // 10])
+                if num % 10 != 0:
+                    h_words.append(units[num % 10])
+            parts.append(" ".join(h_words))
 
-    result = []
-    # Process Thousands:
-    thousands_val = num // 1000
-    if thousands_val &gt; 0:
-        result.append(convert_hundred(thousands_val) + " Thousand")
-        num %= 1000
+        words_repr = " ".join(parts)
 
-    # Process Remaining Hundreds:
-    if num &gt; 0:
-        result.append(convert_hundred(num))
-
-    return " ".join(result)
-
-# Verification demonstrations:
-test_cases = [0, 7, 19, 42, 105, 512, 1000, 4520, 24050, 99999]
-for val in test_cases:
-    print(f"{val:&gt;6d} -&gt; {number_to_words(val)}")</pre></div>
+    print(f"{original:>6d} -> {words_repr}")</pre></div>
       </section>
 
       <section id="c-common-questions">

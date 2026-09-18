@@ -283,18 +283,20 @@ print(not not "hello")      # True (double negation bool conversion: bool("hello
           <li><code class="inline">True or &lt;expr&gt;</code>: <code class="inline">&lt;expr&gt;</code> is <strong>never evaluated</strong>.</li>
         </ul>
 
-        <div class="code"><pre>def expensive_operation():
-    print("&gt;&gt;&gt; Performing expensive database / API call...")
-    return True
+        <div class="code"><pre># Short-circuiting proof using division-by-zero:
+# If Python evaluated both sides, (100 / 0) would crash with ZeroDivisionError!
 
-# Short-circuiting demonstrations:
-print("--- Test 1 ---")
-result1 = False and expensive_operation()
-print("Result 1:", result1)  # Prints: False (function is NEVER called)
+denominator = 0
 
-print("--- Test 2 ---")
-result2 = True or expensive_operation()
-print("Result 2:", result2)   # Prints: True (function is NEVER called)
+# Test 1: 'and' short-circuits on False:
+# The left operand is False, so Python NEVER evaluates the right operand:
+result1 = (denominator != 0) and (100 / denominator > 10)
+print("Result 1 (False and ...):", result1)  # Prints: False (Safe! No ZeroDivisionError)
+
+# Test 2: 'or' short-circuits on True:
+# The left operand is True, so Python NEVER evaluates the right operand:
+result2 = (denominator == 0) or (100 / denominator > 10)
+print("Result 2 (True or ...):  ", result2)  # Prints: True (Safe! No ZeroDivisionError)
 
 # Practical defensive guards using short-circuiting:
 # 1. Null / None guard:
@@ -690,13 +692,14 @@ print("Grade:", grade)  # Grade: B</pre></div>
 
         <div class="code"><pre># Pitfalls of older ternary emulation tricks:
 
-# 1. Tuple indexing evaluates BOTH branches (unsafe for side effects or exceptions):
-def greet():
-    print("Function called!")
-    return "Hello"
+# 1. Tuple indexing evaluates BOTH branches (raises ZeroDivisionError even if condition is False):
+denom = 0
+# The following raises ZeroDivisionError because (100 / denom) is evaluated immediately:
+# ans = ("Safe", 100 / denom)[False]  # ZeroDivisionError: division by zero!
 
-# Even though condition is False, greet() is STILL invoked:
-ans = (greet(), "Guest")[False]  # Prints "Function called!", returns "Guest"
+# In contrast, native ternary short-circuits and never evaluates the unselected branch:
+ans = "Safe" if denom == 0 else (100 / denom)
+print("Native ternary safe result:", ans)  # "Safe" (No crash!)
 
 # 2. Logical and-or bug when true_val is falsy (0, empty string, None):
 is_logged_in = True
@@ -941,7 +944,7 @@ if (n := len(text)) &gt; 10:
           </summary>
           <div class="qa-answer-body">
             <p>Sequence multiplication (<code class="inline">*</code>) creates <strong>shallow copies of the object reference</strong>, not deep copies. In <code class="inline">a = [[]] * 3</code>, all three elements reference the <em>exact same list object</em> in memory. Modifying one (<code class="inline">a[0].append(1)</code>) reflects in all three (<code class="inline">[[1], [1], [1]]</code>).
-            <br /><strong>Correct idiom:</strong> Use a list comprehension to allocate distinct objects: <code class="inline">a = [[] for _ in range(3)]</code>.</p>
+            <br /><strong>Correct idiom:</strong> Allocate distinct objects explicitly: <code class="inline">a = [[], [], []]</code> (or via a list comprehension in Module 10: <code class="inline">[[] for _ in range(3)]</code>).</p>
           </div>
         </details>
 
@@ -1087,17 +1090,23 @@ print(&quot;10 not in [1, 2, 3]:&quot;, 10 not in [1, 2, 3]) # True</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def clamp(n, lo, hi):
-    &quot;&quot;&quot;Clamp n into range [lo, hi] using only comparison operators.&quot;&quot;&quot;
-    if n &lt; lo:
-        return lo
-    elif n &gt; hi:
-        return hi
-    return n
+                <div class="code"><pre># Clamping n into range [lo, hi] using nested ternary comparisons:
+lo, hi = 5, 10
 
-print(&quot;clamp(3, 5, 10):&quot;, clamp(3, 5, 10))   # 5
-print(&quot;clamp(7, 5, 10):&quot;, clamp(7, 5, 10))   # 7
-print(&quot;clamp(15, 5, 10):&quot;, clamp(15, 5, 10)) # 10</pre></div>
+# Test Case 1 (Below lower bound):
+n1 = 3
+clamped1 = lo if n1 < lo else (hi if n1 > hi else n1)
+print(f"clamp({n1}, {lo}, {hi}) -> {clamped1}")  # 5
+
+# Test Case 2 (Inside valid range):
+n2 = 7
+clamped2 = lo if n2 < lo else (hi if n2 > hi else n2)
+print(f"clamp({n2}, {lo}, {hi}) -> {clamped2}")  # 7
+
+# Test Case 3 (Above upper bound):
+n3 = 15
+clamped3 = lo if n3 < lo else (hi if n3 > hi else n3)
+print(f"clamp({n3}, {lo}, {hi}) -> {clamped3}")  # 10</pre></div>
               </div>
             </details>
           </li>
@@ -1217,12 +1226,25 @@ print(f"Swapped: a={a}, b={b}")  # a=27, b=15</pre></div>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre># Truth table printer for boolean operators:
+                <div class="code"><pre># Truth table for boolean operators (evaluating all 4 boolean combinations):
 print(f"{'A':&lt;6} {'B':&lt;6} {'A and B':&lt;10} {'A or B':&lt;10} {'not A':&lt;6}")
 print("-" * 38)
-for a in (True, False):
-    for b in (True, False):
-        print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")</pre></div>
+
+# Combination 1 (True, True):
+a, b = True, True
+print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")
+
+# Combination 2 (True, False):
+a, b = True, False
+print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")
+
+# Combination 3 (False, True):
+a, b = False, True
+print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")
+
+# Combination 4 (False, False):
+a, b = False, False
+print(f"{str(a):&lt;6} {str(b):&lt;6} {str(a and b):&lt;10} {str(a or b):&lt;10} {str(not a):&lt;6}")</pre></div>
               </div>
             </details>
           </li>

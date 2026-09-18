@@ -147,22 +147,23 @@
 
         <div class="code"><pre># Demonstrating multi-paradigm coexistence in a single Python script:
 
-# 1. Procedural: linear script execution
+# --- Python Multi-Paradigm Overview ---
+
+# 1. Procedural Programming (Linear, sequential script execution):
+radius = 5.0
+pi_value = 3.14159
+circle_area = pi_value * (radius ** 2)
+print("Procedural calculation - Circle Area:", circle_area)
+
+# 2. Dynamic Collections & High-Level Structures:
 data = [1, 2, 3, 4, 5, 6]
+evens = [x for x in data if x % 2 == 0]
+print("Filtered even numbers:", evens)
 
-# 2. Functional: pure higher-order transformation with lambda and filter
-evens_squared = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, data)))
-
-# 3. Object-Oriented: encapsulated state and behaviors
-class MathProcessor:
-    def __init__(self, values):
-        self.values = values
-
-    def compute_sum(self):
-        return sum(self.values)
-
-processor = MathProcessor(evens_squared)
-print("Computed sum:", processor.compute_sum())  # Output: 56</pre></div>
+# 3. Object-Oriented & Functional Styles (Preview):
+# Python also natively supports OOP (classes and objects - detailed in Module 19)
+# and Functional programming (lambda, map, filter - detailed in Module 15).
+# For now, observe how clean and readable Python code remains across all styles!</pre></div>
       </section>
 
       <section id="3-features">
@@ -214,15 +215,19 @@ print("Computed sum:", processor.compute_sum())  # Output: 56</pre></div>
 x = 10       # x points to an int object in heap memory
 y = "20"     # y points to a str object in heap memory
 
-# In JavaScript: x + y results in "1020"
-# In Python:
-try:
-    result = x + y
-except TypeError as e:
-    print("TypeError raised:", e)  # unsupported operand type(s) for +: 'int' and 'str'
+# In JavaScript: x + y results in "1020" (silent implicit coercion)
+# In Python: Python rejects incompatible type mixing and raises TypeError:
+# result = x + y  # TypeError: unsupported operand type(s) for +: 'int' and 'str'
 
-# Dynamic Rebinding: variable name can reference an object of a different type:
-x = "Now I am a string"  # Valid: variable x simply points to a new str object</pre></div>
+# Python requires EXPLICIT conversion between different types:
+result = x + int(y)         # Explicit numeric addition: 30
+str_result = str(x) + y     # Explicit string concatenation: "1020"
+print("Explicit numeric sum:", result)
+print("Explicit string concat:", str_result)
+
+# Dynamic Rebinding: variable name can easily reference an object of a different type:
+x = "Now I am a string"  # Valid: variable x now simply points to a str object
+print("Rebound x:", x, "| Type:", type(x))</pre></div>
       </section>
 
       <section id="4-flavors">
@@ -321,38 +326,33 @@ print("Implementation details:", sys.implementation.name)          # 'cpython'</
         </ul>
 
         <h3 id="5-pvm-architecture-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
-        <h4>5.1. Inspecting Bytecode Instructions with the <code class="inline">dis</code> Module</h4>
-        <p>You can disassemble any Python function or code block into raw PVM opcodes using Python’s built-in <code class="inline">dis</code> (disassembler) module:</p>
+        <p>You can disassemble any Python expression, script, or code block into raw PVM opcodes using Python’s built-in <code class="inline">dis</code> (disassembler) module:</p>
 
         <div class="code"><pre>import dis
 
-def calculate_total(price, tax_rate):
-    total = price + (price * tax_rate)
-    return total
-
-# Disassemble the function into PVM bytecode opcodes:
-dis.dis(calculate_total)</pre></div>
+# Disassemble a simple calculation directly into PVM bytecode opcodes:
+calculation = "total = price + (price * 0.05)"
+dis.dis(calculation)</pre></div>
 
         <p><strong>Bytecode Disassembly Output Breakdown:</strong></p>
-        <div class="code"><pre># Output from dis.dis(calculate_total):
+        <div class="code"><pre># Output from dis.dis("total = price + (price * 0.05)"):
 # Line  Byte Offset  Opcode Name       Operand (Argument Value)
 # ---------------------------------------------------------------
-#   2           0    LOAD_FAST         0 (price)
-#               2    LOAD_FAST         0 (price)
-#               4    LOAD_FAST         1 (tax_rate)
-#               6    BINARY_OP         5 (*)
-#               8    BINARY_OP         0 (+)
-#              10    STORE_FAST        2 (total)
-#
-#   3          12    LOAD_FAST         2 (total)
-#              14    RETURN_VALUE</pre></div>
+#   1           0    RESUME            0
+#               2    LOAD_NAME         0 (price)
+#               4    LOAD_NAME         0 (price)
+#               6    LOAD_CONST        0 (0.05)
+#               8    BINARY_OP         5 (*)
+#              12    BINARY_OP         0 (+)
+#              16    STORE_NAME        1 (total)
+#              18    RETURN_CONST      1 (None)</pre></div>
 
         <ul>
-          <li><code class="inline">LOAD_FAST</code>: Pushes a local variable onto the PVM evaluation stack.</li>
+          <li><code class="inline">LOAD_NAME</code>: Pushes the value of a named variable onto the PVM evaluation stack.</li>
+          <li><code class="inline">LOAD_CONST</code>: Pushes a literal constant (e.g. <code class="inline">0.05</code>) onto the evaluation stack.</li>
           <li><code class="inline">BINARY_OP (*)</code>: Pops the top two stack items, computes their product, and pushes the result back onto the stack.</li>
           <li><code class="inline">BINARY_OP (+)</code>: Pops the top two items, computes their sum, and pushes the result.</li>
-          <li><code class="inline">STORE_FAST</code>: Pops the top value from the stack and stores it in the local variable slot for <code class="inline">total</code>.</li>
-          <li><code class="inline">RETURN_VALUE</code>: Pops the top value and returns it to the caller.</li>
+          <li><code class="inline">STORE_NAME</code>: Pops the top value from the stack and binds it to the variable name <code class="inline">total</code>.</li>
         </ul>
       </section>
 
@@ -674,39 +674,40 @@ deactivate</pre></div>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Bytecode Disassembly</strong> — Use the <code class="inline">dis</code> module to disassemble a simple addition function and identify the PVM opcodes.</span>
+                <span class="qa-question-title"><strong>Bytecode Disassembly</strong> — Use the <code class="inline">dis</code> module to disassemble a simple addition expression and identify the PVM opcodes.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import dis
 
-def add_numbers(a, b):
-    return a + b
+# Disassemble a simple addition expression into raw PVM instructions:
+dis.dis("total = 10 + 20")
 
-# Print disassembled bytecode instructions:
-dis.dis(add_numbers)
-
-# Observe output opcodes: LOAD_FAST, BINARY_OP / BINARY_ADD, RETURN_VALUE</pre></div>
+# Observe output opcodes: LOAD_CONST, BINARY_OP / BINARY_ADD, STORE_NAME</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title"><strong>Type Safety Verification</strong> — Demonstrate Python's strong typing by catching the exact exception raised when attempting to add an integer to a string.</span>
+                <span class="qa-question-title"><strong>Type Safety Verification</strong> — Demonstrate Python's strong typing by showing that adding an integer to a string fails without explicit conversion.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def verify_strong_typing():
-    val_int = 100
-    val_str = "200"
-    try:
-        result = val_int + val_str
-    except TypeError as err:
-        print("Caught expected TypeError demonstrating Strong Typing:")
-        print(err)
+                <div class="code"><pre># Demonstrating Strong Typing:
+val_int = 100
+val_str = "200"
 
-verify_strong_typing()</pre></div>
+print("val_int type:", type(val_int))
+print("val_str type:", type(val_str))
+
+# In weakly typed languages (like JS), val_int + val_str silently evaluates to "100200".
+# In Python, attempting val_int + val_str raises a TypeError immediately:
+# result = val_int + val_str  # TypeError: unsupported operand type(s) for +: 'int' and 'str'
+
+# Python demands explicit type conversion:
+print("Explicit conversion sum:", val_int + int(val_str))  # 300
+print("Strong typing successfully verified!")</pre></div>
               </div>
             </details>
           </li>

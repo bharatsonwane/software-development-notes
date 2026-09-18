@@ -380,19 +380,12 @@ company = {
 eng_head = company.get("departments", {}).get("engineering", {}).get("head")
 print("Engineering Head:", eng_head)  # Rahul
 
-# Recursive deep merge function:
-def deep_merge(dict1: dict, dict2: dict) -> dict:
-    result = dict1.copy()
-    for k, v in dict2.items():
-        if k in result and isinstance(result[k], dict) and isinstance(v, dict):
-            result[k] = deep_merge(result[k], v)
-        else:
-            result[k] = v
-    return result
+# Merging dictionary configurations with Python 3.9+ '|' merge operator:
+base_config = {"ui": {"theme": "light", "fontSize": 14}, "api": "v1"}
+user_overrides = {"ui": {"theme": "dark", "fontSize": 14}, "debug": True}
 
-base = {"ui": {"theme": "light", "fontSize": 14}, "api": "v1"}
-overrides = {"ui": {"theme": "dark"}, "debug": True}
-print("Deep Merged:", deep_merge(base, overrides))
+merged_config = base_config | user_overrides
+print("Merged Configuration:", merged_config)
 # {'ui': {'theme': 'dark', 'fontSize': 14}, 'api': 'v1', 'debug': True}</pre></div>
       </section>
 
@@ -422,41 +415,35 @@ catalog = {
 # Customer shopping cart: {item_id: quantity_purchased}
 cart = {"101": 2, "103": 1, "105": 2}
 
-def generate_invoice(cart: dict, catalog: dict, tax_rate: float = 0.05) -> dict:
-    subtotal = 0.0
-    line_items = []
+# Supermarket Invoice Calculation:
+subtotal = 0.0
+tax_rate = 0.05
+line_items = []
 
-    for item_id, qty in cart.items():
-        if item_id not in catalog:
-            continue
+for item_id, qty in cart.items():
+    if item_id in catalog:
         product = catalog[item_id]
-        if qty > product["stock"]:
-            raise ValueError(f"Insufficient stock for {product['name']}. Available: {product['stock']}")
-        
-        # Deduct inventory stock:
-        product["stock"] -= qty
-        total_price = qty * product["price"]
-        subtotal += total_price
-        
-        line_items.append({
-            "name": product["name"],
-            "qty": qty,
-            "unit_price": product["price"],
-            "total": total_price
-        })
+        if qty <= product["stock"]:
+            # Deduct inventory stock:
+            product["stock"] -= qty
+            total_price = qty * product["price"]
+            subtotal += total_price
+            line_items.append({
+                "name": product["name"],
+                "qty": qty,
+                "unit_price": product["price"],
+                "total": total_price
+            })
 
-    tax = subtotal * tax_rate
-    grand_total = subtotal + tax
+tax = subtotal * tax_rate
+grand_total = subtotal + tax
 
-    return {
-        "items": line_items,
-        "subtotal": subtotal,
-        "tax": tax,
-        "grand_total": grand_total
-    }
-
-# Run invoice generator:
-invoice = generate_invoice(cart, catalog)
+invoice = {
+    "items": line_items,
+    "subtotal": subtotal,
+    "tax": tax,
+    "grand_total": grand_total
+}
 
 print("=" * 48)
 print(f"{'SUPERMARKET TAX INVOICE':^48}")
@@ -730,17 +717,7 @@ print("Employees by Dept:", dept_map)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def flatten_dict(d: dict, parent_key: str = "", sep: str = ".") -> dict:
-    items = []
-    for k, v in d.items():
-        new_key = f"{parent_key}{sep}{k}" if parent_key else k
-        if isinstance(v, dict):
-            items.extend(flatten_dict(v, new_key, sep=sep).items())
-        else:
-            items.append((new_key, v))
-    return dict(items)
-
-nested = {
+                <div class="code"><pre>nested = {
     "server": {
         "host": "localhost",
         "port": 8080,
@@ -749,42 +726,64 @@ nested = {
     "version": 2
 }
 
-print("Flattened Dict:", flatten_dict(nested))
-# {'server.host': 'localhost', 'server.port': 8080, 'server.auth.enabled': True, 'server.auth.token': 'secret', 'version': 2}</pre></div>
+# Flattening nested dictionary into dot-notated keys using a stack loop:
+flattened = {}
+stack = [("", nested)]
+
+while stack:
+    parent_key, current_dict = stack.pop()
+    for k, v in current_dict.items():
+        new_key = f"{parent_key}.{k}" if parent_key else k
+        if isinstance(v, dict):
+            stack.append((new_key, v))
+        else:
+            flattened[new_key] = v
+
+print("Flattened Dict:", flattened)
+# {'version': 2, 'server.host': 'localhost', 'server.port': 8080, ...}</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Challenge 2: In-Memory Key-Value Store with TTL (Time-to-Live) — Implement a dictionary wrapper supporting expiration.</span>
+                <span class="qa-question-title">Challenge 2: In-Memory Key-Value Store with TTL (Time-to-Live) — Store and expire keys using dictionary timestamp metadata.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import time
 
-class TTLDict:
-    def __init__(self):
-        self._store = {}
+# Implementing TTL (Time-to-Live) expiration using a standard dictionary:
+# Key -> (value, expires_at_timestamp)
+cache = {}
 
-    def set(self, key, value, ttl_seconds: float):
-        expires_at = time.time() + ttl_seconds
-        self._store[key] = (value, expires_at)
+# Storing a key with 0.1s TTL:
+cache["session_123"] = ("user_active", time.time() + 0.1)
 
-    def get(self, key, default=None):
-        if key not in self._store:
-            return default
-        value, expires_at = self._store[key]
-        if time.time() > expires_at:
-            del self._store[key]  # Clean expired
-            return default
-        return value
+# Immediate retrieval:
+key = "session_123"
+if key in cache:
+    val, exp = cache[key]
+    if time.time() &lt;= exp:
+        print("Immediate get: ", val)  # 'user_active'
+    else:
+        del cache[key]
 
-cache = TTLDict()
-cache.set("session_123", "user_active", ttl_seconds=0.1)
-print("Immediate get: ", cache.get("session_123"))  # 'user_active'
 time.sleep(0.15)
-print("After 150ms get:", cache.get("session_123"))  # None</pre></div>
+
+# Retrieval after expiration:
+if key in cache:
+    val, exp = cache[key]
+    if time.time() &lt;= exp:
+        print("After 150ms get:", val)
+    else:
+        del cache[key]
+        print("After 150ms get: None (key expired and evicted!)")
+else:
+    print("After 150ms get: None (key does not exist)")
+
+# Note: In Module 19 (OOP Fundamentals), we will encapsulate this exact
+# expiration logic into an elegant custom class (class TTLDict)!</pre></div>
               </div>
             </details>
           </li>

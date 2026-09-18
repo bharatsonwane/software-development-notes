@@ -740,21 +740,25 @@ print(f"Estimated Pi: {est:.5f} | Actual math.pi: {math.pi:.5f} | Error: {abs(es
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import importlib
+import importlib.util
 
 plugin_registry = {}
 
 def load_plugin(module_name: str):
-    try:
+    # Verify module existence via find_spec (Exceptions covered in Module 24)
+    spec = importlib.util.find_spec(module_name)
+    if spec is not None:
         mod = importlib.import_module(module_name)
         plugin_registry[module_name] = mod
         print(f"Successfully loaded plugin: {module_name}")
         return mod
-    except ModuleNotFoundError as e:
-        print(f"Plugin load failed: {e}")
+    else:
+        print(f"Plugin load failed: module {module_name!r} not found")
         return None
 
 load_plugin("json")
 load_plugin("math")
+load_plugin("non_existent_plugin")
 print("Registry contains:", list(plugin_registry.keys()))</pre></div>
               </div>
             </details>

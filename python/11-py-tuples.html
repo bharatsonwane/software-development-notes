@@ -581,13 +581,14 @@ print("Vowels tuple:", vowels)
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def find_all_indices(tup: tuple, target) -> tuple:
-    indices = [idx for idx, val in enumerate(tup) if val == target]
-    return len(indices), indices
+                <div class="code"><pre>sample = (10, 20, 30, 20, 40, 20, 50)
+target = 20
 
-sample = (10, 20, 30, 20, 40, 20, 50)
-count, positions = find_all_indices(sample, 20)
-print(f"Target 20 occurred {count} times at indices: {positions}")
+# Finding total count and all index positions of target in tuple:
+positions = [idx for idx, val in enumerate(sample) if val == target]
+count = len(positions)
+
+print(f"Target {target} occurred {count} times at indices: {positions}")
 # Target 20 occurred 3 times at indices: [1, 3, 5]</pre></div>
               </div>
             </details>
@@ -621,41 +622,48 @@ for s in students:
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Task 3: NamedTuple Database Record Modeling — Create an Employee structure with computed annual salary property.</span>
+                <span class="qa-question-title">Task 3: NamedTuple Database Record Modeling — Create an Employee structure and compute annual earnings.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>from collections import namedtuple
 
-class Employee(namedtuple("EmployeeBase", ["id", "name", "monthly_salary", "department"])):
-    @property
-    def annual_salary(self):
-        return self.monthly_salary * 12
+# Creating a lightweight namedtuple record:
+Employee = namedtuple("Employee", ["id", "name", "monthly_salary", "department"])
 
 emp = Employee(101, "Bharat Sonwane", 8500, "Engineering")
-print(f"{emp.name} ({emp.department}) earns ${emp.annual_salary:,} annually.")
-# Bharat Sonwane (Engineering) earns $102,000 annually.</pre></div>
+annual_salary = emp.monthly_salary * 12
+
+print(f"{emp.name} ({emp.department}) earns ${annual_salary:,} annually.")
+# Output: Bharat Sonwane (Engineering) earns $102,000 annually.
+
+# Note: In Module 20 (Inheritance) and Module 21 (Polymorphism),
+# we will learn how to subclass namedtuple to add custom methods and @property getters!</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Task 4: Nested Tuple Flattener — Recursively unpack arbitrarily nested tuples into a single flat tuple.</span>
+                <span class="qa-question-title">Task 4: Nested Tuple Flattener — Unpack nested tuples into a single flat tuple.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>def flatten_tuple(nested: tuple) -> tuple:
-    flat = []
-    for item in nested:
-        if isinstance(item, tuple):
-            flat.extend(flatten_tuple(item))
-        else:
-            flat.append(item)
-    return tuple(flat)
+                <div class="code"><pre>nested_tuple = (1, 2, (3, 4), (5, (6, 7)))
 
-nested = (1, (2, (3, 4)), 5, ((6,), 7))
-print("Flat tuple:", flatten_tuple(nested))
+# Flattening tuples using a loop and temporary list:
+flat_items = []
+stack = [nested_tuple]
+while stack:
+    current = stack.pop(0)
+    for item in current:
+        if isinstance(item, tuple):
+            stack.append(item)
+        else:
+            flat_items.append(item)
+
+flat_result = tuple(flat_items)
+print("Flattened tuple:", flat_result)
 # (1, 2, 3, 4, 5, 6, 7)</pre></div>
               </div>
             </details>
@@ -669,45 +677,43 @@ print("Flat tuple:", flatten_tuple(nested))
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Challenge 1: Immutable Coordinate Grid Pathfinding Cache — Cache path costs between (x1, y1) and (x2, y2) using tuples as keys.</span>
+                <span class="qa-question-title">Challenge 1: Euclidean Distance Calculator — Compute distance between 3D coordinate tuples without NumPy.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
-                <div class="code"><pre>import math
+                <div class="code"><pre>point_a = (1.0, 2.0, 3.0)
+point_b = (4.0, 6.0, 8.0)
 
-path_cache = {}
+# Euclidean Distance using tuple unpacking and arithmetic:
+dx = point_a[0] - point_b[0]
+dy = point_a[1] - point_b[1]
+dz = point_a[2] - point_b[2]
+distance = (dx ** 2 + dy ** 2 + dz ** 2) ** 0.5
 
-def get_distance(point_a: tuple, point_b: tuple) -> float:
-    # Use sorted tuple pair as dictionary key to make distance direction-agnostic:
-    key = tuple(sorted([point_a, point_b]))
-    if key not in path_cache:
-        dist = math.sqrt((point_a[0] - point_b[0])**2 + (point_a[1] - point_b[1])**2)
-        path_cache[key] = round(dist, 3)
-    return path_cache[key]
-
-p1, p2 = (0, 0), (3, 4)
-print("Distance p1 -> p2:", get_distance(p1, p2))  # 5.0
-print("Distance p2 -> p1 (cached):", get_distance(p2, p1))  # 5.0
-print("Cache state:", path_cache)</pre></div>
+print(f"Distance between {point_a} and {point_b}: {distance:.4f}")
+# Distance between (1.0, 2.0, 3.0) and (4.0, 6.0, 8.0): 7.0711</pre></div>
               </div>
             </details>
           </li>
           <li>
             <details class="qa-block practice-block">
               <summary class="qa-question-summary">
-                <span class="qa-question-title">Challenge 2: In-Place Mutation Trap Analysis — Demonstrate and explain the t[idx] += [val] puzzle with try-except.</span>
+                <span class="qa-question-title">Challenge 2: In-Place Mutation Trap Analysis — Demonstrate the nested mutable container behavior in tuples.</span>
                 <span class="qa-hint-badge"><span class="qa-hint-icon">▾</span> Solution</span>
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>t = (1, [10, 20])
-try:
-    t[1] += [30, 40]
-except TypeError as e:
-    print("Caught expected TypeError:", e)
 
-# The inner list was mutated despite the exception!
+# Augmented assignment on a mutable item inside an immutable tuple:
+# Writing t[1] += [30, 40] performs t[1].extend([30, 40]) AND then reassigns t[1] = ...
+# The in-place extension succeeds, but the reassignment raises TypeError on the tuple:
+# t[1] += [30, 40]  # TypeError: 'tuple' object does not support item assignment
+
+# Safe idiom: Mutate the inner container directly via its methods:
+t[1].extend([30, 40])
 print("Final tuple state:", t)
-# Final tuple state: (1, [10, 20, 30, 40])</pre></div>
+# Final tuple state: (1, [10, 20, 30, 40])
+# Note: In Module 24 (Exception Handling), we will catch and inspect the TypeError!</pre></div>
               </div>
             </details>
           </li>

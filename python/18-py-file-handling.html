@@ -707,12 +707,17 @@ def archive_text_files(target_dir, output_zip):
               </summary>
               <div class="qa-answer-body">
                 <div class="code"><pre>import subprocess
+import shutil
 
-try:
-    res = subprocess.run(["git", "--version"], capture_output=True, text=True, check=True)
-    print("Detected Git Version:", res.stdout.strip())
-except (subprocess.CalledProcessError, FileNotFoundError) as e:
-    print("Git command failed or not installed:", e)</pre></div>
+# Check executable existence and returncode (Exception handling is taught in Module 24):
+if shutil.which("git"):
+    res = subprocess.run(["git", "--version"], capture_output=True, text=True)
+    if res.returncode == 0:
+        print("Detected Git Version:", res.stdout.strip())
+    else:
+        print("Git command failed with code:", res.returncode)
+else:
+    print("Git executable not found on system PATH")</pre></div>
               </div>
             </details>
           </li>
