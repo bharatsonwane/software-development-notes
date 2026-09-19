@@ -74,7 +74,8 @@
           </div>
           <div class="nav-sub">
             <a href="#5-1-the-matrix-methodology-for-pattern-generation">5.1. The Matrix Methodology for Pattern Generation</a>
-            <a href="#5-2-numerical-and-centered-pyramid-patterns">5.2. Numerical and Centered Pyramid Patterns</a>
+            <a href="#5-2-two-phase-space-star-and-pyramid-patterns">5.2. Two-Phase (Spaces + Stars) &amp; Centered Pyramids</a>
+            <a href="#5-3-advanced-matrix-invariants-hollow-shapes-and-diagonals">5.3. Advanced Matrix Invariants: Hollow Shapes &amp; Numbers</a>
           </div>
         </div>
         <div class="nav-section">
@@ -448,41 +449,927 @@ else:
             <span class="tier l2">L2</span>
           </div>
         </div>
+
+        <div class="callout">
+          <strong>The Matrix Methodology:</strong> Pattern printing is frequently taught through trial-and-error, leaving learners stranded when shapes vary. In professional computer science pedagogy, every 2D pattern is solved deterministically by treating the terminal display as an <strong>N × M Cartesian coordinate matrix</strong>.
+        </div>
+
+        <div class="matrix-flow-steps">
+          <div class="matrix-step-card">
+            <span class="matrix-step-badge">Step 1</span>
+            <div class="matrix-step-title">Grid Modeling</div>
+            <p class="matrix-step-desc">Envision the visual shape on a 2D grid. Outer loop variable <code class="inline">i</code> tracks <strong>Rows</strong> (vertical axis 0 ... N−1), inner loop variable <code class="inline">j</code> tracks <strong>Columns</strong> (horizontal axis 0 ... M−1).</p>
+          </div>
+          <div class="matrix-step-card">
+            <span class="matrix-step-badge">Step 2</span>
+            <div class="matrix-step-title">Coordinate Tabulation</div>
+            <p class="matrix-step-desc">Plot each cell's exact (i, j) address on paper or mental canvas. Mark which specific coordinates contain stars vs spaces vs numbers.</p>
+          </div>
+          <div class="matrix-step-card">
+            <span class="matrix-step-badge">Step 3</span>
+            <div class="matrix-step-title">Deduce Algebraic Invariant</div>
+            <p class="matrix-step-desc">Discover the mathematical rule governing active cells (e.g. j ≤ i for lower triangles, j &lt; N − i for upper triangles, i == j for diagonals).</p>
+          </div>
+          <div class="matrix-step-card">
+            <span class="matrix-step-badge">Step 4</span>
+            <div class="matrix-step-title">Code Synthesis</div>
+            <p class="matrix-step-desc">Translate row bounds into <code class="inline">for i in range(...)</code>, and column bounds into <code class="inline">for j in range(...)</code> with the condition check or string multiplier.</p>
+          </div>
+        </div>
+
+        <!-- Master Matrix Coordinate Grid Reference -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">The Master Coordinate Matrix Reference (4 × 4)</div>
+            <span class="pattern-badge-rule">Outer Loop: i (Row) &nbsp;|&nbsp; Inner Loop: j (Column)</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Coordinate Grid (i, j)</span>
+                <span>N = 4</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">i ↓ \ j →</th>
+                    <th class="matrix-col-header">Col 0</th>
+                    <th class="matrix-col-header">Col 1</th>
+                    <th class="matrix-col-header">Col 2</th>
+                    <th class="matrix-col-header">Col 3</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">Row 0</td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,0)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">Row 1</td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,0)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">Row 2</td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,0)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">Row 3</td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,0)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="matrix-legend">
+                <span class="matrix-legend-item"><span class="matrix-legend-swatch" style="background: var(--chip-1-bg); border-color: var(--chip-1-border);"></span> Active Star (★)</span>
+                <span class="matrix-legend-item"><span class="matrix-legend-swatch" style="background: var(--chip-3-bg); border: 1px dashed var(--chip-3-border);"></span> Whitespace (␣)</span>
+                <span class="matrix-legend-item"><span class="matrix-legend-swatch" style="background: var(--card);"></span> Empty Cell (·)</span>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>How the Nested Loop Engine Operates:</strong></p>
+              <ul>
+                <li><strong>Outer Loop (<code class="inline">i</code>):</strong> Increments after an entire row finishes. It triggers <code class="inline">print()</code> to issue a newline (<code class="inline">\n</code>) and move down one vertical line.</li>
+                <li><strong>Inner Loop (<code class="inline">j</code>):</strong> Moves horizontally from left to right along row <code class="inline">i</code>. Uses <code class="inline">end=" "</code> or <code class="inline">end=""</code> to keep prints on the same line.</li>
+                <li><strong>Total Matrix Iterations:</strong> N × M steps (e.g. 4 × 4 = 16 total cell decisions).</li>
+              </ul>
+              <div class="code"><pre># Nested loop matrix traversal template:
+n: int = 4
+for i in range(n):         # Row index (vertical)
+    for j in range(n):     # Column index (horizontal)
+        # Decision at coordinate (i, j):
+        print(f"({i},{j})", end=" ")
+    print()                # Row terminator: newline</pre></div>
+            </div>
+          </div>
+        </div>
+
         <h3 id="5-pattern-programs-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <h3 id="5-1-the-matrix-methodology-for-pattern-generation">5.1. The Matrix Methodology for Pattern Generation</h3>
-        <p>Pattern printing transforms 2D visual layouts into nested loop indices: outer loop controls rows ($i$), inner loop controls columns ($j$).</p>
 
-        <div class="code"><pre># 1. Solid Square Pattern (n x n):
+        <!-- Pattern 1: Solid Square -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 1: Solid Square (N × N)</div>
+            <span class="pattern-badge-rule">Invariant: All cells 0 &le; j &lt; n</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Visual Coordinate Grid</span>
+                <span>N = 4</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">i \ j</th>
+                    <th class="matrix-col-header">0</th>
+                    <th class="matrix-col-header">1</th>
+                    <th class="matrix-col-header">2</th>
+                    <th class="matrix-col-header">3</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">i = 0</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 1</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 2</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 3</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="matrix-trace-table">
+                <thead>
+                  <tr><th>Row i</th><th>Active Cols j</th><th>Star Count</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td>[0, 1, 2, 3]</td><td>4</td></tr>
+                  <tr><td>1</td><td>[0, 1, 2, 3]</td><td>4</td></tr>
+                  <tr><td>2</td><td>[0, 1, 2, 3]</td><td>4</td></tr>
+                  <tr><td>3</td><td>[0, 1, 2, 3]</td><td>4</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>Algorithmic Derivation:</strong> In a solid square, every cell (i, j) is filled unconditionally. Both loops run from 0 up to n − 1.</p>
+              <div class="code"><pre># Approach 1: Nested Matrix Traversal
 n: int = 4
 for i in range(n):
     for j in range(n):
         print("*", end=" ")
     print()
 
-# 2. Right-Angled Triangle Pattern (Incremental):
-for i in range(1, n + 1):
-    print("* " * i)
+# Approach 2: Pythonic String Multiplication
+for i in range(n):
+    print("* " * n)</pre></div>
 
-# 3. Inverted Right-Angled Triangle:
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output Preview</span>
+                </div>
+                <pre class="pattern-terminal-body">* * * * 
+* * * * 
+* * * * 
+* * * * </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern 2: Right-Angled Triangle -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 2: Right-Angled Triangle (Lower Triangular Matrix)</div>
+            <span class="pattern-badge-rule">Invariant: Column j &le; Row i</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Visual Coordinate Grid</span>
+                <span>Boundary: j = i</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">i \ j</th>
+                    <th class="matrix-col-header">0</th>
+                    <th class="matrix-col-header">1</th>
+                    <th class="matrix-col-header">2</th>
+                    <th class="matrix-col-header">3</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">i = 0</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(0,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 1</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 2</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 3</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="matrix-trace-table">
+                <thead>
+                  <tr><th>Row i</th><th>Active Cols j (j ≤ i)</th><th>Star Count (i + 1)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td>[0]</td><td>1</td></tr>
+                  <tr><td>1</td><td>[0, 1]</td><td>2</td></tr>
+                  <tr><td>2</td><td>[0, 1, 2]</td><td>3</td></tr>
+                  <tr><td>3</td><td>[0, 1, 2, 3]</td><td>4</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>Algorithmic Derivation:</strong> This represents the classic <em>lower triangular matrix</em>. Stars are printed if and only if j ≤ i. Therefore, for each row i, the inner loop executes exactly i + 1 times (<code class="inline">range(i + 1)</code>).</p>
+              <div class="code"><pre># Approach 1: Dynamic Inner Loop Bound range(i + 1)
+n: int = 4
+for i in range(n):
+    for j in range(i + 1):
+        print("*", end=" ")
+    print()
+
+# Approach 2: Condition inside Full N x N Traversal
+for i in range(n):
+    for j in range(n):
+        if j &lt;= i:
+            print("*", end=" ")
+    print()
+
+# Approach 3: Pythonic String Multiplication (1-indexed)
+for i in range(1, n + 1):
+    print("* " * i)</pre></div>
+
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output Preview</span>
+                </div>
+                <pre class="pattern-terminal-body">* 
+* * 
+* * * 
+* * * * </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern 3: Inverted Right-Angled Triangle -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 3: Inverted Right-Angled Triangle (Upper Triangular Matrix)</div>
+            <span class="pattern-badge-rule">Invariant: Column j &lt; n - i</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Visual Coordinate Grid</span>
+                <span>Boundary: j + i &lt; n</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">i \ j</th>
+                    <th class="matrix-col-header">0</th>
+                    <th class="matrix-col-header">1</th>
+                    <th class="matrix-col-header">2</th>
+                    <th class="matrix-col-header">3</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">i = 0</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 1</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 2</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 3</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,3)</span><span class="symbol">·</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="matrix-trace-table">
+                <thead>
+                  <tr><th>Row i</th><th>Active Cols j</th><th>Star Count (n − i)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td>[0, 1, 2, 3]</td><td>4</td></tr>
+                  <tr><td>1</td><td>[0, 1, 2]</td><td>3</td></tr>
+                  <tr><td>2</td><td>[0, 1]</td><td>2</td></tr>
+                  <tr><td>3</td><td>[0]</td><td>1</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>Algorithmic Derivation:</strong> In an inverted triangle, star count decreases as row index i increases: count = n − i. The inner loop iterates through <code class="inline">range(n - i)</code>.</p>
+              <div class="code"><pre># Approach 1: Forward Row Loop with Decreasing Bound range(n - i)
+n: int = 4
+for i in range(n):
+    for j in range(n - i):
+        print("*", end=" ")
+    print()
+
+# Approach 2: Decrementing Outer Loop range(n, 0, -1)
+for i in range(n, 0, -1):
+    for j in range(i):
+        print("*", end=" ")
+    print()
+
+# Approach 3: Pythonic String Multiplication
 for i in range(n, 0, -1):
     print("* " * i)</pre></div>
 
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output Preview</span>
+                </div>
+                <pre class="pattern-terminal-body">* * * * 
+* * * 
+* * 
+* </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <h3 id="5-pattern-programs-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
-        <h3 id="5-2-numerical-and-centered-pyramid-patterns">5.2. Numerical and Centered Pyramid Patterns</h3>
-        <div class="code"><pre># 4. Number Incremental Triangle:
+        <h3 id="5-2-two-phase-space-star-and-pyramid-patterns">5.2. Two-Phase (Spaces + Stars) &amp; Centered Pyramids</h3>
+
+        <p>When a pattern is right-aligned or centered, empty space is <em>not</em> ignored — it must be explicitly printed. The Matrix Methodology partitions each row into two sequential phases:</p>
+        <ul>
+          <li><strong>Phase 1 (Leading Whitespaces):</strong> Column indices 0 ≤ j &lt; space_count.</li>
+          <li><strong>Phase 2 (Stars):</strong> Column indices space_count ≤ j &lt; total_cols.</li>
+        </ul>
+
+        <!-- Pattern 4: Mirrored Right-Angled Triangle -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 4: Mirrored Right-Angled Triangle (Two-Zone Matrix)</div>
+            <span class="pattern-badge-rule">Spaces: n - 1 - i &nbsp;|&nbsp; Stars: i + 1</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Two-Zone Visual Grid</span>
+                <span>N = 4</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">i \ j</th>
+                    <th class="matrix-col-header">0</th>
+                    <th class="matrix-col-header">1</th>
+                    <th class="matrix-col-header">2</th>
+                    <th class="matrix-col-header">3</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">i = 0</td>
+                    <td><div class="matrix-cell space-cell"><span class="coord">(0,0)</span><span class="symbol">␣</span></div></td>
+                    <td><div class="matrix-cell space-cell"><span class="coord">(0,1)</span><span class="symbol">␣</span></div></td>
+                    <td><div class="matrix-cell space-cell"><span class="coord">(0,2)</span><span class="symbol">␣</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 1</td>
+                    <td><div class="matrix-cell space-cell"><span class="coord">(1,0)</span><span class="symbol">␣</span></div></td>
+                    <td><div class="matrix-cell space-cell"><span class="coord">(1,1)</span><span class="symbol">␣</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 2</td>
+                    <td><div class="matrix-cell space-cell"><span class="coord">(2,0)</span><span class="symbol">␣</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 3</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,3)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="matrix-trace-table">
+                <thead>
+                  <tr><th>Row i</th><th>Spaces (n − 1 − i)</th><th>Stars (i + 1)</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td>3 ("␣␣␣")</td><td>1 ("*")</td><td>4</td></tr>
+                  <tr><td>1</td><td>2 ("␣␣")</td><td>2 ("**")</td><td>4</td></tr>
+                  <tr><td>2</td><td>1 ("␣")</td><td>3 ("***")</td><td>4</td></tr>
+                  <tr><td>3</td><td>0 ("")</td><td>4 ("****")</td><td>4</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>Algorithmic Derivation:</strong> Notice that for each row i, spaces + stars = n. The boundary dividing spaces from stars is at column index j &lt; n − 1 − i.</p>
+              <div class="code"><pre># Approach 1: Matrix Invariant with if/else
 n: int = 4
+for i in range(n):
+    for j in range(n):
+        if j &lt; n - 1 - i:
+            print("  ", end="")  # 2 spaces match '* ' width
+        else:
+            print("* ", end="")
+    print()
+
+# Approach 2: Two Sequential Inner Loops
+for i in range(n):
+    # Phase 1: Print leading spaces
+    for s in range(n - 1 - i):
+        print("  ", end="")
+    # Phase 2: Print stars
+    for st in range(i + 1):
+        print("* ", end="")
+    print()
+
+# Approach 3: Pythonic String Concatenation
+for i in range(1, n + 1):
+    print("  " * (n - i) + "* " * i)</pre></div>
+
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output Preview</span>
+                </div>
+                <pre class="pattern-terminal-body">      * 
+    * * 
+  * * * 
+* * * * </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern 5: Centered Equilateral Pyramid -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 5: Centered Equilateral Pyramid Pattern</div>
+            <span class="pattern-badge-rule">Symmetric Alignment: Spaces = n - i &nbsp;|&nbsp; Stars = i (spaced) or 2i - 1</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Centered Layout Grid</span>
+                <span>N = 4 rows</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">Row</th>
+                    <th class="matrix-col-header">Spaces</th>
+                    <th class="matrix-col-header">Centered Visual Stars</th>
+                    <th class="matrix-col-header">Total Cols</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">i = 1</td>
+                    <td style="font-family: monospace; color: var(--chip-3-fg);">" &nbsp; " (3)</td>
+                    <td><div class="matrix-cell active-star" style="width: 140px; height: 38px;"><span class="symbol">★</span></div></td>
+                    <td style="font-size: 0.8rem; font-family: monospace;">1 star</td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 2</td>
+                    <td style="font-family: monospace; color: var(--chip-3-fg);">" &nbsp;" (2)</td>
+                    <td><div class="matrix-cell active-star" style="width: 140px; height: 38px;"><span class="symbol">★ ★</span></div></td>
+                    <td style="font-size: 0.8rem; font-family: monospace;">2 stars</td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 3</td>
+                    <td style="font-family: monospace; color: var(--chip-3-fg);">" " (1)</td>
+                    <td><div class="matrix-cell active-star" style="width: 140px; height: 38px;"><span class="symbol">★ ★ ★</span></div></td>
+                    <td style="font-size: 0.8rem; font-family: monospace;">3 stars</td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 4</td>
+                    <td style="font-family: monospace; color: var(--chip-3-fg);">"" (0)</td>
+                    <td><div class="matrix-cell active-star" style="width: 140px; height: 38px;"><span class="symbol">★ ★ ★ ★</span></div></td>
+                    <td style="font-size: 0.8rem; font-family: monospace;">4 stars</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <table class="matrix-trace-table">
+                <thead>
+                  <tr><th>Row i (1 to n)</th><th>Leading Spaces</th><th>Spaced Stars</th><th>Odd Star Formulation (2i − 1)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>3</td><td><code class="inline">"* "</code></td><td><code class="inline">"*"</code> (1)</td></tr>
+                  <tr><td>2</td><td>2</td><td><code class="inline">"* * "</code></td><td><code class="inline">"***"</code> (3)</td></tr>
+                  <tr><td>3</td><td>1</td><td><code class="inline">"* * * "</code></td><td><code class="inline">"*****"</code> (5)</td></tr>
+                  <tr><td>4</td><td>0</td><td><code class="inline">"* * * * "</code></td><td><code class="inline">"*******"</code> (7)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>Two Elegant Pyramid Techniques:</strong></p>
+              <ul>
+                <li><strong>Technique A (Spaced Star Trick):</strong> Printing single spaces before <code class="inline">"* "</code> naturally centers the stars because each star carries an embedded trailing space!</li>
+                <li><strong>Technique B (Mathematical Odd Sequence):</strong> Exactly (2i − 1) stars printed after (n − i) spaces produces a solid, gap-free pyramid.</li>
+              </ul>
+              <div class="code"><pre>n: int = 4
+
+# Technique A: Spaced Star Pyramid
+for i in range(1, n + 1):
+    spaces: str = " " * (n - i)
+    stars: str = "* " * i
+    print(spaces + stars)
+
+# Technique B: Odd-Count Solid Star Pyramid (2*i - 1)
+for i in range(1, n + 1):
+    spaces: str = " " * (n - i)
+    stars: str = "*" * (2 * i - 1)
+    print(spaces + stars)</pre></div>
+
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output (Technique A &amp; B)</span>
+                </div>
+                <pre class="pattern-terminal-body"># Technique A (Spaced Stars):
+   * 
+  * * 
+ * * * 
+* * * * 
+
+# Technique B (Odd Solid Stars):
+   *
+  ***
+ *****
+*******</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern 6: Symmetric Diamond Pattern -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 6: Symmetric Diamond Pattern</div>
+            <span class="pattern-badge-rule">Upper Pyramid + Lower Inverted Pyramid</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div>
+              <p style="margin-top: 0;"><strong>Architectural Decomposition:</strong> A diamond of total height n = 7 (or odd n) is decomposed into:</p>
+              <ol>
+                <li><strong>Upper Pyramid:</strong> Rows 0 ... mid where mid = n // 2. Leading spaces decrease as stars increase.</li>
+                <li><strong>Lower Inverted Pyramid:</strong> Rows mid−1 ... 0. Leading spaces increase as stars decrease.</li>
+              </ol>
+              <div class="code"><pre># Symmetric Diamond Generator:
+n: int = 7
+mid: int = n // 2  # 3
+
+# 1. Upper Pyramid (including middle row):
+for i in range(mid + 1):
+    spaces: str = " " * (mid - i)
+    stars: str = "* " * (i + 1)
+    print(spaces + stars)
+
+# 2. Lower Inverted Pyramid:
+for i in range(mid - 1, -1, -1):
+    spaces: str = " " * (mid - i)
+    stars: str = "* " * (i + 1)
+    print(spaces + stars)</pre></div>
+            </div>
+
+            <div>
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output: Diamond (n = 7)</span>
+                </div>
+                <pre class="pattern-terminal-body">   * 
+  * * 
+ * * * 
+* * * * 
+ * * * 
+  * * 
+   * </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 id="5-3-advanced-matrix-invariants-hollow-shapes-and-diagonals">5.3. Advanced Matrix Invariants: Hollow Shapes &amp; Numbers</h3>
+
+        <p>The true pedagogical power of the Matrix Methodology emerges in complex shapes. Instead of juggling nested loops with multiple print counters, we simply write a <strong>single boolean equation</strong> inside an N × N loop!</p>
+
+        <!-- Pattern 7: Hollow Square & Diagonals -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 7: Hollow Square with Diagonals (The "X-Cross Box")</div>
+            <span class="pattern-badge-rule">Borders: i, j &isin; {0, n-1} &nbsp;|&nbsp; Diagonals: i == j or i + j == n - 1</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div class="matrix-visualizer">
+              <div class="matrix-visualizer-title">
+                <span>Boolean Matrix Decision Map</span>
+                <span>N = 5</span>
+              </div>
+              <table class="matrix-table">
+                <thead>
+                  <tr>
+                    <th class="matrix-axis-corner">i \ j</th>
+                    <th class="matrix-col-header">0</th>
+                    <th class="matrix-col-header">1</th>
+                    <th class="matrix-col-header">2</th>
+                    <th class="matrix-col-header">3</th>
+                    <th class="matrix-col-header">4</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="matrix-row-header">i = 0</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,3)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(0,4)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 1</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell diag-cell"><span class="coord">(1,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(1,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell diag-cell"><span class="coord">(1,3)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(1,4)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 2</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,1)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell diag-cell"><span class="coord">(2,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(2,3)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(2,4)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 3</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell diag-cell"><span class="coord">(3,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell empty-cell"><span class="coord">(3,2)</span><span class="symbol">·</span></div></td>
+                    <td><div class="matrix-cell diag-cell"><span class="coord">(3,3)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(3,4)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                  <tr>
+                    <td class="matrix-row-header">i = 4</td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(4,0)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(4,1)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(4,2)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(4,3)</span><span class="symbol">★</span></div></td>
+                    <td><div class="matrix-cell active-star"><span class="coord">(4,4)</span><span class="symbol">★</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="matrix-legend">
+                <span class="matrix-legend-item"><span class="matrix-legend-swatch" style="background: var(--chip-1-bg); border-color: var(--chip-1-border);"></span> Border Wall</span>
+                <span class="matrix-legend-item"><span class="matrix-legend-swatch" style="background: var(--chip-4-bg); border-color: var(--chip-4-border);"></span> Diagonal (i == j or i + j == n - 1)</span>
+                <span class="matrix-legend-item"><span class="matrix-legend-swatch" style="background: var(--card);"></span> Hollow Space</span>
+              </div>
+            </div>
+
+            <div>
+              <p style="margin-top: 0;"><strong>Matrix Algebraic Conditions:</strong></p>
+              <ul>
+                <li><strong>Top &amp; Bottom Borders:</strong> <code class="inline">i == 0 or i == n - 1</code></li>
+                <li><strong>Left &amp; Right Borders:</strong> <code class="inline">j == 0 or j == n - 1</code></li>
+                <li><strong>Main Diagonal (\):</strong> <code class="inline">i == j</code></li>
+                <li><strong>Anti-Diagonal (/):</strong> <code class="inline">i + j == n - 1</code></li>
+              </ul>
+              <div class="code"><pre>n: int = 5
+for i in range(n):
+    for j in range(n):
+        # Compound Matrix Invariant Condition:
+        is_border: bool = (i == 0 or i == n - 1 or j == 0 or j == n - 1)
+        is_diagonal: bool = (i == j or i + j == n - 1)
+        
+        if is_border or is_diagonal:
+            print("*", end=" ")
+        else:
+            print(" ", end=" ")
+    print()</pre></div>
+
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output: Hollow Box with Diagonals</span>
+                </div>
+                <pre class="pattern-terminal-body">* * * * * 
+* *   * * 
+*   *   * 
+* *   * * 
+* * * * * </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern 8: Numerical Incremental Patterns & Floyd's Triangle -->
+        <div class="pattern-showcase">
+          <div class="pattern-showcase-header">
+            <div class="pattern-title">Pattern 8: Numerical Patterns (Column Counter vs Floyd's Triangle)</div>
+            <span class="pattern-badge-rule">Column Value vs Cumulative State Counter</span>
+          </div>
+
+          <div class="pattern-split-view">
+            <div>
+              <p style="margin-top: 0;"><strong>Numerical Pattern Types:</strong></p>
+              <ul>
+                <li><strong>Type 1 (Coordinate Dependent):</strong> The printed value is derived directly from the column index <code class="inline">j</code> or row index <code class="inline">i</code> (e.g. print <code class="inline">j</code>).</li>
+                <li><strong>Type 2 (State Dependent - Floyd's Triangle):</strong> The printed value is a global counter incremented with every cell print, traversing continuously through the lower triangular matrix.</li>
+              </ul>
+
+              <div class="code"><pre>n: int = 4
+
+# Type 1: Column-based Incremental Number Triangle
+print("--- Column-Based Triangle ---")
 for i in range(1, n + 1):
     for j in range(1, i + 1):
         print(j, end=" ")
     print()
 
-# 5. Centered Pyramid Pattern:
+# Type 2: Floyd's Triangle (Continuous Running Counter)
+print("\n--- Floyd's Triangle ---")
+counter: int = 1
 for i in range(1, n + 1):
-    spaces: str = " " * (n - i)
-    stars: str = "* " * i
-    print(spaces + stars)</pre></div>
+    for j in range(1, i + 1):
+        print(f"{counter:2d}", end=" ")
+        counter += 1
+    print()</pre></div>
+            </div>
+
+            <div>
+              <div class="matrix-visualizer" style="margin-bottom: 12px;">
+                <div class="matrix-visualizer-title">
+                  <span>Floyd's Triangle Matrix Flow</span>
+                  <span>N = 4</span>
+                </div>
+                <table class="matrix-table">
+                  <tbody>
+                    <tr>
+                      <td class="matrix-row-header">Row 1</td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">1</span></div></td>
+                      <td><div class="matrix-cell empty-cell"><span class="symbol">·</span></div></td>
+                      <td><div class="matrix-cell empty-cell"><span class="symbol">·</span></div></td>
+                      <td><div class="matrix-cell empty-cell"><span class="symbol">·</span></div></td>
+                    </tr>
+                    <tr>
+                      <td class="matrix-row-header">Row 2</td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">2</span></div></td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">3</span></div></td>
+                      <td><div class="matrix-cell empty-cell"><span class="symbol">·</span></div></td>
+                      <td><div class="matrix-cell empty-cell"><span class="symbol">·</span></div></td>
+                    </tr>
+                    <tr>
+                      <td class="matrix-row-header">Row 3</td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">4</span></div></td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">5</span></div></td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">6</span></div></td>
+                      <td><div class="matrix-cell empty-cell"><span class="symbol">·</span></div></td>
+                    </tr>
+                    <tr>
+                      <td class="matrix-row-header">Row 4</td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">7</span></div></td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">8</span></div></td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">9</span></div></td>
+                      <td><div class="matrix-cell num-cell"><span class="coord">val</span><span class="symbol">10</span></div></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="pattern-terminal">
+                <div class="pattern-terminal-bar">
+                  <div class="pattern-terminal-dots">
+                    <span class="pattern-terminal-dot dot-red"></span>
+                    <span class="pattern-terminal-dot dot-yellow"></span>
+                    <span class="pattern-terminal-dot dot-green"></span>
+                  </div>
+                  <span class="pattern-terminal-title">Terminal Output</span>
+                </div>
+                <pre class="pattern-terminal-body">--- Column-Based Triangle ---
+1 
+1 2 
+1 2 3 
+1 2 3 4 
+
+--- Floyd's Triangle ---
+ 1 
+ 2  3 
+ 4  5  6 
+ 7  8  9 10 </pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section id="6-numerical-algorithms">
@@ -496,7 +1383,7 @@ for i in range(1, n + 1):
         <h3 id="6-numerical-algorithms-l1"><span class="chip tier-l1">L1 Fundamental</span></h3>
 
         <h3 id="6-1-prime-number-verification">6.1. Prime Number Verification</h3>
-        <p>A prime number is a positive integer greater than 1 with no positive divisors other than 1 and itself. In optimized loop execution, divisors need only be checked up to $\lfloor\sqrt{n}\rfloor$.</p>
+        <p>A prime number is a positive integer greater than 1 with no positive divisors other than 1 and itself. In optimized loop execution, divisors need only be checked up to ⌊√n⌋.</p>
 
         <div class="code"><pre># Prime Number Verification using while / for and break:
 num: int = 29
@@ -513,7 +1400,7 @@ else:
 print(f"{num} is prime:", is_prime)  # True</pre></div>
 
         <h3 id="6-2-armstrong-narcissistic-number">6.2. Armstrong (Narcissistic) Number</h3>
-        <p>An Armstrong number of $k$ digits is an integer such that the sum of each digit raised to the power of $k$ equals the number itself (e.g. $153 = 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153$).</p>
+        <p>An Armstrong number of k digits is an integer such that the sum of each digit raised to the power of k equals the number itself (e.g. 153 = 1³ + 5³ + 3³ = 1 + 125 + 27 = 153).</p>
 
         <div class="code"><pre># Armstrong Number Verification using a while loop:
 num: int = 153
@@ -534,7 +1421,7 @@ else:
         <h3 id="6-numerical-algorithms-l2"><span class="chip tier-l2">L2 Intermediate</span></h3>
 
         <h3 id="6-3-fibonacci-series-generation">6.3. Fibonacci Series Generation</h3>
-        <p>Generates the sequence where each number is the sum of the two preceding numbers: $0, 1, 1, 2, 3, 5, 8, 13, \dots$</p>
+        <p>Generates the sequence where each number is the sum of the two preceding numbers: 0, 1, 1, 2, 3, 5, 8, 13, ...</p>
 
         <div class="code"><pre># Fibonacci Series Generation using a while loop:
 terms: int = 10
